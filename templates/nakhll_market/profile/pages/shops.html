@@ -1,0 +1,327 @@
+{% load i18n static %}
+{% load jformat %}
+
+{% block header %}
+    {% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+    <title>بازار نخل | مدیریت حجره</title>
+</head>
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-3">
+                <div class="profile-sidebar-site">    
+                    {% block topsidebar %}
+                        {% include "nakhll_market/profile/parents/new-topsidebar.html" %}
+                    {% endblock %}
+                    <div class="profile-sidebar-main">
+                        <a href="/profile/dashboard/">
+                            <button>
+                                <i class="fas fa-id-badge"></i>
+                                <h5>داشبورد</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/transaction/">
+                            <button>
+                                <i class="fad fa-clipboard-list"></i>
+                            <h5>تراکنش ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/factor/">
+                            <button>
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <h5>فاکتور ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/ticketing/">
+                            <button>
+                                <i class="fad fa-user-headset"></i>
+                                <h5>پشتیبانی</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/shops/">
+                            <button class="activebtn">
+                                <i class="fas fa-store"></i>
+                                <h5>مدیریت حجره</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/review/">
+                            <button>
+                                <i class="fad fa-comments-alt"></i>
+                                <h5>نقد ها و نظرات</h5>
+                            </button>
+                        </a>
+
+                        {% if request.user.is_staff %}
+                            {% block review %}
+                                {% include "nakhll_market/profile/parents/menu_for_shop_manage.html" %}
+                            {% endblock %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                    {% include "nakhll_market/profile/parents/new-header-profile.html" %}
+                {% endblock %}
+                
+                <div class="alarm-section">
+                    <div class="row">
+                        {% if ShowAlart %}
+                        <div class="col-xl-6 xol-lg-6 col-md-6 col-sm-12 col-12">
+                            <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                                <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                                <p>
+                                    {{AlartMessage}}
+                                </p>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% if This_User_Profile.chack_user_bank_account %}
+                    <div class="row">
+                        <div class="col-xl-12 col-12">
+                            <div class="dashboard">
+                                <h4>اطلاعات حساب</h4> 
+                                <form method="POST" action="{% url "nakhll_market:Shop_Manager_AddBankAccount" %}">
+                                    {% csrf_token %}
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                            <label for="AccountOwnerBuilder">نام و نام خانوادگی صاحب حساب :</label>
+                                                <input type="text" name="Shop_AccountOwner" class="form-control" id="AccountOwner" required>
+                                            </div>   
+                                        </div>          
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="CreditCardNumberBuilder">شماره کارت :</label>
+                                                <input type="text" name="Shop_CreditCardNumber" class="form-control" id="CreditCardNumber" pattern="[0-9]{16,16}" required>
+                                                <small class="smallhelp">شماره کارت خود را به صورت اعداد و بدون فاصله، "-" یا "_" وارد کنید.</small>
+                                                <br>
+                                                <small class="smallhelp">طول شماره کارت وارد شده باید 16 رقم باشد!</small>
+                                            </div>
+
+                                            <div class="form-group col-md-6">
+                                                <label for="ShabaBankNumberBuilder">شماره شبا :</label>
+                                                <div class="input-group mb-2 formshaba">
+                                                    <div class="input-group-prepend">
+                                                        <input type="text" name="Shop_ShabaBankNumber" class="form-control" id="ShabaBankNumber" pattern="[0-9]{24,24}" required>
+                                                        <div class="input-group-text">IR</div> 
+                                                    </div>
+                                                    <small class="smallhelp">شماره شبا خود را به صورت اعداد و بدون فاصله وارد کنید.</small>
+                                                    <br>
+                                                    <small class="smallhelp">طول شماره شبا وارد شده باید 24 رقم باشد!</small>
+                                                </div>       
+                                            </div>
+                                        </div>                      
+                                        <div class="form-row">
+                                            <div class="form-group col-md-12">
+                                                <button class="btn btn-primary float-left">ثبت</button>    
+                                            </div>
+                                        </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="row">
+                        <div class="col-xl-12 col-12">
+                            <div class="dashboard">
+                                <h4>اطلاعات حساب</h4> 
+                    
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                    <label for="Account_OwnerBuilder">نام و نام خانوادگی صاحب حساب :</label>
+                                    <fieldset disabled>
+                                        <input type="text" value="{{ This_User_Profile.get_bank_account_name }}" class="form-control" id="Account_OwnerBuilder">
+                                    </fieldset>
+                                    </div>   
+                                </div>          
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="CreditCard_NumberBuilder">شماره کارت :</label>
+                                        <fieldset disabled>
+                                            <input type="text" value="{{ This_User_Profile.get_credit_card_number }}" class="form-control" id="CreditCard_NumberBuilder">
+                                        </fieldset>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <label for="ShabaBank_NumberBuilder">شماره شبا :</label>
+                                        <fieldset disabled>
+                                            <div class="input-group mb-2 formshaba">
+                                                <div class="input-group-prepend">
+                                                        <input type="text"hu value="{{ This_User_Profile.get_shaba_number }}" class="form-control" id="ShabaBank_NumberBuilder">
+                                                    <div class="input-group-text">IR</div>
+                                                </div>
+                                            </div> 
+                                        </fieldset>      
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="dashboard dashboard-padding">
+                    <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12 top-of-shops">
+                            <h3> حجره ها <a href="{% url "nakhll_market:Shop_Manager_AddNewShop" %}" class="add-new-inprofile">افزودن حجره</a></h3>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        {% for item in UserShops %}
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-xs-12 col-12">
+                                <div class="shop-list">
+                                    <div class="shops-box">
+                                        <div class="shoplistbox">
+                                            <div class="mohtava">
+                                                <img src="{{item.Shop.Image_thumbnail_url}}" alt="{{item.Shop.Title}}" class="logo-shop">
+                                                <h2><span><a href="{% url "nakhll_market:ShopsDetail" item.Shop.Slug %}">{{item.Shop.Title}}</a></span></h2>
+                                                <span class="addr-shop"><img src="{% static "images/maintenance.svg" %}" alt="tag">
+                                                {% if item.Market != None %}<a href="{% url "nakhll_market:ShopsDetail" item.Shop.Slug %}"><span>{{item.Market.Title}}</span></a> - <a href="{% url "nakhll_market:ShopsDetail" item.Shop.Slug %}"><span>{{item.SubMarket.Title}}</span></a>{% endif %}
+                                                </span>     
+                                                <p class="loc-p shoploc"><span class="loc-in-shop-admin"><img src="{% static "images/maps-and-flags.svg" %}" alt="location"> 
+                                                    شهر {{item.Shop.City}}
+                                                    </span>
+                                                    <a href="{% url "nakhll_market:Shop_Manager_EditShop" item.Shop.Slug %}" class="edit-hojre-btn">ویرایش</a>
+                                                    <!-- <a href="{% url "nakhll_market:Shop_Manager_AddShopBanner" item.Shop.Slug %}" class="edit-hojre-btn">افزودن بنر به گالری</a> -->
+                                                    <a href="{% url "nakhll_market:Shop_Manager_ShopBannerList" item.Shop.Slug %}" class="edit-hojre-btn">گالری حجره</a>
+                                                </p>           
+                                            </div>
+                                        </div>
+                                    </div>    
+                                </div>    
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                
+                {% if UserShops %}
+                    <div class="dashboard dashboard-padding">
+                        <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12 top-of-shops">
+                                <h3> محصولات <a href="{% url "nakhll_market:Shop_Manager_AddNewProduct" %}" class="add-new-inprofile">افزودن محصول</a></h3>
+                            </div>
+                        </div>
+                {% endif %}
+                {% if UserShops %}
+                    <div class="row">
+                        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                            {% for item in UserShops %}
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link {% if forloop.counter == 1 %}active {% endif %}" id="pills-home-tab" data-toggle="pill" href="#{{item.Shop.Slug}}" role="tab" aria-controls="{{item.Shop.Slug}}" aria-selected="true">محصولات حجره {{item.Shop.Title}}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+                
+                {% if UserShops %}
+                    <div class="tab-content" id="pills-tabContent-product">
+                        <br>
+                        {% for item in UserShops %}
+                            <div class="tab-pane fade {% if forloop.counter == 1 %} show active {% endif %} row" id="{{item.Shop.Slug}}" role="tabpanel" aria-labelledby="{{item.Shop.Slug}}-tab">
+                                
+                                {% for productsus in UserProducts %}
+
+                                    {%if item.Shop.Slug == productsus.FK_Shop.Slug%}
+                                        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12">
+                                            <div class="prod-sec prod-sec-inprofile product-setting">
+                
+                                                <div class="product-img">
+                                                    <img class="prodimg" src="{{productsus.Image_thumbnail_url}}" alt="{{item.Title}}">
+                                                </div>
+                
+                                                <h3>{{productsus.Title}}</h3>
+                
+                                                <span class="numbersprice">{{productsus.Price}} ریال</span>
+                
+                                                <div class="link-prod-profile">
+                                                    <div class="container">
+                
+                                                        <div class="row">
+                                                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 product-setting-btns product-edit-btn">
+                                                                <a href="{% url "nakhll_market:Shop_Manager_EditProduct" productsus.Slug %}">ویرایش</a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-12 product-setting-btns">
+                                                                <a href="{% url "nakhll_market:Shop_Manager_ProductBannerList" productsus.Slug %}">گالری محصول</a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-12 product-setting-btns">
+                                                                <a href="{% url "nakhll_market:Shop_Manager_ProductAttributeList" productsus.Slug %}">ویژگی های محصول</a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-12 product-setting-btns">
+                                                                <a href="{% url "nakhll_market:Shop_Manager_ProductPriceAttributeList" productsus.Slug %}">ویژگی های انتخابی</a>
+                                                            </div>
+                                                        </div>
+                
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                
+                <br><br>
+            </div>
+            {% if UserProducts %}
+                <div class="dashboard dashboard-padding">
+                    <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12 top-of-shops">
+                            <h3> کوپن ها </h3>
+                            <a href="{% url "nakhll_market:Shop_Manager_ShopCopunList" %}" class="add-new-inprofile">لیست کوپن تخفیف ها</a>
+                            <br>
+                            <br>
+                            <a href="{% url "nakhll_market:Shop_Manager_ShopCopun" %}" class="add-new-inprofile">ایجاد کوپن تخفیف جدید</a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+{% block footer-section %}
+    {% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+    {% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

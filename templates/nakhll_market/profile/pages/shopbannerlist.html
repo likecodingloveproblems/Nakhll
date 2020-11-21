@@ -1,0 +1,467 @@
+{% load jformat %}
+{% load i18n static %}
+
+{% block header %}
+    {% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+    <title>بازار نخل | گالری حجره</title>
+    <link rel="stylesheet" href="{% static "css/cropper.css" %}">
+</head>
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-3">
+                <div class="profile-sidebar-site">    
+                    {% block topsidebar %}
+                        {% include "nakhll_market/profile/parents/new-topsidebar.html" %}
+                    {% endblock %}
+                    <div class="profile-sidebar-main">
+                        <a href="/profile/dashboard/">
+                            <button>
+                                <i class="fas fa-id-badge"></i>
+                                <h5>داشبورد</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/transaction/">
+                            <button>
+                                <i class="fad fa-clipboard-list"></i>
+                            <h5>تراکنش ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/factor/">
+                            <button>
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <h5>فاکتور ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/ticketing/">
+                            <button>
+                                <i class="fad fa-user-headset"></i>
+                                <h5>پشتیبانی</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/shops/">
+                            <button class="activebtn">
+                                <i class="fas fa-store"></i>
+                                <h5>مدیریت حجره</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/review/">
+                            <button>
+                                <i class="fad fa-comments-alt"></i>
+                                <h5>نقد ها و نظرات</h5>
+                            </button>
+                        </a>
+                        {% if request.user.is_staff %}
+                            {% block review %}
+                                {% include "nakhll_market/profile/parents/menu_for_shop_manage.html" %}
+                            {% endblock %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                    {% include "nakhll_market/profile/parents/new-header-profile.html" %}
+                {% endblock %}
+
+                <div class="alarm-section">
+                    <div class="row">
+                        {% if ShowAlart %}
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                                    <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                                    <p>
+                                        {{AlartMessage}}
+                                    </p>
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                    <div class="dashboard" id="gallery-box-section">
+                        <form id="gallery-product-form">
+                            <h5>گالری بنر حجره</h5>
+                            <br>
+                            <div class="row product-gallery-pics">
+                                {% for item in ShopBanners %}
+                                    <div val="{{item.id}}" class="col-xl-6 prod-gallery-pic-box">
+                                        {% if item.Publish %}
+                                        <div class="box-gallery-img-section gallery-img-show">
+                                            <img src="{{item.Image.url}}" alt="عکس محصول">
+                                            <div class="item-gallery-option">
+                                                <a href="{{item.Image.url}}" id="show-image-gallery-product" title="مشاهده" target="_blank"><i class="fas fa-eye"></i></a>
+                                                {% if item.Available %}
+                                                <button val="{{item.id}}" class="publish-shop-pic" title="توقف انتشار"><i id="publish-image-gallery-shop-i" class="fas fa-pause-circle"></i></button>
+                                                {% else %}
+                                                <button val="{{item.id}}" class="publish-shop-pic" title="انتشار دادن"><i id="publish-image-gallery-shop-i" class="fas fa-play-circle"></i></button>
+                                                {% endif %}
+                                                        <button val="{{item.id}}" class="delete-prod-pic go-to-pending" id="delete-image-gallery-product"  title="حذف"><i class="fas fa-minus-circle"></i></button>
+                                                    </div>
+                                            {% else %}
+                                            <div class="box-gallery-img-section gallery-img-show">
+                                            <img class="penging-image" src="{{item.Image.url}}" alt="عکس محصول">
+                                            <div class="pending-text">در انتظار تایید</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                <div class="plz-wait-gallery-pic">
+                                    <div class="progress-hide-parent progress-hide">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                                    </div>
+                                    <br>
+                                    <div id="loaderDiv3"><div> لطفا منتظر بمانید </div> <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری"></div>
+                                </div>
+                                <div class="col-xl-6 prod-gallery-pic-box">
+                                    <div class="box-gallery-img-section">
+                                        <label id="label-of-gallery" class="label cropper-label w-100">
+                                            <input type="file" class="sr-only" id="input2" name="image" accept="image/*">
+                                            <img class="rounded cropper-rounded " id="avatar2" src="{% static "images/image_upload2.jpg" %}" alt="avatar"  data-toggle="tooltip" title="انتخاب عکس ">
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="alert cropper-alert" role="alert"></div>
+                                <div class="modal fade" id="modal2" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+                                    <div class="modal-dialog modal-md" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                        <h5 class="modal-title" id="modalLabel">برش تصویر ...</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                        </div>
+                                        <div class="modal-body">
+                                        <div class="img-container cropper-img-container">
+                                            <img id="image2" src="https://avatars0.githubusercontent.com/u/3456749">
+                                        </div>
+                                        </div>
+                                        <div class="modal-footer" id="modal-footer-err">
+                                            <button type="button" class="btn btn-primary right-btn-send-modal" id="crop2">انتخاب تصویر</button>
+                                            <button type="button" class="btn btn-secondary " data-dismiss="modal">بستن</button>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                    <!-- <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                        <div class="order-profile">
+                            <h4>لیست بنر های حجره</h4>
+                            <table class="table">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>عنوان بنر</th>
+                                        <th>توضیحات بنر</th>
+                                        <th>وضعیت بنر</th>
+                                        <th>ویرایش بنر</th>
+                                        <th>حذف بنر</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in ShopBanners %}
+                                        {{item.id}}
+                                        {{item.Image_thumbnail_url}}
+                                        <tr>
+                                            <td>{{item.Title}}</td>
+                                            <td>{{item.Description}}</td>
+                                            {% if item.Publish %}
+                                                {% if item.Edite %}
+                                                    <td>در حال بررسی تغییرات</td>
+                                                    <td>در حال بررسی تغییرات</td>
+                                                    <td>در حال بررسی تغییرات</td>
+                                                {% else %}
+                                                    <td>{% if item.Available %}<a href="{% url "nakhll_market:Shop_Manager_ChangeShopBannerStatus" item.id %}"><i class="fas fa-play-circle" title="نمایش بنر"></i></a>{% else %}<a href="{% url "nakhll_market:Shop_Manager_ChangeShopBannerStatus" item.id %}"><i class="fas fa-pause-circle" title="عدم نمایش بنر"></i></a>{% endif %}</td>
+                                                    <td><a href="{% url "nakhll_market:Shop_Manager_EditShopBanner" item.id %}"><i class="fal fa-edit"></i></a></td>
+                                                    <td><a href="{% url "nakhll_market:Shop_Manager_DeleteShopBanner" item.id %}"><i class="fal fa-trash"></i></a></td>
+                                                {% endif %}
+                                            {% else %}
+                                                <td>در حال بررسی</td>
+                                                <td>در حال بررسی</td>
+                                                <td>در حال بررسی</td>
+                                            {% endif %}
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                    </div> -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script src="{% static "js/cropper.js" %}"></script>
+<script>
+    $("#gallery-box-section").show();
+    var ShopID = '{{ShopID}}';
+    var $progress;
+    var $progressBar;
+    var $alert;
+    var initialAvatarURL;
+    var formData = new FormData();
+    window.addEventListener('DOMContentLoaded', function () {
+      var avatar = document.getElementById('avatar2');
+      var image = document.getElementById('image2');
+      var input = document.getElementById('input2');
+    //   $progress = $('.progress');
+    //   $progressBar = $('.progress-bar');
+      $alert = $('.cropper-alert');
+      var $modal = $('#modal2');
+      var cropper;
+
+      $('[data-toggle="tooltip"]').tooltip();
+
+      input.addEventListener('change', function (e) {
+        var files = e.target.files;
+        var done = function (url) {
+          input.value = '';
+          image.src = url;
+          $alert.hide();
+          $modal.modal('show');
+        };
+        var reader;
+        var file;
+        var url;
+
+        if (files && files.length > 0) {
+          file = files[0];
+
+          if (URL) {
+            done(URL.createObjectURL(file));
+          } else if (FileReader) {
+            reader = new FileReader();
+            reader.onload = function (e) {
+              done(reader.result);
+            };
+            reader.readAsDataURL(file);
+          }
+        }
+      });
+
+      $modal.on('shown.bs.modal', function () {
+        cropper = new Cropper(image, {
+          aspectRatio: 129/40,
+          viewMode: 3,
+        });
+      }).on('hidden.bs.modal', function () {
+        cropper.destroy();
+        cropper = null;
+      });
+      document.getElementById('crop2').addEventListener('click', function (e) {
+          e.preventDefault();
+        var initialAvatarURL;
+        var canvas;
+
+        
+        $("#loaderDiv3").show();
+        $("#input2").prop('disabled', true);
+        $("#avatar2").fadeTo('fast', 0.3);
+        $("#label-of-gallery").css('cursor', 'default');
+
+        if (cropper) {
+          canvas = cropper.getCroppedCanvas({
+            width: 1032,
+            height: 320,
+          });
+            $modal.modal('hide');
+          
+
+
+
+          initialAvatarURL = avatar.src;
+        //   avatar.src = canvas.toDataURL();
+        //  $progress.show();
+          $alert.removeClass('alert-success alert-warning');
+          canvas.toBlob(function (blob) {
+          formData.append('gallery_image', blob, 'avatar.jpg');
+          
+        formData.append('shop_id', ShopID);
+        var crf_token = $('input[name=csrfmiddlewaretoken]').val();
+        $(".progress-hide").show();
+        $.ajax (
+                {
+                    url: '{% url "restapi:web_shop_add_imagetogallery" %}',
+                    method:"post",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    headers:{"X-CSRFToken": crf_token},
+                    xhr: function () {
+                    var xhr = new XMLHttpRequest();
+                    xhr.upload.onprogress = function (e) {
+                        var percent = '0';
+                        var percentage = '0%';
+                        
+                        if (e.lengthComputable) {
+                            percent = Math.round((e.loaded / e.total) * 100);
+                            percentage = percent + '%';
+                            $(".progress-bar").width(percentage).attr('aria-valuenow', percent).text(percentage);
+                        }
+                    };
+                    
+                    return xhr;
+                },
+                    success: function (json, status) {
+                        $("#input2").prop('disabled', false);
+                        $("#label-of-gallery").css('cursor', 'pointer');
+                        $("#avatar2").fadeTo('fast', 1);
+                        $(".progress-hide").hide();
+                        $(".progress-bar").width('0%').attr('aria-valuenow', 0).text('0%');
+                        $("#loaderDiv3").hide();
+                        if (json.status)
+                        {
+                            $(".product-gallery-pics").prepend('<div val="' + json.id + '" class="col-xl-6 prod-gallery-pic-box">' +
+                                    '<div class="box-gallery-img-section gallery-img-show">' +
+                                        '<img src="'+ canvas.toDataURL() +'" alt="بنر حجره">' +
+                                        '<div class="item-gallery-option">' +
+                                            '<a href="' + json.image + '" id="show-image-gallery-product" title="مشاهده" target="_blank"><i class="fas fa-eye"></i></a>' +
+                                            '<button val="' + json.id + '" class="delete-prod-pic" href="#" id="delete-image-gallery-product"  title="حذف"><i class="fas fa-minus-circle"></i></button>' +
+                                        '</div>' +
+                                    '</div>' +
+                                '</div>');
+                        }
+                        else {
+                            console.log(json.message);
+                        }
+                    },
+                    error: function (xhr, erstatus) {
+                        $(".progress-bar").width('0%').attr('aria-valuenow', 0).text('0%');
+                        $("#loaderDiv3").hide();
+                        $(".progress-hide").hide();
+                        $("#label-of-gallery").css('cursor', 'pointer');
+                        console.log(xhr);
+                        console.log(xhr.responseJSON);
+                        console.log(xhr.responseJSON.status);
+                        console.log(xhr.responseJSON.message);
+                        console.log(erstatus);
+                    }
+                }
+            )
+        });
+        }
+      });
+    });
+
+    $(document).on('click','.delete-prod-pic',function(e) {
+        e.preventDefault();
+        var pendornot = $(this).hasClass('go-to-pending');
+        var imgID = $(this).attr('val');
+        $(".product-gallery-pics div[val='" + imgID + "']").fadeTo( "slow", 0.2);
+        $("button[val='" + imgID + "'").prop( "disabled", true);
+        $(this).prop('disabled', true);
+        // $('.loading-add-product').show();
+        $.ajax (
+            {
+                type: 'POST',
+                url: '{% url "restapi:web_shop_delete_imagetogallery" %}',
+                data: {
+                        shop_id: ShopID,
+                        gallery_image_id: imgID,
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                    },
+                success: function (json, status) {
+                    if (json.status)
+                    {
+                        if (pendornot) {
+                            $(".product-gallery-pics div[val='" + imgID + "']").append('<div class="pending-text">در انتظار تایید</div>');
+                        }
+                        else {
+                            $(".product-gallery-pics div[val='" + imgID + "']").remove();
+                        }
+                        // $('.loading-add-product').hide();
+                    }
+                    else
+                    {
+                        console.log(json.message);
+                        // $('.loading-add-product').hide();
+                    }
+                    
+                },
+                error: function (xhr, status) {
+                    console.log(xhr);
+                    console.log(xhr.responseJSON);
+                    console.log(xhr.responseJSON.status);
+                    console.log(xhr.responseJSON.message);
+                    console.log(status);
+                    // $('.loading-add-product').hide();
+                }
+            }
+        )
+    })
+
+    $(document).on('click','.publish-shop-pic',function(e) {
+        e.preventDefault();
+        var imgID = $(this).attr('val');
+        var selfimg = $(this).find("i");
+        console.log(selfimg);
+        $.ajax (
+            {
+                type: 'POST',
+                url: '{% url "restapi:web_shop_change_status_imagetogallery" %}',
+                data: {
+                        shop_id: ShopID,
+                        gallery_id: imgID,
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                    },
+                success: function (json, status) {
+                    console.log(json);
+                    console.log(status);
+                    console.log(json.status);
+                    if (json.status) {
+                        $(selfimg).toggleClass('fa-play-circle fa-pause-circle');
+                    }
+                    if (!json.status) {
+                        json.message;
+                    }
+                },
+                error: function (xhr, status) {
+                    console.log(xhr);
+                    console.log(status);
+                    console.log(xhr.responseJSON);
+                    console.log(xhr.status);
+                    console.log(xhr.responseJSON.status);
+                    console.log(xhr.responseJSON.message);
+                }
+            }
+        )
+    })
+</script>
+
+{% block footer-section %}
+    {% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+    {% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

@@ -1,0 +1,193 @@
+{% load jformat %}
+
+{% block header %}
+    {% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+    <title>بازار نخل | ویرایش تصویر محصول {{UserShop.Title}}</title>
+</head>
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-3">
+                <div class="profile-sidebar-site">    
+                    {% block topsidebar %}
+                        {% include "nakhll_market/profile/parents/new-topsidebar.html" %}
+                    {% endblock %}
+                    <div class="profile-sidebar-main">
+                        <a href="/profile/dashboard/">
+                            <button>
+                                <i class="fas fa-id-badge"></i>
+                                <h5>داشبورد</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/transaction/">
+                            <button>
+                                <i class="fad fa-clipboard-list"></i>
+                            <h5>تراکنش ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/factor/">
+                            <button>
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <h5>فاکتور ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/ticketing/">
+                            <button>
+                                <i class="fad fa-user-headset"></i>
+                                <h5>پشتیبانی</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/shops/">
+                            <button class="activebtn">
+                                <i class="fas fa-store"></i>
+                                <h5>مدیریت حجره</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/review/">
+                            <button>
+                                <i class="fad fa-comments-alt"></i>
+                                <h5>نقد ها و نظرات</h5>
+                            </button>
+                        </a>
+
+                        {% if request.user.is_staff %}
+                            {% block review %}
+                                {% include "nakhll_market/profile/parents/menu_for_shop_manage.html" %}
+                            {% endblock %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                    {% include "nakhll_market/profile/parents/new-header-profile.html" %}
+                {% endblock %}
+
+                <div class="alarm-section">
+                    <div class="row">
+                        {% if ShowAlart %}
+                            <div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                                    <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                                    <p>
+                                        {{AlartMessage}}
+                                    </p>
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                        <div class="dashboard"> 
+                            <h4>ویرایش تصویر محصول</h4> 
+
+                            <form id="new-shopBanner-form" method="POST" enctype="multipart/form-data" action="/profile/product/banner/edite/{{Banners.id}}">
+                                {% csrf_token %}
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        
+                                        <div id="msg"></div>
+                                            <label for="file">تصویر محصول</label>
+                                            <input type="file" name="Banner_Image" class="file" accept="image/*">
+                                            <div class="input-group">
+                                            <input type="text" class="form-control input" disabled placeholder="آپلود عکس" id="file">
+                                            <div class="input-group-append">
+                                                <button type="button" class="browse btn btn-primary">بارگذاری</button>
+                                            </div>
+                                            
+                                            </div>
+                                            
+                                        <br>
+                                        
+                                        <img src="/{{Banners.Image}}" id="preview" class="img-thumbnail" width="80" height="80">
+                                            
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                            <small>
+                                                <br>
+                                                    برای بالا رفتن کیفیت کار ما و عکس ها در سایت لطفا عکس های به صورت مربع بارگذاری شود. با تشکر
+                                            </small>
+                                          
+                                    </div>
+
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                    <label for="inputTitleBanner">عنوان تصویر</label>
+                                        <input type="text" name="Banner_Title"  value="{{Banners.Title}}" class="form-control" id="inputTitleBanner" required>
+                                    </div>
+
+                                    
+                                    <div class="form-group col-md-6">
+                                        <label for="inputBannerURL">لینک تصویر</label>
+                                            <input type="text" name="Banner_URL" value="{{Banners.URL}}" class="form-control" id="inputBannerURL">
+                                    </div>
+                                    
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-12">
+                                    <label for="inputDescriptionBanner">توضیحات تصویر</label>
+                                        <textarea class="form-control" value="{{Banners.Description}}" name="Banner_Description" id="inputDescriptionBanner" rows="2">{{Banners.Description}}</textarea>
+                                    </div>  
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                    <label for="inputBannerBuilder">نام طراح تصویر (اختیاری)</label>
+                                        <input type="text" name="Banner_Builder" value="{{Banners.BannerBuilder}}" class="form-control" id="inputBannerBuilder">
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                    <label for="inputBannerURLBuilder">لینک طراح تصویر (اختیاری)</label>
+                                        <input type="text" name="Banner_URL_Builder" value="{{Banners.BannerURL}}" class="form-control" id="inputBannerURLBuilder">
+                                    </div>
+                                </div>
+ 
+                                <button type="submit" class="btn btn-primary mr-auto" id="send-left">ویرایش تصویر</button>
+                                    <div class="clearfix"></div>
+                                </div>
+
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+{% block footer-section %}
+    {% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+    {% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

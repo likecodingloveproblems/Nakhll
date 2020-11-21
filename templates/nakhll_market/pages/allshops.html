@@ -1,0 +1,77 @@
+{% load i18n static %}
+{% load jformat %}
+
+{% block header %}
+    {% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+
+    <meta name="keywords" content="حجره ها , حجره های بازار نخل , لیست حجره های بازار نخل , حجره های نخل , تمامی حجره های بازار نخل , همه حجره های بازار نخل">
+    <meta name="description" content="همه حجره ها ( فروشگاه های آنلاین ) بازار اجتماعی نخل">
+
+    <title>بازار نخل | حجره ها</title>
+</head>
+
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+<h1 class="hide">حجره های بازار نخل</h1>
+<h2 class="hide">همه حجره ها ( فروشگاه های آنلاین ) بازار اجتماعی نخل</h2>
+<div class="container">
+    <div class="row mg-topbutn">
+        {% for item in Shops %}
+            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+                <div class="shop-list">   
+                    <div class="shoplistbox">
+                        <div class="mohtava">
+                            <img src="{{item.Shop.Image_thumbnail_url}}" alt="{{item.Shop.Title}}" class="logo-shop">
+                            <a href="{% url "nakhll_market:ShopsDetail" item.Shop.Slug %}"><h2><span>{{item.Shop.Title}}</span></h2></a>
+                            <span class="addr-shop"><img src="{% static "images/maintenance.svg" %}" alt="svg">
+                            {% if item.Market != None %}<a href="{% url "nakhll_market:ShopsDetail" item.Shop.Slug %}"><span>{{item.Market.Title}}</span></a> - <a href="{% url "nakhll_market:ShopsDetail" item.Shop.Slug %}"><span>{{item.SubMarket.Title}}</span></a>{% endif %}
+                            </span>     
+                            <p class="loc-p shoploc">
+                            <img src="{% static "images/maps-and-flags.svg" %}" alt="loca"> 
+                                استان {{item.Shop.State}}, شهرستان {{item.Shop.BigCity}}, شهر {{item.Shop.City}}
+                            </p>  
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="row pagerow">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                {% if Shops.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page=1">اولی</a></li>
+                    <li class="page-item"><a class="page-link" href="?page={{Shops.previous_page_number}}">قبلی</a></li>
+                {% endif %}
+                {% for num in Shops.paginator.page_range %}
+                    {% if num == Shops.number %}
+                        <li class="page-item"><a class="page-link" href="?page={{num}}"><strong>{{num}}</strong></a></li>
+                    {% elif num > Shops.number|add:'-3' and num < Shops.number|add:'3' %}
+                        <li class="page-item"><a class="page-link" href="?page={{num}}">{{num}}</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if Shops.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{Shops.next_page_number}}">بعدی</a></li>
+                    <li class="page-item"><a class="page-link" href="?page={{Shops.paginator.num_pages}}">آخری</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
+
+{% block footer-section %}
+    {% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+    {% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

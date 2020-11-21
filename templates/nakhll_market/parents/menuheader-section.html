@@ -1,0 +1,34 @@
+{% load i18n static %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light navbar-section">
+    <div class="container">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="add-shop-mobile" href="{% url "nakhll_market:Shop_Manager_AddNewShop" %}">حجره دار شوید</a>
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav menu-navbar">
+                    {% for item in MenuList %}
+                        {% if forloop.counter == 5 %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="/pages/connectus/">{{item.Value_1}}</a>
+                            </li>
+                        {% elif forloop.counter == 6 %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="/pages/complaint/">{{item.Value_1}}</a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="/pages/static/{{item.Value_2}}/">{{item.Value_1}}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+                <ul class="navbar-nav menu-navbar mr-auto add-shop">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url "nakhll_market:Shop_Manager_AddNewShop" %}">حجره دار شوید</a>
+                    </li>
+                </ul>
+            </div>
+
+    </div>
+</nav>

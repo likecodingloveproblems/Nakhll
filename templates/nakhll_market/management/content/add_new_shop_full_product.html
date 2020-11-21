@@ -1,0 +1,373 @@
+{% load jformat %}
+
+{% block header %}
+{% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+
+    <title>بازار نخل | ثبت محصول جدید</title>
+</head>
+
+
+{% block headertag %}
+{% include "nakhll_market/parents/headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+
+
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-xl-3">
+
+                <div class="profile-sidebar-site">
+
+                    {% block topsidebar %}
+                        {% include "nakhll_market/profile/parents/topsidebar.html" %}
+                    {% endblock %}
+
+                    <div class="profile-sidebar-main">
+
+                            <a href="/profile/dashboard/">
+                                <button>
+                                    <i class="fas fa-id-badge"></i>
+                                    <h5>داشبورد</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/transaction/">
+                                <button>
+                                    <i class="fad fa-clipboard-list"></i>
+                                <h5>تراکنش ها</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/factor/">
+                                <button>
+                                    <i class="fas fa-file-invoice-dollar"></i>
+                                    <h5>فاکتور ها</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/ticketing/">
+                                <button>
+                                    <i class="fad fa-user-headset"></i>
+                                    <h5>پشتیبانی</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/shops/">
+                                <button>
+                                    <i class="fas fa-store"></i>
+                                    <h5>مدیریت حجره</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/review/">
+                                <button>
+                                    <i class="fad fa-comments-alt"></i>
+                                    <h5>نقد ها و نظرات</h5>
+                                </button>
+                            </a>
+
+                        {% if request.user.is_staff %}
+                            {% block review %}
+                                {% include "nakhll_market/profile/parents/menu_for_manage_data.html" %}
+                            {% endblock %}
+                        {% endif %}
+    
+                    </div>
+                </div>
+
+            </div>
+
+
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                    {% include "nakhll_market/profile/parents/header-profile.html" %}
+                {% endblock %}
+
+                <div class="row">
+                    {% if ShowAlart %}
+                    <div class="col-xl-6 xol-lg-6 col-md-6 col-sm-12 col-12">
+                        <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                            <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                            <p>
+                                {{AlartMessage}}
+                            </p>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                        <div class="dashboard"> 
+                            <h4>اضافه کردن محصول</h4>  
+
+                            <form id="new-prod-form" method="POST" enctype="multipart/form-data" action="{% url "nakhll_market:Add_New_Shop_Product" Shop.ID None %}">
+                                {% csrf_token %}
+                                    <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <div id="msg"></div>
+                                                    <label for="file">عکس محصول <code>*</code></label>
+                                                    <input type="file" name="Product_Image" class="file" accept="image/*">
+                                                    <div class="input-group">
+                                                    <input type="text" class="form-control input" disabled placeholder="آپلود عکس" id="file">
+                                                    <div class="input-group-append">
+                                                        <button type="button" class="browse btn btn-primary">بارگذاری</button>
+                                                    </div>
+                                                    </div> 
+                                                <br>
+                                                <img src="https://placehold.it/80x80" id="preview" class="img-thumbnail" width="175" height="175">
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                            <label for="inputprod_title">عنوان محصول <code>*</code></label>
+                                                <input type="text" name="prod_title" class="form-control" id="inputprod_title" minlength="2" maxlength="200" required>
+                                                <small>عنوان باید فارسی و <span class="Riyal">حداکثر 200 کاراکتر</span> باشد.</small>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="inputslugProd">شناسه محصول <code>*</code></label>
+                                                <input type="text" name="slugProd" class="form-control" id="inputslugProd" pattern="[a-z0-9\-_]{2,}" required>
+                                                <small>شناسه محصول باید شامل <span class="Riyal">حروف انگلیسی کوچک</span>، <span class="Riyal">خط تیره ("_" یا "-")</span> و <span class="Riyal">بدون فاصله</span> باشد.</small>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-12">
+                                            <label for="inputProdDes">درباره محصول <code>*</code></label>
+                                                <textarea name="ProdDes" class="form-control" id="inputProdDes" rows="2"></textarea>
+                                                <small>محصول خود را به صورت کامل معرفی نمایید.</small>
+                                            </div>  
+                                        </div>
+                                        
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="inputCat">دسته بندی محصول <code>*</code></label>
+                                                <select data-placeholder="انتخاب دسته بندی" multiple class="chosen-select-rtl form-control" name="ProdCat" tabindex="14">
+                                                    {% for item in Categort %}
+                                                        <option value="{{item.id}}">{{item.Title}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                <small>محصول شما شامل کدام دسته بندی ها می باشد؟</small>
+                                                <br>
+                                                <small>در صورتی که دسته بندی مورد نظر شما موجود نبود، این موضوع رو از طریق <a href="/profile/ticketing/" target="/blank"><span class="Riyal" title="پشتیبانی بازار آنلاین نخل">پشتیبانی</span></a> سایت پیگیری نمایید.</small>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="inputSubMarket">راسته محصول <code>*</code></label>
+                                                <select id="inputSubMarket" name="ProdSub" class="form-control">
+                                                    {% for item in SubMarket %}
+                                                        <option value="{{item.ID}}">{{item.Title}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                <small>محصول شما در کدام راسته قرار می گیرد؟</small>
+                                                <br>
+                                                <small>در صورتی که راسته مورد نظر شما موجود نبود، این موضوع رو از طریق <a href="/profile/ticketing/" target="/blank"><span class="Riyal" title="پشتیبانی بازار آنلاین نخل">پشتیبانی</span></a> سایت پیگیری نمایید.</small>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-row">
+                                            <div class="form-group col-md-12">
+                                            <label for="inputProdBio">معرفی محصول</label>
+                                                <textarea name="ProdBio" class="form-control" id="inputProdBio" maxlength="250" rows="1"></textarea>
+                                                <small>معرفی مختصری از محصول خود تا <span class="Riyal">حداکثر 250 کاراکتر</span> وارد نمایید.</small>
+                                            </div>  
+                                        </div>
+        
+                                        <div class="form-row">
+                                            <div class="form-group col-md-12">
+                                            <label for="inputProdStory">داستان محصول</label>
+                                                <textarea name="ProdStory" class="form-control" id="inputProdStory" rows="2"></textarea>
+                                            </div>  
+                                        </div>
+
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                            <label for="inputprod_title">قیمت فروش محصول <code>*</code></label>
+                                                <input type="text" name="prod_Price" class="form-control" pattern="[0-9]{5,}" id="inputprod_title" required>
+                                                <small>قیمت را به <span class="Riyal">ریال</span> وارد نمایید.</small>
+                                            </div>
+        
+                                            <div class="form-group col-md-6">
+                                            <label for="inputslugProd">قیمت واقعی</label>
+                                                <input type="text" name="Prodoldprice" class="form-control" pattern="[0-9]{5,}" id="inputslugProd">
+                                                <small>در صورت در نظر گرفتن تخفیف برای محصول، قیمت اصلی محصول را اینجا وارد نمایید.</small>
+                                                <br>
+                                                <small>قیمت را به <span class="Riyal">ریال</span> وارد نمایید.</small>
+                                            </div>
+                                        </div>
+
+                                        <h6>وزن محصول</h6>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                            <label for="input_netweight">وزن خالص محصول <code>*</code></label>
+                                                <input type="text" name="product_netweight" class="form-control" pattern="[0-9]{1,6}" id="input_netweight" required>
+                                                <small>وزن خالص محصول را به صورت <span class="Riyal">گرم</span> وارد نمایید.</small>
+                                            </div>
+        
+                                            <div class="form-group col-md-6">
+                                            <label for="input_packingweight">وزن محصول با بسته بندی <code>*</code></label>
+                                                <input type="text" name="product_packingweight" class="form-control" pattern="[0-9]{1,6}" id="input_packingweight" required>
+                                                <small>وزن بسته بندی محصول را به صورت <span class="Riyal">گرم</span> وارد نمایید.</small>
+                                            </div>
+                                        </div>
+        
+                                        <h6>ابعاد محصول</h6>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-4">
+                                            <label for="input_lengthwithpackaging">طول بسته بندی محصول <code>*</code></label>
+                                                <input type="text" name="product_lengthwithpackaging" class="form-control" pattern="[0-9]{1,4}" id="input_lengthwithpackaging" required>
+                                                <small>طول بسته بندی محصول را به صورت <span class="Riyal">سانتی متر</span> وارد نمایید.</small>
+                                            </div>
+        
+                                            <div class="form-group col-md-4">
+                                            <label for="input_widthwithpackaging">عرض بسته بندی محصول <code>*</code></label>
+                                                <input type="text" name="product_widthwithpackaging" class="form-control" pattern="[0-9]{1,4}" id="input_widthwithpackaging" required>
+                                                <small>عرض بسته بندی محصول را به صورت <span class="Riyal">سانتی متر</span> وارد نمایید.</small>
+                                            </div>
+        
+                                            <div class="form-group col-md-4">
+                                            <label for="input_heightwithpackaging">ارتفاع بسته بندی محصول <code>*</code></label>
+                                                <input type="text" name="product_heightwithpackaging" class="form-control" pattern="[0-9]{1,4}" id="input_heightwithpackaging" required>
+                                                <small>ارتفاع بسته بندی محصول را به صورت <span class="Riyal">سانتی متر</span> وارد نمایید.</small>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="PostRangeType">محدوده ارسال</label>
+                                                <select id="PostRangeType" name="ProdRange" class="form-control">
+                                                    <option selected>سراسر کشور</option>
+                                                    <option>استانی</option>
+                                                    <option>شهرستانی</option>
+                                                    <option>شهری</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="PostRangeType">وضعیت محصول</label>
+                                                <select id="PostRangeType" name="ProdPostType" class="form-control">
+                                                    <option selected>آماده در انبار</option>
+                                                    <option>تولید بعد از سفارش</option>
+                                                    <option>سفارشی سازی فروش</option>
+                                                    <option>موجود نیست</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-row">
+                                            <div class="form-group col-md-12">
+                                                <label for="inputPostRange">انتخاب محدوده ارسال محصول</label>
+                                                <select data-placeholder="محدوده ارسال محصول" multiple class="chosen-select-rtl form-control" id="inputPostRange" name="PostRange" tabindex="14">
+                                                    {% for item in PostRange %}
+                                                        <option value="{{item.id}}">{{item}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                <small class="smallhelp">منظور از محدوده ارسال محصول، استان،شهرستان یا شهر هایی است که شما می توانید محصول خود را به آنجا ارسال نمایید.</small>
+                                            </div>
+                                        </div>
+                                         
+                                        <div class="form-row">
+                                            <div class="form-group col-md-12">
+                                                <label for="inputPostRange">انتخاب  استثناء محدوده ارسال محصول</label>
+                                                <select data-placeholder="استثناء های محدوده ارسال محصول" multiple class="chosen-select-rtl form-control" id="inputPostRange" name="ExePostRange" tabindex="14">
+                                                    {% for item in PostRange %}
+                                                        <option value="{{item.id}}">{{item}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                <small class="smallhelp">منظور از استثناء محدوده ارسال محصول، استان،شهرستان یا شهر هایی که شما نمی توانید محصول خود را به آنجا ارسال نمایید.</small>
+                                                <br>
+                                                <small class="smallhelp">به عنوان مثال :</small>
+                                                <ul class="NotePostRange">
+                                                        <li>
+                                                            <span>اگر می خواهید به کل کشور محصول خود را ارسال نمایید :</span>
+                                                            <br>
+                                                            <span>محدوده ارسال را برابر سراسر کشور قرار دهید.</span>
+                                                        </li> 
+                                                        <br>
+                                                        <li>
+                                                            <span>اگر می خواهید به کل کشور به غیر از استان کرمان محصول خود را ارسال نمایید :</span>
+                                                            <br>
+                                                            <span>محدوده ارسال را برابر استانی قرار دهید و در قسمت استثناء ارسال استان کرمان را انتخاب نمایید.</span>
+                                                        </li> 
+                                                        <br>
+                                                        <li>
+                                                            <span>اگر می خواهید به استان های کرمان و فارس به غیر از (شهرستان کرمان) و (شهرستان فیروزآباد - شهر فیروزآباد) ارسال نمایید :</span>
+                                                            <br>
+                                                            <span>محدوده ارسال را برابر استانی قرار دهید و در قسمت محدوده ارسال استان های کرمان و فارس و در قسمت استثناء ارسال (استان کرمان - شهرستان کرمان) و (استان فارس - شهرستان فیروزآباد - شهر فیروزآباد) را انتخاب نمایید.</span>
+                                                        </li>
+                                                        <br>
+                                                        <li>
+                                                            <span>اگر می خواهید فقط به شهرستان کرمان به غیر از (شهرستان کرمان - شهر چترود) ارسال نمایید :</span>
+                                                            <br>
+                                                            <span>محدوده ارسال را برابر شهرستانی قرار دهید و در قسمت محدوده ارسال (استان کرمان - شهرستان کرمان) و در قسمت استثناء ارسال (استان کرمان - شهرستان کرمان - شهر چترود) را انتخاب نمایید.</span>
+                                                        </li>    
+                                                        <br>
+                                                        <li>
+                                                            <span>اگر می خواهید فقط به شهر کرمان ارسال نکنید :</span>
+                                                            <br>
+                                                            <span>محدوده ارسال را برابر شهری قرار دهید و در قسمت محدوده ارسال (استان کرمان - شهرستان کرمان) و در قسمت استثناء ارسال (استان کرمان - شهرستان کرمان - شهر کرمان) را انتخاب نمایید.</span>
+                                                        </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="inputUserStatus">وضعیت نمایش</label>
+                                                <select class="custom-select factor-profile-custom-select" name="Banner_Seen" id="inputUserStatus">
+                                                    <option value="0" selected>عدم نمایش</option>
+                                                    <option value="1">نمایش</option>
+                                                </select>
+                                            </div>
+        
+                                            <div class="form-group col-md-6">
+                                                <label for="inputUserStatus">وضعیت انتشار</label>
+                                                <select class="custom-select factor-profile-custom-select" name="Banner_Status" id="inputUserStatus">
+                                                    <option value="0" selected>عدم انتشار</option>
+                                                    <option value="1">انتشار</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+
+                                        <button type="submit" class="btn btn-primary mr-auto" id="send-left">ثبت محصول</button>
+                                        <div class="clearfix"></div>
+                                        </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+{% block footer-section %}
+{% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+
+
+{% block footer %}
+{% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

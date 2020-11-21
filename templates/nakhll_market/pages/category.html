@@ -1,0 +1,407 @@
+{% load i18n static %}
+{% load jformat %}
+
+{% block header %}
+    {% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+    
+    <meta name="keywords" content="{{all_category}} , دسته بندی {{all_category}} , محصولات {{all_category}} , حجره های {{all_category}} , همه ی {{all_category}} ,تمامی {{all_category}} , {{all_category}} در نخل ,">
+    <meta name="description" content=" مشاهده تمامی محصولات در دسته بندی {{all_category}} بازار نخل ...">
+    <title>بازار نخل | {{all_category_title}}</title>
+    
+</head>
+
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+<div class="container">
+    <div class="row name-section-title">
+        <h1 class="hide">{{all_category}}</h1>
+    </div>
+</div>
+
+<section id="category-sec">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-3 col-md-3 col-12">
+                <form method="POST" action="">
+                {% csrf_token %}
+                    <div class="search-side-bar">
+                        <div class="search-side-bar-title">
+                            <h6>بازه قیمت</h6>
+                        </div>
+                        <div class="hr-line-search-side-bar"></div>
+                        <div class="search-side-bar-content">
+                                                    
+                            <input type="text" class="js-range-slider" name="my_range" id="range-slider"
+                            data-type="double"
+                            data-min="100000"
+                            data-max="50000000"
+                            data-from="{{MinValue}}"
+                            data-to="{{MaxValue}}"
+                            data-step="50000"
+                            />
+                            <input type="number" id="example_2_input_to" class="rangeinputprice" name="Max">
+                            <input type="number" id="example_2_input_from" class="rangeinputprice" name="Min">
+                            <br>
+                        </div>
+                    </div>
+                    <div class="search-side-bar">
+                        <div class="search-side-bar-title">
+                            <h6>دسته بندی ها</h6>
+                        </div>
+                        <div class="hr-line-search-side-bar"></div>
+                        <div class="search-side-bar-content">
+                            <div class="search-category-input">
+                                <div class="input-group mb-3 search-category-input-box">
+                                    <div class="input-group-prepend search-category-input-icon">
+                                        <i class="fal fa-search"></i>
+                                    </div>
+                                    <input type="text" class="form-control target" id="searchCatInp" placeholder="جستجو در دسته بندی ها ..."
+                                        aria-label="Example text with button addon" aria-describedby="button-addon1">
+                                </div>
+                            </div>
+                            <div class="search-category-checklist">
+                                <div class="search-category-checklist-content" id="list-item-for-cat">
+                                    <ul class="search-category-main-list">
+                                        {% for item in Categories %}
+                                            <li>
+                                                <div class="search-category-main-item">
+                                                    <div class="custom-control custom-checkbox search-checks">
+                                                        <input type="checkbox" class="custom-control-input checkbox_val_category" id="{{item.Category.Slug}}" {% if item.Status %}checked{% endif %}>
+                                                        <label class="custom-control-label" for="{{item.Category.Slug}}"></label>
+                                                    </div>
+                                                    <span class="search-category-main-span">{{item.Category.Title}}</span>
+                                                </div>
+                                                {% if item.SubCategory %}
+                                                    <ul class="search-category-sub-list">
+                                                        {% for sub_item in item.SubCategory %}
+                                                            <li>
+                                                                <div class="search-category-sub-item">
+                                                                    <div class="custom-control custom-checkbox search-checks">
+                                                                        <input type="checkbox" class="custom-control-input checkbox_val_category " id="{{sub_item.Category.Slug}}" name="level-2" {% if sub_item.Status %}checked{% endif %}>
+                                                                        <label class="custom-control-label" for="{{sub_item.Category.Slug}}"></label>
+                                                                    </div>
+                                                                    <span class="search-category-sub-span">{{sub_item.Category.Title}}</span>
+                                                                </div>
+                                                            </li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                {% endif %}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="search-side-bar">
+                        <div class="search-side-bar-title">
+                            <h6>مرتب سازی بر اساس :</h6>
+                        </div>
+                        <div class="hr-line-search-side-bar"></div>
+                        <div class="search-side-bar-content">
+                            <br>
+                            <select placeholder="انتخاب دسته بندی" class=" form-control" name="Sort_By" id="sort_options"> 
+                                {% if Sort == 'newest' %}    
+                                    <option selected id="newest" >جدید ترین ها</option>
+                                    <option id="oldest" >قدیمی ترین ها</option>
+                                    <option id="down_price">قیمت نزولی</option>
+                                    <option id="up_price">قیمت صعودی</option>
+                                {% elif Sort == 'oldest' %}
+                                    <option id="newest" >جدید ترین ها</option>
+                                    <option id="oldest" selected>قدیمی ترین ها</option>
+                                    <option id="down_price">قیمت نزولی</option>
+                                    <option id="up_price">قیمت صعودی</option>
+                                {% elif Sort == 'down_price' %}
+                                    <option id="newest">جدید ترین ها</option>
+                                    <option id="oldest">قدیمی ترین ها</option>
+                                    <option selected id="down_price">قیمت نزولی</option>
+                                    <option id="up_price">قیمت صعودی</option>
+                                {% elif Sort == 'up_price' %}
+                                    <option id="newest" >جدید ترین ها</option>
+                                    <option id="oldest" >قدیمی ترین ها</option>
+                                    <option id="down_price">قیمت نزولی</option>
+                                    <option selected id="up_price">قیمت صعودی</option>
+                                {% endif %}
+                            </select>
+                            <br><br>
+                            <span class="btn btn-primary float-left" id="submit-filter">اعمال فیلتر ها</span>
+                            <br><br>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="col-xl-9 col-md-9 col-12">
+                <div class="postsbox-sec">   
+                    <div class="row"> 
+                        {% for item in Products %}
+                            <div class="col-xl-4 col-md-4 pageinprod">
+                                <div class="prod-sec whitebg">
+                                    <a href="/product/{{item.FK_Shop.Slug}}/{{item.Slug}}/"><img class="prodimg" src="{{item.Image_thumbnail_url}}" alt="prodname"></a>                      
+                                    <div class="bottom-product-bar">
+                                        <a href="/product/{{item.FK_Shop.Slug}}/{{item.Slug}}/"><h3>{{item.Title}}</h3></a>
+                                        {% if item.Status != '4' %}<span class="numbersprice">{{item.Price}} ریال</span>{% else %}<span class="empty">ناموجود</span>{% endif %}
+                                        <span class="add-to-cart-link"><span class="add-cart"><i class="far fa-plus"><span class="hide">{{item.ID}}</span></i></span></span>
+                                    </div>
+
+                                </div>
+                            </div>
+                        {% empty %}
+                            <p class="alertmessage">هیچ محصولی یافت نشد!</p>
+                        {% endfor %}
+                    </div>
+                    <div class="row pagerow">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination">
+                                {% if Products.has_previous %}
+                                    <li class="page-item"><a class="page-link" href="?page=1">اولی</a></li>
+                                    <li class="page-item"><a class="page-link" href="?page={{Products.previous_page_number}}">قبلی</a></li>
+                                {% endif %}
+                                {% for num in Products.paginator.page_range %}
+                                    {% if num == Products.number %}
+                                        <li class="page-item"><a class="page-link" href="?page={{num}}"><strong>{{num}}</strong></a></li>
+                                    {% elif num > Products.number|add:'-3' and num < Products.number|add:'3' %}
+                                        <li class="page-item"><a class="page-link" href="?page={{num}}">{{num}}</a></li>
+                                    {% endif %}
+                                {% endfor %}
+                                {% if Products.has_next %}
+                                    <li class="page-item"><a class="page-link" href="?page={{Products.next_page_number}}">بعدی</a></li>
+                                    <li class="page-item"><a class="page-link" href="?page={{Products.paginator.num_pages}}">آخری</a></li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal and script a-t-c -->
+<div class="modal fade" id="add-to-cart-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="title-modal-add-to-cart">عنوان</h5>
+          <button type="button" class="close right-close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p id="text-modal-add-to-cart">توضیحات</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-right" data-dismiss="modal">بستن</button>
+            <a href="/cart/detail/" class="btn btn-primary" id="go-to-card">سبدخرید</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+<script>
+    $('#submit-filter').click(function(){
+        var price = $('#example_2_input_from').val() +'-'+ $('#example_2_input_to').val();
+        var sort = $('#sort_options').find('option:selected').attr('id');
+        var favorite = [];
+        $. each($(".checkbox_val_category:checked"), function(){
+            favorite.push($(this).attr('id'));
+        });
+
+        var category_list = favorite.join("&");
+        console.log(category_list);
+        if (category_list == ''){
+            var url = "/product/all/";
+            window.location.replace(url);
+        }
+        else{
+            var url = "/category/"+category_list+'/'+sort+'/'+price+'/';
+            window.location.replace(url);
+        }
+    });
+</script>
+<script>
+    function handler( event ) {
+        var product_ID = $(event.target).text();
+        var attrprice_list = [];
+        $.ajax(
+            {
+                type: 'POST',
+                url: '{% url "nakhll_market:add_to_cart_with_price_attribute" %}',
+                data: {
+                    product_id : product_ID ,
+                    attrpriceitem : attrprice_list ,
+                    csrfmiddlewaretoken : $('input[name=csrfmiddlewaretoken]').val(),
+                },
+                success: function (json) {
+                    if (json.status) {
+                        if (json.code === '200') {
+                            $('#title-modal-add-to-cart').html(" انجام شد ...");
+                            $('#text-modal-add-to-cart').html("<i class='fas fa-check ok-add-cart'></i><br> محصول در سبدخرید شما موجود است، به تعداد آن افزوده شد.");
+                            $("#go-to-card").show();
+                            $('#add-to-cart-modal').modal('show');
+                        }
+                        else if (json.code === '201') {
+                            $('#title-modal-add-to-cart').html("انجام شد ...");
+                            $('#text-modal-add-to-cart').html("<i class='fas fa-check ok-add-cart'></i><br> محصول موردنظر با موفقیت به سبدخرید شما اضافه شد.");
+                            $("#go-to-card").show();
+                            $('#add-to-cart-modal').modal('show');
+                        }
+                    }
+                    else {
+                        if (json.code === '404') {
+                            $('#title-modal-add-to-cart').html("خطا");
+                            $('#text-modal-add-to-cart').html("<i class='far fa-times cancel-add-cart'></i><br>موجودی محصول کافی نمی باشد ...");
+                            $("#go-to-card").show();
+                            $('#add-to-cart-modal').modal('show');
+                        }
+                        else if (json.code === '500') {
+                            $('#title-modal-add-to-cart').html("خطا");
+                            $('#text-modal-add-to-cart').html("<i class='far fa-times cancel-add-cart'></i><br> خطایی رخ داده است <br>" + json.msg );
+                            $("#go-to-card").show();
+                            $('#add-to-cart-modal').modal('show');
+                        }
+                        else if (json.code === '400') {
+                            $('#title-modal-add-to-cart').html("خطا");
+                            $('#text-modal-add-to-cart').html("<i class='far fa-times cancel-add-cart'></i><br> محصول مورد نظر یافت نشد.");
+                            $("#go-to-card").show();
+                            $('#add-to-cart-modal').modal('show');
+                        }
+                        else if (json.code === '401') {
+                            $('#title-modal-add-to-cart').html("خطا");
+                            $('#text-modal-add-to-cart').html("<i class='far fa-times cancel-add-cart'></i><br> ابتدا به حساب کاربری خود وارد شوید و یا ثبت نام کنید ...");
+                            $("#go-to-card").hide();
+                            $('#add-to-cart-modal').modal('show');
+                        }
+                    }
+                    shopping_cart();
+                },
+                error: function () {
+                    $('#title-modal-add-to-cart').html("خطا");
+                    $('#text-modal-add-to-cart').html("ابتدا به حساب کاربری خود وارد شوید و یا ثبت نام کنید ...");
+                    $("#go-to-card").hide();
+                    $('#add-to-cart-modal').modal('show');
+                    console.log(xhr.status + ": " + xhr.responseText);
+                    RegisteredMobileNumber = false;
+                    shopping_cart();
+                }
+            }
+        );
+    }
+    $( ".add-to-cart-link" ).click( handler );
+</script>
+ <!-- end atc -->
+
+<script>
+    var $range = $("#range-slider");
+    var $inputFrom = $("#example_2_input_from");
+    var $inputTo = $("#example_2_input_to");
+    var instance;
+    var from = 0;
+    var to = 0;
+    
+    $range.ionRangeSlider({
+        skin: "round",
+        type: "double",
+        min: 100000,
+        max: 50000000,
+        from: "{{MinValue}}",
+        to: "{{MaxValue}}",
+        step: 50000,
+        onStart: updateInputs,
+        onChange: updateInputs,
+        onFinish: updateInputs
+    });
+    instance = $range.data("ionRangeSlider");
+    
+    function updateInputs (data) {
+        from = data.from;
+        to = data.to;
+        $inputFrom.prop("value", from);
+        $inputTo.prop("value", to);
+    }
+    
+    $inputFrom.on("change", function () {
+        var val = $(this).prop("value");
+    
+        // validate
+        if (val < min) {
+            val = min;
+        } else if (val > to) {
+            val = to;
+        }
+    
+        instance.update({
+            from: val
+        });
+    
+        $(this).prop("value", val);
+    
+    });
+    
+    $inputTo.on("change", function () {
+        var val = $(this).prop("value");
+    
+        // validate
+        if (val < from) {
+            val = from;
+        } else if (val > max) {
+            val = max;
+        }
+    
+        instance.update({
+            to: val
+        });
+    
+        $(this).prop("value", val);
+    });
+    
+
+</script>
+<script>
+    var availableCats = $(".search-category-main-list > li");
+    var availableCatsCount = $(".search-category-main-list > li").length;
+    $(".target").on('input',function(e){ 
+        var filter = $("#searchCatInp").val();
+        for (var i = 0 ;i < availableCatsCount; i++)
+        {
+            if ($(".search-category-main-list > li")[i].innerText.indexOf(filter) > -1 )
+            {
+                $(".search-category-main-list > li").eq(i).show();
+                if (typeof $(".search-category-main-list > li") !== 'undefined')
+                {
+                    if ($(".search-category-main-list > li")[i].innerText.indexOf(filter) > -1)
+                    {
+                        $(".search-category-main-list > li").eq(i).show();
+                    }
+                }
+            }
+            else {
+                $(".search-category-main-list > li").eq(i).hide();
+            }
+        }
+    });
+
+
+    // $('input[name="level-1"],input[name="level-2"]').bind('click', function () {
+	// 	    $('input[type=checkbox]', $(this).parent('li')).attr('checked', ($(this).is(':checked')));
+	// 	});
+
+</script>
+
+{% block footer-section %}
+{% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+{% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

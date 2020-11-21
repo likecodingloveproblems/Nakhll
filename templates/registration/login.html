@@ -1,0 +1,345 @@
+{% load i18n static %}
+
+{% block header %}
+{% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+    <title>بازار نخل | ورود</title>
+</head>
+<body id="login-page">
+
+<div class="login-sec login-page-whole-div">
+    <div class="blue-thick-line-top"></div>
+    <div class="login-page-whole-content">
+    <h5>ورود به سایت</h5>
+    <div class="errorbox">
+        <strong><div class="errorbox-txt">
+
+        </div></strong>
+        
+    </div>
+    <div class="login-alerts-section login-page-alerts">
+        <p>لطفا خطاهای زیر را برطرف کنید:</p>
+        <ul>
+            <li id="alert-li-mobile-empty"></li>
+            <li id="alert-li-mobile-digits"></li>
+            <li id="alert-li-mobile-length"></li>
+            <li id="alert-li-mobile-valid"></li>
+            <li id="alert-li-mobile-match"></li>
+            <li id="alert-li-password-empty"></li>
+            <li id="alert-li-password-english"></li>
+            <li id="alert-li-system-error"></li>
+        </ul>
+    </div>
+    {% if ShowAlart %}
+        <div id="alert-div-mobile-password-error" class="alert alert-warning alert-dismissible fade show custom-alart limit-alert" role="alert">
+            <i class="far fa-exclamation-circle"></i>
+            <p>
+                {{AlartMessage}}
+            </p>
+        </div>
+    {% endif %}
+    <form id="login-form">
+        {% csrf_token %}
+        <div class="input-login-modal input-mob-login login-page-main-input-login-mob">
+            <div class="before-input-icon">
+                <i class="fal fa-phone fix-before-input-icon-place"></i>
+            </div>
+            <div class="main-input-login">
+                <input id="mobilenumber" name="mobilenumber" type="number" pattern="[0-9]{11}" maxlength="11" placeholder="شماره همراه خود را وارد کنید" class="input-login login-input-modal mobile-form-login">
+            </div>
+        </div>
+        <div class="input-login-modal input-password-login">
+            <div class="before-input-icon">
+                <i class="fal fa-lock-alt fix-before-input-icon-place"></i>
+            </div>
+            <div class="main-input-login">
+                <input id="password" name="password" type="password" placeholder="رمز عبور خود را وارد کنید" class="input-login login-input-modal">
+            </div>
+        </div>
+        <div class="under-inputs">
+            <div class="remember-checkbox">
+                <input type="checkbox" name="remember_me" id="f-pass" class="customCheckBox"> <label for="f-pass"> مرا به خاطر بسپار </label>
+            </div>
+            <div class="forget-password-login-modal">
+                <a href="{% url "nakhll_market:ShowGetPhoneNumber" %}">رمز عبور خود را فراموش کرده اید؟</a>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="login-button-modal login-button-in-login-page">
+            <button id="login-button">
+                ورود
+            </button>
+            <div id="loaderDiv"> لطفا منتظر بمانید <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری"></div>
+        </div>
+    </form>
+    </div>
+    <div class="hr-line-full"></div>
+    <div class="login-page-whole-content login-page-footer">
+        <span>عضو جدید هستید؟</span> <a href="{% url "nakhll_market:AccountRegister" %}">ثبت نام کنید</a>
+    </div>
+</div>
+
+<script src="{% static "js/register_login/login.js" %}" type="text/javascript"></script>
+<script>
+    var Mobempty, Mobdigits, Moblength, Mobvalid, Mobmatch, Passempty, Passeng, Syserror;
+    var booleans = [Mobempty, Mobdigits, Moblength, Mobvalid, Mobmatch, Passempty, Passeng, Syserror];
+    for (var i=0; i<booleans.length; i++)
+    {
+        booleans[i] = false;
+    }
+    $(".login-alerts-section").hide();
+    checkIsThereAlert = function () {
+        for (var i=0; i<booleans.length; i++)
+        {
+            if(booleans[i])
+            {
+                $(".login-alerts-section").show();
+                return;
+            }
+            else
+            {
+                $(".login-alerts-section").hide();
+            }
+        }
+    }
+        //#region Check Registered MobileNumber - Ajax
+            var RegisteredMobileNumber = false;
+            var ajaxProcessing = false;
+            $("#mobilenumber").on("input", function () {
+                ajaxProcessing = true;
+                //Variables
+                var MobileLength = $(this).val().length;
+                var MobileNumber;
+
+                //Initializes
+                // $("#login-button").prop("disabled", true);
+                // $("#login-button").addClass('login-button-disabled');
+                
+                
+                if (MobileLength === 11 && ValidMobileNumber === true) {
+                    MobileNumber = $(this).val();
+                    $.ajax(
+                        {
+                            type: 'POST',
+                            url: '{% url "nakhll_market:Check_New_PhoneNumber" %}',
+                            data: {
+                                phonenumber: MobileNumber,
+                                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                                action: 'post'
+                            },
+                            success: function (json) {
+                                if (json.status) {
+                                    if (json.msg === 'is_exists') {
+                                        $("#alert-li-mobile-match").hide();
+                                        booleans[4] = false;
+                                        if ($("#password").val() !== '') {
+                                            // $("#login-button").prop("disabled", false);
+                                            // $("#login-button").removeClass('login-button-disabled');
+                                            $(".input-mob-login").removeClass("fieldEmpty");
+                                        }
+                                        RegisteredMobileNumber = true;
+                                    }
+                                    else if (json.msg === 'is_not_exists') {
+                                        $("#mobilenumber").addClass("fieldEmpty");
+                                        $(".input-mob-login").addClass("fieldEmpty");
+                                        $("#alert-li-mobile-match").show();
+                                        booleans[4] = true;
+                                        // $("#login-button").prop("disabled", true);
+                                        // $("#login-button").addClass('login-button-disabled');
+                                        RegisteredMobileNumber = false;
+                                    }
+                                }
+                                else {
+                                    $("#alert-li-system-error").show();
+                                    booleans[7] = true;
+                                    // $("#login-button").prop("disabled", true);
+                                    // $("#login-button").addClass('login-button-disabled');
+                                    RegisteredMobileNumber = false;
+                                }
+                                checkIsThereAlert();
+                            },
+                            error: function (xhr) {
+                                $("#alert-li-system-error").show();
+                                booleans[7] = true;
+                                console.log(xhr.status + ": " + xhr.responseText);
+                                RegisteredMobileNumber = false;
+                                checkIsThereAlert();
+                            }
+                        }
+                    );
+                }
+                ajaxProcessing = false;
+            })
+
+            $("#login-button").on("click", function (e) {
+                e.preventDefault();
+                var isItValid = false;
+                isItValid = checkFormValidation();
+                if (isItValid)
+                {
+                    if(RegisteredMobileNumber)
+                    {
+                        $("#loaderDiv").show();
+                        $("#login-button").prop("disabled", true);
+                        $("#login-button").addClass('login-button-disabled');
+                        var  MobileNumbers = $('#mobilenumber').val();
+                        var  PasswordUser = $('#password').val();
+                        var  RememberMe = '0';
+                        if ($('#f-pass').is(":checked")){
+                            var  RememberMe = '1';
+                        }
+                        $.ajax(
+                            {
+                                type: 'POST',
+                                url: '{% url "nakhll_market:login_to_account" %}',
+                                data: {
+                                    mobilenumber : MobileNumbers,
+                                    password: PasswordUser,
+                                    remember_me: RememberMe,
+                                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                                },
+                                success: function (json) {
+                                    console.log('True')
+                                    if (json.status == true) {
+                                        if (json.message == '200') {
+                                            $('.errorbox').hide();
+                                            var base_url = "" + json.next;
+                                            window.location.href = base_url;
+                                        }
+                                        else if (json.message == '400') {
+                                            $("#loaderDiv").hide();
+                                            $("#login-button").prop("disabled", false);
+                                            $("#login-button").removeClass('login-button-disabled');
+                                            console.log('400');
+                                            $('.errorbox-txt').html('شماره موبایل یا رمز عبور شما اشتباه می باشد.');
+                                            $('.errorbox').show();
+                                        }
+                                    }
+                                    else {
+                                        console.log(json.message);
+                                        $('.errorbox-txt').text();
+                                        $('.errorbox').show();
+                                    }
+                                },
+                                error: function (xhr) {
+                                    console.log('False')
+                                    console.log(xhr.status + ": " + xhr.responseText);
+                                }
+                            }
+                        ); 
+                    }
+                    else if(!RegisteredMobileNumber && !ajaxProcessing) {
+                        //Variables
+                        var MobileLength = $(this).val().length;
+                        var MobileNumber;
+                        
+                        //Initializes
+                        // $("#login-button").prop("disabled", true);
+                        // $("#login-button").addClass('login-button-disabled');
+                        
+                        
+                        if (MobileLength === 11 && ValidMobileNumber === true) {
+                            MobileNumber = $(this).val();
+                            $.ajax(
+                                {
+                                    type: 'POST',
+                                    url: '{% url "nakhll_market:Check_New_PhoneNumber" %}',
+                                    data: {
+                                        phonenumber: MobileNumber,
+                                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                                        action: 'post'
+                                    },
+                                    success: function (json) {
+                                        if (json.status) {
+                                            if (json.msg === 'is_exists') {
+                                                $("#alert-li-mobile-match").hide();
+                                                booleans[4] = false;
+                                                $(".input-mob-login").removeClass("fieldEmpty");
+                                                RegisteredMobileNumber = true;
+                                                $("#loaderDiv").show();
+                                                $("#login-button").prop("disabled", true);
+                                                $("#login-button").addClass('login-button-disabled');
+
+                                                var  MobileNumbers = $('#mobilenumber').val();
+                                                var  PasswordUser = $('#password').val();
+                                                var  RememberMe = '0';
+                                                if ($('#f-pass').is(":checked")){
+                                                    var  RememberMe = '1';
+                                                }
+                                                $.ajax(
+                                                    {
+                                                        type: 'POST',
+                                                        url: '{% url "nakhll_market:login_to_account" %}',
+                                                        data: {
+                                                            mobilenumber : MobileNumbers,
+                                                            password: PasswordUser,
+                                                            remember_me: RememberMe,
+                                                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                                                        },
+                                                        success: function (json) {
+                                                            console.log('True')
+                                                            if (json.status == true) {
+                                                                if (json.message == '200') {
+                                                                    $('.errorbox').hide();
+                                                                    var base_url = "" + json.next;
+                                                                    window.location.href = base_url;
+                                                                }
+                                                                else if (json.message == '400') {
+                                                                    $("#loaderDiv").hide();
+                                                                    $("#login-button").prop("disabled", false);
+                                                                    $("#login-button").removeClass('login-button-disabled');
+                                                                    $('.errorbox-txt').html('شماره موبایل یا رمز عبور شما اشتباه می باشد.');
+                                                                    $('.errorbox').show();
+                                                                }
+                                                            }
+                                                            else {
+                                                                console.log(json.message);
+                                                                $('.errorbox-txt').text();
+                                                                $('.errorbox').show();
+                                                            }
+                                                        },
+                                                        error: function (xhr) {
+                                                            console.log('False')
+                                                            console.log(xhr.status + ": " + xhr.responseText);
+                                                        }
+                                                    }
+                                                );      
+                                            }
+                                            else if (json.msg === 'is_not_exists') {
+                                                $("#mobilenumber").addClass("fieldEmpty");
+                                                $(".input-mob-login").addClass("fieldEmpty");
+                                                $("#alert-li-mobile-match").show();
+                                                booleans[4] = true;
+                                                // $("#login-button").prop("disabled", true);
+                                                // $("#login-button").addClass('login-button-disabled');
+                                                RegisteredMobileNumber = false;
+                                            }
+                                        }
+                                        else {
+                                            $("#alert-li-system-error").show();
+                                            booleans[7] = true;
+                                            // $("#login-button").prop("disabled", true);
+                                            // $("#login-button").addClass('login-button-disabled');
+                                            RegisteredMobileNumber = false;
+                                        }
+                                        checkIsThereAlert();
+                                    },
+                                    error: function (xhr) {
+                                        $("#alert-li-system-error").show();
+                                        booleans[7] = true;
+                                        console.log(xhr.status + ": " + xhr.responseText);
+                                        RegisteredMobileNumber = false;
+                                        checkIsThereAlert();
+                                    }
+                                }
+                            );
+                        }
+                    }
+                }
+                else {
+                    return false;
+                }
+            })
+            //#endregion
+</script>
+</body>

@@ -1,0 +1,144 @@
+{% load jformat %}
+
+{% block header %}
+{% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+
+    <title>بازار نخل | سبد خرید</title>
+</head>
+
+
+{% block headertag %}
+{% include "nakhll_market/parents/headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+
+<section id="brdcmb">
+    <div class="container">
+            <div class="row">
+                <div class="col-xl-12">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/">خانه</a></li>
+                            <li class="breadcrumb-item active" aria-current="page"> بررسی خرید و انتخاب شیوه ارسال</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+    </div>
+</section>
+
+<section id="time">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-12">
+                <div class="box-cart-page">
+                    <h4>موقعیت مکانی</h4>
+                    <div class="boxin-cartbox">
+                        <div class="row">
+                            <div class="col-xl-6">
+                                <div class="text-loc-box">
+                                    <h6>تهران</h6>
+                                    <h6>شهرستان ورامین</h6>
+                                    <h6>جاده لشکری</h6>
+                                    <h6>پلاک 7</h6>
+                                    <h6>شماره تماس <span>9120603568 - 98+</span></h6>
+                                    <div class="ae-address">
+                                        <a href="#">اضافه کردن آدرس</a> <a href="#"> ویرایش آدرس</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-6">
+                                <div class="img-loc-box">
+                                    <img src="https://www.ledgerinsights.com/wp-content/uploads/2018/03/34576539_m-810x540.jpg">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h4>شیوه ارسال</h4>
+                    
+                        <div class="row">
+                            <div class="col-xl-6">
+
+
+                                <div class="boxin-cartbox">
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                            <input type="radio" id="customRadioInline2" name="customRadioInline1" class="custom-control-input" checked>
+                                            <label class="custom-control-label" for="customRadioInline2"></label>
+                                            <span class="nameradiobox">پست پیشتاز</span>
+                                            <span class="price-send numbersprice"> 20000 ریال</span>
+                                            
+                                    </div>
+                                    <small class="nameradiobox">ارسال تخمینی ۲-۵ روزه (ممکن است مالیات برای ارسال محاسبه گردد.)</small>
+                                </div>
+
+                            </div>
+                            <div class="col-xl-6">
+
+                                <div class="boxin-cartbox">
+                                   <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="radio" id="customRadioInline2" name="customRadioInline1" class="custom-control-input" checked>
+                                        <label class="custom-control-label" for="customRadioInline2"></label>
+                                        <span class="nameradiobox">ارسال معمولی</span>
+                                        <span class="price-send numbersprice">رایگان</span>
+                                    </div>
+                                    <small class="nameradiobox">ارسال تخمینی ۵-۱۰ روزه (وظایف و مالیات ممکن است به زودی تحویل داده شود)</small>
+                                </div>
+
+                            </div>
+                        </div>
+                    
+                </div>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
+                <div class="sidebar-cart">
+                    <form class="takhfif-form">
+                        <div class="form-group">
+                            <label for="takhfif-code">کد تخفیف :</label>
+                            <input type="text" class="form-control" id="takhfif-code" placeholder="کد تخفیف شما">
+                            <button>بررسی</button>
+                        </div>
+                    </form>
+
+                    <div class="summary-cart">
+                        <h5>خلاصه سفارش :</h5>
+                        <div class="factor-cart-summary">
+                            <mark>جمع مبلغ کالا ها <span class="numbersprice">2000000 ریال</span></mark>
+                            <mark>هزینه ارسال <span class="numbersprice">70000 ریال</span></mark>
+                            {% if Factor_coupon_active == '1' %}
+                            <mark> تخفیف :<span class="numbersprice">{{ Factor.Coupon_price_min }} ریال</span></mark>
+                            {% endif %}
+                            <mark class="end-price">جمع کل <span class="numbersprice">2070000 ریال</span></mark>
+                        </div>
+                    </div>
+                    <div class="continue-cart">
+                        <a href="#"><button class="btn btn-success"><i class="fal fa-map-marker-alt"></i> مرحله بعد </button></a>
+                        <br>
+                        <a href="/" class="aback">بازگشت به صفحه اول</a>
+                    </div>
+
+                    
+                    
+                    
+                         
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% block footer-section %}
+{% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+
+
+{% block footer %}
+{% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

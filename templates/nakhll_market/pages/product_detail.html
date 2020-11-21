@@ -1,0 +1,518 @@
+{% load i18n static %}
+{% load jformat %}
+{% load filters %}
+
+
+<div class="modal fade" id="prod-gallery-Modal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="container">
+                <div class="modal-header prod-gallery-Modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">تصاویر {{Product.Title}}</h5>
+                    <button type="button" class="close close-modal-left" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="short-hr-line"></div>
+                <div class="modal-body prod-detail-Modal-body">
+                    <div class="container">
+                        <div class="row prod-gallery-row">
+                            <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-12 prod-gallery-active-pic-showing">
+                                <img src="/{{Product.Image}}" class="w-100 showing-prod-img" alt="{{Product.Slug}}">
+                                {% for item in Banners %}
+                                    <img src="/{{item.Image}}" class="w-100 showing-banner banner-{{item.id}}" alt="product_banner">
+                                {% endfor %}
+                            </div>
+                            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 preview-prod-imgs-col">
+                                <div class="container">
+                                    <div class="row preview-prod-imgs">
+                                        <div class="col-xl-3 col-lg-3 col-md-2 col-sm-3 col-3 preview-prod-img">
+                                            <img src="/{{Product.Image}}" class="d-block w-100 preview-prod-img-deactive prod-self-img active" alt="{{Product.Slug}}">
+                                        </div>
+                                        {% for item in Banners %}
+                                            <div class="col-xl-3 col-lg-3 col-md-2 col-sm-3 col-3 preview-prod-img preview-prod-banner">
+                                                <img src="/{{item.Image}}" class="d-block w-100 preview-prod-img-deactive banner-{{item.id}}" alt="product_banner">
+                                            </div>
+                                            <script>
+                                                $(".prod-gallery-active-pic-showing img.showing-banner").hide();
+                                                $(".preview-prod-img-deactive").click(function () {
+                                                    $("img.active").removeClass("active");
+                                                    $(this).addClass("active");
+                                                })
+                                                $(".preview-prod-banner .banner-{{item.id}}").click(function () {
+                                                    $(".prod-gallery-active-pic-showing .showing-banner").hide();
+                                                    $(".prod-gallery-active-pic-showing .showing-prod-img").hide();
+                                                    $(".prod-gallery-active-pic-showing .banner-{{item.id}}").show();
+                                                })
+                                                $(".preview-prod-img .prod-self-img").click(function () {
+                                                    $(".prod-gallery-active-pic-showing .showing-banner").hide();
+                                                    $(".prod-gallery-active-pic-showing .showing-prod-img").show();
+                                                })
+                                            </script>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<section id="brdcmb">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">خانه</a></li>
+                        <li class="breadcrumb-item"><a href="{% url "nakhll_market:Markets" %}">{{Product.FK_SubMarket.FK_Market.Title}}</a></li>
+                        <li class="breadcrumb-item"><a href="{% url "nakhll_market:SubMarkets" Product.FK_SubMarket.Slug %}">{{Product.FK_SubMarket.Title}}</a></li>
+                        <li class="breadcrumb-item"><a href="{% url "nakhll_market:ShopsDetail" Shop.Slug %}">{{Shop.Title}}</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{Product.Title}}</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="prod-top">
+    <div class="container">
+        <div class="alarm-section">
+            <div class="row">
+
+                {% if ShowAlart %}
+                <div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">
+                    <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                        <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                        <p>
+                            {{AlartMessage}}
+                        </p>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                <div class="slider-top-prod border-boxshadow">
+                    <div class="row">
+                        <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
+                            <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+                                <div class="carousel-inner">
+
+                                    <div class="carousel-item active">
+                                        <img src="/{{Product.Image}}" class="d-block w-100 prodslid-img cursor-pointer" alt="{{Product.Title}}" data-toggle="modal" data-target="#prod-gallery-Modal">
+                                    </div>
+                                    {% for item in Banners %}
+                                        <div class="carousel-item">
+                                            <img src="/{{item.Image}}" class="d-block w-100 prodslid-img cursor-pointer" alt="{{item.Title}}" data-toggle="modal" data-target="#prod-gallery-Modal">
+                                        </div>
+                                    {% endfor %}
+                                    <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="sr-only">Previous</span>
+                                    </a>
+                                    <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="sr-only">Next</span>
+                                    </a>
+                                </div>
+
+                                <ol class="carousel-indicators carousel-indicators-custom-single-product">
+                                    <li data-target="#carouselExampleControls" data-slide-to="0" class="active">
+                                        <img src="/{{Product.Image}}" class="d-block w-100 prodslid-img-btn" alt="{{Product.Title}}">
+                                    </li>
+                                    {% for item in Banners %}
+                                        <li data-target="#carouselExampleControls" data-slide-to="{{forloop.counter}}">
+                                            <img src="/{{item.Image}}" class="d-block w-100 prodslid-img-btn" alt="{{item.Title}}">
+                                        </li>
+                                    {% endfor %}
+                                    <li class="show-gallery-modal-triple-dots" data-toggle="modal" data-target="#prod-gallery-Modal">
+                                        <p>...</p>
+                                    </li>
+                                </ol>
+                                
+                            </div>
+                        </div>
+
+                        <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-12">
+                            <div class="row">
+                                <div class="col-xl-7">
+                                    <div class="prod-detail">
+                                        <h1>{{Product.Title}}</h1>
+                                        <p>وضعیت محصول : 
+                                            <span>
+                                                {% if Product.Status == '1' %}
+                                                    <span>آماده در انبار</span>
+                                                {% elif Product.Status == '2' %}
+                                                    <span>تولید بعد از سفارش</span>
+                                                {% elif Product.Status == '3' %}
+                                                    <span>تولید با سفارش مشتری</span>
+                                                {% elif Product.Status == '4' %}
+                                                    <span class="prod-detail-is-null">موجود نیست</span>
+                                                {% endif %}
+                                            </span>
+                                        </p>
+                                        <div class="des-prod">
+                                            <h4>معرفی {{Product.Title}} :</h4>
+                                            <p>{{Product.Bio}}</p>
+                                        </div>
+                                    </div>
+                                    <ul class="list-prod-det margin-top-15px">
+                                        <li>
+                                            <div class="shop-of-product-info-container">
+                                                فروشنده : 
+                                                <a href="{% url "nakhll_market:ShopsDetail" Shop.Slug %}">{{Shop.Title}}</a>
+                                                {% if Product.FK_Points.all.count != 0 %}
+                                                    <div class="shop-rate">
+                                                        <i class="fas fa-star"></i>
+                                                        <span>{{ Product.get_point }}</span>
+                                                        <span class="people-count-rate">({{ Product.get_point_count }} نفر)</span>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </li>
+                                        <li>بازارچه : 
+                                            <a href="{% url "nakhll_market:Markets" %}">{{Product.FK_SubMarket.FK_Market.Title}}</a>
+                                        </li>
+                                        <li>راسته : 
+                                            <a href="{% url "nakhll_market:SubMarkets" Product.FK_SubMarket.Slug %}">{{Product.FK_SubMarket.Title}}</a>
+                                        </li>
+                                        <!-- <li>تگ ها : 
+                                            {% for tag in Product.FK_Tag.all %} 
+                                                {% if forloop.counter != 6 %}
+                                                    <span><a href="/search/tag/{{tag.Slug}}"><h5>#{{tag.Title}}</h5></a></span>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </li> -->
+                                        <!-- <li>تعداد فروش : 
+                                            <span>{{Sell_Count}}</span>
+                                        </li> -->
+                                        <li>محدوده ارسال : 
+                                            {% if Product.PostRangeType == '1' %} 
+                                                <span>سراسر کشور</span>
+                                                {% if Product.FK_ExceptionPostRange.all %}
+                                                    <li>خارج از محدوده ارسال :
+                                                        <ul class="ExePostRange">
+                                                            {% for item in Product.FK_ExceptionPostRange.all %}
+                                                                <li>
+                                                                    <span>{{item}}</span>
+                                                                </li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </li>
+                                                {% endif %}
+                                            {% elif Product.PostRangeType == '2' %}
+                                                {% if Product.FK_PostRange.all %}
+                                                    {% if Product.FK_PostRange.all.count == 1 %}<span>استان</span>{% else %}<span>استان های</span>{% endif %}
+
+                                                    {% for item in Product.FK_PostRange.all %}
+                                                            <span>
+                                                                {{item.State}}
+                                                            </span>
+                                                        {% if not forloop.last %}<span>-</span>{% else %}{% endif %}
+                                                    {% endfor %}
+                                                    {% if Product.FK_ExceptionPostRange.all %}
+                                                        <li>خارج از محدوده ارسال :
+                                                            <ul class="ExePostRange">
+                                                                {% for item in Product.FK_ExceptionPostRange.all %}
+                                                                    <li>
+                                                                        <span>{{item}}</span>
+                                                                    </li> 
+                                                                {% endfor %}
+                                                            </ul>
+                                                        </li>
+                                                    {% endif %} 
+                                                {% else %} 
+                                                    <span>سراسر کشور</span>
+                                                        <li>خارج از محدوده ارسال :
+                                                            {% if Product.FK_ExceptionPostRange.all %}
+                                                                <ul class="ExePostRange">
+                                                                    {% for item in Product.FK_ExceptionPostRange.all %}
+                                                                        <li>
+                                                                            <span>{{item}}</span>
+                                                                        </li> 
+                                                                    {% endfor %}
+                                                                </ul>
+                                                            {% endif %}
+                                                        </li>                                                    
+                                                {% endif %}
+                                            {% elif Product.PostRangeType == '3' %}
+                                                {% if Product.FK_PostRange.all.count == 1 %}<span>استان</span>{% else %}<span>استان های</span>{% endif %}
+
+                                                {% for item in Product.FK_PostRange.all %}
+                                                        <span>
+                                                            {{item.State}}
+                                                        </span>
+                                                    {% if not forloop.last %}<span>-</span>{% else %}{% endif %}
+                                                {% endfor %}
+                                                {% if Product.FK_ExceptionPostRange.all %}
+                                                    <li>خارج از محدوده ارسال :
+                                                        <ul class="ExePostRange">
+                                                            {% for item in Product.FK_ExceptionPostRange.all %}
+                                                                <li>
+                                                                    <span>{{item}}</span>
+                                                                </li> 
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </li>
+                                                {% endif %}
+                                            {% elif Product.PostRangeType == '4' %}
+                                                {% if Product.FK_PostRange.all.count == 1 %}<span>شهرستان</span>{% else %}<span>شهرستان های</span>{% endif %}
+
+                                                {% for item in Product.FK_PostRange.all %}
+                                                        <span>
+                                                            {{item.BigCity}}
+                                                        </span>
+                                                    {% if not forloop.last %}<span>-</span>{% else %}{% endif %}
+                                                {% endfor %}
+                                                {% if Product.FK_ExceptionPostRange.all %}
+                                                    <li>خارج از محدوده ارسال :
+                                                        <ul class="ExePostRange">
+                                                            {% for item in Product.FK_ExceptionPostRange.all %}
+                                                                <li>
+                                                                    <span>{{item}}</span>
+                                                                </li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </li>
+                                                {% endif %}
+                                            {% endif %}
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-xl-5">
+                                    <div class="det-prod">
+                                        <!-- <div class="view-count">
+                                            <p><i class="fad fa-eye"></i> : {{View_Count}}</p>
+                                        </div> -->
+                                        <form action="{% url "Payment:AddProductToCartWithAttrPrice" Product.ID %}"  method="POST">
+                                        {% csrf_token %}
+                                            {% if AttrPrice.count != 0 %}<p>ویژگی های انتخابی</p>{% endif %}
+                                            <ul class="attr-list-price">
+                                                {% for item in AttrPrice %}  
+                                                    <li title ="{{item.Description}}">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input type="checkbox" class="custom-control-input attr-item-price" id="attr-{{item.Value}}" value="{{item.id}}" name="attrpriceitem">
+                                                            <label class="custom-control-label" for="attr-{{item.Value}}">{{item.Value}} : <span class="numbersprice">{{item.ExtraPrice}}</span> {% if item.Unit != '-' %}{{item.Unit}}{% endif %} </label>
+                                                        </div>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                            
+                                            {% if Product.OldPrice != '0' %}<div class="org-price"><h4 class="oldprice-prod">قیمت اصلی: <span> ریال </span> <span class="strikeprice" id="mainprice"> {{Product.OldPrice|currency}} </span></h4></div>{% else %}{% endif %}
+                                            <h3 class="price-prod">قیمت : <span> ریال </span> <span id="mainprice"> {{Product.Price|currency}} </span></h3>
+
+                                            <div class="input-group number-spinner add-to-card-div">
+                                                
+                                                
+                                                <!-- <div class="numb-control">
+                                                    <span class="input-group-btn">
+                                                        <button class="btn btn-default" data-dir="up" type="button">+</button>
+                                                    </span>
+                                                    <input type="text" class="form-control text-center form-number-prod" value="1" name="countprod">
+                                                    <span class="input-group-btn">
+                                                        <button class="btn btn-default" data-dir="dwn" type="button">-</button>
+                                                    </span>
+                                                </div> -->
+                                                
+                                                {% if Product.Status != '4' %}<button type="submit" class="btn-add-prod"> <i class="fas fa-cart-plus"></i> افزودن به سبد خرید</button>{% endif %}
+                                                {% if Product.FK_Shop.Slug == 's-a-tahami'%}  
+                                                    <div class="alert alert-warning alert-add-to-carts-tahami" role="alert">
+                                                        لطفا قبل‌از سفارش و تائید نهایی فاکتور بااین شماره 03432476561 تماس ‌گرفته و از موجود بودن کالا اطمینان حاصل کنید.
+                                                    </div>
+                                                {% endif %}
+                                                <!-- <a href="{{ Product.get_add_to_cart_url }}" class="btn-add-prod">
+                                                        افزودن سبد خرید 
+                                                </a>     -->
+
+                                            </div>
+                                        </form>
+
+                                    </div>
+                                    <div class="share-menu">
+                                        <div class="share-icons-container">
+                                            <div class="share-icon-main" data-html='true' data-container="body" data-toggle="popover" data-placement="right" data-content="<div class='share-icons'><div class='share-icon share-telegram'><a href='https://t.me/share/url?url=www.nakhll.com{{ Product.get_url }}&text=از محصول {{Product.Title}} در سایت بازار نخل دیدن کنید'<i class='fab fa-telegram'></i></a></div><div class='share-icon share-whatsapp'><a href='https://web.whatsapp.com/send?text=www.nakhll.com{{ Product.get_url }}   {{ Product.Title }} را در بازار نخل مشاهده کنید ... '><i class='fab fa-whatsapp'></i></a></div><a href='https://www.instagram.com/?url=www.nakhll.com{{ Product.get_url }}' target='_blank' rel='noopener'><div class='share-icon share-instagram'><i class='fab fa-instagram'></i></div></a><div class='share-icon share-twitter'><a href='https://twitter.com/intent/tweet?url=https://www.nakhll.com{{ Product.get_url }}'><i class='fab fa-twitter'></i></a></div><div class='share-icon share-attach' id='tcopy' onclick='copyboard()'><i class='far fa-link'  ></i></div></div>">
+                                                <i class="fas fa-share-alt share-btn"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xl-12 col-md-12">
+                                    <div class="img-baner-prod">
+                                        <img src="{% static "images/product_icons.png" %}" alt="بنر ارسال">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if RelatedProduct %}
+    <section>
+        <div class="container">
+            <div class="slider-hialf-sec">
+                <div class="slider-full-width border-boxshadow">
+                    <h5><a href="#"></a>محصولات مرتبط</h5>
+                    <div class="clearfix"></div>
+                    <div class="slider-full-seller slider-full-cat">
+                        <div class="postslidebt">
+                            <section class="autoplay slider sliderfull">
+                                {% for item in RelatedProduct %}
+                                    <div class="boxslider-slick products-new">
+                                        <a href="{{ item.get_url }}" target="_blank">
+                                            <img src="{{ item.Image_thumbnail_url }}" alt="{{item.Title}}" width="175px" height="175px" >
+                                            <h4 class="titbox">{{item.Title}}</h4>
+                                            <span><span class="numbersprice">{{item.Price}}</span> ریال</span>
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </section>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </section>
+{% endif %}
+
+<section id="tab-prod-sec">
+    <div class="container">
+        <div class="row ">
+            <div class="col-xl-12">
+                <div class="tab-prod border-boxshadow">
+
+                    <ul class="nav nav-pills mb-3 nav-prod nav-mobile nav-tabs-product-exp">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="pill" href="#detail"><i class="fal fa-album-collection"></i> مشخصات محصول </a>
+                        </li>
+                        {% if Product.Description|length != 0 %}
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="pill" href="#about"><i class="far fa-pen-square"></i> درباره محصول </a>
+                            </li>
+                        {% endif %}
+
+                        {% if Product.Story|length != 0 %}
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="pill" href="#story"><i class="fal fa-books"></i> داستان محصول </a>
+                            </li>
+                        {% endif %}
+
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="pill" href="#comment"><i class="far fa-comment"></i> نظرات </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="pill" href="#review"><i class="fal fa-ballot-check"></i> نقد و بررسی </a>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content tab-cont-prod" id="pills-tabContent">
+                        <div class="tab-pane fade show active" id="detail">
+                            
+                            <table class="table table-striped attr-table">
+                                <tbody>
+                                    {% if Product.get_product_net_weight != '0' %}
+                                        <tr>
+                                            <th scope="row" class="titletable">وزن خالص محصول</th>
+                                            <td>{{Product.get_product_net_weight}} <span class="Riyal">گرم</span></td>
+                                        </tr>
+                                    {% endif %}
+                                    <tr>
+                                        <th scope="row" class="titletable">وزن محصول با بسته بندی</th>
+                                        <td>{% if Product.get_product_weight_with_packing == '0' %}نامشخص{% else %}{{Product.get_product_weight_with_packing}} <span class="Riyal">گرم</span>{% endif %}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" class="titletable">ابعاد محصول با بسته بندی</th>
+                                        <td>{% if Product.get_product_dimensions == '0 * 0 * 0' %}نامشخص{% else %}{{Product.get_product_dimensions}} <span class="Riyal">سانتی متر</span>{% endif %}</td>
+                                    </tr>
+                                        {% for item in AttrProduct %}
+                                            <tr>
+                                                <th scope="row" class="titletable">{{item.FK_Attribute.Title}}</th>
+                                                <td>{{item.Value}} <span class="Riyal">{% if item.FK_Attribute.Unit != '-' %}{{item.FK_Attribute.Unit}}{% endif %}</span></td>
+                                            </tr>
+                                        {% endfor %} 
+                                </tbody>
+                            </table>
+
+                        </div>
+
+                        {% if Product.Description|length != 0 %}
+                            <div class="tab-pane fade"  id="about">{{Product.Description}}</div>
+                        {% endif %}
+
+                        {% if Product.Story|length != 0 %}
+                            <div class="tab-pane fade"  id="story">{{Product.Story}}</div>
+                        {% endif %}
+                      
+                        <div class="tab-pane fade"  id="comment">
+                            {% block comment %}
+                                {% include "nakhll_market/pages/comment.html" %}
+                            {% endblock %}                           
+                        </div>
+
+                        <div class="tab-pane fade"  id="review">
+                            {% block review %}
+                                {% include "nakhll_market/pages/review.html" %}
+                            {% endblock %}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    $("#tcopy").click(function () {
+        var dummy = document.createElement('input'),
+            text = window.location.href;
+        document.body.appendChild(dummy);
+        dummy.value = text;
+        dummy.select();
+        document.execCommand('copy');
+        document.body.removeChild(dummy);
+        console.log('aliii');
+        return true;
+    });
+
+    $(".prod-gallery-active-pic-showing img.showing-banner").hide();
+    $(".preview-prod-img-deactive").click(function () {
+        $("img.active").removeClass("active");
+        $(this).addClass("active");
+    })
+
+    $(function () {
+            $('.share-icon-main').popover({
+              container: 'body',
+            //   template: '<div class="popover" role="tooltip""><h3 class="popover-title"></h3><div class="popover-content"><div class="data-content"></div></div></div>'
+            //   template: '<div class="popover" role="popover"><div class="popover-arrow"></div><div class="popover-inner"></div></div>'
+            })
+          })
+          $('body').on('click', function (e) {
+            $('[data-toggle=popover]').each(function () {
+                // hide any open popovers when the anywhere else in the body is clicked
+                if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+                    $(this).popover('hide');
+                }
+            });
+        });
+
+        
+</script>

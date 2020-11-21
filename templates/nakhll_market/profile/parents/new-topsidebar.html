@@ -1,0 +1,66 @@
+{% load i18n static %}
+
+<div class="profile-sidebar">
+    {% if request.user.is_authenticated %}
+        <img src="{{This_User_Profile.Image_thumbnail_url}}" alt="profile-img">
+    {% endif %}
+    <h4>
+    {% if request.user.is_authenticated %}
+        {{request.user.first_name}} {{request.user.last_name}}
+    {% endif %}
+    </h4>
+    <a href="{% url "nakhll_market:Wallet" %}">
+        <h5>
+            <img src="https://cdn0.iconfinder.com/data/icons/shopping-and-ecommerce-1/38/Shopping_icons_1_Converted-09-512.png" alt=".">
+            {% if request.user.is_authenticated %}
+                کیف پول : <span class="priceline"><span class="numbersprice">{{This_User_Inverntory}}</span></span> ریال
+            {% endif %}
+        </h5>
+    </a>
+</div>
+
+<div class="profile-sidebar-icon">
+    <a href="{% url 'logout' %}">
+        <div>
+            <i class="fal fa-sign-out"></i>
+        </div>
+    </a>
+    <a href="{% url "nakhll_market:Message" %}">
+        <div>
+            <div class="new-message-count"></div>
+            <i class="far fa-bell"></i>
+        </div>
+    </a>
+    <a href="{% url "nakhll_market:ShowGetPhoneNumber" %}">
+        <div>
+            <i class="fal fa-lock"></i>
+        </div>
+    </a>
+</div>
+
+<script>
+    // $("#new-message").hide();
+    $(".new-message-count").hide();
+    $(document).ready( function () {
+        $.ajax(
+            {
+                type: 'GET',
+                url: '{% url "Profile:CheckUserMessage" %}',
+                success: function (json) {
+                    if(json.status == true)
+                    {
+                        $(".new-message-count").show();
+                        $(".new-message-count").text(json.count);
+                    }
+                },
+                error: function () {
+                    $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات <br> " + json.error +
+                        "<br><a href='/account/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                    $("#loaderDiv").hide();
+                    console.log(xhr.status + ": " + xhr.responseText);
+                }
+            }
+        );
+    })
+
+</script>

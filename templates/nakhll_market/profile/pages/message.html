@@ -1,0 +1,301 @@
+{% load jformat %}
+{% load i18n static %}
+
+{% block header %}
+    {% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+<title>بازار نخل | پیام ها</title>
+</head>
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-3">
+                <div class="profile-sidebar-site">
+                    {% block topsidebar %}
+                        {% include "nakhll_market/profile/parents/new-topsidebar.html" %}
+                    {% endblock %}
+                    <div class="profile-sidebar-main">
+                        <a href="/profile/dashboard/">
+                            <button>
+                                <i class="fas fa-id-badge"></i>
+                                <h5>داشبورد</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/transaction/">
+                            <button>
+                                <i class="fad fa-clipboard-list"></i>
+                                <h5>تراکنش ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/factor/">
+                            <button>
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <h5>فاکتور ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/ticketing/">
+                            <button>
+                                <i class="fad fa-user-headset"></i>
+                                <h5>پشتیبانی</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/shops/">
+                            <button>
+                                <i class="fas fa-store"></i>
+                                <h5>مدیریت حجره</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/review/">
+                            <button>
+                                <i class="fad fa-comments-alt"></i>
+                                <h5>نقد ها و نظرات</h5>
+                            </button>
+                        </a>
+                        {% if request.user.is_staff %}
+                            {% include "nakhll_market/profile/parents/menu_for_shop_manage.html" %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                    {% include "nakhll_market/profile/parents/new-header-profile.html" %}
+                {% endblock %}
+
+                <div class="alarm-section">
+                    <div class="row">
+                        {% if ShowAlart %}
+                        <div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                                <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                                <p>
+                                    {{AlartMessage}}
+                                </p>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                        <div class="message-profile">
+                            <div class="message-profile-title">
+                                <h4>لیست پیام ها</h4>
+                            </div>
+                            {% if request.user.is_staff %}
+                                <div class="new-message-button">
+                                    <a href="{% url "nakhll_market:AddNewMessage" %}">ایجاد پیام</a>
+                                </div>
+                            {% endif %}
+                            <div class="clearfix">
+
+                            </div>
+                            <div class="hr-line-under-dashboard">
+
+                            </div>
+                            <div class="dashboard-filters filter-size">
+                                <h4>فیلتر</h4>
+                            </div>
+                            <form method="POST" action="{% url "nakhll_market:Message_Filter" %}">
+                                {% csrf_token %}
+                                <div class="row for-search">
+                                    <div
+                                        class="col-xl-3 col-lg-3 col-md-4 col-sm-5 col-5  message-profile-first-col-for-margin">
+                                        <span> تاریخ از :</span>
+                                        <div class="form-group message-profile-form-group">
+                                            <input readonly type="text" {% if Start != None %}value="{{Start}}"
+                                                {% endif %} name="filter_start"
+                                                class="form-control message-profile-form-control" id="start_date">
+                                            <script>
+                                                $("#start_date").persianDatepicker({
+                                                    startDate: "1398/12/1",
+                                                    endDate: "today",
+                                                });
+                                            </script>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-5 col-5">
+                                        <span> تا :</span>
+                                        <div class="form-group message-profile-form-group">
+                                            <input readonly type="text" {% if Start != None %}value="{{End}}"
+                                                {% endif %} name="filter_end"
+                                                class="form-control message-profile-form-control" id="end_date">
+                                            <script>
+                                                $("#end_date").persianDatepicker({
+                                                    startDate: "1398/12/1",
+                                                    endDate: "today",
+                                                });
+                                            </script>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-1 search-button5">
+                                        <!-- <a>امروز</a> -->
+                                    </div>
+                                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-7 col-6">
+                                        <div class="input-group mb-3">
+                                            <div class="input-group-prepend message-profile-input-group-prepend">
+                                                <label class="input-group-text message-profile-input-group-text for="
+                                                    inputGroupSelect01">وضعیت</label>
+                                            </div>
+                                            <select class="custom-select message-profile-custom-select" name="status"
+                                                id="inputGroupSelect01">
+                                                <option value="0" {% if Status == '0' %}selected{% endif %}>همه</option>
+                                                <option value="1" {% if Status == '1' %}selected{% endif %}>خوانده نشده
+                                                </option>
+                                                <option value="2" {% if Status == '2' %}selected{% endif %}>خوانده شده
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-1 search-button4">
+                                        <button>جستجو</button>
+                                    </div>
+                                </div>
+                            </form>
+                            <br>
+                            <div class="hr-line-under-dashboard"></div>
+
+                            <table class="table">
+
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>عنوان</th>
+                                        <th>متن</th>
+                                        <th>فرستنده</th>
+                                        <th>تاریخ ارسال</th>
+                                        <th>وضعیت</th>
+                                        <th>نمایش</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody class="code">
+                                    {% for item in Messages %}
+                                        <tr>
+                                            <td title="{{item.Message.Title}}">{{item.Message.Title}}</td>
+                                            <td class="message-table-text-col">
+                                                {{item.Message.Text}}
+                                            </td>
+                                            <td>{{item.Message.FK_Sender.first_name}} {{item.Message.FK_Sender.last_name}}
+                                            </td>
+                                            <td>{{item.Message.Date|jformat:'%Y/%m/%d'}}</td>
+                                            {% if item.Status %}
+                                            <td class="seen">خوانده شده</td>
+                                            {% else %}
+                                            <td class="not-seen" id="notseen-{{item.Message.id}}">خوانده نشده</td>
+                                            {% endif %}
+                                            <td class="pointer eye-for-show" id="{{item.Message.id}}"><a
+                                                    data-toggle="modal" data-target=".id-{{item.Message.id}}"><i class="fad fa-eye"></i></td>
+                                        </tr>
+                                        <div class="modal fade id-{{item.Message.id}}" tabindex="-1" role="dialog"
+                                            aria-labelledby="..." aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
+                                                role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title message-title-in-modal" id="{{item.Message.id}}">
+                                                            {{item.Message.Title}}</h5>
+                                                        <button type="button" class="close message-title-in-modal"
+                                                            data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        {{item.Message.Text}}
+                                                    </div>
+                                                        <div class="modal-footer footer-in-message-modal">
+                                                            <p class="message-modal-sender-info"> ارسال شده توسط <a href="#">
+                                                                    {{item.Message.FK_Sender.first_name}}
+                                                                    {{item.Message.FK_Sender.last_name}} </a>
+                                                            </p>
+                                                            <div class="message-modal-btns">
+                                                                <!-- <button type="button" class="btn btn-primary"> <a
+                                                                        href="{% url "nakhll_market:AddNewMessage" %}"> پاسخ
+                                                                    </a>
+                                                                </button> -->
+                                                                <button type="button" class="btn btn-secondary"
+                                                                    data-dismiss="modal">بستن</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+                                    {% endfor %}
+                                </tbody>
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    var itemID = '';
+    $(document).ready(function () {
+        $('.eye-for-show').click(function (e) {
+            e.preventDefault();
+            itemID = $(this).attr("id");
+            $.ajax({
+                type: 'POST',
+                url: '{% url "nakhll_market:ChengeMessageStatus" %}',
+                data: {
+                    id: itemID,
+                    csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+                    action: 'post'
+                },
+                success: function (json) {
+                    if (json.status) {
+                        if (json.needload) {
+                            $("#notseen-"+itemID).toggleClass("seen not-seen");
+                            $("#notseen-"+itemID).text('خوانده شده');
+                        }
+                    }
+                },
+                error: function (xhr, errmsg, err) {
+                    $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات <br> " + json.error +
+                        "<br><a href='/account/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                    location.reload()
+                    $("#loaderDiv").hide();
+                    console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                }
+            })
+        });
+    })
+</script>
+
+{% block footer-section %}
+    {% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+    {% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

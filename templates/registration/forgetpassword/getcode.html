@@ -1,0 +1,44 @@
+{% load i18n static %}
+
+{% block header %}
+{% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+    <title>بازار نخل | ثبت نام</title>
+</head>
+<body id="login-page">
+
+    <div class="alarm-section">
+        <div class="row">
+
+            {% if ShowAlart %}
+            <div class="col-xl-6 xol-lg-6 col-md-6 col-sm-12 col-12">
+                <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                    <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                    <p>
+                        {{AlartMessage}}
+                    </p>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+ <div class="login-sec">
+        <h1><a href="/">بازار اجتماعی نخل</a></h1>
+    <h6>احراز هویت</h6>
+    <form method="POST" action="/change_password/changing/off/">
+        {% csrf_token %}
+        <input id="code" name="code" type="text" maxlength="6" placeholder="کد" class="input-login">
+        <br>
+
+            <button type="submit" >
+                ثبت
+            </button>
+    </form>
+</div>
+    
+</body>

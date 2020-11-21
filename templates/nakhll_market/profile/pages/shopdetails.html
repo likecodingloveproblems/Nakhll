@@ -1,0 +1,986 @@
+{% load jformat %}
+{% load i18n static %}
+
+{% block header %}
+    {% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+    <title>بازار نخل | ویرایش حجره "{{UserShop.Title}}"</title>
+    <link rel="stylesheet" href="{% static "css/cropper.css" %}">
+</head>
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+<script type="text/javascript" charset="utf-8" src="{% static "js/chosen.jquery.js" %}"></script>
+
+<div class="modal fade" id="complete-info-modal" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title whole-prof-info-title" id="staticBackdropLabel">تکمیل اطلاعات حجره دار</h5>
+          <button type="button" class="close right-close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body whole-prof-info-body">
+            <div class="container whole-prof-info-form">
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        <p>برای ادامه روند ثبت حجره تکمیل اطلاعات پروفایل الزامی می باشد.</p>
+                    </div>
+                </div>
+                <!--Empty Alerts-->
+                <div id="alert-div-inputState-empty"></div>
+                <div id="alert-div-inputBigCity-empty"></div>
+                <div id="alert-div-inputCity-empty"></div>
+                <div id="alert-div-inputPhoneNumber-empty"></div>
+                <div id="alert-div-inputCityPerCode-empty"></div>
+                <div id="alert-div-inputAddress-empty"></div>
+                <div id="alert-div-inputZipCode-empty"></div>
+
+                <!-- Char Alerts-->
+                <div id="alert-div-inputState-Persian"></div>
+                <div id="alert-div-inputBigCity-Persian"></div>
+                <div id="alert-div-inputCity-Persian"></div>
+                <div id="alert-div-inputPhoneNumber-digits"></div>
+                <div id="alert-div-inputCityPerCode-digits"></div>
+                <div id="alert-div-inputZipCode-digits"></div>
+
+                <!--MinLength Alert-->
+                <div id="alert-div-inputCityPerCode-minlength"></div>
+                <div id="alert-div-inputAddress-minlength"></div>
+
+                <!--Length Alerts-->
+                <div id="alert-div-inputPhoneNumber-Length"></div>
+                <div id="alert-div-inputZipCode-Length"></div>
+
+                <label>
+                    <h6>محدوده جغرافیایی</h6>
+                </label>
+                <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left"
+                    title="نام استان، شهرستان و شهر خود را به صورت فارسی وارد نمایید."></i>
+                    <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="inputshopState">استان <code>*</code></label>
+                        <select name="Profile_State" class="chosen-select-rtl form-control choose-state-chosen" id="inputprofState">
+                            <option value="0">استان خود را انتخاب نمائید...</option>
+                            <option value="2">مرکزی</option>
+                            <option value="3">خراسان شمالی</option>
+                            <option value="4">گلستان</option>
+                            <option value="5">قزوین</option>
+                            <option value="6">قم</option>
+                            <option value="7">اردبیل</option>
+                            <option value="8">تهران</option>
+                            <option value="9">هرمزگان</option>
+                            <option value="10">یزد</option>
+                            <option value="11">سمنان</option>
+                            <option value="12">زنجان</option>
+                            <option value="13">بوشهر</option>
+                            <option value="14">کهگیلویه وبویراحمد</option>
+                            <option value="15">ایلام</option>
+                            <option value="16">خراسان جنوبی</option>
+                            <option value="17">لرستان</option>
+                            <option value="18">همدان</option>
+                            <option value="19">کردستان</option>
+                            <option value="20">سیستان وبلوچستان</option>
+                            <option value="21">اصفهان</option>
+                            <option value="22">خراسان رضوی</option>
+                            <option value="23">کرمان</option>
+                            <option value="24">فارس</option>
+                            <option value="25">خوزستان</option>
+                            <option value="26">کرمانشاه</option>
+                            <option value="27">آذربایجان غربی</option>
+                            <option value="28">آذربایجان شرقی</option>
+                            <option value="29">مازندران</option>
+                            <option value="30">گیلان</option>
+                            <option value="31">چهارمحال وبختیاری</option>
+                            <option value="32">البرز</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group col-md-4">
+                        <label for="inputshopBigCity">شهرستان <code>*</code></label>
+                        <select name="Profile_BigCity" class="chosen-select-rtl form-control choose-bigcity-chosen" id="inputprofBigCity">
+                            <option value="0">شهرستان خود را انتخاب نمائید...</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label class="BigCitySelect" for="inputCityShop">شهر <code>*</code></label>
+                        <select name="Profile_City" class="chosen-select-rtl form-control choose-city-chosen" id="inputprofCity">
+                            <option value="0">شهر خود را انتخاب نمائید...</option>
+                        </select>
+                    </div>
+                </div>
+    
+                <div class="form-row form-group">
+                    <div class="form-group col-md-4">
+                        <label for="inputPhoneNumber">تلفن ثابت <code>*</code></label>
+                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left"
+                            title="شماره تلفن ثابت شما باید 8 رقم باشد."></i>
+                        <input value="{{This_User_Profile.PhoneNumber}}" type="number" placeholder="98****33"
+                            name="Factor_PhoneNumber" pattern="[0-9]{8,8}" class="form-control" id="inputPhoneNumber">
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="inputCityPerCode">پیش شماره <code>*</code></label>
+                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left"
+                            title="پیش شماره شهر خود را به صورت اعداد وارد نمایید - پیش شماره شهر باید حداقل 3 رقم باشد."></i>
+                        <input value="{{This_User_Profile.CityPerCode}}" type="number" placeholder="مثال : 034"
+                            name="Factor_CityPerCode" pattern="[0-9]{3,3}" class="form-control" id="inputCityPerCode">
+                    </div>
+                </div>
+    
+                <div class="form-row form-group">
+                    <div class="col-md-12">
+                        <label for="inputAddress">آدرس <code>*</code></label>
+                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left"
+                            title="آدرس محل سکونت خود را وارد نمائید."></i>
+                        <input value="{{This_User_Profile.Address}}" type="text"
+                            placeholder="آدرس محل سکونت خود را وارد نمائید..."
+                            name="Factor_Address" class="form-control" id="inputAddress" required>
+                    </div>
+                </div>
+                <div class="form-row form-group">
+                    <div class="col-md-6">
+                        <label for="inputZipCode">کد پستی <code>*</code></label>
+                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left"
+                            title="کد پستی شما باید 10 رقم باشد."></i>
+                        <input required value="{{This_User_Profile.ZipCode}}" type="number" placeholder="999*****76"
+                            name="Factor_ZipCode" pattern="[0-9]{10,10}" class="form-control" id="inputZipCode">
+                    </div>
+                    <div class="col-md-6 prof-info-shop-btn">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
+                        <button id="send-profile-info-btn" type="button" class="btn btn-primary">ثبت اطلاعات</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+</div>
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-3">
+                <div class="profile-sidebar-site">    
+                    {% block topsidebar %}
+                        {% include "nakhll_market/profile/parents/new-topsidebar.html" %}
+                    {% endblock %}
+                    <div class="profile-sidebar-main">
+                        <a href="/profile/dashboard/">
+                            <button>
+                                <i class="fas fa-id-badge"></i>
+                                <h5>داشبورد</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/transaction/">
+                            <button>
+                                <i class="fad fa-clipboard-list"></i>
+                            <h5>سفارشات</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/factor/">
+                            <button>
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <h5>فاکتور ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/ticketing/">
+                            <button>
+                                <i class="fad fa-user-headset"></i>
+                                <h5>پشتیبانی</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/shops/">
+                            <button class="activebtn">
+                                <i class="fas fa-store"></i>
+                                <h5>مدیریت حجره</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/review/">
+                            <button>
+                                <i class="fad fa-comments-alt"></i>
+                                <h5>نقد ها و نظرات</h5>
+                            </button>
+                        </a>
+
+                        {% if request.user.is_staff %}
+                            {% block review %}
+                                {% include "nakhll_market/profile/parents/menu_for_shop_manage.html" %}
+                            {% endblock %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                    {% include "nakhll_market/profile/parents/new-header-profile.html" %}
+                {% endblock %}
+
+                <div class="alarm-section">
+                    <div class="row">
+                        {% if ShowAlart %}
+                            <div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                                    <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                                    <p>
+                                        {{AlartMessage}}
+                                    </p>
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div id="alert-div-inputshop-img-empty"></div>
+                    <div id="alert-div-inputshop-title-empty"></div>
+                    <div id="alert-div-inputshop-title-minlength"></div>
+                    <div id="alert-div-inputshop-title-maxlength"></div>
+                    <!-- <div id="alert-div-inputshop-title-valid-chars"></div> -->
+                    <!-- <div id="alert-div-inputshop-title-persian"></div> -->
+                    <!-- <div id="alert-div-inputshop-about-valid-chars"></div> -->
+                    <div id="alert-div-inputshop-state-unknown"></div>
+                    <div id="alert-div-inputshop-bigcity-unknown"></div>
+                    <div id="alert-div-inputshop-city-unknown"></div>
+                    <div id="alert-div-inputshop-Bio-maxlength"></div>
+                    <!-- <div id="alert-div-inputshop-bio-valid-chars"></div> -->
+                    <div id="alert-div-inputshop-submarket-unknown"></div>
+                    <div id="alert-div-inputshop-submarket-limit-count"></div>
+                    <div id="alert-div-inputshop-week-holidays-all"></div>
+                    <div id="alert-div-system-error"></div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                        <div class="dashboard"> 
+                            <h4>ویرایش حجره "{{UserShop.Title}}"</h4> 
+                            <form id="edit-shop-form" method="POST" enctype="multipart/form-data" action="{% url "nakhll_market:Shop_Manager_EditShop" UserShop.Slug %}">
+                                {% csrf_token %}
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="inputshop_title">عنوان حجره</label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="عنوان باید فارسی و حداکثر 70 کاراکتر باشد."></i>
+                                        <input type="text" value="{{UserShop.Title}}" name="Shop_Title" class="form-control" id="inputshop_title" minlength="2" maxlength="70" required>
+                                    </div>
+                                    
+                                    <div class="form-group col-md-6">
+                                        <label for="inputslugshop">شناسه حجره</label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title='شناسه حجره باید شامل حروف انگلیسی کوچک، خط تیره ("-") و بدون فاصله باشد.'></i>
+                                        <fieldset disabled>
+                                            <input type="text" name="Shop_Slug" value="{{UserShop.Slug}}" class="form-control" id="inputslugshop" pattern="[a-z0-9\-_]{2,}" readonly>
+                                        </fieldset>
+                                    </div>
+                                </div>
+
+                                <!-- <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <div id="msg"></div>
+                                        <label for="file">عکس حجره</label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left"
+                                        title="برای بالا رفتن کیفیت کار ما و عکس ها در سایت لطفا عکس های به صورت مربع بارگذاری شود. با تشکر"></i>
+                                        <input type="file" name="Shop_Image" class="file" accept="image/*">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control input" disabled placeholder="آپلود عکس" id="file">
+                                            <div class="input-group-append">
+                                                <button type="button" class="browse btn btn-primary">بارگذاری</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-6 preview-shop-pic-mine">
+                                        <img src="{{ UserShop.Image_thumbnail_url }}" id="avatar" class="img-thumbnail">
+                                    </div>
+                                </div> -->
+
+                                <div class="form-row">                            
+                                    <!-- <br> -->
+                                    <!-- <div class="w-100"> -->
+                                    <label class="label cropper-label w-100">  
+                                        <div class="form-group col-md-6"> 
+                                            <label for="inputslugshop">عکس حجره <code>*</code></label>      
+                                            <br>  
+                                            <a class="btn btn-primary choose-pic-btn" >انتخاب عکس</a>
+                                            <input type="file" class="sr-only input-pic-file" id="input" name="image" accept="image/*">
+                                            <input type="text" class="form-control choose-pic-input-name" disabled placeholder="آپلود عکس">
+                                        </div>
+                                        <br>
+                                        
+                                            <img class="rounded cropper-rounded " id="avatar" src="{{ UserShop.Image_thumbnail_url }}" alt="avatar"  data-toggle="tooltip" title="انتخاب عکس ">
+                                       
+                                    </label>
+                                    <!-- </div> -->
+                                </div>
+                                        <div class="alert cropper-alert" role="alert"></div>
+                                        <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+                                            <div class="modal-dialog modal-md" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                <h5 class="modal-title" id="modalLabel">برش تصویر ...</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                <div class="img-container cropper-img-container">
+                                                    <img id="image" src="https://avatars0.githubusercontent.com/u/3456749">
+                                                </div>
+                                                </div>
+                                                <div class="modal-footer" id="modal-footer-err">
+                                                    <button type="button" class="btn btn-primary right-btn-send-modal" id="crop">انتخاب تصویر</button>
+                                                    <button type="button" class="btn btn-secondary " data-dismiss="modal">بستن</button>
+                                                </div>
+                                            </div>
+                                            </div>
+                                        </div>
+                                        
+                                <div class="form-row">
+                                    <div class="form-group col-md-12">
+                                        <label for="inputshopdes">درباره حجره</label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="حجره خود را به صورت کامل معرفی نمایید."></i>
+                                        <textarea class="form-control" name="Shop_Des" id="inputshopdes" rows="2">{{UserShop.Description}}</textarea>
+                                    </div>  
+                                </div>
+                                <br>
+                                <div class="form-row shop-place-title">
+                                    <h6>اطلاعات محل استقرار حجره</h6>
+                                    <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="اطلاعات دقیق محل استقرار حجره را وارد کنید."></i>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="inputshopState">استان <code>*</code></label>
+                                        <select name="Shop_State" class="chosen-select-rtl form-control choose-state-chosen" id="inputshopState">
+                                            <option value="0">استان خود را انتخاب نمائید...</option>
+                                            <option value="2">مرکزی</option>
+                                            <option value="3">خراسان شمالی</option>
+                                            <option value="4">گلستان</option>
+                                            <option value="5">قزوین</option>
+                                            <option value="6">قم</option>
+                                            <option value="7">اردبیل</option>
+                                            <option value="8">تهران</option>
+                                            <option value="9">هرمزگان</option>
+                                            <option value="10">یزد</option>
+                                            <option value="11">سمنان</option>
+                                            <option value="12">زنجان</option>
+                                            <option value="13">بوشهر</option>
+                                            <option value="14">کهگیلویه وبویراحمد</option>
+                                            <option value="15">ایلام</option>
+                                            <option value="16">خراسان جنوبی</option>
+                                            <option value="17">لرستان</option>
+                                            <option value="18">همدان</option>
+                                            <option value="19">کردستان</option>
+                                            <option value="20">سیستان وبلوچستان</option>
+                                            <option value="21">اصفهان</option>
+                                            <option value="22">خراسان رضوی</option>
+                                            <option value="23">کرمان</option>
+                                            <option value="24">فارس</option>
+                                            <option value="25">خوزستان</option>
+                                            <option value="26">کرمانشاه</option>
+                                            <option value="27">آذربایجان غربی</option>
+                                            <option value="28">آذربایجان شرقی</option>
+                                            <option value="29">مازندران</option>
+                                            <option value="30">گیلان</option>
+                                            <option value="31">چهارمحال وبختیاری</option>
+                                            <option value="32">البرز</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group col-md-6 bigcity-form-group">
+                                        <label for="inputshopBigCity">شهرستان <code>*</code></label>
+                                        <div class="loading-chosen-ajax bigcity-loading"><img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری">
+                                            در حال بارگزاری
+                                        </div>
+                                        <select name="Shop_BigCity" class="chosen-select-rtl form-control choose-bigcity-chosen" id="inputshopBigCity">
+                                            <option value="0">شهرستان خود را انتخاب نمائید...</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-row shop-place">
+                                    <div class="form-group col-md-6 city-form-group">
+                                        <label class="BigCitySelect" for="inputCityShop">شهر <code>*</code></label>
+                                        <div class="loading-chosen-ajax city-loading"><img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری">
+                                            در حال بارگزاری
+                                        </div>
+                                        <select name="Shop_City" class="chosen-select-rtl form-control choose-city-chosen" id="inputshopCity">
+                                            <option value="0">شهر خود را انتخاب نمائید...</option>
+                                        </select>
+                                    </div>
+                                <script>
+                                    var selectedState;
+                                    createBigCity = function () { $.ajax (
+                                        {
+                                            type:'POST',
+                                            url: '{% url "restapi:get_state_bigcity" %}',
+                                            data: {
+                                                id: selectedState,
+                                                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                                            },
+                                            success: function (json) {
+                                                $('#inputshopBigCity').empty(); //remove all child nodes
+                                                $('#inputshopBigCity').append('<option value="0">شهرستان خود را انتخاب نمائید...</option>');
+                                                for( i=0; i < json.length; i++) {
+                                                    $("#inputshopBigCity").append('<option value="'+ json[i].id + '">' + json[i].name + '</option>');
+                                                }
+                                                $("#inputshopBigCity").prop('disabled', false);
+                                                $(".bigcity-form-group").removeClass('select-wait');
+                                                $(".bigcity-loading").hide();
+                                                $("#inputshopBigCity").trigger("chosen:updated");
+                                                if (findState)
+                                                {
+                                                    shopBigCityOptions = $('#inputshopBigCity option').map(function() { return ({'name': $(this).text(), 'id': $(this).val()})});
+                                                    for(var i=0;i < shopBigCityOptions.length; i++)
+                                                    {
+                                                        if (usershopBigCity == shopBigCityOptions[i].name)
+                                                        {
+                                                            $("#inputshopBigCity").val(shopBigCityOptions[i].id);
+                                                            $("#inputshopBigCity").trigger('chosen:updated');
+                                                            selectedBigCity = shopBigCityOptions[i].id;
+                                                            findBigCity = true;
+                                                            createCity();
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                        },
+                                        error: function () {
+                                            
+                                        }
+                                    }
+                                    )
+                                }
+                                var selectedBigCity;
+                                        createCity = function () { $.ajax (
+                                            {
+                                                type:'POST',
+                                                url: '{% url "restapi:get_bigcity_city" %}',
+                                                data: {
+                                                    id: selectedBigCity,
+                                                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                                                },
+                                                success: function (json) {
+                                                    $('#inputshopCity').empty(); //remove all child nodes
+                                                    $('#inputshopCity').append('<option value="0">شهر خود را انتخاب نمائید...</option>');
+                                                    for( i=0; i < json.length; i++) {
+                                                        $("#inputshopCity").append('<option value="'+ json[i].id + '">' + json[i].name + '</option>');
+                                                    }
+                                                    $("#inputshopCity").prop('disabled', false);
+                                                    $(".city-form-group").removeClass('select-wait');
+                                                    $(".city-loading").hide();
+                                                    $("#inputshopCity").trigger("chosen:updated");
+                                                    if (findBigCity)
+                                                    {
+                                                        shopCityOptions = $('#inputshopCity option').map(function() { return ({'name': $(this).text(), 'id': $(this).val()})});
+                                                        for(var i=0;i < shopCityOptions.length; i++)
+                                                        {
+                                                            if (usershopCity == shopCityOptions[i].name)
+                                                            {
+                                                                $("#inputshopCity").val(shopCityOptions[i].id);
+                                                                $("#inputshopCity").trigger('chosen:updated');
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                            },
+                                            error: function () {
+                                                
+                                            }
+                                        }
+                                        )
+                                    }
+                                $(document).ready( function () {
+                                    $('#inputshopState').chosen().change(function() {
+                                        $("#inputshopBigCity").prop('disabled', true);
+                                        $("#inputshopBigCity").trigger("chosen:updated");
+                                        $(".bigcity-form-group").addClass('select-wait');
+                                        $(".bigcity-loading").show();
+                                        selectedState = $(this).val();
+                                        $('#inputshopCity').empty(); //remove all child nodes
+                                        $('#inputshopCity').append('<option value="0">شهر خود را انتخاب نمائید...</option>');
+                                        $("#inputshopCity").trigger("chosen:updated");
+                                        if (selectedState != 0) {
+                                            createBigCity();
+                                        }
+                                        else {
+                                            $('#inputshopBigCity').empty(); //remove all child nodes
+                                            $('#inputshopBigCity').append('<option value="0">شهرستان خود را انتخاب نمائید...</option>');
+                                            $("#inputshopBigCity").prop('disabled', false);
+                                            $(".bigcity-form-group").removeClass('select-wait');
+                                            $(".bigcity-loading").hide();
+                                            $("#inputshopBigCity").trigger("chosen:updated");
+                                        }
+                                    })
+                                    $("#inputshopBigCity").chosen().change(function () {
+                                        $("#inputshopCity").prop('disabled', true);
+                                        $("#inputshopCity").trigger("chosen:updated");
+                                        $(".city-form-group").addClass('select-wait');
+                                        $(".city-loading").show();
+                                        selectedBigCity = $(this).val();
+                                        if (selectedBigCity != 0) {
+                                            createCity();
+                                        }
+                                        else {
+                                            $('#inputshopCity').empty(); //remove all child nodes
+                                            $('#inputshopCity').append('<option value="0">شهر خود را انتخاب نمائید...</option>');
+                                            $("#inputshopCity").prop('disabled', false);
+                                            $(".city-form-group").removeClass('select-wait');
+                                            $(".city-loading").hide();
+                                            $("#inputshopCity").trigger("chosen:updated");
+                                        }
+                                    });
+                            })
+                                </script>
+        
+                                    <div class="form-group col-md-6">
+                                        <label for="inputSubMarket">راسته حجره</label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="حجره شما در کدام راسته ها قرار می گیرد؟
+                                        در صورتی که راسته مورد نظر شما موجود نبود، این موضوع رو از طریق پیشتبانی سایت پیگیری نمایید."></i>
+                                        <select data-placeholder="انتخاب راسته" multiple class="form-control submarket-shop" name="Shop_SubMarket" id="select-cat" tabindex="14">
+                                            {% for item in Submarkets %}
+                                                <option value="{{item.SubMarket.ID}}" {% if item.Status %}selected{% endif %}>{{item.SubMarket.Title}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-12">
+                                    <label for="inputshopBio">معرفی حجره دار</label>
+                                    <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="متن کوتاهی با حداکثر 200 کاراکتر در مورد معرفی خودتان"></i>
+                                        <textarea class="form-control" name="Shop_Bio" id="inputshopBio" maxlength="200" rows="2">{{UserShop.Bio}}</textarea>
+                                    </div>  
+                                </div>
+                                <br>
+                                <div class="form-row">
+                                    <div class="form-group col-md-12 weekcheck">
+                                        <label for="inputHolidays">روز های تعطیل</label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="روز هایی که حجره شما فعالیت ندارد را وارد نمایید."></i>
+                                        <br>
+                                        <div class="row form-check form-check-inline">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="SATCheck" name="SATCheck" value="0" {% if '0' in UserShop.get_holidays %}checked{% endif %}>
+                                                <label class="custom-control-label" for="SATCheck">شنبه</label>
+                                            </div>
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="SUNCheck" name="SUNCheck" value="1" {% if '1' in UserShop.get_holidays %}checked{% endif %}>
+                                                <label class="custom-control-label" for="SUNCheck">یک شنبه</label>
+                                            </div>
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="MONCheck" name="MONCheck" value="2" {% if '2' in UserShop.get_holidays %}checked{% endif %}>
+                                                <label class="custom-control-label" for="MONCheck">دو شنبه</label>
+                                            </div>
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="TUECheck" name="TUECheck" value="3" {% if '3' in UserShop.get_holidays %}checked{% endif %}>
+                                                <label class="custom-control-label" for="TUECheck">سه شنبه</label>
+                                            </div>
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="WEDCheck" name="WEDCheck" value="4" {% if '4' in UserShop.get_holidays %}checked{% endif %}>
+                                                <label class="custom-control-label" for="WEDCheck">چهار شنبه</label>
+                                            </div>
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="THUCheck" name="THUCheck" value="5" {% if '5' in UserShop.get_holidays %}checked{% endif %}>
+                                                <label class="custom-control-label" for="THUCheck">پنج شنبه</label>
+                                            </div>
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="FRICheck" name="FRICheck" value="6" {% if '6' in UserShop.get_holidays %}checked{% endif %}>
+                                                <label class="custom-control-label" for="FRICheck">جمعه</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <a class="btn btn-primary mr-auto edit-shop-btn shop-btn" id="send-left">ویرایش حجره</a>
+                                <div class="clearfix"></div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<script src="{% static "js/cropper.js" %}"></script>
+<script>
+    var form_Data = new FormData();
+    window.addEventListener('DOMContentLoaded', function () {
+      var avatar = document.getElementById('avatar');
+      var image = document.getElementById('image');
+      var input = document.getElementById('input');
+      var $progress = $('.progress');
+      var $progressBar = $('.progress-bar');
+      var $alert = $('.alert');
+      var $modal = $('#modal');
+      var cropper;
+
+      $('[data-toggle="tooltip"]').tooltip();
+
+      input.addEventListener('change', function (e) {
+        var files = e.target.files;
+        var done = function (url) {
+          input.value = '';
+          image.src = url;
+          $alert.hide();
+          $modal.modal('show');
+        };
+        var reader;
+        var file;
+        var url;
+
+        if (files && files.length > 0) {
+          file = files[0];
+
+          if (URL) {
+            done(URL.createObjectURL(file));
+          } else if (FileReader) {
+            reader = new FileReader();
+            reader.onload = function (e) {
+              done(reader.result);
+            };
+            reader.readAsDataURL(file);
+          }
+        }
+      });
+
+      $modal.on('shown.bs.modal', function () {
+        cropper = new Cropper(image, {
+          aspectRatio: 1,
+          viewMode: 3,
+        });
+      }).on('hidden.bs.modal', function () {
+        cropper.destroy();
+        cropper = null;
+      });
+
+      document.getElementById('crop').addEventListener('click', function () {
+        var initialAvatarURL;
+        var canvas;
+
+        $modal.modal('hide');
+
+        if (cropper) {
+          canvas = cropper.getCroppedCanvas({
+            width: 1200,
+            height: 1200,
+          });
+          initialAvatarURL = avatar.src;
+          avatar.src = canvas.toDataURL();
+          $progress.show();
+          $alert.removeClass('alert-success alert-warning');
+          canvas.toBlob(function (blob) {
+          form_Data.append('shop_image', blob, 'avatar.jpg');
+        });
+        }
+      });
+    });
+    var profInfoajax = false;
+    var submitResult = false;
+    var submarkets_List = '';
+    var holidaysString = '';
+    
+
+    checkProfileInfo = function () {
+        $.ajax(
+                {
+                    type: 'GET',
+                    url: '{% url "nakhll_market:check_user_profile_info" %}',
+
+                    success: function (json) {
+                        if (json.status) {
+                            profInfoajax = true;
+                            submitResult = clickOnEdit();
+                            if (submitResult)
+                            {
+                                var crf_token = $('input[name=csrfmiddlewaretoken]').val();
+                                
+                                var shopTitle = $("#inputshop_title").val();
+                                var shopDes = $("#inputshopdes").val();
+                                var shopState = $("#inputshopState option:selected").text()
+                                var shopBigCity = $("#inputshopBigCity option:selected").text()
+                                var shopCity = $("#inputshopCity option:selected").text()
+                                var shopBio = $("#inputshopBio").val();
+                                var shopID = '{{UserShop.ID | safe }}';
+                                
+                                form_Data.append('shop_title' , shopTitle);
+                                form_Data.append('shop_state' , shopState);
+                                form_Data.append('shop_bigcity' , shopBigCity);
+                                form_Data.append('shop_city' , shopCity);
+                                form_Data.append('shop_des', shopDes);
+                                form_Data.append('shop_bio', shopBio);
+                                form_Data.append('shop_submarket', submarkets_List);
+                                form_Data.append('shop_holidays', holidaysString);
+                                form_Data.append('shop_id', shopID);
+                                
+                                $(".whole-prof-info-form").remove();
+                                $(".whole-prof-info-body").html('<div class="please-wait"> لطفا منتظر بمانید <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری"> </div>' +
+                                '<div class="progress"> ' +
+                                '<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>' +
+                                '</div>' +
+                                '<div class="inprogresstext"> در حال بارگزاری ...</div>');
+                                $(".whole-prof-info-title").html('در حال ویرایش حجره...');
+                                
+                                $("#complete-info-modal").modal();
+                                $.ajax(
+                                        {
+                                            url: '{% url "restapi:web_edit_shop" %}',
+                                            method:"post",
+                                            data: form_Data,
+                                            contentType: false,
+                                            processData: false,
+                                            headers:{"X-CSRFToken": crf_token},
+                                            xhr: function () {
+                                                var xhr = new XMLHttpRequest();
+
+                                                xhr.upload.onprogress = function (e) {
+                                                var percent = '0';
+                                                var percentage = '0%';
+
+                                                if (e.lengthComputable) {
+                                                    percent = Math.round((e.loaded / e.total) * 100);
+                                                    percentage = percent + '%';
+                                                    $(".progress-bar").width(percentage).attr('aria-valuenow', percent).text(percentage);
+                                                }
+                                                };
+
+                                                return xhr;
+                                            },
+                                            success:function (json) {
+                                                $(".whole-prof-info-title").html('ویرایش موفق حجره');
+                                                $(".whole-prof-info-body").html('<div>حجره شما با موفقیت ویرایش گردید.</div>' +
+                                                '<button type="button" class="btn btn-secondary float-left" data-dismiss="modal">بستن</button>' +
+                                                '<a href="/profile/shops/"><button type="button" class="btn btn-primary float-left marginleft">مدیریت حجره</button></a>');
+                                            },
+                                            error:function (xhr, status) {
+                                                $(".whole-prof-info-title").html('خطا در ویرایش حجره');
+                                                $(".whole-prof-info-body").html('<div>ثبت حجره شما با خطا مواجه گردید.</div>' +
+                                                '<div>' + xhr.responseJSON.res +' </div>' +
+                                                '<button type="button" class="btn btn-secondary float-left" data-dismiss="modal">بستن</button>');
+                                                $("#alert-div-system-error").show();
+                                                console.log(xhr.status + ": " + xhr.responseText);
+                                            }
+                                        })
+                            }
+                        }
+                        else if (json.msg == 'Information Is Not Complete'){
+                            $("#complete-info-modal").modal();
+                            profInfoajax = false;
+                            $(".submit-shop-btn").removeClass("send-button-disabled disabled");
+                        }
+                        else {
+                            $("#alert-div-system-error").show();
+                            $(".submit-shop-btn").removeClass("send-button-disabled disabled");
+                            profInfoajax = false;
+                        }
+                },
+                    error: function (xhr) {
+                        $("#alert-div-system-error").show();
+                        console.log(xhr.status + ": " + xhr.responseText);
+                    }
+                }
+            );
+            return submitResult;
+    }
+
+
+    var usershopState = '{{UserShop.State | safe}}';
+    var usershopBigCity = '{{UserShop.BigCity | safe}}';
+    var usershopCity = '{{UserShop.City | safe}}';
+    var findState = false;
+    var findBigCity = false;
+    var findCity = false;
+
+    var shopStateOptions = $('#inputshopState option').map(function() { return ({'name': $(this).text(), 'id': $(this).val()})});
+    var shopBigCityOptions = [];
+    var shopCityOptions = [];
+    $(document).ready(function() {
+        for (var i=0; i < shopStateOptions.length; i++)
+        {
+            if (usershopState == shopStateOptions[i].name)
+            {
+                $("#inputshopState").val(shopStateOptions[i].id);
+                $("#inputshopState").trigger('chosen:updated');
+                selectedState = shopStateOptions[i].id;
+                findState = true;
+                createBigCity();
+                break;
+            }
+        }
+        
+    })
+</script>
+<script src="{% static "js/shop/newShop.js" %}" type="text/javascript"></script>
+<script src="{% static "js/factor/sendInfo.js" %}" type="text/javascript"></script>
+<script>
+    var userID = {{request.user.id | safe }};
+    var checkValidForm = false;
+    $("#send-profile-info-btn").on('click', function () {
+    checkValidForm = checkLeftPart();
+    if(checkValidForm)
+    {
+        $("#send-profile-info-btn").prop('disabled', true);
+        $("#send-profile-info-btn").addClass('login-button-disabled');
+        $.ajax(
+                {
+                    type: 'POST',
+                    url: '{% url "nakhll_market:add_user_location_info" %}',
+                    data: {
+                        user_id: userID,
+                        user_phonenumber: $("#inputPhoneNumber").val() ,
+                        user_city_precode: $("#inputCityPerCode").val() ,
+                        user_state: $("#inputprofState option:selected").text() ,
+                        user_bigcity: $("#inputprofBigCity option:selected").text() ,
+                        user_city: $("#inputprofCity option:selected").text() ,
+                        user_address: $("#inputAddress").val() ,
+                        user_zipcode: $("#inputZipCode").val() ,
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                        action: 'post'
+                    },
+                    success: function (json) {
+                        $(".whole-prof-info-form").remove();
+                        $(".whole-prof-info-body").html('<div> اطلاعات شما با موفقیت ثبت گردید.</div>' +
+                        '<button type="button" class="btn btn-secondary float-left" data-dismiss="modal">بستن</button>');
+                    },
+                    error: function (xhr) {
+                        $("#complete-info-modal").remove();
+                        $("html, body").animate({ 
+                            scrollTop: 120
+                        }, "slow");
+                        $("#alert-div-system-error").show();
+                        console.log(xhr.status + ": " + xhr.responseText);
+                    }
+                }
+            )
+        }
+    })
+
+    createBigCityForProf = function ()
+    {
+        $.ajax (
+            {
+                type:'POST',
+                url: '{% url "restapi:get_state_bigcity" %}',
+                data: {
+                    id: selectedProfState,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                },
+                success: function (json) {
+                    $('#inputprofBigCity').empty(); //remove all child nodes
+                    $('#inputprofBigCity').append('<option value="0">شهرستان خود را انتخاب نمائید...</option>');
+                    for( i=0; i < json.length; i++) {
+                        $("#inputprofBigCity").append('<option value="'+ json[i].id + '">' + json[i].name + '</option>');
+                    }
+                    $("#inputprofBigCity").trigger("chosen:updated");
+                    if (findProfState)
+                    {
+                        profBigCityOptions = $('#inputprofBigCity option').map(function() { return ({'name': $(this).text(), 'id': $(this).val()})});
+                        for(var i=0;i < profBigCityOptions.length; i++)
+                        {
+                            if (userprofBigCity == profBigCityOptions[i].name)
+                            {
+                                $("#inputprofBigCity").val(profBigCityOptions[i].id);
+                                $("#inputprofBigCity").trigger('chosen:updated');
+                                selectedProfBigCity = profBigCityOptions[i].id;
+                                findBigCity = true;
+                                createCityForProf();
+                                break;
+                            }
+                        }
+                    }
+                },
+                error: function () {
+                    
+                }
+            }
+        )
+    }
+    createCityForProf = function ()
+    {
+        $.ajax (
+            {
+                type:'POST',
+                url: '{% url "restapi:get_bigcity_city" %}',
+                data: {
+                    id: selectedProfBigCity,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                },
+                success: function (json) {
+                    $('#inputprofCity').empty(); //remove all child nodes
+                    $('#inputprofCity').append('<option value="0">شهر خود را انتخاب نمائید...</option>');
+                    for( i=0; i < json.length; i++) {
+                        $("#inputprofCity").append('<option value="'+ json[i].id + '">' + json[i].name + '</option>');
+                    }
+                    $("#inputprofCity").trigger("chosen:updated");
+                    if (findProfBigCity)
+                    {
+                        profCityOptions = $('#inputprofCity option').map(function() { return ({'name': $(this).text(), 'id': $(this).val()})});
+                        for(var i=0;i < profCityOptions.length; i++)
+                        {
+                            if (userprofCity == profCityOptions[i].name)
+                            {
+                                $("#inputprofCity").val(profCityOptions[i].id);
+                                $("#inputprofCity").trigger('chosen:updated');
+                                break;
+                            }
+                        }
+                    }
+            },
+            error: function () {
+                
+            }
+        }
+        )
+    }
+    var userprofState = '{{This_User_Profile.State}}';
+    var userprofBigCity = '{{This_User_Profile.BigCity}}';
+    var userprofCity = '{{This_User_Profile.City}}';
+    var selectedProfState;
+    var selectedProfBigCity;
+    // var selectedProfCity;
+    var findProfState = false;
+    var findProfBigCity = false;
+    var findProfCity = false;
+
+    var profStateOptions = $('#inputprofState option').map(function() { return ({'name': $(this).text(), 'id': $(this).val()})});
+    var profBigCityOptions = [];
+    var profCityOptions = [];
+    $(document).ready(function() {
+        for (var i=0; i < profStateOptions.length; i++)
+        {
+            if (userprofState == profStateOptions[i].name)
+            {
+                $("#inputprofState").val(profStateOptions[i].id);
+                $("#inputprofState").trigger('chosen:updated');
+                selectedProfState = profStateOptions[i].id;
+                findProfState = true;
+                createBigCityForProf();
+                break;
+            }
+        }
+    })
+</script>
+
+{% block footer-section %}
+    {% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+    {% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

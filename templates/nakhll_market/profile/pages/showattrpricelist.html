@@ -1,0 +1,1589 @@
+{% load jformat %}
+
+{% block header %}
+    {% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+    <title>بازار نخل | لیست ویژگی های انتخابی محصول</title>
+</head>
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+<section id="bg-profile-top">
+
+</section>
+
+<div class="modal fade" id="myModalerror" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title prod-modal-title" id="exampleModalLabel">ویرایش ویژگی انتخابی</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body whole-modal-body" id="text_err">
+            <div class="whole-content-of-modal">
+                
+            </div>
+        </div>
+        <div class="modal-footer whole-content-of-footer" id="modal-footer-err">
+        </div>
+        </div>
+    </div>
+</div>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-3">
+                <div class="profile-sidebar-site">    
+                    {% block topsidebar %}
+                        {% include "nakhll_market/profile/parents/new-topsidebar.html" %}
+                    {% endblock %}
+                    <div class="profile-sidebar-main">
+                        <a href="/profile/dashboard/">
+                            <button>
+                                <i class="fas fa-id-badge"></i>
+                                <h5>داشبورد</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/transaction/">
+                            <button>
+                                <i class="fad fa-clipboard-list"></i>
+                            <h5>تراکنش ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/factor/">
+                            <button>
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <h5>فاکتور ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/ticketing/">
+                            <button>
+                                <i class="fad fa-user-headset"></i>
+                                <h5>پشتیبانی</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/shops/">
+                            <button class="activebtn">
+                                <i class="fas fa-store"></i>
+                                <h5>مدیریت حجره</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/review/">
+                            <button>
+                                <i class="fad fa-comments-alt"></i>
+                                <h5>نقد ها و نظرات</h5>
+                            </button>
+                        </a>
+
+                        {% if request.user.is_staff %}
+                            {% block review %}
+                                {% include "nakhll_market/profile/parents/menu_for_shop_manage.html" %}
+                            {% endblock %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                    {% include "nakhll_market/profile/parents/new-header-profile.html" %}
+                {% endblock %}
+
+                <div class="row">
+                    {% if ShowAlart %}
+                        <div class="col-xl-6 xol-lg-6 col-md-6 col-sm-12 col-12">
+                            <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                                <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                                <p>
+                                    {{AlartMessage}}
+                                </p>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                    <div class="dashboard" id="optional-attribute-box-section">
+                        <h4>لیست ویژگی های انتخابی محصول</h4>
+                        <form id="optional-attribute-product-form">
+                            <br>
+                            <div class="opt-attr-main-title-question-section">
+                                <div class="row optional-attr-main-inputs-row">
+                                    <div class="col-xl-5">
+                                        <div class="form-row">
+                                            <div class="form-group col-md-12 opt-attr-title-input">
+                                                <label for="product_optattr_title">عنوان ویژگی انتخابی<code>*</code></label>
+                                                <input type="text" name="product_optattr_title" autocomplete="off" class="form-control" id="product_optattr_title" required>
+                                            </div>
+                                        </div>
+                                        <div class="opt-attr-suggestions">
+                                            <div class="opt-attr-suggestion">سایز</div>
+                                            <div class="opt-attr-suggestion">رنگ</div>
+                                            <div class="opt-attr-suggestion">مدل</div>
+                                            <div class="opt-attr-suggestion">جنس</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-7">
+                                        <ul class="optional-attr-question-list">
+                                            <li>
+                                                <span> آیا این ویژگی باعث افزایش قیمت اصلی محصول می شود؟ </span>
+                                                <span>
+                                                    <label><input id="opt-attr-radio-extra-price-y" type="radio" name="optradio1"> بله </label>
+                                                    <label><input id="opt-attr-radio-extra-price-n" type="radio" name="optradio1" checked> خیر </label>
+                                                </span>
+                                            </li>
+                                            <li>
+                                                <span> آیا این ویژگی باعث تغییر در وزن محصول می شود؟ </span>
+                                                <span>
+                                                    <label><input id="opt-attr-radio-change-weight-y" type="radio" name="optradio2"> بله </label>
+                                                    <label><input id="opt-attr-radio-change-weight-n" type="radio" name="optradio2" checked> خیر </label>
+                                                </span>
+                                            </li>
+                                            <li>
+                                                <span> آیا این ویژگی باعث تغییر در ابعاد محصول می شود؟ </span>
+                                                <span>
+                                                    <label><input id="opt-attr-radio-change-dimension-y" type="radio" name="optradio3"> بله </label>
+                                                    <label><input id="opt-attr-radio-change-dimension-n" type="radio" name="optradio3" checked> خیر </label>
+                                                </span>
+                                            </li>
+                                            <li>
+                                                <span> نوع انتخاب مقدار ها به چه صورت است؟ </span>
+                                                <span>
+                                                    <label><input id="opt-attr-radio-type-choice-choose" type="radio" name="optradio4" checked> تک انتخابی </label>
+                                                    <label><input id="opt-attr-radio-type-choice-select" type="radio" name="optradio4"> چند انتخابی </label>
+                                                </span>
+                                            </li>
+                                            <li>
+                                                <span> آیا تعیین این ویژگی برای خرید محصول اجباریست؟ </span>
+                                                <span>
+                                                    <label><input id="opt-attr-radio-necessary-y" type="radio" name="optradio5"> بله </label>
+                                                    <label><input id="opt-attr-radio-necessary-n" type="radio" name="optradio5" checked> خیر </label>
+                                                </span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xl-12 continue-error-box">
+                                        <button class="btn btn-primary mr-auto opt-attr-continue-to-values" id="send-left">ادامه</button>
+                                        <p></p>
+                                    </div>
+                                </div>
+                                <div class="row opt-attr-show-table">
+                                    <div class="col-xl-12">
+                                        <div class="error-edit-fields"></div>
+                                        <table class="table table-striped attr-table text-right opt-attr-table">
+                                            <tbody id="new-opt-attr-add-product">
+                                                <tr>
+                                                    <th scope="row" class="titletable">
+                                                        عنوان
+                                                    </th>
+                                                    <th scope="row" class="titletable">
+                                                        اجباری
+                                                    </th>
+                                                    <th scope="row" class="titletable">
+                                                        نوع انتخاب
+                                                    </th>
+                                                    <th scope="row" class="titletable">
+                                                        ویرایش ویژگی
+                                                    </th>
+                                                    <th scope="row" class="titletable">
+                                                        حذف ویژگی
+                                                    </th>
+                                                    <th scope="row" class="titletable show-hide">
+                                                    </th>
+                                                </tr>
+                                                {% for item in OptinalAttribute %}
+                                                    <tr class="opt-attr-list-row" val="{{item.id}}">
+                                                        <td class="opt-attr-title">{{item.Title}}</td>
+                                                        <td class="opt-attr-status">{% if item.Status %}<i class="far fa-check"></i>{% else %}<i class="far fa-times"></i>{% endif %}</td>
+                                                        <td class="opt-attr-type">{% if item.Type == '0' %}تک انتخابی{% elif item.Type == '1' %}چند انتخابی{% endif %}</td>
+                                                        <td>
+                                                            <span class="point-mouse edit-delete-spans edit-entire-opt-attr" val="{{item.id}}">
+                                                                ویرایش ویژگی
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <span class="point-mouse edit-delete-spans delete-entire-opt-attr" val="{{item.id}}">
+                                                                حذف ویژگی
+                                                            </span>
+                                                        </td>
+                                                        <td class="show-hide">
+                                                            <i class="fas fa-angle-left rotated no"></i>
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="opt-attr-value-tbl opt-attr-value-tbl-hide">
+                                                        <td class="no-padding" colspan="6">
+                                                            <table val="{{item.id}}" class="w-100 table table-striped attr-table text-right opt-attr-value-table">
+                                                                <tr val='opt-attr-value-th-{{item.id}}'>
+                                                                    <th scope="row" class="titletable3">
+                                                                        مقدار
+                                                                    </th>
+                                                                    <th scope="row" class="titletable3">
+                                                                        وضعیت انبار
+                                                                    </th>
+                                                                    <th scope="row" class="titletable3">
+                                                                        موجودی
+                                                                    </th>
+                                                                    <th scope="row" class="titletable3">
+                                                                        قیمت
+                                                                    </th>
+                                                                    <th scope="row" class="titletable3">
+                                                                        وزن
+                                                                    </th>
+                                                                    <th scope="row" class="titletable3">
+                                                                        ابعاد
+                                                                    </th>
+                                                                    <th scope="row" class="titletable3">
+                                                                        ویرایش
+                                                                    </th>
+                                                                    <th scope="row" class="titletable3">
+                                                                        حذف
+                                                                    </th>
+                                                                </tr>
+                                                                {% for value in item.get_details %}
+                                                                <tr class="new-opt-attr-value-added-{{item.id}}" val="{{value.id}}" val-opt-attr="{{item.id}}">
+                                                                    <td class="opt-attr-value-title">{{value.Value}}</td>
+                                                                    <td class="opt-attr-value-status">{% if value.Status == '1' %}آماده در انبار{% elif value.Status == '2' %}تولید بعد از سفارش{% elif value.Status == '3' %}سفارشی سازی فروش{% else %}موجود نیست{% endif %}</td>
+                                                                    <td class="opt-attr-value-inventory">{{value.Inventory}}</td>
+                                                                    <td class="opt-attr-value-price"><span class="opt-attr-value-price-amount">{{value.Price}}</span> ریال</td>
+                                                                    <td class="opt-attr-value-weight"><span class="opt-attr-value-weight-amount">{{value.Weight}}</span> گرم</td>
+                                                                    <td class="opt-attr-value-dimension"><span class="opt-attr-value-length">{{value.Length}}</span> * <span class="opt-attr-value-width">{{value.Width}}</span> * <span class="opt-attr-value-height">{{value.Height}}</span> سانتی متر</td>
+                                                                    <td>
+                                                                        <span class="point-mouse edit-delete-spans edit-value-opt-attr" val-opt-attr="{{item.id}}" val="{{value.id}}">ویرایش</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        <span class="point-mouse edit-delete-spans delete-opt-attr-value" val-opt-attr="{{item.id}}" val="{{value.id}}">حذف</span>
+                                                                    </td>
+                                                                </tr>
+                                                                {% endfor %}
+                                                                <tr new-value-previous-attr="{{item.id}}" class="point-mouse previous-opt-attr-add-value-tr">
+                                                                    <td class="previous-opt-attr-add-value-tr" colspan="8">
+                                                                        +
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="opt-attr-values-section">
+                                <div class="row">
+                                            <div class="form-group col-xl-5">
+                                                <label for="product_optattr_value">مقدار ویژگی انتخابی<code>*</code></label>
+                                                <input type="text" name="product_optattr_value" class="form-control" id="product_optattr_value" required>
+                                            </div>
+                                            <div class="form-group col-xl-5">
+                                                <div class="row">
+                                                    <div class="form-group col-md-8" id="detail-now-box-for_opt_attr">
+                                                        <label for="product_Status_for_opt_attr">وضعیت محصول<code>*</code></label>
+                                                        <select id="selectProdStatusForOptAttr" name="product_Status_for_opt_attr" class="form-control product-detail-now_for_opt_attr">
+                                                            <option selected id="in-store-for-opt-attr">آماده در انبار</option>
+                                                            <option>تولید بعد از سفارش</option>
+                                                            <option>سفارشی سازی فروش</option>
+                                                            <option>موجود نیست</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-4" id="detail-num-box-for-opt-attr">
+                                                        <label for="product_available_count_for_opt_attr">موجودی<code>*</code></label>
+                                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="تعداد موجودی خود در انبار را میتوانید در این قسمت وارد کنید."></i>
+                                                        <input type="number" name="product_available_count_for_opt_attr" class="form-control" id="prod_num_in_store_for_opt_attr" maxlength="2">
+                                                    </div>
+                                                </div>
+                                    </div>
+                                    <div id="opt-attr-extra-price-sec" class="form-group col-xl-5">
+                                        <label for="product_optattr_price">مقدار قیمت جدید<code>*</code></label>
+                                        <input type="number" name="product_optattr_price" class="form-control" id="product_optattr_price">
+                                    </div>
+                                    <div id="opt-attr-extra-weight-sec" class="form-group col-xl-5">
+                                        <label for="product_optattr_extra_weight">وزن جدید محصول با بسته بندی<code>*</code></label>
+                                        <input type="number" name="product_optattr_extra_weight" class="form-control" id="product_optattr_extra_weight">
+                                    </div>
+                                    <div id="opt-attr-change-dimension-sec" class="form-group col-xl-5">
+                                        <div class="row">
+                                            <div class="col-xl-4">
+                                                <label for="product_optattr_change_dimension_x">طول<code>*</code></label>
+                                                <input type="number" name="product_optattr_change_dimension_x" class="form-control" id="product_optattr_change_dimension_x">
+                                            </div>
+                                            <div class="col-xl-4">
+                                                <label for="product_optattr_change_dimension_y">عرض<code>*</code></label>
+                                                <input type="number" name="product_optattr_change_dimension_y" class="form-control" id="product_optattr_change_dimension_y">
+                                            </div>
+                                            <div class="col-xl-4">
+                                                <label for="product_optattr_change_dimension_z">ارتفاع<code>*</code></label>
+                                                <input type="number" name="product_optattr_change_dimension_z" class="form-control" id="product_optattr_change_dimension_z">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-1">
+                                        <button class="save-location-rate add-opt-attr-values" id="send-left">
+                                            <i class="far fa-plus"></i>
+                                        </button>
+                                    </div>
+                                    <div class="error-complete-fields">
+                                        
+                                    </div>
+                                    <div class="new-opt-attr-value-added-info">
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row bottom-of-opt-attr">
+                                <div class="col-xl-12 btn-add-opt-attr">
+                                    <!-- <button class="btn btn-primary mr-auto final-btn-product-submit" id="send-left"> ثبت نهایی </button> -->
+                                    <button disabled="disabled" class="btn btn-primary mr-auto add-new add-new-in-list add-new-disabled" id="send-left">
+                                        افزودن ویژگی انتخابی جدید
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    $("#optional-attribute-box-section").show();
+    var optAttrExtraPrice = false;
+    var optAttrExtraWeight = false;
+    var optAttrChangeDimension = false;
+    var optAttr;
+    var activeOptAttrID;
+
+    var ProductID = '{{ThisProduct.ID | safe}}';
+    // var Producttest = '{{ThisProduct.Length_With_Packaging | safe}}';
+    // var optAttrList = '{{OptinalAttribute | safe}}';
+    
+
+    // var defFuncOptAttrDelete = true;
+    // var defFuncOptAttrValueDelete = true;
+
+    var optAttrValuSectionValid = false;
+    var previousOptAttr;
+
+    $(document).on('click', '.opt-attr-continue-to-values', function (e) {
+        e.preventDefault();
+        if ($("#product_optattr_title").val() != '' || $("#product_optattr_title").val().length != 0)
+        {
+            var newOptAttrTitle = $("#product_optattr_title").val();
+            var newOptAttrType = $("#opt-attr-radio-type-choice-choose").is(":checked") ? '0' : '1';
+            var newOptAttrStatus = $("#opt-attr-radio-necessary-y").is(":checked") ? '1' : '0';
+
+            optAttrExtraPrice = $("#opt-attr-radio-extra-price-y").is(":checked");
+            optAttrExtraWeight = $("#opt-attr-radio-change-weight-y").is(":checked");
+            optAttrChangeDimension = $("#opt-attr-radio-change-dimension-y").is(":checked");
+
+            $.ajax (
+                {
+                    type: 'POST',
+                    url: '{% url "restapi:web_product_add_optional_attribute" %}',
+                    data: {
+                        product_id:  ProductID,
+                        this_title : newOptAttrTitle,
+                        this_type : newOptAttrType,
+                        this_status : newOptAttrStatus,
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                    },
+                    success: function (json, status) {
+                        if (json.status)
+                        {
+                            // console.log(json);
+                            // console.log(json.data);
+                            // console.log(json.data.FK_Details);
+                            // previousOptAttr = false;
+                            optAttr = json.data;
+                            activeOptAttrID = optAttr.id;
+                            $(".continue-error-box p").hide();
+                            $(".opt-attr-continue-to-values").addClass('btn-continue-opt-attr-disabled');
+                            if($("#opt-attr-radio-extra-price-n").is(":checked"))
+                            {
+                                $("#opt-attr-extra-price-sec").hide();
+                            }
+                            else if ($("#opt-attr-radio-extra-price-y").is(":checked"))
+                            {
+                                $("#opt-attr-extra-price-sec").show();
+                            }
+                            if($("#opt-attr-radio-change-weight-n").is(":checked"))
+                            {
+                                $("#opt-attr-extra-weight-sec").hide();
+                            }
+                            else if ($("#opt-attr-radio-change-weight-y").is(":checked"))
+                            {
+                                $("#opt-attr-extra-weight-sec").show();
+                            }
+                            if($("#opt-attr-radio-change-dimension-n").is(":checked"))
+                            {
+                                $("#opt-attr-change-dimension-sec").hide();
+                            }
+                            else if ($("#opt-attr-radio-change-dimension-y").is(":checked"))
+                            {
+                                $("#opt-attr-change-dimension-sec").show();
+                            }
+                            $(".opt-attr-values-section").show();
+                            $(".opt-attr-main-title-question-section *").attr("disabled", "disabled").off('click');
+                            
+                            $(".opt-attr-main-title-question-section").addClass('opt-attr-main-title-question-section-disabled');
+                            optAttrValuSectionValid = true;
+                            
+                            
+                            var showNecessary = $("#opt-attr-radio-necessary-y").is(":checked") ? '<i class="far fa-check"></i>' : '<i class="far fa-times"></i>';
+                            var showChooseType = $("#opt-attr-radio-type-choice-select").is(':checked') ? 'چند انتخابی' : 'تک انتخابی';
+
+                            $(".opt-attr-list-row").removeClass('opt-attr-row-hover-static');
+                            $(".opt-attr-list-row").removeClass('opened-row');
+                            $(".opt-attr-list-row").find(".rotated").addClass("no").removeClass("yes");
+                            $(".opt-attr-value-tbl").addClass('opt-attr-value-tbl-hide');
+
+                            $("#new-opt-attr-add-product").append(
+                            '<tr class="opt-attr-list-row opt-attr-row-hover-static opened-row" val="' + json.data.id + '">' +
+                            '<td class="opt-attr-title">' + newOptAttrTitle + '</td>' +
+                            '<td class="opt-attr-status">' + showNecessary + '</td>' +
+                            '<td class="opt-attr-type">' + showChooseType + '</td>' +
+                            // '<td class="opt-attr-val-td"></td>' +
+                            '<td> <span class="point-mouse edit-entire-opt-attr edit-delete-spans" val="' + json.data.id + '"> ویرایش ویژگی </span> </td>' +
+                            '<td> <span class="point-mouse delete-entire-opt-attr edit-delete-spans" val="' + json.data.id + '"> حذف ویژگی </span> </td>' +
+                            '<td class="show-hide"><i class="fas fa-angle-left rotated yes"></i></td>' +
+                            '</tr>' +
+                            '<tr class="opt-attr-value-tbl">' +
+                                '<td class="no-padding" colspan="6">' +
+                                    '<table val="' + json.data.id + '" class="w-100 table table-striped opt-attr-table text-right">' +
+                                        '<tr val="opt-attr-value-th-' + json.data.id + '">' +
+                                            '<th scope="row" class="titletable3">' +
+                                               ' مقدار' +
+                                            '</th>' +
+                                            '<th scope="row" class="titletable3">' +
+                                                'وضعیت انبار' +
+                                            '</th>' +
+                                            '<th scope="row" class="titletable3">' +
+                                                'موجودی' +
+                                            '</th>' +
+                                            '<th scope="row" class="titletable3">' +
+                                                'قیمت' +
+                                            '</th>' +
+                                            '<th scope="row" class="titletable3">' +
+                                                'وزن' +
+                                            '</th>' +
+                                            '<th scope="row" class="titletable3">' +
+                                                'ابعاد' +
+                                            '</th>' +
+                                            '<th scope="row" class="titletable3">' +
+                                                'ویرایش' +
+                                            '</th>' +
+                                            '<th scope="row" class="titletable3">' +
+                                                'حذف' +
+                                            '</th>' +
+                                        '</tr>' +
+                                    '</table>' +
+                                '</td>' +
+                            '</tr>'
+                            );
+                            optAttrEmpty = false;
+                            $(".btn-add-opt-attr button.add-new-disabled").prop('disabled', false);
+                            $(".btn-add-opt-attr button.add-new").removeClass('add-new-disabled');
+                            
+
+                            // var scrollPos = $(".opt-attr-values-section").offset().top;
+                            // var scrollPosDown = $("button.add-new").offset().top;
+                            // $('.opt-attr-values-section').animate({
+                            // scrollTop: scrollPosDown
+                            // }, 500);
+                        }
+                        else
+                        {
+                            console.log(json.message);
+                            $(".continue-error-box p").html('<i class="fas fa-exclamation-triangle"></i> خطا! : ' + json.message).show();
+                        }
+                    },
+                    error: function (xhr, status) {
+                        console.log(xhr);
+                        console.log(xhr.responseJSON);
+                        console.log(status);
+                        $(".continue-error-box p").html('<i class="fas fa-exclamation-triangle"></i> خطا! : ' + xhr.responseJSON.message).show();
+                    }
+                }
+            )
+        }
+        else {
+            $(".continue-error-box p").html('<i class="fas fa-exclamation-triangle"></i> خطا! : لطفا عنوان ویژگی را وارد نمائید.').show();
+        }
+    })
+
+    $(document).on('click', '.add-opt-attr-values', function (e) {
+        e.preventDefault();
+        var optAttrValue;
+        var optAttrPrice;
+        var optAttrWeight;
+        var optAttrLength;
+        var optAttrWidth;
+        var optAttrHeight;
+        var optAttrInventory;
+        var optAttrStatus;
+        if (($("#product_optattr_value").val() != '' || 
+            $("#product_optattr_value").val().length != 0) &&
+            ($("#selectProdStatusForOptAttr").prop('selectedIndex') != 0 || ($("#prod_num_in_store_for_opt_attr").val() != '' || $("#prod_num_in_store_for_opt_attr").val().length != 0)) &&
+            (!optAttrExtraPrice || $("#product_optattr_price").val() != '' || $("#product_optattr_price").val().length != 0) &&
+            (!optAttrExtraWeight || $("#product_optattr_extra_weight").val() != '' || $("#product_optattr_extra_weight").val().length != 0) &&
+            (!optAttrChangeDimension || (($("#product_optattr_change_dimension_x").val() != '' || $("#product_optattr_change_dimension_x").val().length != 0) && ($("#product_optattr_change_dimension_y").val() != '' || $("#product_optattr_change_dimension_y").val().length != 0) && ($("#product_optattr_change_dimension_z").val() != '' || $("#product_optattr_change_dimension_z").val().length != 0))))
+            {
+                if (optAttrExtraPrice && $("#product_optattr_price").val().length < 2) {
+                    $(".error-complete-fields").html('<i class="fas fa-exclamation-triangle"></i> قیمت باید بیش از 2 رقم باشد');
+                    $(".error-complete-fields").show();
+                    $(".error-complete-fields").fadeOut(3000);
+                    $(".product_optattr_price").addClass("inputshopempty");
+                    return;
+                }
+                optAttrValue = $("#product_optattr_value").val();
+
+                if (!previousOptAttr)
+                {
+                    optAttrPrice = $("#opt-attr-radio-extra-price-y").is(':checked') ? $("#product_optattr_price").val() : '{{ThisProduct.Price | safe}}';
+                    optAttrWeight = $("#opt-attr-radio-change-weight-y").is(':checked') ? $("#product_optattr_extra_weight").val() : '{{ThisProduct.Weight_With_Packing | safe}}';
+                    if ($("#opt-attr-radio-change-dimension-y").is(':checked'))
+                    {
+                        optAttrLength = $("#product_optattr_change_dimension_x").val();
+                        optAttrWidth = $("#product_optattr_change_dimension_y").val();
+                        optAttrHeight = $("#product_optattr_change_dimension_z").val();
+                    }
+                    else
+                    {
+                        optAttrLength = '{{ThisProduct.Length_With_Packaging | safe}}';
+                        optAttrWidth = '{{ThisProduct.Width_With_Packaging | safe}}';
+                        optAttrHeight = '{{ThisProduct.Height_With_Packaging | safe}}';
+                    }
+                }
+                else
+                {
+                    optAttrPrice = $("#product_optattr_price").val();
+                    optAttrWeight = $("#product_optattr_extra_weight").val();
+                    optAttrLength = $("#product_optattr_change_dimension_x").val();
+                    optAttrWidth = $("#product_optattr_change_dimension_y").val();
+                    optAttrHeight = $("#product_optattr_change_dimension_z").val();
+                }
+                optAttrInventory = $("#selectProdStatusForOptAttr").prop('selectedIndex') == 0 ? $("#prod_num_in_store_for_opt_attr").val() : '0';
+                optAttrStatus = $("#selectProdStatusForOptAttr").prop('selectedIndex') + 1;
+
+                $.ajax (
+                    {
+                        type:'POST',
+                        url: '{% url "restapi:web_optional_attribute_add_detail" %}',
+                        data: {
+                            product_id: ProductID,
+                            optional_attribute_id: activeOptAttrID,
+                            this_value: optAttrValue,
+                            this_price: optAttrPrice,
+                            this_weight: optAttrWeight,
+                            this_length: optAttrLength,
+                            this_width: optAttrWidth,
+                            this_height: optAttrHeight,
+                            this_inventory: optAttrInventory,
+                            this_status: optAttrStatus,
+                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                        },
+                        success: function (json, status) {
+                            if (json.status)
+                            {
+                                $(".new-opt-attr-value-added-info").html('<i class="fas fa-check-circle"></i> مقدار ویژگی انتخابی با موفقیت ثبت شد.');
+                                $(".new-opt-attr-value-added-info").show();
+                                $(".new-opt-attr-value-added-info").fadeOut(3000);
+
+                                // console.log(json);
+                                // console.log(json.data);
+                                // console.log(json.data.FK_Details);
+                                // console.log(json.data.FK_Details[0]);
+                                // console.log(json.data.id);
+                                $("tr.new-opt-attr-value-added-" + activeOptAttrID).remove();
+                                var optAttrValueTdDiv = '';
+                                var optAttrValueStatus;
+                                for (var i=0; i<json.data.FK_Details.length; i++)
+                                {
+                                    switch(json.data.FK_Details[i].Status)
+                                    {
+                                        case '1':
+                                            optAttrValueStatus = 'آماده در انبار';
+                                            break;
+                                        case '2':
+                                            optAttrValueStatus = 'تولید بعد از سفارش';
+                                            break;
+                                        case '3':
+                                            optAttrValueStatus = 'سفارشی سازی فروش';
+                                            break;
+                                        default:
+                                            optAttrValueStatus = 'موجود نیست';
+
+                                    }
+                                    optAttrValueTdDiv += '<tr class="new-opt-attr-value-added-' + activeOptAttrID + '" val-opt-attr="' + activeOptAttrID + '" val="' + json.data.FK_Details[i].id + '">' +
+                                        '<td class="opt-attr-value-title">' + json.data.FK_Details[i].Value + '</td>' +
+                                        '<td class="opt-attr-value-status">' + optAttrValueStatus + '</td>' +
+                                        '<td class="opt-attr-value-inventory">' + json.data.FK_Details[i].Inventory + '</td>' +
+                                        '<td class="opt-attr-value-price"><span class="opt-attr-value-price-amount">' + json.data.FK_Details[i].Price + '</span> ریال </td>' +
+                                        '<td class="opt-attr-value-weight"><span class="opt-attr-value-weight-amount">' + json.data.FK_Details[i].Weight + '</span> گرم </td>' +
+                                        '<td class="opt-attr-value-dimension"><span class="opt-attr-value-length">' + json.data.FK_Details[i].Length + '</span> * <span class="opt-attr-value-width">' + json.data.FK_Details[i].Width + '</span> * <span class="opt-attr-value-height">' + json.data.FK_Details[i].Height + '</span> سانتی متر</td>' +
+                                        '<td><span class="point-mouse edit-delete-spans edit-value-opt-attr" val-opt-attr="' + activeOptAttrID + '" val="' + json.data.FK_Details[i].id + '">ویرایش</span></td>' +
+                                        '<td><span class="point-mouse edit-delete-spans delete-opt-attr-value" val-opt-attr="' + activeOptAttrID + '" val="' + json.data.FK_Details[i].id + '">حذف</span></td>' +
+                                    '</tr>';
+                                }
+                                $("tr[val='opt-attr-value-th-" + activeOptAttrID + "']").after(optAttrValueTdDiv);
+                                // var tdOptAttrVal = "#new-opt-attr-add-product tr#optAttr-" + activeOptAttrID + " td.opt-attr-val-td";
+                                // $(tdOptAttrVal).html(optAttrValueTdDiv);
+                                optAttrEmpty = true;
+                            }
+                            else {
+                                $(".error-complete-fields").html('<i class="fas fa-exclamation-triangle"></i> ' + json.message);
+                                $(".error-complete-fields").show();
+                                $(".error-complete-fields").fadeOut(3000);
+                            }
+
+                        },
+                        error: function (xhr, status) {
+                            console.log(xhr);
+                            console.log(status);
+                            console.log(xhr.responseJSON);
+                            $(".error-complete-fields").html('<i class="fas fa-exclamation-triangle"></i> ' + xhr.responseJSON.message);
+                            $(".error-complete-fields").show();
+                            $(".error-complete-fields").fadeOut(3000);
+                        }
+                    }
+                )
+            }
+        else {
+            $(".error-complete-fields").html('<i class="fas fa-exclamation-triangle"></i> لطفا اطلاعات خواسته شده را تکمیل نمائید.');
+            $(".error-complete-fields").show();
+            $(".error-complete-fields").fadeOut(3000);
+        }
+    })
+
+    readyNewOptAttr = function () {
+        $("#product_optattr_value").val('');
+        $("#prod_num_in_store_for_opt_attr").val('');
+        $("#product_optattr_price").val('');
+        $("#product_optattr_extra_weight").val('');
+        $("#product_optattr_change_dimension_x").val('');
+        $("#product_optattr_change_dimension_y").val('');
+        $("#product_optattr_change_dimension_z").val('');
+        $(".opt-attr-values-section").hide();
+        $(".opt-attr-main-title-question-section *").attr("disabled", false).on('click');
+        $(".opt-attr-main-title-question-section").removeClass('opt-attr-main-title-question-section-disabled');
+        $(".opt-attr-continue-to-values").removeClass('btn-continue-opt-attr-disabled');
+        $(".btn-add-opt-attr button.add-new").prop('disabled', true);
+        $(".btn-add-opt-attr button.add-new").addClass('add-new-disabled');
+        optAttrValuSectionValid = false;
+    }
+
+    $(document).on('click', '.add-new', function (e) {
+        e.preventDefault();
+        // if ($("#new-opt-attr-add-product tr#optAttr-" + optAttr.id + " td.opt-attr-val-td").text() == '')
+        if ($("table[val=" + activeOptAttrID + "]").find("tr").length < 2)
+        {
+            $(".prod-modal-title").html('هشدار');
+            $(".whole-modal-body").html('<div>شما برای ویژگی انتخابی خود مقداری در نظر نگرفته اید!</div>' +
+            '<div>آیا مایلید این ویژگی انتخابی حذف شود؟</div>');
+            $('.whole-content-of-footer').html('<button type="button" class="btn btn-secondary float-left" data-dismiss="modal">خیر</button>' +
+            '<button type="button" class="btn btn-primary float-left marginleft" id="delete-opt-attr-y" data-dismiss="modal">بله</button>');
+            $("#myModalerror").modal();
+        }
+        else {
+            readyNewOptAttr();
+            if (!previousOptAttr)
+            {
+                $("table[val=" + activeOptAttrID + "] tbody").append('<tr new-value-previous-attr=' + activeOptAttrID + 'class="point-mouse previous-opt-attr-add-value-tr">' +
+                    '<td class="previous-opt-attr-add-value-tr" colspan="8">' +
+                        '+' +
+                    '</td>' +
+                '</tr>');
+            }
+        }
+    })
+
+    $(document).on('click', '.previous-opt-attr-add-value-tr', function() {
+        activeOptAttrID = $(this).attr('new-value-previous-attr');
+        
+        $(this).off();
+        optAttrExtraPrice = true;
+        optAttrExtraWeight = true;
+        optAttrChangeDimension = true;
+        previousOptAttr = true;
+        $(".continue-error-box p").hide();
+        $(".opt-attr-continue-to-values").addClass('btn-continue-opt-attr-disabled');
+        $(".opt-attr-main-title-question-section *").attr("disabled", "disabled").off('click');
+        $("#opt-attr-change-dimension-sec").show();
+        $("#opt-attr-extra-price-sec").show();
+        $("#opt-attr-extra-weight-sec").show();
+        $(".opt-attr-values-section").show();
+        $(".opt-attr-main-title-question-section").addClass('opt-attr-main-title-question-section-disabled');
+        $(".btn-add-opt-attr button.add-new-disabled").prop('disabled', false);
+        $(".btn-add-opt-attr button.add-new").removeClass('add-new-disabled');
+        optAttrValuSectionValid = true;
+
+    })
+
+    $(document).on('click', '#delete-opt-attr-y', function (e)
+    {
+        e.preventDefault();
+        var optAttrtr = activeOptAttrID;
+        $.ajax (
+            {
+                type: 'POST',
+                url: '{% url "restapi:web_product_optional_attribute" %}',
+                data: {
+                    product_id: ProductID,
+                    optional_attribute_id: optAttrtr,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                },
+                success: function (json, status) {
+                    if (json.status)
+                    {
+                        $(".new-opt-attr-value-added-info").html('<i class="fas fa-check-circle"></i> ویژگی انتخابی با موفقیت حذف شد.');
+                        $(".new-opt-attr-value-added-info").show();
+                        $(".new-opt-attr-value-added-info").fadeOut(3000);
+
+                        $("tr[val=" + optAttrtr + "]").next().remove();
+                        $("tr[val=" + optAttrtr + "]").remove();
+                        readyNewOptAttr();
+                    }
+                    else {
+                        $(".error-complete-fields").html('<i class="fas fa-exclamation-triangle"></i> ' + json.message);
+                        $(".error-complete-fields").show();
+                        $(".error-complete-fields").fadeOut(3000);
+                    }
+                },
+                error: function (xhr, status) {
+                    console.log(xhr);
+                    console.log(status);
+                    console.log(xhr.responseJSON);
+                    $(".error-complete-fields").html('<i class="fas fa-exclamation-triangle"></i> ' + xhr.responseJSON.message);
+                    $(".error-complete-fields").show();
+                    $(".error-complete-fields").fadeOut(3000);
+                }
+            }
+        )
+    })
+
+        $(document).on('click', '.delete-opt-attr-value', function () {
+            var optAttrtr = $(this).attr('val-opt-attr');
+            var optAttrtd = $(this).attr('val');
+            $.ajax (
+                {
+                    type: 'POST',
+                    url: '{% url "restapi:web_optional_attribute_delete_detail" %}',
+                    data: {
+                        product_id: ProductID,
+                        optional_attribute_id: optAttrtr,
+                        detail_id: optAttrtd,
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                    },
+                    success: function (json, status) {
+                        if (json.status)
+                        {
+                            $(".new-opt-attr-value-added-info").html('<i class="fas fa-check-circle"></i> مقدار ویژگی انتخابی با موفقیت حذف شد.');
+                            $(".new-opt-attr-value-added-info").show();
+                            $(".new-opt-attr-value-added-info").fadeOut(3000);
+                            $("tr.new-opt-attr-value-added-" + optAttrtr).remove();
+                            var optAttrValueTdDiv = '';
+                            var optAttrValueStatus;
+                                for (var i=0; i<json.data.FK_Details.length; i++)
+                                {
+                                    switch(json.data.FK_Details[i].Status)
+                                    {
+                                        case '1':
+                                            optAttrValueStatus = 'آماده در انبار';
+                                            break;
+                                        case '2':
+                                            optAttrValueStatus = 'تولید بعد از سفارش';
+                                            break;
+                                        case '3':
+                                            optAttrValueStatus = 'سفارشی سازی فروش';
+                                            break;
+                                        default:
+                                            optAttrValueStatus = 'موجود نیست';
+                                    }
+                                    optAttrValueTdDiv += '<tr class="new-opt-attr-value-added-' + optAttrtr + '" val-opt-attr="' + optAttrtr + '" val="' + json.data.FK_Details[i].id + '">' +
+                                        '<td class="opt-attr-value-title">' + json.data.FK_Details[i].Value + '</td>' +
+                                        '<td class="opt-attr-value-status">' + optAttrValueStatus + '</td>' +
+                                        '<td class="opt-attr-value-inventory">' + json.data.FK_Details[i].Inventory + '</td>' +
+                                        '<td class="opt-attr-value-price"><span class="opt-attr-value-price-amount">' + json.data.FK_Details[i].Price + '</span> ریال </td>' +
+                                        '<td class="opt-attr-value-weight"><span class="opt-attr-value-weight-amount">' + json.data.FK_Details[i].Weight + '</span> گرم </td>' +
+                                        '<td class="opt-attr-value-dimension"><span class="opt-attr-value-length">' + json.data.FK_Details[i].Length + '</span> * <span class="opt-attr-value-width">' + json.data.FK_Details[i].Width + '</span> * <span class="opt-attr-value-height">' + json.data.FK_Details[i].Height + '</span> سانتی متر</td>' +
+                                        '<td><span class="point-mouse edit-delete-spans edit-value-opt-attr" val-opt-attr="' + optAttrtr + '" val="' + json.data.FK_Details[i].id + '">ویرایش</span></td>' +
+                                        '<td><span class="point-mouse edit-delete-spans delete-opt-attr-value" val-opt-attr="' + optAttrtr + '" val="' + json.data.FK_Details[i].id + '">حذف</span></td>' +
+                                    '</tr>';
+                                }
+                                $("tr[val='opt-attr-value-th-" + optAttrtr + "']").after(optAttrValueTdDiv);
+
+
+
+
+
+
+
+
+
+                            // var optAttrValueTdDiv = '';
+                            // for (var i=0; i<json.data.details.length; i++)
+                            // {
+                            //     optAttrValueTdDiv += '<div val2="' + optAttrtr + '" val1="' + json.data.details[i].id + '" class="opt-attr-item point-mouse">' + json.data.details[i].value + '<i val2="' + optAttrtr + '" val1="' + json.data.details[i].id + '" class="far fa-times delete-opt-attr-value"></i></div>';
+                            // }
+                            // var tdOptAttrVal = "#new-opt-attr-add-product tr#optAttr-" + optAttrtr + " td.opt-attr-val-td";
+                            // $(tdOptAttrVal).html(optAttrValueTdDiv);
+                            if ((optAttrValueTdDiv == '' || optAttrValueTdDiv.length == 0))
+                            {
+                                if (optAttrValuSectionValid && optAttrtr == activeOptAttrID)
+                                {
+                                    $(".prod-modal-title").html('هشدار');
+                                    $(".whole-modal-body").html('<div>شما برای ویژگی انتخابی خود مقداری در نظر نگرفته اید!</div>' +
+                                    '<div>آیا مایلید این ویژگی انتخابی حذف شود؟</div>');
+                                    $(".whole-content-of-footer").html('<button type="button" class="btn btn-secondary float-left" data-dismiss="modal">خیر</button>' +
+                                    '<button type="button" class="btn btn-primary float-left marginleft" id="delete-opt-attr-y" data-dismiss="modal">بله</button>');
+                                    $("#myModalerror").modal();
+                                }
+                                else
+                                {
+                                    $(".whole-modal-body").html('<div>شما برای ویژگی انتخابی خود مقداری در نظر نگرفته اید!</div>' +
+                                    '<div>این ویژگی انتخابی به صورت خودکار از محصول شما حذف میگردد!</div>');
+                                    $(".whole-content-of-footer").html('<button type="button" class="btn btn-secondary float-left" data-dismiss="modal">بستن</button>');
+                                    $("#myModalerror").modal();
+                                    $.ajax (
+                                    {
+                                        type: 'POST',
+                                        url: '{% url "restapi:web_product_optional_attribute" %}',
+                                        data: {
+                                            product_id: ProductID,
+                                            optional_attribute_id: optAttrtr,
+                                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                                        },
+                                        success: function (json, status) {
+                                            if (json.status)
+                                            {
+                                                // var optAttrDeleteAddress = "#new-opt-attr-add-product tr#optAttr-" + optAttrtr;
+                                                // $(optAttrDeleteAddress).remove();
+                                                $("tr[val=" + optAttrtr + "]").next().remove();
+                                                $("tr[val=" + optAttrtr + "]").remove();
+                                            }
+                                            else {
+                                                $(".error-complete-fields").html('<i class="fas fa-exclamation-triangle"></i> ' + json.message);
+                                                $(".error-complete-fields").show();
+                                                $(".error-complete-fields").fadeOut(3000);
+                                            }
+                                        },
+                                        error: function (xhr, status) {
+                                            console.log(xhr);
+                                            console.log(status);
+                                            console.log(xhr.responseJSON);
+                                            $(".error-complete-fields").html('<i class="fas fa-exclamation-triangle"></i> ' + xhr.responseJSON.message);
+                                            $(".error-complete-fields").show();
+                                            $(".error-complete-fields").fadeOut(3000);
+                                        }
+                                    }
+                                    )
+                                }
+                            }
+                        }
+                        else {
+                            $(".error-complete-fields").html('<i class="fas fa-exclamation-triangle"></i> ' + json.message);
+                            $(".error-complete-fields").show();
+                            $(".error-complete-fields").fadeOut(3000);
+                        }
+                    },
+                    error: function (xhr, status) {
+                        console.log(xhr);
+                        console.log(status);
+                        console.log(xhr.responseJSON);
+                        $(".error-complete-fields").html('<i class="fas fa-exclamation-triangle"></i> ' + xhr.responseJSON.message);
+                        $(".error-complete-fields").show();
+                        $(".error-complete-fields").fadeOut(3000);
+                    }
+                }
+            )
+        })
+
+        $(document).on('click', '.delete-entire-opt-attr', function () {
+            var optAttrtr = $(this).attr('val');
+            $.ajax (
+                {
+                    type: 'POST',
+                    url: '{% url "restapi:web_product_optional_attribute" %}',
+                    data: {
+                        product_id: ProductID,
+                        optional_attribute_id: optAttrtr,
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                    },
+                    success: function (json, status) {
+                        if (json.status)
+                        {
+                            // var optAttrDeleteAddress = "#new-opt-attr-add-product tr#optAttr-" + optAttrtr;
+                            // $(optAttrDeleteAddress).remove();
+                            $(".new-opt-attr-value-added-info").html('<i class="fas fa-check-circle"></i> ویژگی انتخابی با موفقیت حذف شد.');
+                            $(".new-opt-attr-value-added-info").show();
+                            $(".new-opt-attr-value-added-info").fadeOut(3000);
+                            $("tr[val=" + optAttrtr + "]").next().remove();
+                            $("tr[val=" + optAttrtr + "]").remove();
+                            if (optAttrtr == activeOptAttrID)
+                            {
+                                readyNewOptAttr();
+                            }
+                        }
+                        else {
+                            $(".error-complete-fields").html('<i class="fas fa-exclamation-triangle"></i> ' + json.message);
+                            $(".error-complete-fields").show();
+                            $(".error-complete-fields").fadeOut(3000);
+                        }
+                    },
+                    error: function (xhr, status) {
+                        console.log(xhr);
+                        console.log(status);
+                        console.log(xhr.responseJSON);
+                        $(".error-complete-fields").html('<i class="fas fa-exclamation-triangle"></i> ' + xhr.responseJSON.message);
+                        $(".error-complete-fields").show();
+                        $(".error-complete-fields").fadeOut(3000);
+                    }
+                }
+            )
+        })
+
+        $(document).on('click', '.opt-attr-list-row', function () {
+            $(".opt-attr-list-row").removeClass('opt-attr-row-hover-static');
+            $(".opt-attr-list-row").not($(this)).removeClass('opened-row');
+            $(".opt-attr-list-row").find(".rotated").addClass("no").removeClass("yes");
+            $(".opt-attr-value-tbl").addClass('opt-attr-value-tbl-hide');
+            if ($(this).hasClass("opened-row")) {
+                $(this).next().addClass('opt-attr-value-tbl-hide');
+                $(this).find(".rotated").addClass("no");
+                $(this).find(".rotated").removeClass("yes");
+                $(this).removeClass('opt-attr-row-hover-static opened-row');
+            }
+            else {
+                $(this).next().removeClass('opt-attr-value-tbl-hide');
+                $(this).find(".rotated").addClass("yes");
+                $(this).find(".rotated").removeClass("no");
+                $(this).addClass('opt-attr-row-hover-static opened-row');
+            }
+                // $(this).next().find('table').hide().slideDown(1000);
+        })
+
+        var optAttrID;
+        var optAttrPreviousType;
+        var optAttrPreviousStatus;
+
+        $(document).on("click", ".edit-entire-opt-attr", function (e) {
+            e.preventDefault();
+            $(".whole-content-of-modal").html('<div class="row">' +
+                '<div class="form-group col-12">' +
+                    '<label for="product_optattr_title">عنوان ویژگی انتخابی</label>' +
+                    '<input disabled type="text" name="product_optattr_title" class="form-control" id="product_optattr_title_edit">' +
+                '</div>' +
+                '<div class="form-group col-12">' +
+                    '<ul class="optional-attr-question-list">' +
+                        '<li>' +
+                        '<span> نوع انتخاب مقدار ها به چه صورت است؟ </span>' +
+                            '<span>' +
+                                '<label><input id="opt-attr-radio-type-choice-choose-edit" type="radio" name="optradio4"> تک انتخابی </label>' +
+                                '<label><input id="opt-attr-radio-type-choice-select-edit" type="radio" name="optradio4"> چند انتخابی </label>' +
+                            '</span>' +
+                        '</li>' +
+                        '<li>' +
+                            '<span> آیا تعیین این ویژگی برای خرید محصول اجباریست؟ </span>' +
+                            '<span>' +
+                                '<label><input id="opt-attr-radio-necessary-y-edit" type="radio" name="optradio5"> بله </label>' +
+                                '<label><input id="opt-attr-radio-necessary-n-edit" type="radio" name="optradio5"> خیر </label>' +
+                            '</span>' +
+                        '</li>' +
+                    '</ul>' +
+                '</div>' +
+            '</div>');
+            $(".whole-content-of-footer").html('<button data-dismiss="modal" type="submit" id="edit-opt-attr-submit" class="btn btn-primary ml-auto">ویرایش </button>' +
+            '<button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>');
+
+            optAttrID = $("tr[val='" + $(this).attr('val') + "']").attr('val');
+            $('#product_optattr_title_edit').val($($("tr[val='" + $(this).attr('val') + "'] td.opt-attr-title")[0]).text());
+            if ($("tr[val='" + $(this).attr('val') + "'] td.opt-attr-status i").hasClass('fa-check'))
+            {
+                $("#opt-attr-radio-necessary-y-edit").prop("checked", "checked");
+                optAttrPreviousStatus = '1';
+            }
+            else {
+                $("#opt-attr-radio-necessary-n-edit").prop("checked", "checked");
+                optAttrPreviousStatus = '0';
+            }
+            var optAttrTypeText = $("tr[val='" + $(this).attr('val') + "'] td.opt-attr-type").text();
+            if (optAttrTypeText.includes('تک انتخابی'))
+            {
+                $("#opt-attr-radio-type-choice-choose-edit").prop("checked", "checked");
+                optAttrPreviousType = '0';
+            }
+            else {
+                $("#opt-attr-radio-type-choice-select-edit").prop("checked", "checked")
+                optAttrPreviousType = '1';
+            }
+            $("#myModalerror").modal();
+        })
+
+
+        $(document).on('click', '#edit-opt-attr-submit', function (e) {
+            e.preventDefault();
+            var optAttrTypeEdit;
+            var optAttrStatusEdit;
+
+            optAttrTypeEdit = $("#opt-attr-radio-type-choice-select-edit").is(':checked') ? '1' : '0';
+            optAttrStatusEdit = $("#opt-attr-radio-necessary-y-edit").is(":checked") ? '1' : '0';
+
+            if (optAttrTypeEdit == optAttrPreviousType)
+            {
+                optAttrTypeEdit = 'null';
+            }
+
+            if (optAttrStatusEdit == optAttrPreviousStatus)
+            {
+                optAttrStatusEdit = 'null';
+            }
+
+            $.ajax (
+                {
+                    type: 'POST',
+                    url: '{% url "restapi:web_product_edit_optional_attribute" %}',
+                    data: {
+                        product_id: ProductID,
+                        optional_attribute_id: optAttrID,
+                        this_type: optAttrTypeEdit,
+                        this_status: optAttrStatusEdit,
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                    },
+                    success: function (json, status) {
+                        if (json.status)
+                        {
+                            $(".new-opt-attr-value-added-info").html('<i class="fas fa-check-circle"></i> ویژگی انتخابی با موفقیت ویرایش شد.');
+                            $(".new-opt-attr-value-added-info").show();
+                            $(".new-opt-attr-value-added-info").fadeOut(3000);
+                            var optAttrEditedType = json.data.Type == '1' ? 'چند انتخابی' : 'تک انتخابی';
+                            var optAttrEditedStatus = json.data.Status == true ? '<i class="far fa-check"></i>' : '<i class="far fa-times"></i>';
+
+                            $("tr[val='" + json.data.id +"'] td.opt-attr-status").html(optAttrEditedStatus);
+                            $("tr[val='" + json.data.id +"'] td.opt-attr-type").html(optAttrEditedType);
+                        }
+                        else {
+                            console.log(json.message);
+                            $(".error-complete-fields").html('<i class="fas fa-exclamation-triangle"></i> ' + json.message);
+                            $(".error-complete-fields").show();
+                            $(".error-complete-fields").fadeOut(3000);
+                        }
+                    },
+                    error: function (xhr, status) {
+                        console.log(xhr);
+                        console.log(status);
+                        console.log(xhr.responseJSON);
+                        $(".error-complete-fields").html('<i class="fas fa-exclamation-triangle"></i> ' + xhr.responseJSON.message);
+                        $(".error-complete-fields").show();
+                        $(".error-complete-fields").fadeOut(3000);
+                    }
+                }
+            )
+        })
+
+        var optAttrValueID;
+        $(document).on('click', '.edit-value-opt-attr', function (e) {
+            e.preventDefault();
+            $(".whole-content-of-modal").html('<div class="row">' +
+                '<div class="form-group col-12">' +
+                    '<label for="product_optattr_value">مقدار ویژگی انتخابی</label>' +
+                    '<input type="text" name="product_optattr_value" class="form-control" id="product_optattr_value_edit">' +
+                '</div>' +
+                '<div class="form-group col-12">' +
+                    '<div class="row">' +
+                        '<div class="form-group col-md-8" id="detail-now-box-for_opt_attr">' +
+                            '<label for="product_Status_for_opt_attr_edit">وضعیت محصول</label>' +
+                            '<select id="selectProdStatusForOptAttrEdit" name="product_Status_for_opt_attr_edit" class="form-control product-detail-now_for_opt_attr">' +
+                                '<option selected id="in-store-for-opt-attr">آماده در انبار</option>' +
+                                '<option>تولید بعد از سفارش</option>' +
+                                '<option>سفارشی سازی فروش</option>' +
+                                '<option>موجود نیست</option>' +
+                            '</select>' +
+                        '</div>' +
+                        '<div class="col-md-4" id="detail-num-box-for-opt-attr-edit">' +
+                            '<label for="product_available_count_for_opt_attr">موجودی</label>' +
+                            '<i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="تعداد موجودی خود در انبار را میتوانید در این قسمت وارد کنید."></i>' +
+                            '<input type="number" name="product_available_count_for_opt_attr" class="form-control" id="prod_num_in_store_for_opt_attr_edit" maxlength="2">' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div id="opt-attr-extra-price-sec-edit" class="form-group col-6">' +
+                    '<label for="product_optattr_price_edit">مقدار قیمت جدید</label>' +
+                    '<input type="number" name="product_optattr_price" class="form-control" id="product_optattr_price_edit">' +
+                '</div>' +
+                '<div id="opt-attr-extra-weight-sec-edit" class="form-group col-6">' +
+                    '<label for="product_optattr_extra_weight_edit">وزن جدید محصول با بسته بندی</label>' +
+                    '<input type="number" name="product_optattr_extra_weight" class="form-control" id="product_optattr_extra_weight_edit">' +
+                '</div>' +
+                '<div id="opt-attr-change-dimension-sec-edit" class="form-group col-12">' +
+                    '<div class="row">' +
+                        '<div class="col-xl-4">' +
+                            '<label for="product_optattr_change_dimension_x_edit">طول</label>' +
+                            '<input type="number" name="product_optattr_change_dimension_x_edit" class="form-control" id="product_optattr_change_dimension_x_edit">' +
+                        '</div>' +
+                        '<div class="col-xl-4">' +
+                            '<label for="product_optattr_change_dimension_y_edit">عرض</label>' +
+                            '<input type="number" name="product_optattr_change_dimension_y_edit" class="form-control" id="product_optattr_change_dimension_y_edit">' +
+                        '</div>' +
+                        '<div class="col-xl-4">' +
+                            '<label for="product_optattr_change_dimension_z_edit">ارتفاع</label>' +
+                            '<input type="number" name="product_optattr_change_dimension_z_edit" class="form-control" id="product_optattr_change_dimension_z_edit">' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>');
+            $(".whole-content-of-footer").html('<button data-dismiss="modal" type="submit" id="edit-opt-attr-value-submit" class="btn btn-primary ml-auto">ویرایش </button>' +
+            '<button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>');
+
+            $("#myModalerror").modal();
+
+            optAttrValueID = $(this).attr('val');
+            optAttrID = $(this).attr('val-opt-attr');
+
+
+            $("#product_optattr_value_edit").val($("tr[val-opt-attr='" + optAttrID + "'][val='" + optAttrValueID + "'] td.opt-attr-value-title").text());
+
+            
+            var expression = $("tr[val-opt-attr='" + optAttrID + "'][val='" + optAttrValueID + "'] td.opt-attr-value-status").text();
+            
+            switch(expression) {
+            case 'آماده در انبار':
+                $("#selectProdStatusForOptAttrEdit").prop('selectedIndex', 0);
+                $("#prod_num_in_store_for_opt_attr_edit").val($("tr[val-opt-attr='" + optAttrID + "'][val='" + optAttrValueID + "'] td.opt-attr-value-inventory").text());
+                break;
+            case 'تولید بعد از سفارش':
+                $("#selectProdStatusForOptAttrEdit").prop('selectedIndex', 1);
+                $("#detail-num-box-for-opt-attr-edit").hide();
+                break;
+            case 'سفارشی سازی فروش':
+                $("#selectProdStatusForOptAttrEdit").prop('selectedIndex', 2);
+                $("#detail-num-box-for-opt-attr-edit").hide();
+                break;
+            default:
+                $("#selectProdStatusForOptAttrEdit").prop('selectedIndex', 3);
+                $("#detail-num-box-for-opt-attr-edit").hide();
+                // موجود نیست
+            }
+
+            $("#product_optattr_price_edit").on('input', function () {
+                $("#product_optattr_price_edit").removeClass("inputshopempty");
+            })
+            $("#product_optattr_price_edit").val($("tr[val-opt-attr='" + optAttrID + "'][val='" + optAttrValueID + "'] td.opt-attr-value-price span.opt-attr-value-price-amount").text());
+            $("#product_optattr_extra_weight_edit").val($("tr[val-opt-attr='" + optAttrID + "'][val='" + optAttrValueID + "'] td.opt-attr-value-weight span.opt-attr-value-weight-amount").text());
+            $("#product_optattr_change_dimension_x_edit").val($("tr[val-opt-attr='" + optAttrID + "'][val='" + optAttrValueID + "'] td.opt-attr-value-dimension span.opt-attr-value-length").text());
+            $("#product_optattr_change_dimension_y_edit").val($("tr[val-opt-attr='" + optAttrID + "'][val='" + optAttrValueID + "'] td.opt-attr-value-dimension span.opt-attr-value-width").text());
+            $("#product_optattr_change_dimension_z_edit").val($("tr[val-opt-attr='" + optAttrID + "'][val='" + optAttrValueID + "'] td.opt-attr-value-dimension span.opt-attr-value-height").text());
+            
+
+        })
+
+        $(document).on('click', '#edit-opt-attr-value-submit', function (e) {
+            e.preventDefault();
+            var optAttrEditValueTitle = $("#product_optattr_value_edit").val();
+            var optAttrEditValuePrice = $("#product_optattr_price_edit").val();
+            var optAttrEditValueWeight = $("#product_optattr_extra_weight_edit").val();
+            var optAttrEditValueLength = $("#product_optattr_change_dimension_x_edit").val();
+            var optAttrEditValueWidth = $("#product_optattr_change_dimension_y_edit").val();
+            var optAttrEditValueHeight = $("#product_optattr_change_dimension_z_edit").val();
+            var optAttrEditValueInventory = $("#selectProdStatusForOptAttrEdit").prop('selectedIndex') != 0 ? '0' : $("#prod_num_in_store_for_opt_attr_edit").val();
+            var optAttrEditValueStatus = $("#selectProdStatusForOptAttrEdit").prop('selectedIndex') + 1;
+
+
+            if(optAttrEditValuePrice.length < 2)
+            {
+                $(".error-edit-fields").html('<i class="fas fa-exclamation-triangle"></i> قیمت باید بیش از 2 رقم باشد');
+                $(".error-edit-fields").show();
+                $(".error-edit-fields").fadeOut(3000);
+                $("#product_optattr_price_edit").addClass("inputshopempty");
+                return;
+            }
+            $.ajax (
+                {
+                    type: 'POST',
+                    url: '{% url "restapi:web_product_optional_attribute_edit_detail" %}',
+                    data: {
+                        product_id: ProductID,
+                        optional_attribute_id: optAttrID,
+                        detail_id: optAttrValueID,
+                        this_value: optAttrEditValueTitle,
+                        this_price: optAttrEditValuePrice,
+                        this_weight: optAttrEditValueWeight,
+                        this_length: optAttrEditValueLength,
+                        this_width: optAttrEditValueWidth,
+                        this_height: optAttrEditValueHeight,
+                        this_inventory: optAttrEditValueInventory,
+                        this_status: optAttrEditValueStatus,
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                    },
+                    success: function (json, status) {
+                        if (json.status)
+                        {
+                            $(".new-opt-attr-value-added-info").html('<i class="fas fa-check-circle"></i> مقدار ویژگی انتخابی با موفقیت ویرایش شد.');
+                            $(".new-opt-attr-value-added-info").show();
+                            $(".new-opt-attr-value-added-info").fadeOut(3000);
+                            var optAttrEditedStatus;
+                            
+                            var tdMaker = '<tr>' +
+                                            '<th scope="row" class="titletable3">' +
+                                                'مقدار' +
+                                            '</th>' +
+                                            '<th scope="row" class="titletable3">' +
+                                                'وضعیت انبار' +
+                                            '</th>' +
+                                            '<th scope="row" class="titletable3">' +
+                                                'موجودی' +
+                                            '</th>' +
+                                            '<th cope="row" class="titletable3">' +
+                                                'قیمت' +
+                                            '</th>' +
+                                            '<th cope="row" class="titletable3">' +
+                                                'وزن' +
+                                            '</th>' +
+                                            '<th cope="row" class="titletable3">' +
+                                                'ابعاد' +
+                                            '</th>' +
+                                            '<th cope="row" class="titletable3">' +
+                                                'ویرایش' +
+                                            '</th>' +
+                                            '<th cope="row" class="titletable3">' +
+                                                'حذف' +
+                                            '</th>' +
+                                        '</tr>';
+                            for (var i=0; i<json.data.FK_Details.length; i++)
+                            {
+                                switch(json.data.FK_Details[i].Status)
+                                {
+                                    case '1':
+                                        optAttrEditedStatus = 'آماده در انبار';
+                                    break;
+                                    case '2':
+                                        optAttrEditedStatus = 'تولید بعد از سفارش';
+                                    break;
+                                    case '3':
+                                        optAttrEditedStatus = 'سفارشی سازی فروش';
+                                    break;
+                                    default:
+                                        optAttrEditedStatus = 'موجود نیست';
+                                }
+                                tdMaker +=  '<tr val-opt-attr="' + optAttrID + '" val="' + json.data.FK_Details[i].id + '">' +
+                                            '<td class="opt-attr-value-title">' + json.data.FK_Details[i].Value + '</td>' +
+                                            '<td class="opt-attr-value-status">' + optAttrEditedStatus + '</td>' +
+                                            '<td class="opt-attr-value-inventory">' + json.data.FK_Details[i].Inventory + '</td>' +
+                                            '<td class="opt-attr-value-price"><span class="opt-attr-value-price-amount">' + json.data.FK_Details[i].Price + '</span> ریال</td>' +
+                                            '<td class="opt-attr-value-weight"><span class="opt-attr-value-weight-amount">' + json.data.FK_Details[i].Weight + '</span> گرم</td>' +
+                                            '<td class="opt-attr-value-dimension"><span class="opt-attr-value-length">' + json.data.FK_Details[i].Length + '</span> * <span class="opt-attr-value-width">' + json.data.FK_Details[i].Width + '</span> * <span class="opt-attr-value-height">' + json.data.FK_Details[i].Height + '</span> سانتی متر</td>' +
+                                            '<td>' +
+                                                '<span class="point-mouse edit-delete-spans edit-value-opt-attr" val-opt-attr="' + optAttrID + '" val="' + json.data.FK_Details[i].id + '">ویرایش</span>' +
+                                            '</td>' +
+                                            '<td>' +
+                                                '<span class="point-mouse edit-delete-spans delete-opt-attr-value val-opt-attr="' + optAttrID + '" val="' + json.data.FK_Details[i].id + '">حذف</span>' +
+                                            '</td>' +
+                                            '</tr>';
+                            }
+
+                            var tblAddress = ".opt-attr-value-table";
+                            $(tblAddress).html(tdMaker);
+                        }
+                        else {
+                            console.log(json.message);
+                        }
+                    },
+                    error: function (xhr, status) {
+                        console.log(xhr);
+                        console.log(status);
+                        console.log(xhr.responseJSON);
+                    }
+                }
+            )
+        })
+
+        $(document).on('change', '#selectProdStatusForOptAttrEdit', function () {
+            if ($(this).prop('selectedIndex') == 0) {
+                $("#detail-num-box-for-opt-attr-edit").show();
+            }
+            else {
+                $("#detail-num-box-for-opt-attr-edit").hide();
+            }
+        })
+
+        $(".product-detail-now_for_opt_attr" ).change(function() {
+        if($('.product-detail-now_for_opt_attr option:selected ').text() != 'آماده در انبار') {
+            $('#detail-num-box-for-opt-attr').hide();
+            var el = $('#detail-now-box-for_opt_attr');
+            el.addClass('col-md-12');
+            el.removeClass('col-md-8');
+            // $("#alert-div-inputproduct-available-count-empty").hide();
+            // $("#alert-div-inputproduct-available-count-digits").hide();
+            // $("#alert-div-inputproduct-available-count-zero-value").hide();
+        }
+        else{
+            $('#detail-num-box-for-opt-attr').show();
+            var el = $('#detail-now-box-for_opt_attr');
+            el.addClass('col-md-8');
+            el.removeClass('col-md-12');
+        }
+    });
+
+    $("#product_optattr_title").focusin(function () {
+        $(".opt-attr-suggestions").show();
+    })
+    $("#product_optattr_title").focusout(function () {
+        setTimeout( function () {
+            $(".opt-attr-suggestions").hide();
+        }, 150);
+    })
+    $(".opt-attr-suggestion").click( function () {
+        $("#product_optattr_title").val($(this).text());
+    });
+
+    $("#product_optattr_title").on('input', function () {
+        if ($(this).val() != '' || $(this).val().length != 0)
+        {
+            $(".opt-attr-suggestions").hide();
+        }
+        else {
+            $(".opt-attr-suggestions").show();
+        }
+    })
+    $("#product_optattr_title").on('input', function () {
+        var textLength = $(this).val().length;
+        if (textLength >= 255) {
+            $(this).val($(this).val().substr(0, 255));
+            $(this).prop("maxlength", 255);
+            return false;
+        }
+    })
+
+
+    $("#product_optattr_value").on('input', function () {
+        var textLength = $(this).val().length;
+        if (textLength >= 255) {
+            $(this).val($(this).val().substr(0, 255));
+            $(this).prop("maxlength", 255);
+            return false;
+        }
+    })
+
+    $("#product_optattr_price").on("keypress", function () {
+            var textLength = $(this).val().length;
+            if (textLength >= 15) {
+                $(this).val($(this).val().substr(0, 15));
+                $(this).prop("maxlength", 15);
+                return false;
+            }
+        })
+
+
+        $("#product_optattr_extra_weight").on("paste", function () {
+            setTimeout(function(){
+                var textLength = $("#product_optattr_extra_weight").val().length;
+                if (textLength >= 4) {
+                    $("#product_optattr_extra_weight").val($("#product_optattr_extra_weight").val().substr(0, 6));
+                    $("#product_optattr_extra_weight").prop("maxlength", 6);
+                }
+                var data = $("#product_optattr_extra_weight").val();
+                for(var i=0; i<data.length; i++)
+                {
+                    var ewt = data.charCodeAt(i);
+                    if (48 <= ewt && ewt <= 57) {
+                        
+                    }
+                    else {
+                        $("#product_optattr_extra_weight").val('');
+                        $("#product_optattr_extra_weight").addClass("inputshopempty");	
+                        return false;
+                    }
+                }
+        }, 10)
+            setTimeout(function () {
+                if($("#product_optattr_extra_weight").val() !== '')
+                {
+                    $("#product_optattr_extra_weight").removeClass("inputshopempty");
+                }
+            }, 20)
+        })
+
+
+        $("#product_optattr_extra_weight").on("keypress", function () {
+            var textLength = $(this).val().length;
+            if (textLength >= 6) {
+                $(this).val($(this).val().substr(0, 6));
+                $(this).prop("maxlength", 6);
+                return false;
+            }
+        })
+
+        $("#product_optattr_change_dimension_z").on("paste", function () {
+            setTimeout(function(){
+                var textLength = $("#product_optattr_change_dimension_z").val().length;
+                if (textLength >= 4) {
+                    $("#product_optattr_change_dimension_z").val($("product_optattr_change_dimension_z").val().substr(0, 4));
+                    $("#product_optattr_change_dimension_z").prop("maxlength", 4);
+                }
+                var data = $("#product_optattr_change_dimension_z").val();
+                for(var i=0; i<data.length; i++)
+                {
+                    var ewt = data.charCodeAt(i);
+                    if (48 <= ewt && ewt <= 57) {
+                        
+                    }
+                    else {
+                        $("#product_optattr_change_dimension_z").val('');
+                        $("#product_optattr_change_dimension_z").addClass("inputshopempty");	
+                        return false;
+                    }
+                }
+        }, 10)
+            setTimeout(function () {
+                if($("#product_optattr_change_dimension_z").val() !== '')
+                {
+                    $("#product_optattr_change_dimension_z").removeClass("inputshopempty");
+                }
+            }, 20)
+        })
+
+        $("#product_optattr_change_dimension_y").on("paste", function () {
+            setTimeout(function(){
+                var textLength = $("#product_optattr_change_dimension_y").val().length;
+                if (textLength >= 4) {
+                    $("#product_optattr_change_dimension_y").val($("product_optattr_change_dimension_y").val().substr(0, 4));
+                    $("#product_optattr_change_dimension_y").prop("maxlength", 4);
+                }
+                var data = $("#product_optattr_change_dimension_y").val();
+                for(var i=0; i<data.length; i++)
+                {
+                    var ewt = data.charCodeAt(i);
+                    if (48 <= ewt && ewt <= 57) {
+                        
+                    }
+                    else {
+                        $("#product_optattr_change_dimension_y").val('');
+                        $("#product_optattr_change_dimension_y").addClass("inputshopempty");	
+                        return false;
+                    }
+                }
+        }, 10)
+            setTimeout(function () {
+                if($("#product_optattr_change_dimension_y").val() !== '')
+                {
+                    $("#product_optattr_change_dimension_y").removeClass("inputshopempty");
+                }
+            }, 20)
+        })
+
+        $("#product_optattr_change_dimension_x").on("paste", function () {
+            setTimeout(function(){
+                var textLength = $("#product_optattr_change_dimension_x").val().length;
+                if (textLength >= 4) {
+                    $("#product_optattr_change_dimension_x").val($("#product_optattr_change_dimension_x").val().substr(0, 4));
+                    $("#product_optattr_change_dimension_x").prop("maxlength", 4);
+                }
+                var data = $("#product_optattr_change_dimension_x").val();
+                for(var i=0; i<data.length; i++)
+                {
+                    var ewt = data.charCodeAt(i);
+                    if (48 <= ewt && ewt <= 57) {
+                        
+                    }
+                    else {
+                        $("#product_optattr_change_dimension_x").val('');
+                        $("#product_optattr_change_dimension_x").addClass("inputshopempty");
+                        return false;
+                    }
+                }
+        }, 10)
+            setTimeout(function () {
+                if($("#product_optattr_change_dimension_x").val() !== '')
+                {
+                    $("#product_optattr_change_dimension_x").removeClass("inputshopempty");
+                }
+            }, 20)
+        })
+        $("#product_optattr_change_dimension_x").on("keypress", function () {
+            var textLength = $(this).val().length;
+            if (textLength >= 4) {
+                $(this).val($(this).val().substr(0, 4));
+                $(this).prop("maxlength", 4);
+                return false;
+            }
+        })
+        $("#product_optattr_change_dimension_y").on("keypress", function () {
+            var textLength = $(this).val().length;
+            if (textLength >= 4) {
+                $(this).val($(this).val().substr(0, 4));
+                $(this).prop("maxlength", 4);
+                return false;
+            }
+        })
+        $("#product_optattr_change_dimension_z").on("keypress", function () {
+            var textLength = $(this).val().length;
+            if (textLength >= 4) {
+                $(this).val($(this).val().substr(0, 4));
+                $(this).prop("maxlength", 4);
+                return false;
+            }
+        })
+        $("#prod_num_in_store_for_opt_attr").on("paste", function () {
+            setTimeout(function(){
+                var textLength = $("#prod_num_in_store_for_opt_attr").val().length;
+                if (textLength >= 2) {
+                    $("#prod_num_in_store_for_opt_attr").val($("#prod_num_in_store_for_opt_attr").val().substr(0, 2));
+                    $("#prod_num_in_store_for_opt_attr").prop("maxlength", 2);
+                }
+                var data = $("#prod_num_in_store_for_opt_attr").val();
+                for(var i=0; i<data.length; i++)
+                {
+                    var ewt = data.charCodeAt(i);
+                    if (48 <= ewt && ewt <= 57) {
+                        
+                    }
+                    else {
+                        $("#prod_num_in_store_for_opt_attr").val('');
+                        $("#prod_num_in_store_for_opt_attr").addClass("inputshopempty");
+                        return false;
+                    }
+                }
+        }, 10)
+            setTimeout(function () {
+                if($("#prod_num_in_store_for_opt_attr").val() !== '')
+                {
+                    $("#prod_num_in_store_for_opt_attr").removeClass("inputshopempty");
+                }
+            }, 20)
+        })
+        $("#prod_num_in_store_for_opt_attr").on("keypress", function () {
+            var textLength = $(this).val().length;
+            if (textLength >= 2) {
+                $(this).val($(this).val().substr(0, 2));
+                $(this).prop("maxlength", 2);
+                return false;
+            }
+        })
+</script>
+
+{% block footer-section %}
+    {% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+    {% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

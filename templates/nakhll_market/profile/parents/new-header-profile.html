@@ -1,0 +1,30 @@
+{% load i18n static %}
+<div class="row">
+        <div class="col-xl-4">
+        <div class="body-top-profile">
+            <span>
+                {% if request.user.is_authenticated %}
+                    امتیاز کاربر : {{This_User_Profile.Point}}
+                {% endif %}
+            </span>
+        </div>
+        </div>
+        <div class="col-xl-4">
+            <div class="body-top-profile">
+            <a href="{% url "nakhll_market:Wallet" %}">
+                {% if request.user.is_authenticated %}
+                    کیف پول : <span class="priceline"><span class="numbersprice">{{This_User_Inverntory}}</span></span> ریال 
+                {% endif %}
+            </a>
+            </div>
+        </div>
+        <div class="col-xl-4">
+            <div class="body-top-profile">
+                <span>
+                    {% if request.user.is_authenticated %}
+                        کد معرف شما : {{This_User_Profile.UserReferenceCode}}
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    </div>

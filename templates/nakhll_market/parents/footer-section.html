@@ -1,0 +1,140 @@
+{% load i18n static %}
+<footer>
+        <div class="container">
+            <div class="row footer-top">
+                <div class="col-xl-8 col-lg-8 col-md-6 col-sm-12 col-12 text-top-footer">
+                    <p> با خدمات  بازار نخل در ۷ روز هفته همراه ما باشید.</p>
+                </div>
+                <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 col-6 call-footer">
+                    <div>
+                        <i class="fal fa-headphones-alt"></i>
+                    </div>
+
+                    <div>
+                        شماره تماس
+                        <br> 034-32476561
+                    </div>
+                </div>
+
+                <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 col-6 call-footer">
+                    <div>
+                        <i class="fal fa-envelope"></i>
+                    </div>
+
+                    <div>
+                        ایمیل
+                        <br> info[atsine]nakhll.com
+                    </div>
+                </div>
+            </div>
+        </div>
+        <section id="footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 about-footer">
+                        <div class="logo-info">
+                            <div class="logo-footer">
+                                <img src="{% static "images/Page-1.png" %}" alt="logo">
+                            </div>
+                            <div class="about-footer">
+                                <p>
+                                   رویکرد اصلی بازار نخل زمینه سازی جهت حضور کسب و کار هایی است اصیل و پر معنا در سرتاسر ایران، که علاوه بر آن سهم بالایی از تجارب مردم را به خود اختصاص میدهد .
+                                    <a href="/pages/static/aboutus/">بیشتر بخوانید</a>
+                                </p>
+                                <div class="icon-footer">
+                                    <a href="https://www.instagram.com/nakhll1/" target="_blank"><i class="fab fa-instagram"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-6">
+                        <div class="list-footer">
+                            <h6>فهرست عناوین</h6>
+                            <ul>
+                                {% for item in MenuList %}
+                                    {% if forloop.counter == 3 %}
+                                        <li><a href="/pages/static/{{item.Value_2}}/">{{item.Value_1}}</a></li>
+                                    {% elif forloop.counter == 4 %}
+                                        <li><a href="/pages/static/{{item.Value_2}}/">{{item.Value_1}}</a></li>
+                                    {% elif forloop.counter == 5 %}
+                                        <li><a href="/pages/connectus/">{{item.Value_1}}</a></li>                                                
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-6">
+                        <div class="slider-license-footer ">
+
+                        <div id="myCarousel" class="carousel slide footerslidecarousel" data-ride="carousel" data-interval="1500">
+                        <!-- Indicators -->
+                        <ol class="carousel-indicators">
+                            <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                            <li data-target="#myCarousel" data-slide-to="1"></li>
+                            <li data-target="#myCarousel" data-slide-to="2"></li>
+                        </ol>
+
+
+                        <!-- Indicators -->
+                    
+
+                        <!-- The slideshow -->
+                        <div class="carousel-inner height-slider-footer">
+                            <div class="carousel-item active">
+                            <img id = 'jxlzfukzrgvjesgtnbqesizp' style = 'cursor:pointer' onclick = 'window.open("https://logo.samandehi.ir/Verify.aspx?id=163029&p=rfthgvkaxlaoobpduiwkpfvl", "Popup","toolbar=no, scrollbars=no, location=no, statusbar=no, menubar=no, resizable=0, width=450, height=630, top=30")' alt = 'logo-samandehi' src = 'https://logo.samandehi.ir/logo.aspx?id=163029&p=nbpdwlbqqftilymaodrfbsiy' />
+                            </div>
+                            <div class="carousel-item">
+                            <a target="_blank" href="https://trustseal.enamad.ir/?id=135577&amp;Code=4LVJlUntZdqZWSmXWkA1" rel="nofollow"><img src="https://Trustseal.eNamad.ir/logo.aspx?id=135577&amp;Code=4LVJlUntZdqZWSmXWkA1" alt="enemd" style="cursor:pointer" id="4LVJlUntZdqZWSmXWkA1"></a>
+                            </div>
+                            <div class="carousel-item">
+                            <a target="_blank" href="http://kerman.irannsr.org/services/trade_unit/319012-%D8%A7%D8%B9%D8%B6%D8%A7%DB%8C-%D8%AD%D9%82%D9%88%D9%82%DB%8C-%D9%86%D9%88%DB%8C%D8%AF-%D8%AA%DB%8C%D9%85%DA%86%D9%87-%D8%AA%D8%AC%D8%A7%D8%B1%D8%AA-%D9%86%DB%8C%D9%84.html?t=%D8%AC%D8%B3%D8%AA%D8%AC%D9%88%DB%8C-%D9%BE%DB%8C%D8%B4%D8%B1%D9%81%D8%AA%D9%87" rel="nofollow"><img src="{% static "images/socialcer23.png" %}" alt="senfi" style="cursor:pointer"></a>
+                            </div>
+                        </div>
+
+                        <a class="carousel-control-prev" href="#demo" data-slide="prev">
+                            <span class="carousel-control-prev-icon"></span>
+                        </a>
+                        <a class="carousel-control-next" href="#demo" data-slide="next">
+                            <span class="carousel-control-next-icon"></span>
+                        </a>
+                        </div>
+
+                            
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12">
+                        <div class="newslatter-footer">
+                            <h6>عضویت در خبرنامه</h6>  
+                         
+                            <form class="search-top newslatter" method="POST" action="/addemail/">
+                                {% csrf_token %}
+                                <input type="email" placeholder="آدرس ایمیل خود را وارد کنید ..." pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" name="email" id="email">
+                                <button type="submit" value="Submit" class="submit-search">عضویت</button>   
+                            </form>
+                            <div class="loaderDiv" id="loaderfooter">
+                                لطفا منتظر بمانید
+                                <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری">
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="copy-right-footer">
+            <div class="container">
+                <div class="row footercopy">
+                    <div class="col-xl-11 col-lg-11 col-md-10 col-sm-12 col-12">
+                        <p>تمامی خدمات این وب سایت دارای مجوزهای لازم از مراجع مربوطه می باشد و فعالیت های این سایت تابع قوانین و مقررات جمهوری اسلامی ایران است.</p>
+                    </div>
+                    <div class="col-xl-1 col-lg-1 col-md-2 col-sm-12 col-12"><a href="#">©بازار نخل</a></div>
+                </div>
+            </div>
+        </section> 
+
+</footer>
+
+<script type="text/javascript">!function(){function t(){var t=document.createElement("script");t.type="text/javascript",t.async=!0,localStorage.getItem("rayToken")?t.src="https://app.raychat.io/scripts/js/"+o+"?rid="+localStorage.getItem("rayToken")+"&href="+window.location.href:t.src="https://app.raychat.io/scripts/js/"+o;var e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(t,e)}var e=document,a=window,o="1b3710ed-495e-4794-bbc7-842af6728c48";"complete"==e.readyState?t():a.attachEvent?a.attachEvent("onload",t):a.addEventListener("load",t,!1)}();</script>
+
+    <body>
+</html>

@@ -1,0 +1,165 @@
+{% load jformat %}
+
+{% block header %}
+{% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+
+    <title>بازار نخل | ویرایش اطلاعات کاربر</title>
+</head>
+
+
+{% block headertag %}
+{% include "nakhll_market/parents/headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+
+
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-xl-3">
+
+                <div class="profile-sidebar-site">   
+                    
+                    {% block topsidebar %}
+                        {% include "nakhll_market/profile/parents/topsidebar.html" %}
+                    {% endblock %}
+
+                    <div class="profile-sidebar-main">
+
+                            <a href="/profile/dashboard/">
+                                <button>
+                                    <i class="fas fa-id-badge"></i>
+                                    <h5>داشبورد</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/transaction/">
+                                <button>
+                                    <i class="fad fa-clipboard-list"></i>
+                                <h5>تراکنش ها</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/factor/">
+                                <button>
+                                    <i class="fas fa-file-invoice-dollar"></i>
+                                    <h5>فاکتور ها</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/ticketing/">
+                                <button>
+                                    <i class="fad fa-user-headset"></i>
+                                    <h5>پشتیبانی</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/shops/">
+                                <button>
+                                    <i class="fas fa-store"></i>
+                                    <h5>مدیریت حجره</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/review/">
+                                <button>
+                                    <i class="fad fa-comments-alt"></i>
+                                    <h5>نقد ها و نظرات</h5>
+                                </button>
+                            </a>
+
+                        {% if request.user.is_staff %}
+                            {% block menu %}
+                                {% include "nakhll_market/profile/parents/menu_for_user_manage.html" %}
+                            {% endblock %}
+                        {% endif %}
+    
+                    </div>
+                </div>
+
+            </div>
+
+
+
+            <div class="col-xl-9">
+                <br>
+
+                <div class="alarm-section">
+                    <div class="row">
+
+                        {% if ShowAlart %}
+                        <div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                                <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                                <p>
+                                    {{AlartMessage}}
+                                </p>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                        <div class="dashboard"> 
+                            <h4>ویرایش مشخصات {{User_Selected.first_name}} {{User_Selected.last_name}}</h4>
+
+                            <form method="POST" action="{% url "nakhll_market:Edit_User_Info" User_Selected.id 'none' %}">
+                                {% csrf_token %}
+                                <div class="form-row">
+                                    <div class="form-group col-md-4">
+                                        <label for="inputUserName">نام کاربری</label>
+                                            <input value="{{User_Selected.username}}" name="username" pattern="[a-z0-9A-Z_]{2,255}" class="form-control" id="inputUserName" required>
+                                        </div>
+                                    <div class="form-group col-md-4">
+                                        <label for="inputNationalCode">کد ملی</label>
+                                        <input id="inputNationalCode" class="form-control" name="nationalcode" pattern="[0-9]{10,10}" value="{{Profile_Selected.NationalCode}}" required>
+                                    </div>
+
+                                    <div class="form-group col-md-4">
+                                        <label for="inputMobileNumber">شماره موبایل</label>
+                                        <input value="{{Profile_Selected.MobileNumber}}" name="mobilenumber" pattern="[0-9]{11,11}" class="form-control" id="inputMobileNumber" required>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary mr-auto" id="send-left">ذخیره اطلاعات</button>
+                                <div class="clearfix"></div>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+{% block footer-section %}
+{% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+
+
+{% block footer %}
+{% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

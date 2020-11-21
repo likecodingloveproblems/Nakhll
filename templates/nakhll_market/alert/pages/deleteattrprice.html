@@ -1,0 +1,158 @@
+{% load jformat %}
+
+{% block header %}
+    {% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+    <title>بازار نخل | هشدار ها</title>
+</head>
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-3">
+                <div class="profile-sidebar-site">    
+                    {% block topsidebar %}
+                        {% include "nakhll_market/profile/parents/new-topsidebar.html" %}
+                    {% endblock %}
+                    <div class="profile-sidebar-main">
+                        <a href="/profile/dashboard/">
+                            <button>
+                                <i class="fas fa-id-badge"></i>
+                                <h5>داشبورد</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/transaction/">
+                            <button>
+                                <i class="fad fa-clipboard-list"></i>
+                            <h5>تراکنش ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/factor/">
+                            <button>
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <h5>فاکتور ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/ticketing/">
+                            <button>
+                                <i class="fad fa-user-headset"></i>
+                                <h5>پشتیبانی</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/shops/">
+                            <button>
+                                <i class="fas fa-store"></i>
+                                <h5>مدیریت حجره</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/review/">
+                            <button>
+                                <i class="fad fa-comments-alt"></i>
+                                <h5>نقد ها و نظرات</h5>
+                            </button>
+                        </a>
+
+                        {% if request.user.is_staff %}
+                            {% block review %}
+                                {% include "nakhll_market/alert/pages/menu_for_alert.html" %}
+                            {% endblock %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                    {% include "nakhll_market/profile/parents/new-header-profile.html" %}
+                {% endblock %}
+
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                        <div class="dashboard"> 
+                            <h4>حذف ارزش ویژگی</h4>
+                            <div class="hr-line-alert"></div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="inputshoptitle">نام حجره دار</label>
+                                        <p class="show-title-in-alert">{{AttrPrice.FK_Product.FK_Shop.FK_ShopManager.first_name}} {{AttrPrice.FK_Product.FK_Shop.FK_ShopManager.last_name}}</p>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="inputshoplink">لینک محصول</label>
+                                        <a href="/product/{{AttrPrice.FK_Product.FK_Shop.Slug}}/{{AttrPrice.FK_Product.Slug}}" target="_blank"><p class="Riyal button-link">محصول {{AttrPrice.FK_Product.Title}}</p></a>
+                                    </div>
+                                </div>
+                            <div class="hr-line-alert"></div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="inputAttribute">عنوان ویژگی</label>
+                                    <fieldset disabled>
+                                        <input type="text" name="Attribute" value="{{AttrPrice.Value}}" class="form-control" id="inputAttribute">
+                                    </fieldset>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="inputSlugAttribute">میزان افزایش قیمت</label>
+                                    <fieldset disabled>
+                                        <input type="text" name="SlugAttribute" value="{{AttrPrice.ExtraPrice}}" class="form-control" id="inputSlugAttribute">
+                                    </fieldset>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label for="inputUnitAttribute">واحد ویژگی</label>
+                                    <fieldset disabled>
+                                        <input type="text" name="UnitAttribute" value="{{AttrPrice.Unit}}" class="form-control" id="inputUnitAttribute">
+                                        <p><small class="smallhelp">درصورتی که ویژگی مربوطه فاقد واحد باشد، این فیلد باید به صورت "-" باشد!</small></p>
+                                    </fieldset>
+                                </div>
+
+                                <div class="form-group col-md-8">
+                                    <label for="inputUnitAttribute">توضیحات ویژگی</label>
+                                    <fieldset disabled>
+                                        <textarea type="text" name="UnitAttribute" class="form-control" id="inputUnitAttribute" rows="1">{{AttrPrice.Description}}</textarea>
+                                    </fieldset>
+                                </div>
+                            </div>
+
+                            <br>
+
+                            <form method="POST" action="/profile/alert/record/deleteattrprice/{{AttrPrice.id}}">
+                                {% csrf_token %}
+                                <div class="col-xl-5 col-6">
+                                    <button class="btn btn-primary">تایید</button>
+                                </div>
+                            </form>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% block footer-section %}
+    {% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+    {% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

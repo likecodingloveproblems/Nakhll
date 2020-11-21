@@ -1,0 +1,333 @@
+{% load jformat %}
+
+{% block header %}
+    {% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+    <title>بازار نخل | هشدار ها</title>
+</head>
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-xl-3">
+                <div class="profile-sidebar-site">    
+                    {% block topsidebar %}
+                        {% include "nakhll_market/profile/parents/new-topsidebar.html" %}
+                    {% endblock %}
+                    <div class="profile-sidebar-main">
+                        <a href="/profile/dashboard/">
+                            <button>
+                                <i class="fas fa-id-badge"></i>
+                                <h5>داشبورد</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/transaction/">
+                            <button>
+                                <i class="fad fa-clipboard-list"></i>
+                            <h5>تراکنش ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/factor/">
+                            <button>
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <h5>فاکتور ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/ticketing/">
+                            <button>
+                                <i class="fad fa-user-headset"></i>
+                                <h5>پشتیبانی</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/shops/">
+                            <button>
+                                <i class="fas fa-store"></i>
+                                <h5>مدیریت حجره</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/review/">
+                            <button>
+                                <i class="fad fa-comments-alt"></i>
+                                <h5>نقد ها و نظرات</h5>
+                            </button>
+                        </a>
+
+                        {% if request.user.is_staff %}
+                            {% block review %}
+                                {% include "nakhll_market/alert/pages/menu_for_alert.html" %}
+                            {% endblock %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                    {% include "nakhll_market/profile/parents/new-header-profile.html" %}
+                {% endblock %}
+
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                        <div class="dashboard"> 
+                            <h4>بررسی محصول جدید</h4>
+                            <div class="hr-line-alert"></div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="inputshoptitle">نام حجره دار</label>
+                                        <p class="show-title-in-alert">{{Product.FK_Shop.FK_ShopManager.first_name}} {{Product.FK_Shop.FK_ShopManager.last_name}}</p>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="inputshoplink">لینک حجره دار</label>
+                                        <a href="/{{Product.FK_Shop.Slug}}" target="_blank"><p class="Riyal button-link">حجره {{Product.FK_Shop.Title}}</p></a>
+                                    </div>
+                                </div>
+                            <div class="hr-line-alert"></div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">  
+                                    <div id="msg"></div>
+                                    <label for="file">عکس محصول</label>
+                                    <br>
+                                    <img src="{{Product.Image_thumbnail_url}}" id="preview" class="img-thumbnail">    
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                <label for="inputprod_title">عنوان محصول</label>
+                                <fieldset disabled>
+                                    <input type="text" name="prod_title" value="{{Product.Title}}" class="form-control" id="inputprod_title">
+                                </fieldset>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="inputslugProd">شناسه محصول</label>
+                                    <fieldset disabled>
+                                        <input type="text" name="slugProd" class="form-control" value="{{Product.Slug}}" id="inputslugProd">
+                                    </fieldset>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="inpuShop"> حجره </label>
+                                    <fieldset disabled>
+                                        <input type="text" name="ProdShop" class="form-control" value="{{Product.FK_Shop.Title}}" id="inputslugProd">
+                                    </fieldset>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                <label for="inputProdDes">درباره محصول</label>
+                                <fieldset disabled>
+                                    <textarea name="ProdDes" class="form-control" value="{{Product.Description}}" id="inputProdDes" rows="2">{{Product.Description}}</textarea>
+                                </fieldset>
+                                </div>  
+                            </div>
+                                
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="input_category">دسته بندی محصول</label>
+                                    <fieldset disabled>
+                                        <select data-placeholder="دسته بندی ها" multiple class="chosen-select-rtl form-control" id="input_category" tabindex="14">
+                                            {% for item in Product.FK_Category.all %}
+                                                <option selected>{{item.Title}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </fieldset>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="inputSubMarket">راسته محصول</label>
+                                    <fieldset disabled>
+                                        <input type="text" name="ProdSub" class="form-control" value="{{Product.FK_SubMarket.Title}}" id="inputslugProd">
+                                    </fieldset>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                <label for="inputProdBio">معرفی محصول</label>
+                                <fieldset disabled>
+                                    <textarea name="ProdBio" class="form-control" value="{{Product.Bio}}" id="inputProdBio" rows="2">{{Product.Bio}}</textarea>
+                                </fieldset>
+                                </div>  
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                <label for="inputProdStory">داستان محصول</label>
+                                <fieldset disabled>
+                                    <textarea name="ProdStory" class="form-control" value="{{Product.Story}}" id="inputProdStory" rows="2">{{Product.Story}}</textarea>
+                                </fieldset>
+                                </div>  
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                <label for="inputprod_title">قیمت فروش محصول</label>
+                                <fieldset disabled>
+                                    <input type="text" name="prod_Price" value="{{Product.Price}}" class="form-control" id="inputprod_title">
+                                </fieldset>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                <label for="inputslugProd">قیمت واقعی</label>
+                                <fieldset disabled>
+                                    <input type="text" name="Prodoldprice" value="{{Product.OldPrice}}" class="form-control" id="inputslugProd">
+                                </fieldset>
+                                </div>
+                            </div>
+
+                            <h6>وزن محصول (<span class="Riyal">گرم</span>)</h6>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                <label for="input_netweight">وزن خالص محصول</label>
+                                <fieldset disabled>
+                                    <input type="text" name="product_netweight" class="form-control" value="{{Product.Net_Weight}}" id="input_netweight">
+                                </fieldset>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                <label for="input_packingweight">وزن محصول با بسته بندی</label>
+                                <fieldset disabled>
+                                    <input type="text" name="product_packingweight" class="form-control" value="{{Product.Weight_With_Packing}}" id="input_packingweight">
+                                </fieldset>
+                                </div>
+                            </div>
+
+                            <h6>ابعاد محصول (<span class="Riyal">سانتی متر</span>)</h6>
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                <label for="input_lengthwithpackaging">طول بسته بندی محصول</label>
+                                <fieldset disabled>
+                                    <input type="text" name="product_lengthwithpackaging" class="form-control" value="{{Product.Length_With_Packaging}}" id="input_lengthwithpackaging" required>
+                                </fieldset>
+                                </div>
+
+                                <div class="form-group col-md-4">
+                                <label for="input_widthwithpackaging">عرض بسته بندی محصول</label>
+                                <fieldset disabled>
+                                    <input type="text" name="product_widthwithpackaging" class="form-control" value="{{Product.Width_With_Packaging}}" id="input_widthwithpackaging" required>
+                                <fieldset>
+                                </div>
+
+                                <div class="form-group col-md-4">
+                                <label for="input_heightwithpackaging">ارتفاع بسته بندی محصول</label>
+                                <fieldset disabled>
+                                    <input type="text" name="product_heightwithpackaging" class="form-control" value="{{Product.Height_With_Packaging}}" id="input_heightwithpackaging" required>
+                                </fieldset>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="PostRangeType">محدوده ارسال</label>
+                                    <fieldset disabled>
+                                        <input type="text" name="ProdRange" class="form-control" value="{{ Product.get_sendtype }}" id="inputslugProd">
+                                    </fieldset>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="PostRangeType">وضعیت محصول</label>
+                                    <fieldset disabled>
+                                        <input type="text" name="ProdPostType" class="form-control" value="{{ Product.get_status }}" id="inputslugProd">
+                                    </fieldset>
+                                </div>
+                            </div>
+
+                            {% if Product.Status == '1' %}
+                                <div class="form-row">
+                                    <div class="form-group col-md-2">
+                                        <label for="ProductCountInStore">موجودی محصول</label>
+                                        <fieldset disabled>
+                                            <input type="text" name="prod_num_in_store" class="form-control" value="{{Product.Inventory}}" id="ProductCountInStore">
+                                        </fieldset>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            <div class="form-row">
+                                {% if Product.FK_PostRange.all.count != 0 %}
+                                    <div class="form-group col-md-6">
+                                        <label for="input_postrange">محدوده ارسال محصول</label>
+                                        <fieldset disabled>
+                                            <select data-placeholder="محدوده ارسال" multiple class="chosen-select-rtl form-control" id="input_postrange" tabindex="14">
+                                                {% for item in Product.FK_PostRange.all %}
+                                                    <option selected>{{item}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </fieldset>
+                                    </div>
+                                {% endif %}
+                                {% if Product.FK_ExceptionPostRange.all.count != 0 %}
+                                    <div class="form-group col-md-6">
+                                        <label for="input_exepostrange">استثناء محدوده ارسال محصول</label>
+                                        <fieldset disabled>
+                                            <select data-placeholder="محدوده ارسال" multiple class="chosen-select-rtl form-control" id="input_exepostrange" tabindex="14">
+                                                {% for item in Product.FK_ExceptionPostRange.all %}
+                                                    <option selected>{{item}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </fieldset>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <br>
+                            <div class="hr-line-alert"></div>
+                            <form id="new-prod-form" method="POST" action="/profile/alert/record/product/{{Product.ID}}">
+                                {% csrf_token %}
+                                <div class="col-xl-12 col-12">
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="radio" id="accept-btn" name="accept-btn" value="1" class="custom-control-input" checked>
+                                        <label class="custom-control-label" for="accept-btn">نمایش در سایت</label>
+                                      </div>
+                                      <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="radio" id="customRadioInline2" name="accept-btn" value="0" class="custom-control-input">
+                                        <label class="custom-control-label" for="customRadioInline2">عدم تایید</label>
+                                    </div>
+                                    <br>
+                                    <div class="form-group mg-12">
+                                        <label for="descriptionalert">توضیحات :</label>
+                                        <textarea class="form-control" id="descriptionalert" name="Des" rows="1" required></textarea>
+                                    </div>
+                                    <button class="btn btn-primary btn-left">ثبت</button>
+                                </div>
+                                <div class="clearfix"></div>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+{% block footer-section %}
+    {% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+    {% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

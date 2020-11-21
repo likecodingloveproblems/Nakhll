@@ -1,0 +1,386 @@
+{% load jformat %}
+
+{% block header %}
+    {% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+    <title>بازار نخل | افزودن ویژگی محصول </title>
+</head>
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+<div class="loading-index loading-add-product">
+    <div class="loadingpage">
+        <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        <p>
+            لطفا منتظر بمانید ...
+        </p>
+    </div>
+</div>
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-3">
+                <div class="profile-sidebar-site">    
+                    {% block topsidebar %}
+                        {% include "nakhll_market/profile/parents/new-topsidebar.html" %}
+                    {% endblock %}
+                    <div class="profile-sidebar-main">
+                        <a href="/profile/dashboard/">
+                            <button>
+                                <i class="fas fa-id-badge"></i>
+                                <h5>داشبورد</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/transaction/">
+                            <button>
+                                <i class="fad fa-clipboard-list"></i>
+                            <h5>تراکنش ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/factor/">
+                            <button>
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <h5>فاکتور ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/ticketing/">
+                            <button>
+                                <i class="fad fa-user-headset"></i>
+                                <h5>پشتیبانی</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/shops/">
+                            <button class="activebtn">
+                                <i class="fas fa-store"></i>
+                                <h5>مدیریت حجره</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/review/">
+                            <button>
+                                <i class="fad fa-comments-alt"></i>
+                                <h5>نقد ها و نظرات</h5>
+                            </button>
+                        </a>
+
+                        {% if request.user.is_staff %}
+                            {% block review %}
+                                {% include "nakhll_market/profile/parents/menu_for_shop_manage.html" %}
+                            {% endblock %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                    {% include "nakhll_market/profile/parents/new-header-profile.html" %}
+                {% endblock %}
+
+                <div class="alarm-section">
+                    <div class="row">
+                        {% if ShowAlart %}
+                            <div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                                    <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                                    <p>
+                                        {{AlartMessage}}
+                                    </p>
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                        <!-- <div class="dashboard"> 
+                            <h4>افزودن ویژگی محصول</h4> 
+
+                            <form id="attr-form" method="POST" action="{% url "nakhll_market:Shop_Manager_AddProductAttribute" Product.Slug %}">
+                                {% csrf_token %}
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="inputFK_Attribute">عنوان ویژگی</label>
+                                        <select id="inputFK_Attribute" name="Attribute_Title" class="form-control" request>
+                                            {% for item in Attributes %}
+                                                <option value="{{item.id}}">{{item}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="inputValueAttr">مقدار ویژگی</label>
+                                        <input type="text" name="Attribute_Value" class="form-control" id="inputValueAttr" required>
+                                    </div>
+                                </div>
+
+                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".newattr">ثبت ویژگی جدید</button>
+
+                                <button type="submit" class="btn btn-primary mr-auto" id="send-left" name="add-attr">تایید</button>
+                                    <div class="clearfix"></div>
+                                </div>
+
+                            </form>
+
+                        </div> -->
+                        <div class="dashboard" id="attribute-box-section">
+                            <form id="attribute-product-form">
+                                <h5>ثبت ویژگی محصول</h5>
+                                <div class="row">
+                                    <div class="col-xl-11">
+                                        <div class="form-row">
+                                            <div class="form-group col-md-5">
+                                                <label for="inputshopAttr">ویژگی <code>*</code></label>
+                                                <select name="Shop_Attr" class="chosen-select-rtl form-control choose-attribute-chosen" id="product_attr_title">
+                                                    <option value="0">ویژگی خود را انتخاب نمائید...</option>
+                                                    {% for item in Attributes %}
+                                                        <option value="{{item.id}}" data-unit="{{item.Unit}}" id="{{item.id}}">{{item.Title}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            
+                                            <div class="form-group col-md-5">
+                                                <label for="product_attr_value">مقدار <code>*</code></label>
+                                                <input type="text" name="product_attr_value" class="form-control" id="product_attr_value" required>
+                                            </div>
+            
+                                            <div class="form-group col-md-2">
+                                                <label class="BigCitySelect" for="product_attr_unit">واحد </label>
+                                                <p class="text-center" id="product_attr_unit"></p><span class="hide" id="title-attr-field"></span>
+                                                <script>
+                                                    var attrname = '';
+                                                    $(document).ready( function () {
+                                                        $('.choose-attribute-chosen').chosen().change(function(){
+                                                            var x = $('#product_attr_title option:selected').data('unit');
+                                                            attrname = $('#product_attr_title option:selected').text();
+                                                            if(x == '-'){
+                                                                document.getElementById('product_attr_unit').innerHTML = 'واحد ندارد';
+
+                                                            }
+                                                            else{
+                                                                document.getElementById('product_attr_unit').innerHTML = x;
+                                                            }
+                                                            var attrid = $('#product_attr_title option:selected').attr('id');
+                                                             document.getElementById('title-attr-field').innerHTML = attrid;
+                                                        })
+                                                    });
+                                                </script>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-1">
+                                         <button class="save-location-rate save-attr-product"><i class="far fa-plus"></i></button>
+                                     </div>
+                                 </div>
+                                 <p class="result-add-attr"></p>
+                                 <p>ویژگی ها :</p>
+
+                                 <div class="tab-pane fade show active" id="detail">
+                                        
+                                    <table class="table table-striped attr-table text-right">
+                                        <tbody id="new-attr-add-product">
+                                            
+                                                <!-- <tr>
+                                                    <th scope="row" class="titletable">وزن خالص محصول</th>
+                                                    <td><span class="pure-weight-td"> </span><span class="Riyal"> گرم</span></td>
+                                                    <td></td>
+                                                </tr>
+                                            
+                                            <tr>
+                                                <th scope="row" class="titletable">وزن محصول با بسته بندی</th>
+                                                <td><span class="pack-weight-td"></span><span class="Riyal"> گرم</span></td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row" class="titletable">ابعاد محصول با بسته بندی</th>
+                                                <td><span class="dimensions-td"></span><span class="Riyal"> سانتی متر</span></td>
+                                                <td></td>
+                                            </tr> -->
+                                            <!-- <div id="new-attr-add-product">
+                                               
+                                            </div> -->
+                                            
+                                        </tbody>
+                                    </table>
+        
+                                </div>
+
+
+
+
+                            </form>
+                            <!-- <a href="/profile/shops/" class="btn btn-primary mr-auto float-left"></a> -->
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade bd-example-modal-lg newattr" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                    <div class="dashboard" style="margin-bottom: 0;"> 
+                        <h4>افزودن ویژگی</h4> 
+                        <form id="attr-form" method="POST" enctype="multipart/form-data" action="{% url "nakhll_market:AddAttribute" Product.Slug %}">
+                            {% csrf_token %}
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="inputAttribute">عنوان ویژگی</label>
+                                    <input type="text" name="Attribute" class="form-control" id="inputAttribute" required>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="inputUnitAttribute">واحد ویژگی</label>
+                                    <input type="text" name="UnitAttribute" class="form-control" id="inputUnitAttribute" required>
+                                    <p><small class="smallhelp">اگر ویژگی شما واحد ندارد به جای آن " - " بگذارید!</small></p>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary mr-auto" id="send-left" name="newAttr">تایید</button>
+                            <div class="clearfix"></div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#attribute-box-section').show();
+    var ProductID = '{{Product.ID | safe}}';
+    console.log(ProductID);
+
+    $(".save-attr-product").on('click', function(e) {
+        e.preventDefault();
+        var attrid = $('#title-attr-field').text();
+        var valueattr = $('#product_attr_value').val();
+        var attridselected = $('#product_attr_title option:selected').val();
+        var nameattr = attrname;
+        if ($('#product_attr_unit').text() !='واحد ندارد'){
+            var unitattr = $('#product_attr_unit').text();
+        }
+        else{
+            var unitattr = ' ';
+        }
+        if (attridselected != '0' && $("#product_attr_value").val().length != 0) {
+            $('.loading-add-product').show();
+            $.ajax (
+                {
+                    type: 'POST',
+                    url: '{% url "restapi:web_product_add_attribute" %}',
+                    data: {
+                            product_id:  ProductID,
+                            attribute_id : attrid,
+                            attribute_value : valueattr,
+                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                        },
+                    success: function (json) {
+                        var dupCheck = true;
+                        for (var i=2; i<$("#new-attr-add-product").find('tr').length ;i++) {
+                            if ($($("#new-attr-add-product").find('tr')[i]).attr('val') == json.id) {
+                                    dupCheck = false;
+                                }
+                        }
+                        if (dupCheck) {
+                            $('#new-attr-add-product').append(
+                                '<tr val="' + json.id + '">'+
+                                    '<th scope="row" class="titletable">'+ nameattr +'</th>'+
+                                    '<td>'+ valueattr +'<span class="Riyal"> '+ unitattr +' </span></td>'+
+                                    '<td><button class="delete-attr-btn" val="' + json.id + '" val2="' + attridselected + '">حذف این ویژگی</button></td>'+
+                                '</tr>'
+                            );
+                        }
+
+
+                        var disableAttr = '#product_attr_title option[id=' + attridselected + ']';
+                        $(disableAttr).attr('disabled', true);
+                        $('#product_attr_title option:selected').trigger('chosen:updated');
+                            
+                        $('.result-add-attr').text(
+                            'با موفقیت ثبت شد ...'
+                        );
+                        
+                        $('.loading-add-product').hide();
+                    },
+                    error: function (xhr, status) {
+                        $('.result-add-attr').append(
+                            xhr.status + ": " + xhr.responseText
+                        );
+                        $('.loading-add-product').hide();
+                    }
+                }
+            )
+        }
+    })
+    $(document).on('click','.delete-attr-btn',function(e) {
+        e.preventDefault();
+        var attrid = $(this).attr('val');
+        var attridselected = $(this).attr('val2');
+        $('.loading-add-product').show();
+        $.ajax (
+            {
+                type: 'POST',
+                url: '{% url "restapi:web_product_delete_attribute" %}',
+                data: {
+                        product_id: ProductID,
+                        product_attribute_id: attrid,
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                    },
+                success: function (json, status) {
+                    if (json.status)
+                    {
+                        var valattrid = '#new-attr-add-product tr[val=' + attrid + ']';
+                        $(valattrid).remove();
+                        var disableAttr = '#product_attr_title option[id=' + attridselected + ']';
+                        $(disableAttr).attr('disabled', false);
+                        $('#product_attr_title option:selected').trigger('chosen:updated');
+                        $('.loading-add-product').hide();
+                    }
+                    else {
+                        console.log(json.message);
+                        $('.loading-add-product').hide();
+                    }
+                },
+                error: function (xhr, status) {
+                    console.log(xhr);
+                    console.log(xhr.responseJSON);
+                    console.log(xhr.responseJSON.status);
+                    console.log(xhr.responseJSON.message);
+                    console.log(status);
+                    $('.loading-add-product').hide();
+                }
+            }
+        )
+    })
+</script>
+
+{% block footer-section %}
+    {% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+    {% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

@@ -1,0 +1,262 @@
+{% load jformat %}
+{% load i18n static %}
+
+{% block header %}
+    {% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+
+    <title>بازار نخل | لیست فاکتور ها</title>
+</head>
+
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+
+
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-xl-3">
+                <div class="profile-sidebar-site">    
+                    {% block topsidebar %}
+                        {% include "nakhll_market/profile/parents/new-topsidebar.html" %}
+                    {% endblock %}
+                    <div class="profile-sidebar-main">
+                        <a href="/profile/dashboard/">
+                            <button>
+                                <i class="fas fa-id-badge"></i>
+                                <h5>داشبورد</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/transaction/">
+                            <button>
+                                <i class="fad fa-clipboard-list"></i>
+                            <h5>تراکنش ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/factor/">
+                            <button class="activebtn">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <h5>فاکتور ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/ticketing/">
+                            <button>
+                                <i class="fad fa-user-headset"></i>
+                                <h5>پشتیبانی</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/shops/">
+                            <button>
+                                <i class="fas fa-store"></i>
+                                <h5>مدیریت حجره</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/review/">
+                            <button>
+                                <i class="fad fa-comments-alt"></i>
+                                <h5>نقد ها و نظرات</h5>
+                            </button>
+                        </a>
+                        {% if request.user.is_staff %}
+                            {% block review %}
+                                {% include "nakhll_market/profile/parents/menu_for_shop_manage.html" %}
+                            {% endblock %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                    {% include "nakhll_market/profile/parents/new-header-profile.html" %}
+                {% endblock %}
+
+                <div class="alarm-section">
+                    <div class="row">
+                        {% if ShowAlart %}
+                        <div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                                <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                                <p>
+                                    {{AlartMessage}}
+                                </p>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                        <div class="factor-profile">
+                            <h4>لیست فاکتور ها</h4>
+
+                            <div class="hr-line-under-dashboard"></div>
+                            <div class="dashboard-filters filter-size">
+                                <h4>فیلتر</h4>
+                            </div>
+                            <form method="POST" action="{% url "nakhll_market:ManageFactorFilter" %}">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-5 col-5  factor-profile-first-col-for-margin">
+                                        <span> تاریخ از :</span>
+                                        <div class="form-group factor-profile-form-group">
+                                            <input readonly type="text" name="date_start"
+                                                class="form-control factor-profile-form-control" {% if Start != None %}value="{{Start}}"{% endif %} id="start_date">
+                                            <script>
+                                                $("#start_date").persianDatepicker({
+                                                    startDate: "1398/7/1",
+                                                    //selectedBefore: true,
+                                                    endDate: "today",
+                                                });
+                                            </script>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-5 col-5">
+                                        <span> تا :</span>
+                                        <div class="form-group factor-profile-form-group">
+                                            <input readonly type="text" name="date_end"
+                                                class="form-control factor-profile-form-control" {% if End != None %}value="{{End}}"{% endif %} id="end_date">
+                                            <script>
+                                                $("#end_date").persianDatepicker({
+                                                    startDate: "1398/7/1",
+                                                    //selectedBefore: true,
+                                                    endDate: "today"
+                                                });
+                                            </script>
+                                        </div>
+                                    </div>
+                                    <!-- <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-1 search-button5">
+                                        <a id="today-date-button">امروز</a>
+                                    </div> -->
+                                    <div class="col-xl-5 col-lg-4 col-md-5 col-sm-7 col-6 factor-profile-input-group-col">
+                                        <div class="input-group mb-3">
+                                            <div class="input-group-prepend factor-profile-input-group-prepend">
+                                                <label class="input-group-text factor-profile-input-group-text for="inputGroupSelect01">وضعیت</label>
+                                            </div>
+                                            <select class="custom-select factor-profile-custom-select" name="check_out" id="inputGroupSelect01">
+                                                <option value="0" {% if CheckOut == '0' %}selected{% endif %}>همه</option>
+                                                <option value="1" {% if CheckOut == '1' %}selected{% endif %}>تسویه نشده</option>
+                                                <option value="2" {% if CheckOut == '2' %}selected{% endif %}>تسویه شده</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-6 col-lg-5 col-md-7 col-sm-9 col-9">
+                                        <div class="input-group mb-3">
+                                            <div class="input-group-prepend factor-profile-input-group-prepend">
+                                                <label class="input-group-text factor-profile-input-group-text for="inputGroupSelect01">وضعیت فاکتور</label>
+                                            </div>
+                                            <select class="custom-select factor-profile-custom-select" name="status" id="inputGroupSelect01">
+                                                <option value="6" {% if Status == '6' %}selected{% endif %}>همه</option>
+                                                <option value="0" {% if Status == '0' %}selected{% endif %}>سفارش تحویل داده شده است</option>
+                                                <option value="1" {% if Status == '1' %}selected{% endif %}>سفارش آماده است</option>
+                                                <option value="2" {% if Status == '2' %}selected{% endif %}>سفارش در حال آماده سازی است</option>
+                                                <option value="3" {% if Status == '3' %}selected{% endif %}>منتظر بررسی</option>
+                                                <option value="4" {% if Status == '4' %}selected{% endif %}>سفارش لغو شده است</option>
+                                                <option value="5" {% if Status == '5' %}selected{% endif %}>سفارش ارسال شده است</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-7 col-7">
+                                        <div class="input-group mb-3">
+                                            <div class="input-group-prepend factor-profile-input-group-prepend">
+                                                <span class="input-group-text factor-profile-input-group-text" id="basic-addon1">نام خریدار</span>
+                                            </div>
+                                            <select class="form-control factor-profile-custom-select" name="customer_name" id="inputGroupSelect01" aria-label="Username"
+                                            aria-describedby="basic-addon1">
+                                                <option value="000" {% if Customer == '000' %}selected{% endif %}>همه</option>
+                                                {% for item in User %}
+                                                    <option value="{{item.id}}" {% if Customer == item.username %}selected{% endif %}>{{item.first_name}} {{item.last_name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-1 search-button4">
+                                        <button>جستجو</button>
+                                    </div>
+                                </div>
+                            </form>
+                            <br>
+                            <div class="hr-line-under-dashboard"></div>
+                            <table class="table">
+                                <thead class="thead-light">
+                                    <tr>
+                                    <th>شماره فاکتور</th>
+                                    <th>مبلغ</th>
+                                    <th>خریدار</th>
+                                    <th>تاریخ خرید</th>
+                                    <th>وضعیت فاکتور</th>
+                                    <th>وضعیت تسویه</th>
+                                    <th>نمایش</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="code">
+                                    {% for factor in Factors %}
+                                        <tr>
+                                            <td class="pointer">{{factor.FactorNumber}}</td>
+                                            <td><span class="numbersprice">{{factor.TotalPrice}}</span> ریال</td>
+                                            <td>{{factor.FK_User.first_name}} {{factor.FK_User.last_name}}</td>
+                                            <td>{{factor.OrderDate|jformat:'%H:%M - %Y/%m/%d'}}</td>
+                                            {% if factor.OrderStatus == '0' %}
+                                                <td>سفارش تحویل داده شده است</td>
+                                            {% elif factor.OrderStatus == '1' %}
+                                                <td>سفارش آماده است</td>
+                                            {% elif factor.OrderStatus == '2' %}
+                                                <td> در حال آماده سازی </td>
+                                            {% elif factor.OrderStatus == '3' %}
+                                                <td>در حال بررسی</td>
+                                            {% elif factor.OrderStatus == '4' %}
+                                                <td>سفارش لغو شده است</td>
+                                            {% elif factor.OrderStatus == '5' %}
+                                                <td>سفارش ارسال شده است</td>
+                                            {% endif %}
+                                            {% if factor.Checkout %}
+                                                <td class="cleared" title="{{factor.FK_Staff_Checkout.first_name}} {{factor.FK_Staff_Checkout.last_name}}"><p>تسویه شده</p></td>
+                                            {% else %}
+                                                <td class="not-cleared"><a href="{% url "nakhll_market:ChangeFactorCheckoutStatus" factor.ID %}"><p>تسویه نشده</p></a></td>
+
+                                            {% endif %}
+                                            <td class="pointer"><a href="{% url "nakhll_market:ShowFactorItem" factor.ID %}" target="_blank"><i class="fad fa-eye"></i></a></td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+{% block footer-section %}
+    {% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+    {% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

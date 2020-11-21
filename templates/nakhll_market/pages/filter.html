@@ -1,0 +1,313 @@
+{% load i18n static %}
+{% load jformat %}
+
+{% block header %}
+{% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+
+    <meta name="keywords" content="محصولات بازار نخل , محصولات نخل , همه محصولات بازار نخل , محصول های بازار نخل , نمایش همه محصولات بازار نخل ">
+    <meta name="description" content="مشاهده همه محصولات بازار اجتماعی نخل .">
+    <title>بازار نخل | همه محصولات</title>
+    
+</head>
+
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+<section id="category-sec">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-xl-3 col-md-3 col-12">
+                <div class="sidebar-web">
+                    <form method="POST" action="{% url "nakhll_market:ShowAllProducts" %}">
+                        {% csrf_token %}
+                        <h5>فیلتر محصولات </h5>
+
+                        <br>
+
+                        <h6>مرتب سازی بر اساس :</h6>
+                        <select placeholder="انتخاب دسته بندی" class=" form-control" name="Sort_By">
+                            {% if Sort == '0' %}    
+                                <option selected>جدید ترین ها</option>
+                                <option >قدیمی ترین ها</option>
+                                <option >قیمت نزولی</option>
+                                <option >قیمت صعودی</option>
+                            {% elif Sort == '1' %}
+                                <option >جدید ترین ها</option>
+                                <option selected>قدیمی ترین ها</option>
+                                <option >قیمت نزولی</option>
+                                <option >قیمت صعودی</option>
+                            {% elif Sort == '2' %}
+                                <option >جدید ترین ها</option>
+                                <option >قدیمی ترین ها</option>
+                                <option selected >قیمت نزولی</option>
+                                <option >قیمت صعودی</option>
+                            {% elif Sort == '3' %}
+                                <option >جدید ترین ها</option>
+                                <option >قدیمی ترین ها</option>
+                                <option >قیمت نزولی</option>
+                                <option selected >قیمت صعودی</option>
+                            {% endif %}
+                        </select>
+
+                        <br><br>
+
+                            <h6> بازه قیمت <span>(قیمت به ریال)</span> :</h6>
+
+                            <br>
+
+                            <input type="text" class="js-range-slider" name="my_range" value="" id="range-slider"
+                                data-type="double"
+                                data-min="100000"
+                                data-max="50000000"
+                                data-from="{{MinValue}}"
+                                data-to="{{MaxValue}}"
+                                data-step="50000"
+                            />
+
+                            <input type="number" id="example_2_input_to" class="rangeinputprice" name="Max">
+                            <input type="number" id="example_2_input_from" class="rangeinputprice" name="Min">
+
+                            <br>
+                            <br>
+
+                            <h6>دسته بندی :</h6>
+                            <select data-placeholder="انتخاب دسته بندی" multiple class="chosen-select-rtl form-control" name="Category_Select" tabindex="14">    
+                                {% for item in Categories %}
+                                    <option {% if item.Status %}selected{% endif %}>{{item.Category.Title}}</option>
+                                {% endfor %}
+                            </select>
+
+                            <br><br>
+
+                            <button type="submit" class="btn btn-primary float-left">اعمال فیلتر ها</button>
+
+                            <br><br>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-xl-9 col-md-9 col-12">
+                <div class="postsbox-sec">   
+                    <div class="row"> 
+                        {% if Products %}
+                            {% for item in Products %}
+                                <div class="col-xl-4 col-md-4 pageinprod">
+                                    <div class="prod-sec whitebg">
+                                        <a href="/product/{{item.FK_Shop.Slug}}/{{item.Slug}}/"><img class="prodimg" src="{{item.Image_thumbnail_url}}" alt="prodname"></a>
+                                        <div class="bottom-product-bar">
+                                            <a href="/product/{{item.FK_Shop.Slug}}/{{item.Slug}}/"><h3>{{item.Title}}</h3></a>
+                                            {% if item.Status != '4' %}<span class="numbersprice">{{item.Price}} ریال</span>{% else %}<span class="empty">ناموجود</span>{% endif %}
+                                            <span class="add-to-cart-link"><span class="add-cart"><i class="far fa-plus"><span class="hide">{{item.ID}}</span></i></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="alertmessage">هیچ محصولی یافت نشد!</p>
+                        {% endif %}
+                    </div>
+                    <div class="row pagerow">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination">
+                                {% if Products.has_previous %}
+                                    <li class="page-item"><a class="page-link" href="?page=1">اولی</a></li>
+                                    <li class="page-item"><a class="page-link" href="?page={{Products.previous_page_number}}">قبلی</a></li>
+                                {% endif %}
+                                {% for num in Products.paginator.page_range %}
+                                    {% if num == Products.number %}
+                                        <li class="page-item"><a class="page-link" href="?page={{num}}"><strong>{{num}}</strong></a></li>
+                                    {% elif num > Products.number|add:'-3' and num < Products.number|add:'3' %}
+                                        <li class="page-item"><a class="page-link" href="?page={{num}}">{{num}}</a></li>
+                                    {% endif %}
+                                {% endfor %}
+                                {% if Products.has_next %}
+                                    <li class="page-item"><a class="page-link" href="?page={{Products.next_page_number}}">بعدی</a></li>
+                                    <li class="page-item"><a class="page-link" href="?page={{Products.paginator.num_pages}}">آخری</a></li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<script>
+    var $range = $("#range-slider");
+    var $inputFrom = $("#example_2_input_from");
+    var $inputTo = $("#example_2_input_to");
+    var instance;
+    var from = 0;
+    var to = 0;
+    
+    $range.ionRangeSlider({
+        skin: "round",
+        type: "double",
+        min: 100000,
+        max: 50000000,
+        from: 100000,
+        to: 50000000,
+        step: 10000,
+        onStart: updateInputs,
+        onChange: updateInputs,
+        onFinish: updateInputs
+    });
+    instance = $range.data("ionRangeSlider");
+    
+    function updateInputs (data) {
+        from = data.from;
+        to = data.to;
+        $inputFrom.prop("value", from);
+        $inputTo.prop("value", to);
+    }
+    
+    $inputFrom.on("change", function () {
+        var val = $(this).prop("value");
+    
+        // validate
+        if (val < min) {
+            val = min;
+        } else if (val > to) {
+            val = to;
+        }
+    
+        instance.update({
+            from: val
+        });
+    
+        $(this).prop("value", val);
+    
+    });
+    
+    $inputTo.on("change", function () {
+        var val = $(this).prop("value");
+    
+        // validate
+        if (val < from) {
+            val = from;
+        } else if (val > max) {
+            val = max;
+        }
+    
+        instance.update({
+            to: val
+        });
+    
+        $(this).prop("value", val);
+    });
+</script>
+
+
+<!-- Modal and script a-t-c -->
+<div class="modal fade" id="add-to-cart-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="title-modal-add-to-cart">عنوان</h5>
+          <button type="button" class="close right-close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p id="text-modal-add-to-cart">توضیحات</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-right" data-dismiss="modal">بستن</button>
+            <a href="/cart/detail/" class="btn btn-primary" id="go-to-card">سبدخرید</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+    function handler( event ) {
+        var product_ID = $(event.target).text();
+        var attrprice_list = [];
+        $.ajax(
+            {
+                type: 'POST',
+                url: '{% url "nakhll_market:add_to_cart_with_price_attribute" %}',
+                data: {
+                    product_id : product_ID ,
+                    attrpriceitem : attrprice_list ,
+                    csrfmiddlewaretoken : $('input[name=csrfmiddlewaretoken]').val(),
+                },
+                success: function (json) {
+                    if (json.status) {
+                        if (json.code === '200') {
+                            $('#title-modal-add-to-cart').html(" انجام شد ...");
+                            $('#text-modal-add-to-cart').html("<i class='fas fa-check ok-add-cart'></i><br> محصول در سبدخرید شما موجود است، به تعداد آن افزوده شد.");
+                            $("#go-to-card").show();
+                            $('#add-to-cart-modal').modal('show');
+                        }
+                        else if (json.code === '201') {
+                            $('#title-modal-add-to-cart').html("انجام شد ...");
+                            $('#text-modal-add-to-cart').html("<i class='fas fa-check ok-add-cart'></i><br> محصول موردنظر با موفقیت به سبدخرید شما اضافه شد.");
+                            $("#go-to-card").show();
+                            $('#add-to-cart-modal').modal('show');
+                        }
+                    }
+                    else {
+                        if (json.code === '404') {
+                            $('#title-modal-add-to-cart').html("خطا");
+                            $('#text-modal-add-to-cart').html("<i class='far fa-times cancel-add-cart'></i><br>موجودی محصول کافی نمی باشد ...");
+                            $("#go-to-card").show();
+                            $('#add-to-cart-modal').modal('show');
+                        }
+                        else if (json.code === '500') {
+                            $('#title-modal-add-to-cart').html("خطا");
+                            $('#text-modal-add-to-cart').html("<i class='far fa-times cancel-add-cart'></i><br> خطایی رخ داده است <br>" + json.msg );
+                            $("#go-to-card").show();
+                            $('#add-to-cart-modal').modal('show');
+                        }
+                        else if (json.code === '400') {
+                            $('#title-modal-add-to-cart').html("خطا");
+                            $('#text-modal-add-to-cart').html("<i class='far fa-times cancel-add-cart'></i><br> محصول مورد نظر یافت نشد.");
+                            $("#go-to-card").show();
+                            $('#add-to-cart-modal').modal('show');
+                        }
+                        else if (json.code === '401') {
+                            $('#title-modal-add-to-cart').html("خطا");
+                            $('#text-modal-add-to-cart').html("<i class='far fa-times cancel-add-cart'></i><br> ابتدا به حساب کاربری خود وارد شوید و یا ثبت نام کنید ...");
+                            $("#go-to-card").hide();
+                            $('#add-to-cart-modal').modal('show');
+                        }
+                    }
+                    shopping_cart();
+                },
+                error: function () {
+                    $('#title-modal-add-to-cart').html("خطا");
+                    $('#text-modal-add-to-cart').html("ابتدا به حساب کاربری خود وارد شوید و یا ثبت نام کنید ...");
+                    $("#go-to-card").hide();
+                    $('#add-to-cart-modal').modal('show');
+                    console.log(xhr.status + ": " + xhr.responseText);
+                    RegisteredMobileNumber = false;
+                    shopping_cart();
+                }
+            }
+        );
+    }
+    $( ".add-to-cart-link" ).click( handler );
+</script>
+ <!-- end atc -->
+
+{% block footer-section %}
+{% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+{% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

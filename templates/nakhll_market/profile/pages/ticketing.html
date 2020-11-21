@@ -1,0 +1,223 @@
+{% load jformat %}
+
+{% block header %}
+    {% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+
+    <title>بازار نخل | پشتیبانی</title>
+</head>
+
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+
+
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-xl-3">
+
+                <div class="profile-sidebar-site">    
+                    {% block topsidebar %}
+                        {% include "nakhll_market/profile/parents/new-topsidebar.html" %}
+                    {% endblock %}
+                    <div class="profile-sidebar-main">
+
+                        <a href="/profile/dashboard/">
+                            <button>
+                                <i class="fas fa-id-badge"></i>
+                                <h5>داشبورد</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/transaction/">
+                            <button>
+                                <i class="fad fa-clipboard-list"></i>
+                            <h5>تراکنش ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/factor/">
+                            <button>
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <h5>فاکتور ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/ticketing/">
+                            <button class="activebtn">
+                                <i class="fad fa-user-headset"></i>
+                                <h5>پشتیبانی</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/shops/">
+                            <button>
+                                <i class="fas fa-store"></i>
+                                <h5>مدیریت حجره</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/review/">
+                            <button>
+                                <i class="fad fa-comments-alt"></i>
+                                <h5>نقد ها و نظرات</h5>
+                            </button>
+                        </a>
+
+                        {% if request.user.is_staff %}
+                            {% block menu %}
+                                {% include "nakhll_market/profile/parents/menu_for_shop_manage.html" %}
+                            {% endblock %}
+                        {% endif %}
+    
+                    </div>
+                </div>
+
+            </div>
+
+
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                    {% include "nakhll_market/profile/parents/new-header-profile.html" %}
+                {% endblock %}
+
+                <div class="alarm-section">
+                    <div class="row"> 
+                        {% if ShowAlart %}
+                        <div class="col-xl-6 xol-lg-6 col-md-6 col-sm-12 col-12">
+                            <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                                <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                                <p>
+                                    {{AlartMessage}}
+                                </p>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                        <div class="profile-box">
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="list-support">
+                                        <ul>
+                                            <span><li class="activelistsupport">فنی <span class="">{{TicFani}}</span></li></span>
+                                            <span><li>مالی <span class="">{{TicMali}}</span></li></span>
+                                            <span><li>پشتیبانی <span class="">{{TicPoshtibani}}</span></li></span>
+                                        </ul>
+                                    </div>
+                                            
+                                    <div class="status-support">
+                                        <h6>  وضعیت : </h6>
+                                        <ul>                                       
+                                            <li><i class="fas fa-circle dontread-point"></i> خوانده نشده</li>                                           
+                                            <li><i class="fas fa-circle read-point"></i> در حال بررسی</li>                                            
+                                            <li><i class="fas fa-circle response-point"></i> بررسی شده</li>                                           
+                                            <li><i class="fas fa-circle close-point"></i> بسته شده</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-lg-4 col-list-ticket">
+                                    <!-- <div class="search-supprt-wrapper">
+                                        <form>
+                                            <i class="fas fa-search"></i>
+                                            <input name="search-suppurt" type="text" placeholder="جستجو در تیکت ها">    
+                                        </form>
+                                    </div> -->
+                                    {% for item in Ticketings %}
+                                        <div class="list-ticket">
+                                            <a href="{% url "nakhll_market:TicketinDetail" item.ID %}">
+                                                <div class="item-ticket {% if item.SeenStatus == '0' %}notseenticket{% elif item.SeenStatus == '1' %}activeticket{% elif item.SeenStatus == '2' %}setticket{% elif item.SeenStatus == '3' %}closeticket{% endif %}">
+                                                    <img src="{{This_User_Profile.Image_thumbnail_url}}">
+                                                    <h5>{{item.Title}} <span>{{item.Date|jformat:'%Y/%m/%d'}}</span></h5>
+                                                    <p>{{item.Description}}</p>
+                                                </div>    
+                                            </a>   
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                
+
+                                
+                                <div class="col-lg-5">
+                                    <div class="form-ticket">
+                                        <h5>درخواست جدید</h5>
+                                        <form method="POST" enctype="multipart/form-data" action="addticket/">
+                                            {% csrf_token %}
+                                            <div class="form-group row">
+                                                <label for="inputTitle" class="col-sm-2 col-form-label">عنوان</label>
+                                                <div class="col-sm-10">
+                                                    <input type="text" name="Ticket_Title" class="form-control" id="inputTitle" required>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <label for="sec-input" class="col-sm-2 col-form-label">بخش</label>
+                                                    <div class="col-sm-10">
+                                                        <select class="custom-select" name="Ticket_Section" required id="sec-input">
+                                                            <option value="0">پشتیبانی</option>
+                                                            <option value="2">فنی</option>
+                                                            <option value="1">مالی</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <label for="texts-input" class="col-sm-12 col-form-label">متن پیام</label>
+                                                    <div class="col-sm-12">
+                                                        <textarea name="Ticket_Description" class="form-control" id="texts-input" rows="4" required></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <label for="texts-input" class="col-sm-12 col-form-label">بارگذاری عکس</label>
+                                                    <div class="col-sm-12">
+                                                        <input type="file" accept="image/*" name="Ticket_Image">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <button class="btn btn-primary mr-auto">ثبت درخواست</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% block footer-section %}
+    {% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+    {% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

@@ -1,0 +1,1130 @@
+{% load i18n static %}
+
+{% block header %}
+{% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+    <title>بازار نخل | ثبت نام</title>
+</head>
+<body id="login-page">
+
+    <div class="alarm-section">
+        <div class="row">
+            {% if ShowAlart %}
+            <div class="col-xl-6 xol-lg-6 col-md-6 col-sm-12 col-12">
+                <div id="alert-div-mobile-password-error" class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                    <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                    <p>
+                        {{AlartMessage}}
+                    </p>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-xl-12">        
+            <div class="login-sec register-div register-page-whole-div">
+                <div class="blue-thick-line-top"></div>
+                <!-- <h1><a href="/">بازار اجتماعی نخل</a></h1>
+            <h6>خوش آمدید</h6>         -->
+            <div class="register-page-whole-content">
+                <h4>ثبت نام در سایت</h4>
+            </div>
+            <div id="codeback"></div>
+                <form method="POST" id="register">
+                    <div class="register-page-whole-content">
+                        <!-- <label>برای ثبت نام ابتدا شماره تماس خود را وارد کنید .</label> -->
+                        {% csrf_token %}
+                        <!-- <li id="alert-li-mobile-empty"></li>
+                        <li id="alert-li-mobile-digits"></li>
+                        <li id="alert-li-mobile-length"></li>
+                        <li id="alert-li-mobile-valid"></li>
+                        <li id="alert-li-mobile-match"></li>
+                        <li id="alert-li-system-error"></li> -->
+                        <div class="login-alerts-section forgetpassword-alerts-section mob-alerts-section">
+                            <p>لطفا خطاهای زیر را برطرف کنید:</p>
+                            <ul>
+                                <li id="alert-li-mobile-empty"></li>
+                                <li id="alert-li-mobile-digits"></li>
+                                <li id="alert-li-mobile-length"></li>
+                                <li id="alert-li-mobile-valid"></li>
+                                <li id="alert-li-mobile-match"></li>
+                                <li id="alert-li-system-error"></li>
+                            </ul>
+                        </div>
+                        <div class="input-login-modal input-mob-login login-page-main-input-login-mob">
+                            <div class="before-input-icon">
+                                <i class="fal fa-phone fix-before-input-icon-place"></i>
+                            </div>
+                            <div class="main-input-login">
+                                <input id="mobilenumber" name="mobilenumber" type="number" pattern="[0-9]{11}" maxlength="11" placeholder="شماره همراه خود را وارد کنید" class="input-login login-input-modal" required>
+                            </div>
+                        </div>
+                        <!-- <input id="mobilenumber" name="mobilenumber" type="number" pattern="[0-9]{11}" maxlength="11" placeholder="شماره موبایل" class="input-login" required> -->
+                        <!-- <br> -->
+                        <div class="register-get-code-btn">
+                            <button id="get-code-button" type="submit" >دریافت کد تایید</button>
+                        </div>
+                    </div>
+                    <div class="hr-line-full"></div>
+                    <div class="forgetpassword-mobilenumber-content back-to-login-a">
+                        <a href="/login">بازگشت به صفحه ورود</a>
+                    </div>
+                </form>
+                <div id="loaderDiv">
+                    لطفا منتظر بمانید
+                    <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری">
+                </div>
+                <div class="setform"></div>
+            </div>
+            
+            <div id="results">
+
+            </div>
+
+            <script>
+                function checkMelliCode() {
+                    meli_code = document.getElementById("nactioncode").value;
+                    if (meli_code.length == 10) {
+                        if (meli_code == '1111111111' ||
+                            meli_code == '0000000000' ||
+                            meli_code == '2222222222' ||
+                            meli_code == '3333333333' ||
+                            meli_code == '4444444444' ||
+                            meli_code == '5555555555' ||
+                            meli_code == '6666666666' ||
+                            meli_code == '7777777777' ||
+                            meli_code == '8888888888' ||
+                            meli_code == '9999999999') {
+                            document.getElementById('nationAlert').innerHTML = '<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
+                                '<div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">' +
+                                '<i class="far fa-exclamation-circle"></i>' +
+                                '<p>کد ملی وارد شده صحیح نمی باشد ...</p></div></div>';
+                            melliCodeCheking = false;
+                            return false;
+                            
+                        }
+                        c = parseInt(meli_code.charAt(9));
+                        n = parseInt(meli_code.charAt(0)) * 10 +
+                            parseInt(meli_code.charAt(1)) * 9 +
+                            parseInt(meli_code.charAt(2)) * 8 +
+                            parseInt(meli_code.charAt(3)) * 7 +
+                            parseInt(meli_code.charAt(4)) * 6 +
+                            parseInt(meli_code.charAt(5)) * 5 +
+                            parseInt(meli_code.charAt(6)) * 4 +
+                            parseInt(meli_code.charAt(7)) * 3 +
+                            parseInt(meli_code.charAt(8)) * 2;
+                        r = n - parseInt(n / 11) * 11;
+                        if ((r == 0 && r == c) || (r == 1 && c == 1) || (r > 1 && c == 11 - r)) {
+                            document.getElementById('nationAlert').innerHTML  ='<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
+                                '<div class="alert alert-warning alert-dismissible fade show custom-alart allowed-alert" role="alert">' +
+                                '<p>کد ملی وارد شده صحیح می باشد.</p></div></div>';
+                            melliCodeCheking = true;
+                            return true;
+                        } else {
+                            document.getElementById('nationAlert').innerHTML  ='<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
+                                '<div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">' +
+                                '<i class="far fa-exclamation-circle"></i>' +
+                                '<p>کد ملی وارد شده صحیح نمی باشد...</p></div></div>';
+                            melliCodeCheking = false;
+                            return false;
+                        }
+                    } else {
+                        document.getElementById('nationAlert').innerHTML  ='<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
+                                '<div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">' +
+                                '<i class="far fa-exclamation-circle"></i>' +
+                                '<p>کد ملی باید شامل ده رقم باشد...</p></div></div>';
+                        melliCodeCheking = false;
+                        return false;
+                    }
+                }
+
+                    var phonenumber ;
+
+                    function ajaxCall(){
+                    
+                     $("#loaderDiv").show();
+                            $.ajax({
+                                type:'POST',
+                                url:'{% url "Profile:GetRegisteriCode" %}',
+                                data:{
+                                    mobilenumber: phonenumber,
+                                    csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+                                    action: 'post',
+                                },    
+                                success:function(json){ 
+                                    if (json.status == true){
+                                        $("#register" ).remove();
+                                        $(".phonesender").remove();
+                                        $("#codesetvalid" ).remove();
+                                        // $(".setform").prepend('<div class="phonesender">کد فعال سازی به شماره <span id="phoneusersend">'+phonenumber+'</span> ارسال شد و یا با تماس تلفنی کد یکبار مصرف در اختیار شما قرار خواهد گرفت ...<div><form method="POST" id="codesetvalid">'+
+                                        // '{% csrf_token %}'+
+                                        // '<input id="code" name="code" type="number" maxlength="6" placeholder="کد" class="input-login">'+
+                                        // '<br>'+
+                                        // '<h5 class="btn btn-primary brn-pr" id="callcode" onclick="ajaxCall()">ارسال مجدد</h5>'+
+                                        // '<h5 href="" class="btn btn-primary brn-pr" id="resendcode" onclick="ajaxCall()">ارسال مجدد کد یکبار مصرف </h5>'+
+                                        // '<button id="submit-authentication-code" type="submit" > ثبت</button><br><br>'+
+                                        // '<span onclick="location.reload();" class="pointers">ویرایش شماره</span>'+
+                                        // '</form>'
+                                        // );
+                                        $(".setform").prepend('<div class="phonesender">کد فعال سازی به شماره<span id="phoneusersend">'+phonenumber+'</span>  ارسال شد یا با تماس تلفنی کد یکبارمصرف در اختیار شما قرار خواهد گرفت ... <div class="get-code-form-part"><form method="POST" id="codesetvalid">'+
+                                        '{% csrf_token %}'+
+                                        '<div class="input-login-modal input-mob-forgetpassword"> ' +
+                                            '<div class="before-input-icon"> ' +
+                                                '<i class="fal fa-key fix-before-input-icon-place"></i>' +
+                                            '</div>' +
+                                            '<div class="main-input-login">' +
+                                                '<input id="code" name="code" type="number" pattern="[0-9]{11}" maxlength="6" placeholder="لطفا کد فعالسازی را وارد کنید" class="input-login login-input-modal">' +
+                                            '</div>' +
+                                        '</div>' +
+                                        // '<input id="code" name="code" type="text" maxlength="6" placeholder="کد" class="input-login">'+
+                                        '<br>'+
+                                        '<div class="login-button-modal submit-code-btn"> '+
+                                            '<button type="submit">' +
+                                                'بررسی کد فعال سازی' +
+                                            '</button>' +
+                                        '</div>' +
+                                        '<h5 class="btn btn-primary brn-pr" id="callcode" onclick="ajaxCall()">ارسال مجدد</h5>'+
+                                        '<button  type="submit" > ثبت</button><br><br>'+
+                                        '<span onclick="location.reload();" class="pointers">ویرایش شماره</span>'+
+                                        '</form>'
+                                        );
+                                        $("#resendcode").hide();
+                                        
+                                        $("#loaderDiv").hide();
+                                        
+
+                                    }else{
+                                        $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات <br> "+json.error+
+                                        "<br><a href='/account/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                                        setTimeout(function() {
+                                            location.reload();
+                                        }, 8000);
+                                        $("#loaderDiv").hide();
+                                    }
+                                },
+                                error : function(xhr,errmsg,err) {
+                                    $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات <br> "+json.error+
+                                    "<br><a href='/account/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                                    setTimeout(function() {
+                                        location.reload();
+                                    }, 8000);
+                                    $("#loaderDiv").hide();
+                                    console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                                }
+                            });
+ 
+                
+                }
+
+                        $(document).on('submit', '#register',function(e){
+                        phonenumber = $('#mobilenumber').val();
+                        
+                        $("#loaderDiv").show();
+                        $("#get-code-button").prop('disabled', true);
+                        $("#get-code-button").addClass('login-button-disabled');
+                        e.preventDefault();
+                            $.ajax({
+                                type:'POST',
+                                url:'{% url "Profile:GetRegisteriCode" %}',
+                                data:{
+                                    mobilenumber: phonenumber,
+                                    csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+                                    action: 'post',
+                                },    
+                                success:function(json){ 
+                                    if (json.status == true){
+                                        $("#register" ).remove();
+                                        // $(".setform").prepend('<div class="phonesender">کد فعال سازی به شماره <span id="phoneusersend">'+phonenumber+'</span> ارسال شد <div><form method="POST" id="codesetvalid">'+
+                                        // '{% csrf_token %}'+
+                                        // '<input id="code" name="code" type="number" maxlength="6" placeholder="کد" class="input-login">'+
+                                        // '<br>'+
+                                        // '<span id="timer">01:59</span><br>'+
+                                        // '<h5 class="btn btn-primary brn-pr" id="callcode" onclick="ajaxCall()">دریافت کد با تماس تلفنی</h5>'+
+                                        // '<h5 href="" class="btn btn-primary brn-pr" id="resendcode" onclick="ajaxCall()">ارسال مجدد کد یکبار مصرف </h5>'+
+                                        // '<button id="submit-authentication-code" type="submit" > ثبت</button><br><br>'+
+                                        // '<span onclick="location.reload();" class="pointers">ویرایش شماره</span>'+
+                                        // '</form>'
+                                        // );
+                                        $(".setform").prepend('<div class="phonesender"><div class="get-code-form-part"><form method="POST" id="codesetvalid">'+
+                                        '{% csrf_token %}'+
+                                        '<div class="input-login-modal input-mob-forgetpassword"> ' +
+                                            '<div class="before-input-icon"> ' +
+                                                '<i class="fal fa-key fix-before-input-icon-place"></i>' +
+                                            '</div>' +
+                                            '<div class="main-input-login">' +
+                                                '<input id="code" name="code" type="number" pattern="[0-9]{11}" maxlength="6" placeholder="لطفا کد فعالسازی را وارد کنید" class="input-login login-input-modal">' +
+                                            '</div>' +
+                                        '</div>' +
+                                        // '<input id="code" name="code" type="text" maxlength="6" placeholder="کد" class="input-login">'+
+                                        '<br>'+
+                                        '<div class="login-button-modal submit-code-btn"> '+
+                                            '<button id="submit-authentication-code" type="submit">' +
+                                                'بررسی کد فعال سازی' +
+                                            '</button>' +
+                                        '</div>' +
+                                        // '<input id="code" name="code" type="text" maxlength="6" placeholder="کد" class="input-login">'+
+                                        // '<br>'+
+                                        '<div class="time-and-call">' +
+                                        '<div class="time-spans">' +
+                                        '<span class="time-texts">ارسال مجدد کد: </span><span id="timer">01:59</span> <span class="time-texts"> ثانیه دیگر </span><br>'+
+                                        '</div>' +
+                                        '<div class="get-code-by-call">' +
+                                            '<h5 class="point-mouse" id="callcode" onclick="ajaxCallFp()"> دریافت کد از طریق تماس </h5>' +
+                                            '<h5 href="" class="btn btn-primary brn-pr" id="resendcode" onclick="ajaxCallFp()">ارسال مجدد کد یکبار مصرف </h5>'+
+                                        '</div>' +
+                                        '<div class="clearfix"></div>' +
+                                        '</div>' +
+                                        '</div>' +
+                                        '<div class="hr-line-full"></div>' +
+                                        '<div class="get-code-form-part footer-of-submit-code">' +
+                                        // '<h5 class="btn btn-primary brn-pr" id="callcode" onclick="ajaxCallFp()">دریافت کد با تماس تلفنی</h5>'+
+                                        // '<button type="submit" > ثبت</button><br><br>'+
+                                        // '<span onclick="location.reload();" class="pointers">ویرایش شماره</span>'+
+                                        '<span> شماره ' + phonenumber + ' اشتباه است؟ ' + '<span onclick="location.reload();" class="pointers change-phone-for-get-code">تغییر شماره همراه</span>'+
+                                        '</div>' +
+                                        '</form>'
+                                        );
+                                        $("#resendcode").hide();
+                                        document.getElementById('timer').innerHTML =
+                                        001 + ":" + 59;
+                                        startTimer();
+
+                                        function startTimer() {
+                                        var presentTime = document.getElementById('timer').innerHTML;
+                                        var timeArray = presentTime.split(/[:]+/);
+                                        var m = timeArray[0];
+                                        var s = checkSecond((timeArray[1] - 1));
+                                        if(s==59){m=m-1}
+                                        if(m<0){
+                                            $("#callcode").remove(); 
+                                            $("#resendcode").show();
+                                            $("#timer").text("00:00")
+                                            return m
+                                            }
+                                        
+                                        document.getElementById('timer').innerHTML =
+                                            m + ":" + s;
+                                        
+                                        setTimeout(startTimer, 1000);
+                                        }
+
+                                        function checkSecond(sec) {
+                                        if (sec < 10 && sec >= 0) {sec = "0" + sec}; // add zero in front of numbers < 10
+                                        if (sec < 0) {sec = "59"};
+                                        return sec;
+                                        }
+                                        $("#loaderDiv").hide();
+
+                                    }else{
+                                        $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات <br> "+json.error+
+                                        "<br><a href='/account/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                                        setTimeout(function() {
+                                            location.reload();
+                                        }, 8000);
+                                        $("#loaderDiv").hide();
+                                    }
+                                },
+                                error : function(xhr,errmsg,err) {
+                                    $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات <br> "+json.error+
+                                    "<br><a href='/account/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                                    setTimeout(function() {
+                                        location.reload();
+                                    }, 8000);
+                                    $("#loaderDiv").hide();
+                                    console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                                }
+                            });
+
+                        
+                        });
+                                
+                
+    
+                $(document).on('submit', '#codesetvalid',function(e){
+                $("#loaderDiv").show();
+                $("#submit-authentication-code").prop('disabled', true);
+                $("#submit-authentication-code").addClass('login-button-disabled');
+
+                e.preventDefault();
+                    $.ajax({
+                        type:'POST',
+                        url:'{% url "Profile:codesetvalid" %}',
+                        data:{
+                            mobilenumber:phonenumber,
+                            code : $('#code').val(),
+                            csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+                            action: 'post',
+                        },    
+                        success:function(json){ 
+                            $("#codesetvalid" ).remove();
+                            if (json.status == true) {
+                                $('.phonesender').remove();
+                                $("#loaderDiv").hide();
+                                // $(".setform").prepend(
+                                //     '<form method="POST" id="regform">' +
+                                //     '{% csrf_token %}' +
+                                //     '<div id="registerend"><div id="loaderDiv"> لطفا منتظر بمانید <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری"></div></div>' +
+                                //     '<input id="firstname" name="firstname" type="text" placeholder="نام *" class="input-login" required><br>' +
+                                //     '<div id="alert-div-firstname"></div>' +
+                                //     '<input id="lastname" name="lastname" type="text" placeholder="نام خانوادگی *" class="input-login" required><br>' +
+                                //     '<div id="alert-div-lastname"></div>' +
+                                //     '<input id="nactioncode" name="nactioncode" oninput="checkMelliCode()" type="number" pattern="[0-9]{10}" maxlength="10" placeholder="کد ملی *" class="input-login" required><br>' +
+                                //     '<div id="nationAlert"></div>' +
+                                //     '<div id="alert-div-nation"></div>' +
+                                //     '<div id="alert-div-nation-digits"></div>' +
+                                //     '<div id="alert-div-nationcode-dup"></div>' +
+                                //     '<div id="alert-div-nationcode-system-error"></div>' +
+                                //     '<input id="email" name="email" type="email" placeholder="ایمیل" class="input-login" required><br>' +
+                                //     '<input id="username" name="username" type="text" placeholder="نام کاربری *" pattern="[a-z.A-Z-0-9_]{2,}" class="input-login" required>' +
+                                //     '<small id="usernameAlert"></small>' +
+                                //     '<div id="alert-div-username"></div>' +
+                                //     '<div id="alert-div-username-english"></div>' +
+                                //     '<div id="alert-div-username-dup"></div>' +
+                                //     '<div id="alert-div-username-system-error"></div>' +
+                                //     '<div class="textright"><small>نام کاربری باید شامل حروف انگلیسی باشد</small></div><br>' +
+                                //     '<input id="password" name="password" type="password" placeholder="رمز عبور *" pattern="[a-zA-Z0-9]{8,}" class="input-login" required>' +
+                                //     '<div id="alert-div-password"></div>' +
+                                //     '<div id="alert-div-password-english"></div>' +
+                                //     '<div id="alert-div-password-minlength"></div>' +
+                                //     '<input id="newpassword" name="newpassword" type="password" placeholder="تکرار رمز عبور *" pattern="[a-zA-Z0-9]{8,}" class="input-login" required>' +
+                                //     '<div id="alert-div-newpassword"></div>' +
+                                //     '<div id="alert-div-newpassword-no-match"></div>' +
+                                //     '<div id="alert-div-newpassword-english"></div>' +
+                                //     '<div class="textright"><small>رمز عبور باید شامل حروف بزرگ و کوچک انگلیسی همراه با عدد باشد.<br>رمز عبور شما نمی‌تواند شبیه سایر اطلاعات شخصی شما باشد.<br>رمز عبور شما می‌بایست حداقل از 8 حرف تشکیل شده باشد.<br>رمز شما نمی تواند از عبارات معروف باشد.<br></small></div>' +
+                                //     '<input id="referencecode" name="referencecode" type="text" placeholder="کد معرف" class="input-login" maxlength="6" >' +
+                                //     '<button id="sign-up-button2" type="submit">ثبت نام</button><a href="/account/login/" class="sign-calss">ورود </a>' +
+                                //     '</form>')
+                                //     initAlerts();
+                                //     initUsernameAlert();
+                                //     initFirstNameAlert();
+                                //     initLastNameAlert();
+                                //     initNationAlert();
+                                //     initPasswordAlert();
+                                //     initNewPasswordAlert();
+                                //     checkNewUsername();
+                                //     checknationalcode();
+                                //     initSignUpButton();
+                                $(".setform").prepend(
+                                    '<form method="POST" id="regform">' +
+                                    '{% csrf_token %}' +
+                                    '<div class="get-code-form-part">' +
+                                    '<div id="registerend"><div id="loaderDiv"> لطفا منتظر بمانید <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری"></div></div>' +
+                                    '<div class="login-alerts-section login-page-alerts reg-page-alerts">' +
+                                        '<p>لطفا خطاهای زیر را برطرف کنید:</p>' +
+                                        '<ul>' +
+                                            '<li id="alert-li-firstname"></li>' +
+                                            '<li id="alert-li-lastname"></li>' +
+                                            '<li id="alert-li-name-persian"></li>' +
+                                            '<li id="alert-li-nation"></li>' +
+                                            '<li id="alert-li-nation-digits"></li>' +
+                                            '<li id="alert-li-nationcode-dup"></li>' +
+                                            '<li id="alert-li-nationcode-system-error"></li>' +
+                                            '<li id="alert-li-username"></li>' +
+                                            '<li id="alert-li-username-english"></li>' +
+                                            '<li id="alert-li-username-dup"></li>' +
+                                            '<li id="alert-li-username-system-error"></li>' +
+                                            // '<li id="alert-li-password"></li>' +
+                                            // '<li id="alert-li-password-english"></li>' +
+                                            // '<li id="alert-li-password-minlength"></li>' +
+                                            // '<li id="alert-li-newpassword"></li>' +
+                                            // '<li id="alert-li-newpassword-no-match"></li>' +
+                                            // '<li id="alert-li-newpassword-english"></li>' +
+                                        '</ul>' +
+                                    '</div>' +
+                                    '<input id="firstname" name="firstname" type="text" placeholder="نام *" class="input-login" required><br>' +
+                                    // '<div id="alert-div-firstname"></div>' +
+                                    '<input id="lastname" name="lastname" type="text" placeholder="نام خانوادگی *" class="input-login" required><br>' +
+                                    // '<div id="alert-div-lastname"></div>' +
+                                    '<input id="nactioncode" name="nactioncode" oninput="checkMelliCode()" type="number" pattern="[0-9]{10}" maxlength="10" placeholder="کد ملی *" class="input-login" required><br>' +
+                                    '<div id="nationAlert"></div>' +
+                                    // '<div id="alert-div-nation"></div>' +
+                                    // '<div id="alert-div-nation-digits"></div>' +
+                                    // '<div id="alert-div-nationcode-dup"></div>' +
+                                    // '<div id="alert-div-nationcode-system-error"></div>' +
+                                    '<input class="reg-email-input input-login" id="email" name="email" type="email" placeholder="ایمیل" class="input-login" required><br>' +
+                                    '<input id="username" name="username" type="text" placeholder="نام کاربری *" pattern="[a-z.A-Z-0-9_]{2,}" class="input-login" required>' +
+                                    '<small id="usernameAlert"></small>' +
+                                    // '<div id="alert-div-username"></div>' +
+                                    // '<div id="alert-div-username-english"></div>' +
+                                    // '<div id="alert-div-username-dup"></div>' +
+                                    // '<div id="alert-div-username-system-error"></div>' +
+                                    '<div class="textright"><small>نام کاربری باید شامل حروف انگلیسی باشد</small></div><br>' +
+                                    '<div class="login-warning-section">' +
+                                        '<p>برای انتخاب رمز عبور به نکات زیر دقت فرمائید:</p>' +
+                                        '<ul>' +
+                                            '<li>رمز عبور باید شامل حروف بزرگ و کوچک انگلیسی همراه با عدد باشد.</li>' +
+                                            '<li>رمز عبور شما نمی‌تواند شبیه سایر اطلاعات شخصی شما باشد.</li>' +
+                                            '<li>رمز عبور شما می‌بایست حداقل از 8 حرف تشکیل شده باشد.</li>' +
+                                            '<li>رمز شما نمی تواند از عبارات معروف باشد.</li>' +
+                                        '</ul>' +
+                                    '</div>' +
+                                    '<div class="login-alerts-section login-page-alerts reg-page-pass-alerts">' +
+                                        '<p>لطفا خطاهای زیر را برطرف کنید:</p>' +
+                                        '<ul>' +
+                                            '<li id="alert-li-password"></li>' +
+                                            '<li id="alert-li-password-english"></li>' +
+                                            '<li id="alert-li-password-minlength"></li>' +
+                                            '<li id="alert-li-newpassword"></li>' +
+                                            '<li id="alert-li-newpassword-no-match"></li>' +
+                                            '<li id="alert-li-newpassword-english"></li>' +
+                                        '</ul>' +
+                                    '</div>' +
+                                    '<input id="password" name="password" type="password" placeholder="رمز عبور *" pattern="[a-zA-Z0-9]{8,}" class="input-login" required>' +
+                                    // '<div id="alert-div-password"></div>' +
+                                    // '<div id="alert-div-password-english"></div>' +
+                                    // '<div id="alert-div-password-minlength"></div>' +
+                                    '<input id="newpassword" name="newpassword" type="password" placeholder="تکرار رمز عبور *" pattern="[a-zA-Z0-9]{8,}" class="input-login" required>' +
+                                    // '<div id="alert-div-newpassword"></div>' +
+                                    // '<div id="alert-div-newpassword-no-match"></div>' +
+                                    // '<div id="alert-div-newpassword-english"></div>' +
+                                    // '<div class="textright"><small>رمز عبور باید شامل حروف بزرگ و کوچک انگلیسی همراه با عدد باشد.<br>رمز عبور شما نمی‌تواند شبیه سایر اطلاعات شخصی شما باشد.<br>رمز عبور شما می‌بایست حداقل از 8 حرف تشکیل شده باشد.<br>رمز شما نمی تواند از عبارات معروف باشد.<br></small></div>' +
+                                    '<input id="referencecode" name="referencecode" type="text" placeholder="کد معرف" class="input-login" maxlength="6" >' +
+                                    '<button id="sign-up-button2" type="submit">ثبت نام</button><a href="/account/login/" class="sign-calss">ورود </a>' +
+                                    '</div></form>')
+                                    initAlerts();
+                                    initUsernameAlert();
+                                    initFirstNameAlert();
+                                    initLastNameAlert();
+                                    initNationAlert();
+                                    initEmailAlert();
+                                    initPasswordAlert();
+                                    initNewPasswordAlert();
+                                    checkNewUsername();
+                                    checknationalcode();
+                                    initSignUpButton();
+                                    showAlertSection();
+                                    $("#sign-up-button2").prop('disabled', false);
+                                    $("#sign-up-button2").removeClass('login-button-disabled');
+                            }else{
+                            $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات <br> کد وارد شده صحبح نمی باشد."+
+                            "<br><a href='/account/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                            setTimeout(function() {
+                                location.reload();
+                            }, 8000);
+                        }           
+                    },
+                    error : function(xhr,errmsg,err) {
+                        $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات <br> کد وارد شده صحبح نمی باشد."+
+                        "<br><a href='/account/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                        setTimeout(function() {
+                            location.reload();
+                        }, 8000);
+                        }
+                    });
+                });
+                        
+                    
+            
+            
+                        $(document).on('submit', '#regform',function(e){
+                        $("#loaderDiv").show();
+                        $("#sign-up-button2").prop('disabled', true);
+                        $("#sign-up-button2").addClass('login-button-disabled');
+                        
+                        e.preventDefault();
+                        $.ajax({
+                                type:'POST',
+                                url:'{% url "Profile:AccountRegister" %}',
+                                data:{
+                                    mobilenumber :phonenumber,
+                                    firstname:$('#firstname').val(),
+                                    lastname:$('#lastname').val(),
+                                    nactioncode:$('#nactioncode').val(),
+                                    email :$('#email').val(),
+                                    username:$('#username').val(),
+                                    password :$('#password').val(),
+                                    newpassword :$('#newpassword').val(),
+                                    referencecode : $('#referencecode').val(),
+                                    csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+                                    action: 'post'
+                                },
+                                success:function(json){
+                                    if (json.status == true){
+                                        $("#loaderDiv").remove(); 
+                                        $('#registerend').html("<div class='alert-box alert radius' data-alert> عضویت شما با موفقیت انجام شد"+
+                                        "<br><a href='/account/login/' class='btn btn-outline-primary'>ورود به سایت </a></div>");
+                                        setTimeout(function() {
+                                            window.location.replace("/account/login/");
+                                        }, 8000);
+                                    }else{
+                                        $("#loaderDiv").remove(); 
+                                        $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات <br> "+json.error+
+                                        "<br><a href='/forgetpassword' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                                        $("#regform").remove();
+                                        // $(".setform").prepend(
+                                        //     '<form method="POST" id="regform">' +
+                                        //     '{% csrf_token %}' +
+                                        //     '<div id="registerend"><div id="loaderDiv"> لطفا منتظر بمانید <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری"></div></div>' +
+                                        //     '<input id="firstname" name="firstname" type="text" placeholder="نام *" class="input-login" required><br>' +
+                                        //     '<div id="alert-div-firstname"></div>' +
+                                        //     '<input id="lastname" name="lastname" type="text" placeholder="نام خانوادگی *" class="input-login" required><br>' +
+                                        //     '<div id="alert-div-lastname"></div>' +
+                                        //     '<input id="nactioncode" name="nactioncode" oninput="checkMelliCode()" type="number" pattern="[0-9]{10}" maxlength="10" placeholder="کد ملی *" class="input-login" required><br>' +
+                                        //     '<div id="nationAlert"></div>' +
+                                        //     '<div id="alert-div-nation"></div>' +
+                                        //     '<div id="alert-div-nation-digits"></div>' +
+                                        //     '<div id="alert-div-nationcode-dup"></div>' +
+                                        //     '<div id="alert-div-nationcode-system-error"></div>' +
+                                        //     '<input id="email" name="email" type="email" placeholder="ایمیل" class="input-login" required><br>' +
+                                        //     '<input id="username" name="username" type="text" placeholder="نام کاربری *" pattern="[a-z.A-Z-0-9_]{2,}" class="input-login" required>' +
+                                        //     '<small id="usernameAlert"></small>' +
+                                        //     '<div id="alert-div-username"></div>' +
+                                        //     '<div id="alert-div-username-english"></div>' +
+                                        //     '<div id="alert-div-username-dup"></div>' +
+                                        //     '<div id="alert-div-username-system-error"></div>' +
+                                        //     '<div class="textright"><small>نام کاربری باید شامل حروف انگلیسی باشد</small></div><br>' +
+                                        //     '<input id="password" name="password" type="password" placeholder="رمز عبور *" pattern="[a-zA-Z0-9]{8,}" class="input-login" required>' +
+                                        //     '<div id="alert-div-password"></div>' +
+                                        //     '<div id="alert-div-password-english"></div>' +
+                                        //     '<div id="alert-div-password-minlength"></div>' +
+                                        //     '<input id="newpassword" name="newpassword" type="password" placeholder="تکرار رمز عبور *" pattern="[a-zA-Z0-9]{8,}" class="input-login" required>' +
+                                        //     '<div id="alert-div-newpassword"></div>' +
+                                        //     '<div id="alert-div-newpassword-no-match"></div>' +
+                                        //     '<div id="alert-div-newpassword-english"></div>' +
+                                        //     '<div class="textright"><small>رمز عبور باید شامل حروف بزرگ و کوچک انگلیسی همراه با عدد باشد.<br>رمز عبور شما نمی‌تواند شبیه سایر اطلاعات شخصی شما باشد.<br>رمز عبور شما می‌بایست حداقل از 8 حرف تشکیل شده باشد.<br>رمز شما نمی تواند از عبارات معروف باشد.<br></small></div>' +
+                                        //     '<input id="referencecode" name="referencecode" type="text" placeholder="کد معرف" class="input-login" maxlength="6" >' +
+                                        //     '<button id="sign-up-button2" type="submit">ثبت نام</button><a href="/account/login/" class="sign-calss">ورود </a>' +
+                                        //     '</form>');
+                                        // initAlerts();
+                                        // initUsernameAlert();
+                                        // initFirstNameAlert();
+                                        // initLastNameAlert();
+                                        // initNationAlert();
+                                        // initPasswordAlert();
+                                        // initNewPasswordAlert();
+                                        // checkNewUsername();
+                                        // checknationalcode();
+                                        // initSignUpButton();
+                                        $(".setform").prepend(
+                                    '<form method="POST" id="regform">' +
+                                    '{% csrf_token %}' +
+                                    '<div class="get-code-form-part">' +
+                                    '<div id="registerend"><div id="loaderDiv"> لطفا منتظر بمانید <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری"></div></div>' +
+                                    '<div class="login-alerts-section login-page-alerts reg-page-alerts">' +
+                                        '<p>لطفا خطاهای زیر را برطرف کنید:</p>' +
+                                        '<ul>' +
+                                            '<li id="alert-li-firstname"></li>' +
+                                            '<li id="alert-li-lastname"></li>' +
+                                            '<li id="alert-li-name-persian"></li>' +
+                                            '<li id="alert-li-nation"></li>' +
+                                            '<li id="alert-li-nation-digits"></li>' +
+                                            '<li id="alert-li-nationcode-dup"></li>' +
+                                            '<li id="alert-li-nationcode-system-error"></li>' +
+                                            '<li id="alert-li-username"></li>' +
+                                            '<li id="alert-li-username-english"></li>' +
+                                            '<li id="alert-li-username-dup"></li>' +
+                                            '<li id="alert-li-username-system-error"></li>' +
+                                            // '<li id="alert-li-password"></li>' +
+                                            // '<li id="alert-li-password-english"></li>' +
+                                            // '<li id="alert-li-password-minlength"></li>' +
+                                            // '<li id="alert-li-newpassword"></li>' +
+                                            // '<li id="alert-li-newpassword-no-match"></li>' +
+                                            // '<li id="alert-li-newpassword-english"></li>' +
+                                        '</ul>' +
+                                    '</div>' +
+                                    '<input id="firstname" name="firstname" type="text" placeholder="نام *" class="input-login" required><br>' +
+                                    // '<div id="alert-div-firstname"></div>' +
+                                    '<input id="lastname" name="lastname" type="text" placeholder="نام خانوادگی *" class="input-login" required><br>' +
+                                    // '<div id="alert-div-lastname"></div>' +
+                                    '<input id="nactioncode" name="nactioncode" oninput="checkMelliCode()" type="number" pattern="[0-9]{10}" maxlength="10" placeholder="کد ملی *" class="input-login" required><br>' +
+                                    '<div id="nationAlert"></div>' +
+                                    // '<div id="alert-div-nation"></div>' +
+                                    // '<div id="alert-div-nation-digits"></div>' +
+                                    // '<div id="alert-div-nationcode-dup"></div>' +
+                                    // '<div id="alert-div-nationcode-system-error"></div>' +
+                                    '<input class="reg-email-input input-login" id="email" name="email" type="email" placeholder="ایمیل" class="input-login" required><br>' +
+                                    '<input id="username" name="username" type="text" placeholder="نام کاربری *" pattern="[a-z.A-Z-0-9_]{2,}" class="input-login" required>' +
+                                    '<small id="usernameAlert"></small>' +
+                                    // '<div id="alert-div-username"></div>' +
+                                    // '<div id="alert-div-username-english"></div>' +
+                                    // '<div id="alert-div-username-dup"></div>' +
+                                    // '<div id="alert-div-username-system-error"></div>' +
+                                    '<div class="textright"><small>نام کاربری باید شامل حروف انگلیسی باشد</small></div><br>' +
+                                    '<div class="login-warning-section">' +
+                                        '<p>برای انتخاب رمز عبور به نکات زیر دقت فرمائید:</p>' +
+                                        '<ul>' +
+                                            '<li>رمز عبور باید شامل حروف بزرگ و کوچک انگلیسی همراه با عدد باشد.</li>' +
+                                            '<li>رمز عبور شما نمی‌تواند شبیه سایر اطلاعات شخصی شما باشد.</li>' +
+                                            '<li>رمز عبور شما می‌بایست حداقل از 8 حرف تشکیل شده باشد.</li>' +
+                                            '<li>رمز شما نمی تواند از عبارات معروف باشد.</li>' +
+                                        '</ul>' +
+                                    '</div>' +
+                                    '<div class="login-alerts-section login-page-alerts reg-page-pass-alerts">' +
+                                        '<p>لطفا خطاهای زیر را برطرف کنید:</p>' +
+                                        '<ul>' +
+                                            '<li id="alert-li-password"></li>' +
+                                            '<li id="alert-li-password-english"></li>' +
+                                            '<li id="alert-li-password-minlength"></li>' +
+                                            '<li id="alert-li-newpassword"></li>' +
+                                            '<li id="alert-li-newpassword-no-match"></li>' +
+                                            '<li id="alert-li-newpassword-english"></li>' +
+                                        '</ul>' +
+                                    '</div>' +
+                                    '<input id="password" name="password" type="password" placeholder="رمز عبور *" pattern="[a-zA-Z0-9]{8,}" class="input-login" required>' +
+                                    // '<div id="alert-div-password"></div>' +
+                                    // '<div id="alert-div-password-english"></div>' +
+                                    // '<div id="alert-div-password-minlength"></div>' +
+                                    '<input id="newpassword" name="newpassword" type="password" placeholder="تکرار رمز عبور *" pattern="[a-zA-Z0-9]{8,}" class="input-login" required>' +
+                                    // '<div id="alert-div-newpassword"></div>' +
+                                    // '<div id="alert-div-newpassword-no-match"></div>' +
+                                    // '<div id="alert-div-newpassword-english"></div>' +
+                                    // '<div class="textright"><small>رمز عبور باید شامل حروف بزرگ و کوچک انگلیسی همراه با عدد باشد.<br>رمز عبور شما نمی‌تواند شبیه سایر اطلاعات شخصی شما باشد.<br>رمز عبور شما می‌بایست حداقل از 8 حرف تشکیل شده باشد.<br>رمز شما نمی تواند از عبارات معروف باشد.<br></small></div>' +
+                                    '<input id="referencecode" name="referencecode" type="text" placeholder="کد معرف" class="input-login" maxlength="6" >' +
+                                    '<button id="sign-up-button2" type="submit">ثبت نام</button><a href="/account/login/" class="sign-calss">ورود </a>' +
+                                    '</div></form>')
+                                    initAlerts();
+                                    initUsernameAlert();
+                                    initFirstNameAlert();
+                                    initLastNameAlert();
+                                    initNationAlert();
+                                    initEmailAlert();
+                                    initPasswordAlert();
+                                    initNewPasswordAlert();
+                                    checkNewUsername();
+                                    checknationalcode();
+                                    initSignUpButton();
+                                    showAlertSection();
+                                        $("#sign-up-button2").prop('disabled', false);
+                                        $("#sign-up-button2").removeClass('login-button-disabled');
+                                    }
+                                },
+                                error : function(xhr,errmsg,err) {
+                                    $('#results').html("<div class='alert-box alert radius' data-alert>خطا "+json.error+
+                                        "<a href='#' class='close'>&times;</a></div>"); // add the error to the dom
+                                    $("#loaderDiv").remove(); 
+                                    $("#regform").remove();   
+                                    console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                                    // $(".setform").prepend(
+                                    //     '<form method="POST" id="regform">' +
+                                    // '{% csrf_token %}' +
+                                    // '<div id="registerend"><div id="loaderDiv"> لطفا منتظر بمانید <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری"></div></div>' +
+                                    // '<input id="firstname" name="firstname" type="text" placeholder="نام *" class="input-login" required><br>' +
+                                    // '<div id="alert-div-firstname"></div>' +
+                                    // '<input id="lastname" name="lastname" type="text" placeholder="نام خانوادگی *" class="input-login" required><br>' +
+                                    // '<div id="alert-div-lastname"></div>' +
+                                    // '<input id="nactioncode" name="nactioncode" oninput="checkMelliCode()" type="number" pattern="[0-9]{10}" maxlength="10" placeholder="کد ملی *" class="input-login" required><br>' +
+                                    // '<div id="nationAlert"></div>' +
+                                    // '<div id="alert-div-nation"></div>' +
+                                    // '<div id="alert-div-nation-digits"></div>' +
+                                    // '<div id="alert-div-nationcode-dup"></div>' +
+                                    // '<div id="alert-div-nationcode-system-error"></div>' +
+                                    // '<input id="email" name="email" type="email" placeholder="ایمیل" class="input-login" required><br>' +
+                                    // '<input id="username" name="username" type="text" placeholder="نام کاربری *" pattern="[a-z.A-Z-0-9_]{2,}" class="input-login" required>' +
+                                    // '<small id="usernameAlert"></small>' +
+                                    // '<div id="alert-div-username"></div>' +
+                                    // '<div id="alert-div-username-english"></div>' +
+                                    // '<div id="alert-div-username-dup"></div>' +
+                                    // '<div id="alert-div-username-system-error"></div>' +
+                                    // '<div class="textright"><small>نام کاربری باید شامل حروف انگلیسی باشد</small></div><br>' +
+                                    // '<input id="password" name="password" type="password" placeholder="رمز عبور *" pattern="[a-zA-Z0-9]{8,}" class="input-login" required>' +
+                                    // '<div id="alert-div-password"></div>' +
+                                    // '<div id="alert-div-password-english"></div>' +
+                                    // '<div id="alert-div-password-minlength"></div>' +
+                                    // '<input id="newpassword" name="newpassword" type="password" placeholder="تکرار رمز عبور *" pattern="[a-zA-Z0-9]{8,}" class="input-login" required>' +
+                                    // '<div id="alert-div-newpassword"></div>' +
+                                    // '<div id="alert-div-newpassword-no-match"></div>' +
+                                    // '<div id="alert-div-newpassword-english"></div>' +
+                                    // '<div class="textright"><small>رمز عبور باید شامل حروف بزرگ و کوچک انگلیسی همراه با عدد باشد.<br>رمز عبور شما نمی‌تواند شبیه سایر اطلاعات شخصی شما باشد.<br>رمز عبور شما می‌بایست حداقل از 8 حرف تشکیل شده باشد.<br>رمز شما نمی تواند از عبارات معروف باشد.<br></small></div>' +
+                                    // '<input id="referencecode" name="referencecode" type="text" placeholder="کد معرف" class="input-login" maxlength="6">' +
+                                    // '<button id="sign-up-button2" type="submit">ثبت نام</button><a href="/account/login/" class="sign-calss">ورود </a>' +
+                                    // '</form>')
+                                    // initAlerts();
+                                    // initUsernameAlert();
+                                    // initFirstNameAlert();
+                                    // initLastNameAlert();
+                                    // initNationAlert();
+                                    // initPasswordAlert();
+                                    // initNewPasswordAlert();
+                                    // checkNewUsername();
+                                    // checknationalcode();
+                                    // initSignUpButton();
+                                    $(".setform").prepend(
+                                    '<form method="POST" id="regform">' +
+                                    '{% csrf_token %}' +
+                                    '<div class="get-code-form-part">' +
+                                    '<div id="registerend"><div id="loaderDiv"> لطفا منتظر بمانید <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری"></div></div>' +
+                                    '<div class="login-alerts-section login-page-alerts reg-page-alerts">' +
+                                        '<p>لطفا خطاهای زیر را برطرف کنید:</p>' +
+                                        '<ul>' +
+                                            '<li id="alert-li-firstname"></li>' +
+                                            '<li id="alert-li-lastname"></li>' +
+                                            '<li id="alert-li-name-persian"></li>' +
+                                            '<li id="alert-li-nation"></li>' +
+                                            '<li id="alert-li-nation-digits"></li>' +
+                                            '<li id="alert-li-nationcode-dup"></li>' +
+                                            '<li id="alert-li-nationcode-system-error"></li>' +
+                                            '<li id="alert-li-username"></li>' +
+                                            '<li id="alert-li-username-english"></li>' +
+                                            '<li id="alert-li-username-dup"></li>' +
+                                            '<li id="alert-li-username-system-error"></li>' +
+                                            // '<li id="alert-li-password"></li>' +
+                                            // '<li id="alert-li-password-english"></li>' +
+                                            // '<li id="alert-li-password-minlength"></li>' +
+                                            // '<li id="alert-li-newpassword"></li>' +
+                                            // '<li id="alert-li-newpassword-no-match"></li>' +
+                                            // '<li id="alert-li-newpassword-english"></li>' +
+                                        '</ul>' +
+                                    '</div>' +
+                                    '<input id="firstname" name="firstname" type="text" placeholder="نام *" class="input-login" required><br>' +
+                                    // '<div id="alert-div-firstname"></div>' +
+                                    '<input id="lastname" name="lastname" type="text" placeholder="نام خانوادگی *" class="input-login" required><br>' +
+                                    // '<div id="alert-div-lastname"></div>' +
+                                    '<input id="nactioncode" name="nactioncode" oninput="checkMelliCode()" type="number" pattern="[0-9]{10}" maxlength="10" placeholder="کد ملی *" class="input-login" required><br>' +
+                                    '<div id="nationAlert"></div>' +
+                                    // '<div id="alert-div-nation"></div>' +
+                                    // '<div id="alert-div-nation-digits"></div>' +
+                                    // '<div id="alert-div-nationcode-dup"></div>' +
+                                    // '<div id="alert-div-nationcode-system-error"></div>' +
+                                    '<input class="reg-email-input input-login" id="email" name="email" type="email" placeholder="ایمیل" class="input-login" required><br>' +
+                                    '<input id="username" name="username" type="text" placeholder="نام کاربری *" pattern="[a-z.A-Z-0-9_]{2,}" class="input-login" required>' +
+                                    '<small id="usernameAlert"></small>' +
+                                    // '<div id="alert-div-username"></div>' +
+                                    // '<div id="alert-div-username-english"></div>' +
+                                    // '<div id="alert-div-username-dup"></div>' +
+                                    // '<div id="alert-div-username-system-error"></div>' +
+                                    '<div class="textright"><small>نام کاربری باید شامل حروف انگلیسی باشد</small></div><br>' +
+                                    '<div class="login-warning-section">' +
+                                        '<p>برای انتخاب رمز عبور به نکات زیر دقت فرمائید:</p>' +
+                                        '<ul>' +
+                                            '<li>رمز عبور باید شامل حروف بزرگ و کوچک انگلیسی همراه با عدد باشد.</li>' +
+                                            '<li>رمز عبور شما نمی‌تواند شبیه سایر اطلاعات شخصی شما باشد.</li>' +
+                                            '<li>رمز عبور شما می‌بایست حداقل از 8 حرف تشکیل شده باشد.</li>' +
+                                            '<li>رمز شما نمی تواند از عبارات معروف باشد.</li>' +
+                                        '</ul>' +
+                                    '</div>' +
+                                    '<div class="login-alerts-section login-page-alerts reg-page-pass-alerts">' +
+                                        '<p>لطفا خطاهای زیر را برطرف کنید:</p>' +
+                                        '<ul>' +
+                                            '<li id="alert-li-password"></li>' +
+                                            '<li id="alert-li-password-english"></li>' +
+                                            '<li id="alert-li-password-minlength"></li>' +
+                                            '<li id="alert-li-newpassword"></li>' +
+                                            '<li id="alert-li-newpassword-no-match"></li>' +
+                                            '<li id="alert-li-newpassword-english"></li>' +
+                                        '</ul>' +
+                                    '</div>' +
+                                    '<input id="password" name="password" type="password" placeholder="رمز عبور *" pattern="[a-zA-Z0-9]{8,}" class="input-login" required>' +
+                                    // '<div id="alert-div-password"></div>' +
+                                    // '<div id="alert-div-password-english"></div>' +
+                                    // '<div id="alert-div-password-minlength"></div>' +
+                                    '<input id="newpassword" name="newpassword" type="password" placeholder="تکرار رمز عبور *" pattern="[a-zA-Z0-9]{8,}" class="input-login" required>' +
+                                    // '<div id="alert-div-newpassword"></div>' +
+                                    // '<div id="alert-div-newpassword-no-match"></div>' +
+                                    // '<div id="alert-div-newpassword-english"></div>' +
+                                    // '<div class="textright"><small>رمز عبور باید شامل حروف بزرگ و کوچک انگلیسی همراه با عدد باشد.<br>رمز عبور شما نمی‌تواند شبیه سایر اطلاعات شخصی شما باشد.<br>رمز عبور شما می‌بایست حداقل از 8 حرف تشکیل شده باشد.<br>رمز شما نمی تواند از عبارات معروف باشد.<br></small></div>' +
+                                    '<input id="referencecode" name="referencecode" type="text" placeholder="کد معرف" class="input-login" maxlength="6" >' +
+                                    '<button id="sign-up-button2" type="submit">ثبت نام</button><a href="/account/login/" class="sign-calss">ورود </a>' +
+                                    '</div></form>')
+                                    initAlerts();
+                                    initUsernameAlert();
+                                    initFirstNameAlert();
+                                    initLastNameAlert();
+                                    initNationAlert();
+                                    initEmailAlert();
+                                    initPasswordAlert();
+                                    initNewPasswordAlert();
+                                    checkNewUsername();
+                                    checknationalcode();
+                                    initSignUpButton();
+                                    showAlertSection();
+                                    $("#sign-up-button2").prop('disabled', false);
+                                    $("#sign-up-button2").removeClass('login-button-disabled');
+                                        },
+                                    });
+                                });
+
+                                
+            
+            </script>
+            </div>
+            
+            </div>
+            </div>
+            </div>
+
+
+
+    
+    
+    
+    
+    
+
+
+</div>
+    
+<script src="{% static "js/register_login/register.js" %}" type="text/javascript"></script>
+<script>
+    var Mobempty, Mobdigits, Moblength, Mobvalid, Mobmatch, Syserror;
+    var booleans = [Mobempty, Mobdigits, Moblength, Mobvalid, Mobmatch, Syserror];
+    for (var i=0; i<booleans.length; i++)
+    {
+        booleans[i] = false;
+    }
+    $(".login-alerts-section").hide();
+    checkIsThereAlert = function () {
+        for (var i=0; i<booleans.length; i++)
+        {
+            if(booleans[i])
+            {
+                $(".mob-alerts-section").show();
+                return;
+            }
+            else
+            {
+                $(".mob-alerts-section").hide();
+            }
+        }
+    }
+    
+    var fnameempty, lnameempty, nationempty, nationdigits, nationdup, nationsyserr, userempty, usereng, userdup, usersyserr, passempty, passeng, passminlen, newpassempty, newpassnotmatch, newpasseng, namepersian;
+    var booleansReg = [fnameempty, lnameempty, nationempty, nationdigits, nationdup, nationsyserr, userempty, usereng, userdup, usersyserr, passempty, passeng, passminlen, newpassempty, newpassnotmatch, newpasseng, namepersian];
+    showAlertSection = function () {
+        for (var i=0; i<booleansReg.length; i++)
+        {
+            booleansReg[i] = false;
+        }
+        checkIsThereAlertReg = function () {
+            for (var i=0; i<10; i++)
+            {
+                if(booleansReg[i])
+                {
+                    $(".reg-page-alerts").show();
+                    break;
+                    return;
+                }
+                else
+                {
+                    $(".reg-page-alerts").hide();
+                }
+            }
+            if(booleansReg[16])
+            {
+                $(".reg-page-alerts").show();
+            }
+        }
+        checkIsThereAlertp = function () {
+            for (var i=10; i<booleansReg.length; i++)
+            {
+                if(booleansReg[i])
+                {
+                    $(".reg-page-pass-alerts").show();
+                    break;
+                    return;
+                }
+                else
+                {
+                    $(".reg-page-pass-alerts").hide();
+                }
+            }
+
+        }
+    }
+
+
+    // var validMobileNumber = false;
+    var mobileNumber;
+
+    $("#mobilenumber").on("input", function () {
+        $("#get-code-button").prop("disabled", true);
+        $("#get-code-button").addClass('login-button-disabled');
+        $("#alert-li-mobile-valid").hide();
+        booleans[3] = false;
+        checkIsThereAlert();
+        // validMobileNumber = false;
+        var mobileLength = $(this).val().length;
+        if (mobileLength === 11) {
+            mobileNumber = $(this).val();
+            $.ajax(
+                {
+                    type: 'POST',
+                    url: '{% url "nakhll_market:Check_New_PhoneNumber" %}',
+                    data: {
+                        phonenumber: mobileNumber,
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                        action: 'post'
+                    },
+                    success: function (json) {
+                        if (json.status) {
+                            if (json.msg === 'is_exists') {
+                                $("#get-code-button").prop("disabled", true);
+                                $("#get-code-button").addClass('login-button-disabled');
+                                $("#mobilenumber").addClass("mobileempty");
+                                $(".input-mob-forgetpassword").addClass("fieldEmpty");
+                                $("#alert-li-mobile-match").html('با این شماره قبلا ثبت نام شده است!')
+                                $("#alert-li-mobile-match").show();
+                                booleans[4] = true;
+                                // validMobileNumber = false;
+                            }
+                            else if (json.msg === 'is_not_exists') {
+                                if($("#mobilenumber").val()[0] === '0' && $("#mobilenumber").val()[1] === '9') {
+                                    $("#alert-li-mobile-match").hide();
+                                    booleans[4] = false;
+                                    $("#get-code-button").prop("disabled", false);
+                                    $("#get-code-button").removeClass('login-button-disabled');
+                                    // validMobileNumber = true;
+                                }
+                                else {
+                                    $("#get-code-button").prop("disabled", true);
+                                    $("#get-code-button").addClass('login-button-disabled');
+                                    $("#mobilenumber").addClass("mobileempty");
+                                    $(".input-mob-forgetpassword").addClass("fieldEmpty");
+                                    $("#alert-li-mobile-valid").html('شماره موبایل وارد شده معتبر نمیباشد!')
+
+                                    $("#alert-li-mobile-valid").show();
+                                    booleans[3] = true;
+                                }
+                            }
+                        }
+                        else {
+                            $("#alert-li-system-error").show();
+                            booleans[5] = true;
+                            $("#get-code-button").prop("disabled", true);
+                            $("#get-code-button").addClass('login-button-disabled');
+                            // validMobileNumber = false;
+                        }
+                        checkIsThereAlert();
+                    },
+                    error: function (xhr) {
+                        $("#alert-li-system-error").show();
+                        booleans[5] = true;
+                        $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات <br> " + xhr.responseText +
+                            "<br><a href='/account/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                        $("#loaderDiv").hide();
+                        console.log(xhr.status + ": " + xhr.responseText);
+                        checkIsThereAlert();
+                        // validMobileNumber = false;
+                    }
+                }
+            );
+        }
+    })
+    var usernameInp;
+    var userDupMessage;
+    var usernamechecking = false;
+    checkNewUsername = function() {
+        $("#username").on("input", function () {
+        usernameInp = $(this).val();
+        usernamechecking = false;
+        if($(this).val() !== '') {
+            $.ajax(
+                {
+                    type: 'POST',
+                    url: '{% url "nakhll_market:Check_New_UserName" %}',
+                    data: {
+                        username: usernameInp,
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                        action: 'post'
+                    },
+                    success: function (json) {
+                        if(json.status)
+                        {
+                            userDupMessage = json.msg;
+                            if(userDupMessage === 'Username Is Exists')
+                            {
+                                $("#username").addClass('fieldEmpty');
+                                $("#alert-li-username-dup").show();
+                                booleansReg[8] = true;
+
+                                usernamechecking = false;
+                            }
+                            else if(userDupMessage === 'Username Is Not Exists')
+                            {
+                                $("#username").removeClass('fieldEmpty');
+                                $("#alert-li-username-dup").hide();
+                                booleansReg[8] = false;
+                                usernamechecking = true;
+                            }
+                            else if(userDupMessage === 'Error In Get Data')
+                            {
+                                $("#username").addClass('fieldEmpty');
+                                $("#alert-li-username-system-error").show();
+                                booleansReg[9] = true;
+                                usernamechecking = false;
+                            }
+                        }
+                        else
+                        {
+                            usernamechecking = false;
+                        }
+                        checkIsThereAlertReg();
+                    },
+                    error: function (xhr) {
+                        $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات <br> " + xhr.responseText +
+                            "<br><a href='/account/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                        $("#loaderDiv").hide();
+                        console.log(xhr.status + ": " + xhr.responseText);
+                    }
+                }
+            );
+            }
+        }
+    )}
+    var nationcodeDupMessage;
+    var nationcodechecking = false;
+    var nationcodelength;
+    checknationalcode = function () {
+        $("#nactioncode").on("paste change keyup", function () {
+            nationcodelength = $(this).val().length;
+            if (nationcodelength === 10) {
+                nationcodeInp = $(this).val();
+                $.ajax(
+                    {
+                        type: 'POST',
+                        url: '{% url "nakhll_market:Check_New_NationalCode" %}',
+                        data: {
+                            nationalcode: nationcodeInp,
+                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                            action: 'post'
+                        },
+                        success: function (json) {
+                            if (json.status) {
+                                nationcodeDupMessage = json.msg;
+                                if (nationcodeDupMessage === 'Natioalcode Is Exists') {
+                                    $("#nactioncode").addClass('fieldEmpty');
+                                    $("#alert-li-nationcode-dup").show();
+                                    booleansReg[4] = true;
+                                    nationcodechecking = false;
+                                }
+                                else if (nationcodeDupMessage === 'Natioalcode Is Not Exists') {
+                                    $("#nactioncode").removeClass('fieldEmpty');
+                                    $("#alert-li-nationcode-dup").hide();
+                                    booleansReg[4] = false;
+                                    nationcodechecking = true;
+                                }
+                                else if (nationcodeDupMessage === 'Error In Get Data') {
+                                    $("#nactioncode").addClass('fieldEmpty');
+                                    $("#alert-li-nationcode-system-error").show();
+                                    booleansReg[5] = true;
+                                    nationcodechecking = false;
+                                }
+                            }
+                            else {
+                                nationcodechecking = false;
+                            }
+                            checkIsThereAlertReg();
+                        },
+                        error: function (xhr) {
+                            $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات <br> " + json.error +
+                                "<br><a href='/account/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                            $("#loaderDiv").hide();
+                            console.log(xhr.status + ": " + xhr.responseText);
+                        }
+                    }
+                );
+            }
+        })
+    }
+</script>
+
+</body>

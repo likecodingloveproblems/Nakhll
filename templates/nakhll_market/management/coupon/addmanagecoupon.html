@@ -1,0 +1,219 @@
+{% load jformat %}
+
+{% block header %}
+    {% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+    <title>بازار نخل | ثبت کوپن مدیریت</title>
+</head>
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-3">
+                <div class="profile-sidebar-site">   
+                    {% block topsidebar %}
+                        {% include "nakhll_market/profile/parents/new-topsidebar.html" %}
+                    {% endblock %}
+                    <div class="profile-sidebar-main">
+                        <a href="/profile/dashboard/">
+                            <button>
+                                <i class="fas fa-id-badge"></i>
+                                <h5>داشبورد</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/transaction/">
+                            <button>
+                                <i class="fad fa-clipboard-list"></i>
+                            <h5>تراکنش ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/factor/">
+                            <button>
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <h5>فاکتور ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/ticketing/">
+                            <button>
+                                <i class="fad fa-user-headset"></i>
+                                <h5>پشتیبانی</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/shops/">
+                            <button>
+                                <i class="fas fa-store"></i>
+                                <h5>مدیریت حجره</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/review/">
+                            <button>
+                                <i class="fad fa-comments-alt"></i>
+                                <h5>نقد ها و نظرات</h5>
+                            </button>
+                        </a>
+
+                        {% if request.user.is_staff %}
+                            {% block menu %}
+                                {% include "nakhll_market/profile/parents/menu_for_coupon.html" %}
+                            {% endblock %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                    {% include "nakhll_market/profile/parents/new-header-profile.html" %}
+                {% endblock %}
+
+                <div class="row">
+                    {% if ShowAlart %}
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                            <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                            <p>
+                                {{AlartMessage}}
+                            </p>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                        <div class="dashboard"> 
+                            <h4>اضافه کردن کوپن مدیریت</h4>  
+
+                            <form id="new-prod-form" method="POST">
+                                {% csrf_token %}
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                    <label for="inputCopun_Title">عنوان کوپن<code>*</code></label>
+                                        <input type="text" name="copun_title" maxlength="100" class="form-control" id="inputCopun_Title" required>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <label for="inputCopun_Serial">سریال کوپن</label>
+                                            <input type="text" name="copun_serial" pattern="[a-z.A-Z-0-9_]{2,30}" class="form-control" id="inputCopun_Serial">
+                                            <small>شماره سریال کوپن حداقل <span class="Riyal">2</span> و حداکثر <span class="Riyal">30</span> کاراکتر می تواند باشد.</small>
+                                            <br>
+                                            <small>در صورت خالی گذاشتن این فیلد یک سریال <span class="Riyal">8</span> رقمی تصادفی برای کوپن شما تولید می شود.</small>
+                                    </div>
+                                </div>
+
+                                
+                                <div class="form-row">
+                                    <div class="form-group col-md-12">
+                                        <label for="inputCopun_Des">توضیحات کوپن</label>
+                                        <textarea class="form-control" name="copun_des" id="inputCopun_Des" rows="1"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="inputCopun_StartDay">تاریخ شروع کوپن <code>*</code></label>
+                                        <input type="text" name="Copun_SatatDay" class="form-control" id="inputCopun_StartDay" required >
+                                        <script>
+                                            $("#inputCopun_StartDay").persianDatepicker({
+                                                startDate: "today",
+                                                endDate: "1455/05/05"
+                                            });
+                                        </script>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <label for="inputCopun_EndDay">تاریخ انقضاء کوپن <code>*</code></label>
+                                        <input type="text" name="Copun_EndDay" class="form-control" id="inputCopun_EndDay" required >
+                                        <script>
+                                            $("#inputCopun_EndDay").persianDatepicker({
+                                                startDate: "today",
+                                                endDate: "1455/05/05"
+                                            });
+                                        </script>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="inputCopun_DiscountType">نوع تخفیف کوپن <code>*</code></label>
+                                        <select id="inputCopun_DiscountType" name="Copun_DiscountType" class="form-control">
+                                            <option value="1" selected>درصدی</option>
+                                            <option value="2">اعتباری</option>
+                                        </select>
+                                        <small>اگر می خواهید چند درصد تخفیف دهید، نوع <span class="Riyal">درصدی</span> را انتخاب کنید و در صورتی که می خواهید مقداری ثابت تخفیف دهید نوع <span class="Riyal">اعتباری</span> را انتخاب کنید.</small>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                    <label for="inputCopun_DiscountRate">میزان تخفیف کوپن <code>*</code></label>
+                                        <input type="text" name="Copun_DiscountRate" class="form-control" pattern="[0-9]{1,}" id="inputCopun_DiscountRate" required>
+                                        <small>اگر نوع تخفیف را به صورت <span class="Riyal">درصدی</span> قرار داده اید، باید عددی از <span class="Riyal">1</span> تا <span class="Riyal">100</span> را اینجا وارد نمایید.</small>
+                                        <br>
+                                        <small>اگر نوع تخفیف را به صورت <span class="Riyal">اعتباری</span> قرار داده اید، باید عدد وارد شده از <span class="Riyal">10000</span> ریال به بالا باشد.</small>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                    <label for="inputCopun_MinimumAmount">حداقل میزان خرید</label>
+                                        <input type="text" name="Copun_MinimumAmount" class="form-control" pattern="[0-9]{5,}" id="inputCopun_MinimumAmount">
+                                        <small>اگر می خواهید کوپن شما دارای شرط <span class="Riyal">حداقل خرید</span> توسط خریدار باشد، مقدار مدنظر خود را اینجا وارد نمایید، در غیر اینصورت این بخش را خالی بگذارید.</small>
+                                        <br>
+                                        <small>مبلغ وارد شده باید به <span class="Riyal">ریال</span> وارد شود.</small>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                    <label for="inputCopun_MaximumAmount">حداکثر میزان خرید</label>
+                                        <input type="text" name="Copun_MaximumAmount" class="form-control" pattern="[0-9]{5,}" id="inputCopun_MaximumAmount">
+                                        <small>اگر می خواهید کوپن شما دارای شرط حداکثر خرید<span class="Riyal">حداکثر خرید</span> توسط خریدار باشد، مقدار مدنظر خود را اینجا وارد نمایید، در غیر اینصورت این بخش را خالی بگذارید.</small>
+                                        <br>
+                                        <small>مبلغ وارد شده باید به <span class="Riyal">ریال</span> وارد شود.</small>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                    <label for="inputCopun_NumberOfUse">میزان دفعات مجاز استفاده از کوپن <code>*</code></label>
+                                        <input type="text" name="Copun_NumberOfUse" class="form-control" value="1" pattern="[0-9]{1,}" id="inputCopun_NumberOfUse" required>
+                                        <small><span  class="Riyal">تعداد</span> دفعاتی که هر فرد می تواند از کوپن شما استفاده کند را می توانید اینجا وارد نمایید.</small>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary mr-auto" id="send-left">ادامه</button>
+                                <div class="clearfix"></div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% block footer-section %}
+    {% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+    {% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

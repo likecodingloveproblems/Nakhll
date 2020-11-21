@@ -1,0 +1,126 @@
+{% load jformat %}
+{% load i18n static %}
+
+{% block header %}
+    {% include "nakhll_market/parents/headersite.html" %}
+{% endblock %}
+
+
+    <title>بازار نخل | کمپین روز دختر</title>
+</head>
+
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+<header class="first-pay-header">
+    <div class="top-first-pay camp-top-slide">
+        <div class="">
+            <div class="top-first-pay-content camp-slider">
+                <img src="{{Detail.Value_2}}" alt="روز دختر" class="header-camp">
+                <!-- <h1> روز دختر</h1> -->
+                <!-- <p><h2>با کد تخفیف<strong class="Riyal"> dokhtar </strong>روز دختر</h2></p> -->
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="favorite-products">
+    <div class="container">
+        <div class="row">
+            <div class="col-4">
+            </div>
+            <div class="col-4">
+                <p class="top-title">محصولات کمپین</p>
+            </div>
+        </div>
+
+        <div class="products">
+            <div class="row">
+                {% for item in Products %}
+                    <div class="col-xl-2 col-lg-3 col-md-4 col-12">
+                        <div class="product">
+                            <div class="product-img">
+                                <img src="{{item.Image_thumbnail_url}}" alt="product">
+                            </div>
+                            <div class="product-info">
+                                <p>{{item.Title}}</p>
+                                <div class="product-prices">
+                                    <span class="after-off-price numbersprice">{{item.Price}} ریال</span>
+                                    {% if item.OldPrice != '0' %}<span class="real-price numbersprice">{{item.OldPrice}} ریال</span>{% endif %}
+                                </div>
+                                <div class="logo-rate">
+                                    <div class="company-logo">
+                                        <img src="{{item.FK_Shop.Image_thumbnail_url}}" alt="logo">
+                                        <h5 class="company-name-title">{{item.FK_Shop.Title}}</h5>
+                                    </div>
+                                    <!-- <div class="info-icon">
+                                        <i class="fas fa-info-circle"></i>
+                                        <br>
+                                        <span>{{item.FK_Shop.Point}}</span>
+                                    </div> -->
+                                </div>
+                                <div class="buy-button">
+                                    <a href="{{ item.get_url }}">مشاهده محصول</a>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="chamber-support-campaing">
+    <div class="container">
+        <h4 class="top-title" ><span>حجره های حامی کمپین </span></h4>
+            <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                    <div class="slider-full-width">
+                        <div class="slider-full-seller">
+                            <div class="postslidebt">
+                                <section class="autoplay slider sliderfull">
+                                    {% for item in Coupon.FK_Shops.all %}
+                                        <div class="boxslider-slick">
+                                            <a href="{{ item.get_url }}">
+                                                <img src="{{item.Image_thumbnail_url}}"  alt="{{item.Title}}" class="seller-img">
+                                                <!-- <div class="ratecode">{{item.Point}}</div> -->
+                                                <div class="nameseller">
+                                                    <h3>{{item.Title}}</h3>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    {% endfor %}
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block footer-section %}
+    {% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+
+
+{% block footer %}
+    {% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}
+
+</body>
+
+</html>

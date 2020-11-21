@@ -1,0 +1,237 @@
+{% load jformat %}
+
+{% block header %}
+    {% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+    <title>بازار نخل | هشدار ها - حجره جدید</title>
+</head>
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-3">
+                <div class="profile-sidebar-site">    
+                    {% block topsidebar %}
+                        {% include "nakhll_market/profile/parents/new-topsidebar.html" %}
+                    {% endblock %}
+                    <div class="profile-sidebar-main">
+                        <a href="/profile/dashboard/">
+                            <button>
+                                <i class="fas fa-id-badge"></i>
+                                <h5>داشبورد</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/transaction/">
+                            <button>
+                                <i class="fad fa-clipboard-list"></i>
+                            <h5>تراکنش ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/factor/">
+                            <button>
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <h5>فاکتور ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/ticketing/">
+                            <button>
+                                <i class="fad fa-user-headset"></i>
+                                <h5>پشتیبانی</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/shops/">
+                            <button>
+                                <i class="fas fa-store"></i>
+                                <h5>مدیریت حجره</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/review/">
+                            <button>
+                                <i class="fad fa-comments-alt"></i>
+                                <h5>نقد ها و نظرات</h5>
+                            </button>
+                        </a>
+
+                        {% if request.user.is_staff %}
+                            {% block review %}
+                                {% include "nakhll_market/profile/parents/menu_for_shop_manage.html" %}
+                            {% endblock %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                    {% include "nakhll_market/profile/parents/new-header-profile.html" %}
+                {% endblock %}
+
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                        <div class="dashboard"> 
+                            <h4>بررسی حجره جدید</h4>
+                            <div class="hr-line-alert"></div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="inputshoptitle">نام حجره دار</label>
+                                        <p class="show-title-in-alert">{{This_Shop.FK_ShopManager.first_name}} {{This_Shop.FK_ShopManager.last_name}}</p>
+                                    </div>
+                                </div>
+                            <div class="hr-line-alert"></div>
+
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                    <label for="input_image">عکس حجره</label>
+                                    <br>
+                                    <img src="{{ This_Shop.Image_thumbnail_url }}" id="input_image" class="img-thumbnail" alt="{{This_Shop.Title}}">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="input_title">عنوان حجره</label>
+                                    <fieldset disabled>
+                                        <input type="text" value="{{This_Shop.Title}}" class="form-control" id="input_title">
+                                    </fieldset>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <label for="input_slug">شناسه حجره</label>
+                                    <fieldset disabled>
+                                        <input type="text" value="{{This_Shop.Slug}}" class="form-control" id="input_slug">
+                                    </fieldset>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                    <label for="input_description">درباره حجره</label>
+                                    <fieldset disabled>
+                                        <textarea class="form-control" id="input_description" rows="2">{{This_Shop.Description}}</textarea>
+                                    </fieldset>
+                                </div>  
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label for="input_state">استان</label>
+                                    <fieldset disabled>
+                                        <input type="text" value="{{This_Shop.State}}" class="form-control" id="input_state">
+                                    </fieldset>
+                                </div>
+
+                                <div class="form-group col-md-4">
+                                    <label for="input_bigcity">شهرستان</label>
+                                    <fieldset disabled>
+                                        <input type="text" value="{{This_Shop.BigCity}}" class="form-control" id="input_bigcity">
+                                    </fieldset>
+                                </div>
+
+                                <div class="form-group col-md-4">
+                                    <label for="input_city">شهر</label>
+                                    <fieldset disabled>
+                                        <input type="text" value="{{This_Shop.City}}" class="form-control" id="input_city">
+                                    </fieldset>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="input_bio">معرفی حجره دار</label>
+                                    <fieldset disabled>
+                                        <textarea class="form-control" id="input_bio" rows="2">{{This_Shop.Bio}}</textarea>
+                                    </fieldset>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <label for="input_submarket">راسته حجره</label>
+                                    <select data-placeholder="انتخاب راسته" multiple class="chosen-select-rtl form-control submarket-shop" id="input_submarket" tabindex="14" disabled>
+                                        {% for item in This_Shop.FK_SubMarket.all %}
+                                            <option selected>{{item.Title}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                <label for="input_holidays">روز های تعطیل</label>
+                                    <select data-placeholder="روز های تعطیل هفته" multiple class="chosen-select-rtl form-control submarket-shop" id="input_holidays" tabindex="14" disabled>
+                                        {% for item in This_Shop.get_holidays %}
+                                            {% if item == '0' %}
+                                                <option selected>شنبه</option>
+                                            {% elif item == '1' %}
+                                                <option selected>یکشنبه</option>
+                                            {% elif item == '2' %}
+                                                <option selected>دوشنبه</option>
+                                            {% elif item == '3' %}
+                                                <option selected>سه شنبه</option>
+                                            {% elif item == '4' %}
+                                                <option selected>چهارشنبه</option>
+                                            {% elif item == '5' %}
+                                                <option selected>پنج شنبه</option>
+                                            {% elif item == '6' %}
+                                                <option selected>جمعه</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="hr-line-alert"></div>
+                            <div class="row">
+                                <div class="col-xl-12 col-12">
+                                    <form method="POST" action="{% url "nakhll_market:RecordShopAlert" This_Shop.ID %}">
+                                        {% csrf_token %}
+                                        <div class="custom-control custom-radio custom-control-inline">
+                                            <input type="radio" id="accept-btn" name="accept-btn"  value="1" class="custom-control-input" checked>
+                                            <label class="custom-control-label" for="accept-btn">نمایش در سایت</label>
+                                        </div>
+                                        <div class="custom-control custom-radio custom-control-inline">
+                                            <input type="radio" id="customRadioInline2" name="accept-btn" value="0" class="custom-control-input">
+                                            <label class="custom-control-label" for="customRadioInline2">عدم تایید</label>
+                                        </div>
+                                        <br>
+                                        <div class="form-group mg-10">
+                                            <label for="descriptionalert">توضیحات :</label>
+                                            <textarea class="form-control" name="Des" id="descriptionalert" rows="1" required></textarea>
+                                        </div>
+                                        <button class="btn btn-primary btn-left">ثبت</button>
+                                    </form>
+                                </div> 
+                            </div>  
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+{% block footer-section %}
+    {% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+    {% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

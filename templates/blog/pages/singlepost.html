@@ -1,0 +1,220 @@
+{% load i18n static %}
+{% load jformat %}
+
+{% block header %}
+    {% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+<title>وبلاگ بازار نخل | {{Post.Title}}</title>
+</head>
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+<div class="blog-post">
+    <div class="container">
+        <div class="row">
+            {% if ShowAlart %}
+                <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12">
+                    <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                        <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                        <p>
+                            {{AlartMessage}}
+                        </p>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="col-xl-8 col-lg-8 col-md-8 col-12">
+                <div class="blog-post-main">
+                    <img class="blog-post-img-1" src="{{Post.Slider.url}}">
+                    <div class="blog-post-main-content">
+                        <div class="blog-post-writer-date">
+                            <div class="blog-post-writer">
+                                نوشته شده توسط
+                                <span>
+                                    {{Post.FK_User.first_name}} {{Post.FK_User.last_name}}
+                                </span>
+                            </div>
+                            <div class="blog-post-date">
+                                ارسال شده {{PostDate}}
+                            </div>
+                        </div>
+                        <div class="clearfix">
+
+                        </div>
+                        <div class="blog-post-main-title-div">
+                            <div class="blog-post-main-title">
+                                <h4>{{Post.Title}}</h4>
+                            </div>
+                            <div class="blog-post-views">
+                                <p class="view-count">بازدید : {{View_Count}}</p>
+                            </div>
+                        </div>
+                        <div class="clearfix">
+
+                        </div>
+                        <div class="row blog-post-rate">
+                            <div class="col-xl-10 col-lg-9 col-md-8 col-sm-9 col-8 hr-line-after-rate-col">
+                                <div class="hr-line-after-rate">
+
+                                </div>
+                            </div>
+                            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-3 col-4 blog-post-stars-col">
+                                <form method="POST" action="set-point">
+                                    <div class="blog-post-rate-stars-point">
+                                        <div class="rating blog-post-stars">
+                                            <label id="rate5">
+                                                <input type="radio" name="rating" value="5" title="5 stars"> 5
+                                            </label>
+                                            <label id="rate4">
+                                                <input type="radio" name="rating" value="4" title="4 stars"> 4
+                                            </label>
+                                            <label id="rate3">
+                                                <input type="radio" name="rating" value="3" title="3 stars"> 3
+                                            </label>
+                                            <label id="rate2">
+                                                <input type="radio" name="rating" value="2" title="2 stars"> 2
+                                            </label>
+                                            <label id="rate1">
+                                                <input type="radio" name="rating" value="1" title="1 star"> 1
+                                            </label>
+                                        </div>
+                                        <span>
+                                            {% if Post.get_poin == 0.0 %}0{% else %}{{ Post.get_poin }}{% endif %}
+                                        </span>
+                                    </div>
+                                    <div class="blog-post-rating-user-count">
+                                        رای داده شده توسط <span class="point-count">{{PointCount}}</span> نفر
+                                    </div>
+                                </form>
+                                <script type="text/javascript">
+                                $('.blog-post-stars label').change(function(){
+                                    $("#resendcode").show();
+                                    var pointer = 0;
+                                    var rate1 = $('#rate1').hasClass("selected");
+                                    var rate2 = $('#rate2').hasClass("selected");
+                                    var rate3 = $('#rate3').hasClass("selected");
+                                    var rate4 = $('#rate4').hasClass("selected");
+                                    var rate5 = $('#rate5').hasClass("selected");
+                                    if(rate1){
+                                        pointer = 1;
+                                    }
+                                    else if(rate2){
+                                        pointer = 2;
+                                    }
+                                    else if(rate3){
+                                        pointer = 3;
+                                    }
+                                    else if(rate4){
+                                        pointer = 4;
+                                    }
+                                    else if(rate5){
+                                        pointer = 5;
+                                    }
+                                    else {
+                                        pointer = 0;
+                                    }
+                                    var slug = "{{ Post.Slug | safe }}";
+
+                            $.ajax({
+                                type:'POST',
+                                url:'{% url "blog:SetPoint" %}',
+                                data:{
+                                    rating: pointer,
+                                    Slug: slug,
+                                    csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+                                    action: 'post',
+                                },    
+                                success:function(json){ 
+                                    if (json.status == true){
+                                        location.reload();
+                                    }else{
+                                        alert(json.error)
+                                    }
+                                },
+                                error : function(xhr,errmsg,err) {
+                                    alert('صفحه را مجددا بارگذاری کنید و دوباره امتحان کنید');
+                                    console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                                }
+                            });
+
+
+                                });
+                                </script>
+                            </div>
+                        </div>
+                        <div class="clearfix">
+
+                        </div>
+                        <div class="blog-post-content">
+                            <p>{% autoescape off %}{{Post.Content}}{% endautoescape %}</p>
+                            <br>
+                            <div class="blog-post-tags">
+                                {% for item in Tags %}
+                                <!-- <a href="#"> -->
+                                    <div class="blog-post-tag">
+                                        <h2>
+                                            {{item.Title}}
+                                        </h2>
+                                    </div>
+                                <!-- </a> -->
+                                {% endfor %}
+
+                            </div>
+                        </div>
+                        {% block comment %}
+                            {% include "blog/pages/post_comment.html" %}
+                        {% endblock %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4 col-lg-4 col-md-4 col-12">
+                <div class="blog-sidebar">
+                    <p class="blog-sidebar-title">درباره نویسنده</p>
+                    <p>
+                        {{Writer}}
+                    </p>
+
+                </div>
+                <div class="blog-sidebar blog-sidebar-2nd">
+                    <p class="blog-sidebar-title">آخرین نوشته ها</p>
+                    <ul>
+                        {% for item in LastPost %}
+                        <a href="{% url "blog:BlogPost" item.Slug %}">
+                            <li>{{item.Title}}</li>
+                        </a>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="blog-sidebar blog-sidebar-2nd">
+                    <p class="blog-sidebar-title">دسته بندی ها</p>
+                    <ul>
+                        {% for item in Categories %}
+                        <!-- <a href="#"> -->
+                            <li>{{item.Title}}</li>
+                        <!-- </a> -->
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block footer-section %}
+    {% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+    {% include "nakhll_market/parents/footermain.html" %}
+{% endblock %}

@@ -1,0 +1,1326 @@
+{% load jformat %}
+{% load i18n static %}
+{% load compress %}
+<!-- headermain -->
+<!DOCTYPE html>
+<html lang="en">
+<head> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="language" content="Persion">
+    <meta name="author" content="viscal">
+    <meta name="theme-color" content="#f1fbff" />
+    <meta name="msapplication-navbutton-color" content="#f1fbff">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#f1fbff">
+    
+    {% compress css %}
+        <link rel="stylesheet" href="{% static "css/fontiran.css" %}" />
+        <link rel="stylesheet" href="{% static "css/all.min.css" %}" />
+        <link rel="stylesheet" href="{% static "css/ion.rangeSlider.min.css" %}" />
+        <link  rel="stylesheet" href="{% static "css/persianDatepicker.css" %}" />
+        <link rel="stylesheet" type="text/css" href="{% static "css/slick.css" %}" />
+        <link rel="stylesheet" type="text/css" href="{% static "css/slick-theme.css" %}" />
+        <link rel="stylesheet" href="{% static "css/bootstrap-rtl.min.css" %}" />
+        <link rel="stylesheet" href="{% static "css/chosen.css" %}" />
+        <link rel="stylesheet" href="{% static "css/style.css" %}" />
+    {% endcompress %}
+
+    <!-- faveicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static "images/favicon/apple-touch-icon.pn" %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static "images/favicon/favicon-32x32.png" %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static "images/favicon/favicon-16x16.png" %}">
+    <link rel="manifest" href="{% static "images/favicon/site.webmanifest" %}">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-156540827-1"></script>
+      
+    <!--JavaScript-->
+    {% compress js file base %}
+        <script type="text/javascript" charset="utf-8" src="{% static "js/jquery4.min.js" %}"></script>
+        <script type="text/javascript" charset="utf-8" src="{% static "js/jquery.min.js" %}"></script>
+        <script type="text/javascript" charset="utf-8" src="{% static "js/persianDatepicker.js" %}"></script>
+        <script type="text/javascript" charset="utf-8" src="{% static "js/ion.rangeSlider.min.js" %}"></script>
+    {% endcompress %}
+    {% compress js inline %}
+    <script type="text/javascript" charset="utf-8" >
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-156540827-1');
+    </script>
+    {% endcompress %}
+    <!--set session-->
+    {% if not request.user.is_authenticated %}
+        <script text="javascripts">
+            $('document').ready(function() {
+                var this_page_path = '{{request.path|safe}}';
+                $.ajax(
+                    {
+                        type: 'POST',
+                        url: '{% url "nakhll_market:set_session" %}',
+                        data :{
+                            this_path:this_page_path,
+                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                        },
+                        success: function (json) {
+                            if (json.status == true){
+                                console.log(json.status);
+                            }
+                        },
+                        error: function (xhr) {
+                            console.log(xhr.status + ": " + xhr.responseText);
+                        }
+                    }
+                );      
+            })
+        </script>
+    {% endif %}
+<!-- headermain -->
+
+
+<title>بازار نخل | کاربران</title>
+</head>
+
+<!-- headertag-section -->
+<header>
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-2 col-lg-3 col-md-3 col-sm-6 col-12 logo-header">
+                <a href="/"><img src="{% static "images/Logo SVG.svg" %}" alt="لوگو" class="img-responsive"></a>
+            </div>
+            <div class="col-xl-8 col-lg-6 col-md-6 col-sm-6 col-12 search-header">
+                <ul class="menu-top">
+                    {% for op in Options %}
+                        {% if forloop.first %}
+                            <li><a class="active-text" href="{{ op.Value_2 }}">{% autoescape off %}{{ op.Value_1 }}{% endautoescape %}</a></li>
+                            {% else %}
+                            <li><a href="{{ op.Value_2 }}">{% autoescape off %}{{ op.Value_1}}{% endautoescape %}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+                <form class="search-top" method="POST" action="/pages/search/">
+                    {% csrf_token %}
+                    <img src="{% static "images/search (1).svg" %}" alt="search">
+                    <input type="text" placeholder="جستجو در کالا ها" name="search" required>
+                    <button class="submit-search">جستجو</button>
+                </form>
+            </div>
+            <div class="col-xl-2 col-lg-3 col-md-3 col-sm-12 col-12 icon-header">
+                <div class="icon-top">
+                    {% if request.user.is_authenticated %}
+                        <div class="user-top dropdown cls-avatar">               
+                            <a href="{% url "nakhll_market:Dashbord" %}" class="dropdown-toggle" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <img src="{% static "images/useronline.svg" %}" alt="ناحیه کاربری">
+                            </a>
+                            <div class="dropdown-menu dropdown-primary sh-cart">
+
+                                <a href="{% url "nakhll_market:Dashbord" %}" >
+                                <div class="profile-top">
+                                    <img src="{{This_User_Profile.Image_thumbnail_url}}" class="profileimg" alt="profileimg">
+                                    <span>خوش آمدید</span>
+                                    <h3>{{request.user.first_name}}</h3>
+                                </div>
+                                </a>
+                        
+                                <a class="wallet-filled" href="{% url "nakhll_market:Wallet" %}">
+                                    <i class="fal fa-wallet"></i> کیف پول : <span class="numbersprice">{{This_User_Inverntory}}</span> ریال
+                                </a>
+                                    <div class="dropdown-listmenu">
+                                        <a class="dropdown-item" href="{% url "nakhll_market:Dashbord" %}"><i class="fad fa-user"></i> پروفایل </a>
+                                        <!-- <a class="dropdown-item" href="#"><img src="{% static "images/shopping-basket.svg" %}" alt=""> فروش های اخیر</a> -->
+                                        <a class="dropdown-item" href="{% url "nakhll_market:UserShops" %}"><i class="fad fa-store-alt"></i> مدیریت حجره </a>
+                                        <a class="dropdown-item" href="{% url 'logout' %}"><i class="fad fa-sign-out-alt"></i> خروج</a>
+                                    </div>
+                                </div>
+                        </div>
+                    {% else %}
+                            <div class="user-top dropdown">
+                                <a data-toggle="modal" data-target=".bd-example-modal-lg">
+                                    <img src="{% static "images/user.svg" %}" alt="ناحیه کاربری">
+                                    <p> ورود <br> عضویت </p>
+                                </a>
+                            </div>
+                    {% endif %}
+
+                    {% if request.user.is_authenticated %}
+                        <div class="cart-top dropdown">
+                            <a class="dropdown-toggle" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <img src="{% static "images/shopping-bag.svg" %}" alt="سبد خرید">
+                            </a>
+                            <div class="dropdown-menu dropdown-primary sh-cart cls-cart">
+                                
+                                <span>تعداد کالا</span><span class="shopBagProductCount"></span><a href="{% url "Payment:cartdetail" %}" class="ainsh">مشاهده سبد&zwnj;خرید</a>
+                                <br>
+                                
+                                <P>مبلغ : <span id="totalPrice" class="numbersprice"> 0 </span>ریال</P>
+                                <p>
+                                    <a href="{% url "Payment:cartdetail" %}" class="savecart"><i class="far fa-cart-plus"></i> ثبت سفارش </a>
+                                </p>
+                                <div class="hr-line-in-shop-bag">
+
+                                </div>
+                                <div id="loaderDiv" class="loaderDivclass">
+                                    در حال بارگذاری
+                                    <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری">
+                                </div>
+                                <div class="shop-bag-products-empty">
+                                    <p>
+                                        محصولی در سبد خرید شما وجود ندارد!
+                                    </p>
+                                </div>
+                                <div class="shop-bag-products">
+                                </div>
+                                <p class="shop-bag-more-products-p">
+                                    <a href="{% url "Payment:cartdetail" %}" class="shop-bag-more-products"> بیشتر... </a>
+                                </p> 
+                            </div>
+                            <div class="shop-bag-count"></div>
+                        </div>
+                    {% else %}
+                        <div class="cart-top dropdown">
+                            <a class="dropdown-toggle" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="{% url "nakhll_market:AccountLogout" %}">
+                                <img src="{% static "images/shopping-bag.svg" %}" alt="سبد خرید">
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="modal fade bd-example-modal-lg" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content radius-10px">
+          <div class="blue-thick-line-top"></div>
+            <div class="modal-header login-modal-header">
+                <h5 class="modal-title center-modal-title" id="exampleModalLabel">ورود به سایت</h5>
+                <button type="button" class="close-login-modal" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body login-modal-body">
+                <div id="login-page">
+                    <div class="login-alerts-section">
+                        <p>لطفا خطاهای زیر را برطرف کنید:</p>
+                        <ul>
+                            <li id="alert-li-mobile-empty"></li>
+                            <li id="alert-li-mobile-digits"></li>
+                            <li id="alert-li-mobile-length"></li>
+                            <li id="alert-li-mobile-valid"></li>
+                            <li id="alert-li-mobile-match"></li>
+                            <li id="alert-li-password-empty"></li>
+                            <li id="alert-li-password-english"></li>
+                            <li id="alert-li-system-error"></li>
+                        </ul>
+                    </div>
+                    <form id="login-form">
+                        {% csrf_token %}
+                        <div class="input-login-modal input-mob-login">
+                            <div class="before-input-icon">
+                                <i class="fal fa-phone fix-before-input-icon-place"></i>
+                            </div>
+                            <div class="main-input-login">
+                                <input id="mobilenumber" name="mobilenumber" type="number" pattern="[0-9]{11}" maxlength="11" placeholder="شماره همراه خود را وارد کنید" class="input-login login-input-modal">
+                            </div>
+                        </div>
+                        <div class="input-login-modal input-password-login">
+                            <div class="before-input-icon">
+                                <i class="fal fa-lock-alt fix-before-input-icon-place"></i>
+                            </div>
+                            <div class="main-input-login">
+                                <input id="password" name="password" type="password" placeholder="رمز عبور خود را وارد کنید" class="input-login login-input-modal">
+                            </div>
+                        </div>
+                        <div class="under-inputs">
+                            <div class="remember-checkbox">
+                                <input type="checkbox" name="remember_me" id="f-pass" class="customCheckBox"> <label for="f-pass"> مرا به خاطر بسپار </label>
+                            </div>
+                            <div class="forget-password-login-modal">
+                                <a href="{% url "nakhll_market:ShowGetPhoneNumber" %}">رمز عبور خود را فراموش کرده اید؟</a>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="login-button-modal">
+                            <button id="login-button">
+                                ورود
+                            </button>
+                            <div id="loaderDiv"> لطفا منتظر بمانید <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری"></div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer login-footer-modal">
+                <span>عضو جدید هستید؟</span> <a href="{% url "nakhll_market:AccountRegister" %}">ثبت نام کنید</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- {% compress js inline %} -->
+    {% if request.user.is_authenticated %}
+        <script type="text/javascript" charset="utf-8">
+            $(".shop-bag-more-products-p").hide();
+            $(".shop-bag-products-empty").hide();
+            $(".shop-bag-count").hide();
+            $("#loaderDiv").show();
+            $(document).ready(function () {
+                shopping_cart();
+            })
+
+            function shopping_cart() {
+
+            
+
+            var shopBagProductCount;
+            var txt1 ="";
+                $.ajax(
+                    {
+                        type: 'GET',
+                        url: '{% url "restapi:get_factor_products" %}',
+
+                        success: function (json) {
+                            shopBagProductCount = json.FK_FactorPost.length;
+                            if(shopBagProductCount > 0)
+                            {
+                                $(".shop-bag-products-empty").hide();
+                                $(".shop-bag-count").show();
+                                $(".shop-bag-count").text(shopBagProductCount);
+                                var totalPrice = 0;
+                                for (var i=0; i < shopBagProductCount; i++){
+                                    totalPrice += json.FK_FactorPost[i].get_total_item_price;
+                                }
+                                $("#totalPrice").text(totalPrice);
+                                $(".shopBagProductCount").text(shopBagProductCount);
+                                if (shopBagProductCount <= 3)
+                                {
+                                var i;
+                                for (i=0; i < shopBagProductCount ; i++) {
+                                    txt1 += '<a href="/product/' +
+                                    json.FK_FactorPost[i].FK_Product.FK_Shop.Slug +
+                                    '/' + 
+                                    json.FK_FactorPost[i].FK_Product.Slug + 
+                                    '"> <div class="row shop-bag-product"> <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-12 shop-bag-product-1st-col"> <div class="cart-show"> <img src="' + 
+                                    json.FK_FactorPost[i].FK_Product.Image_thumbnail_url + 
+                                    '" alt="عکس محصول"> </div> </div> <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-12 shop-bag-product-2nd-col"> <div class="shop-bag-product-content">' + 
+                                    json.FK_FactorPost[i].FK_Product.Title +
+                                    ' (تعداد : '+
+                                    json.FK_FactorPost[i].ProductCount +
+                                    ') <div class="shop-bag-product-price"> <span class="numbersprice">' +
+                                    json.FK_FactorPost[i].get_total_item_price + 
+                                    '</span> ریال </div> </div> </div> </div> </a> <div class="hr-line-in-shop-bag"> </div>';
+                                }  
+                                $(".shop-bag-products").html(txt1);
+                                }
+                                else {
+                                    var i;
+                                    for (i=0; i < 3 ; i++) {
+                                        txt1 += '<a href="/product/' +
+                                    json.FK_FactorPost[i].FK_Product.FK_Shop.Slug +
+                                    '/' + 
+                                    json.FK_FactorPost[i].FK_Product.Slug + 
+                                    '"> <div class="row shop-bag-product"> <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-12 shop-bag-product-1st-col"> <div class="cart-show"> <img src="'+ 
+                                    json.FK_FactorPost[i].FK_Product.Image_thumbnail_url + 
+                                    '" alt="عکس محصول"> </div> </div> <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-12 shop-bag-product-2nd-col"> <div class="shop-bag-product-content">' + 
+                                    json.FK_FactorPost[i].FK_Product.Title +
+                                    ' (تعداد : '+
+                                    json.FK_FactorPost[i].ProductCount +
+                                    ') <div class="shop-bag-product-price"> <span class="numbersprice">' +
+                                    json.FK_FactorPost[i].get_total_item_price + 
+                                    '</span> ریال </div> </div> </div> </div> </a> <div class="hr-line-in-shop-bag"> </div>';
+                                }  
+                                    $(".shop-bag-products").html(txt1);
+                                    $(".shop-bag-more-products-p").show();
+                                }
+                            }
+                            else {
+                                $(".shopBagProductCount").text(0);
+                                $(".shop-bag-products-empty").show();
+                            }
+                            $("#loaderDiv").remove();
+                            $(".numbersprice").digits();
+                        },
+                        error: function (xhr) {
+                            $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات " +
+                                "<br><a href='/account/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                            $("#loaderDiv").hide();
+                            console.log(xhr.status + ": " + xhr.responseText);
+                        }
+                    }
+                );
+            }
+        </script>
+    {% endif %}
+
+<script type="text/javascript" charset="utf-8" src="{% static "js/register_login/login.js" %}"></script>
+<script type="text/javascript" charset="utf-8">
+    var Mobempty, Mobdigits, Moblength, Mobvalid, Mobmatch, Passempty, Passeng, Syserror;
+    var booleans = [Mobempty, Mobdigits, Moblength, Mobvalid, Mobmatch, Passempty, Passeng, Syserror];
+    for (var i=0; i<booleans.length; i++)
+    {
+        booleans[i] = false;
+    }
+    $(".login-alerts-section").hide();
+    checkIsThereAlert = function () {
+        for (var i=0; i<booleans.length; i++)
+        {
+            if(booleans[i])
+            {
+                $(".login-alerts-section").show();
+                return;
+            }
+            else
+            {
+                $(".login-alerts-section").hide();
+            }
+        }
+    }
+    //#region Check Registered MobileNumber - Ajax
+    var RegisteredMobileNumber = false;
+    $("#mobilenumber").on("input", function () {
+            //Variables
+            var MobileLength = $(this).val().length;
+            var MobileNumber;
+
+            //Initializes
+            // $("#login-button").prop("disabled", true);
+            // $("#login-button").addClass('login-button-disabled');
+            
+            
+            if (MobileLength === 11 && ValidMobileNumber === true) {
+                MobileNumber = $(this).val();
+                $.ajax(
+                    {
+                        type: 'POST',
+                        url: '{% url "nakhll_market:Check_New_PhoneNumber" %}',
+                        data: {
+                            phonenumber: MobileNumber,
+                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                            action: 'post'
+                        },
+                        success: function (json) {
+                            if (json.status) {
+                                if (json.msg === 'is_exists') {
+                                    $("#alert-li-mobile-match").hide();
+                                    booleans[4] = false;
+                                    if ($("#password").val() !== '') {
+                                        // $("#login-button").prop("disabled", false);
+                                        // $("#login-button").removeClass('login-button-disabled');
+                                        $("#mobilenumber").removeClass("fieldEmpty");
+                                        $(".input-mob-login").removeClass("fieldEmpty");
+                                    }
+                                    RegisteredMobileNumber = true;
+                                }
+                                else if (json.msg === 'is_not_exists') {
+                                    $("#mobilenumber").addClass("fieldEmpty");
+                                    $(".input-mob-login").addClass("fieldEmpty");
+                                    $("#alert-li-mobile-match").show();
+                                    booleans[4] = true;
+                                    // $("#login-button").prop("disabled", true);
+                                    // $("#login-button").addClass('login-button-disabled');
+                                    RegisteredMobileNumber = false;
+                                }
+                            }
+                            else {
+                                $("#alert-li-system-error").show();
+                                booleans[7] = true;
+                                // $("#login-button").prop("disabled", true);
+                                // $("#login-button").addClass('login-button-disabled');
+                                RegisteredMobileNumber = false;
+                            }
+                            checkIsThereAlert();
+                        },
+                        error: function (xhr) {
+                            $("#alert-li-system-error").show();
+                            booleans[7] = true;
+                            console.log(xhr.status + ": " + xhr.responseText);
+                            RegisteredMobileNumber = false;
+                            checkIsThereAlert();
+                        }
+                    }
+                );
+            }
+        })
+
+
+        $("#login-button").on("click", function (e) {
+            e.preventDefault();
+            var isItValid = false;
+            isItValid = checkFormValidation();
+            if (isItValid)
+            {
+                if(RegisteredMobileNumber)
+                {
+                        $("#loaderDiv").show();
+                        $("#login-button").prop("disabled", true);
+                        $("#login-button").addClass('login-button-disabled');
+                        
+                        var  MobileNumbers = $('#mobilenumber').val();
+                        var  PasswordUser = $('#password').val();
+                        var  RememberMe = '0';
+                        if ($('#f-pass').is(":checked")){
+                            var  RememberMe = '1';
+                        }
+                        $.ajax(
+                            {
+                                type: 'POST',
+                                url: '{% url "nakhll_market:login_to_account" %}',
+                                data: {
+                                    mobilenumber : MobileNumbers,
+                                    password: PasswordUser,
+                                    remember_me: RememberMe,
+                                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                                },
+                                success: function (json) {
+                                    console.log('True')
+                                    if (json.status == true) {
+                                        if (json.message == '200') {
+                                            $('.errorbox').hide();
+                                            var base_url = "" + json.next;
+                                            window.location.href = base_url;
+                                        }
+                                        else if (json.message == '400') {
+                                            console.log('400');
+                                            $('#errorbox-txt').html('شماره موبایل یا رمز عبور شما اشتباه می باشد.');
+                                            $('.errorbox').show();
+                                        }
+                                    }
+                                    else {
+                                        console.log(json.message);
+                                        $('errorbox-txt').text();
+                                        $('.errorbox').show();
+                                    }
+                                },
+                                error: function (xhr) {
+                                    console.log('False')
+                                    console.log(xhr.status + ": " + xhr.responseText);
+                                }
+                            }
+                        );
+                    }
+                    else if(!RegisteredMobileNumber && !ajaxProcessing) {
+                        //Variables
+                        var MobileLength = $(this).val().length;
+                        var MobileNumber;
+                        
+                        //Initializes
+                        // $("#login-button").prop("disabled", true);
+                        // $("#login-button").addClass('login-button-disabled');
+                        
+                        
+                        if (MobileLength === 11 && ValidMobileNumber === true) {
+                            MobileNumber = $(this).val();
+                            $.ajax(
+                                {
+                                    type: 'POST',
+                                    url: '{% url "nakhll_market:Check_New_PhoneNumber" %}',
+                                    data: {
+                                        phonenumber: MobileNumber,
+                                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                                        action: 'post'
+                                    },
+                                    success: function (json) {
+                                        if (json.status) {
+                                            if (json.msg === 'is_exists') {
+                                                $("#alert-li-mobile-match").hide();
+                                                booleans[4] = false;
+                                                $(".input-mob-login").removeClass("fieldEmpty");
+                                                RegisteredMobileNumber = true;
+                                                $("#loaderDiv").show();
+                                                $("#login-button").prop("disabled", true);
+                                                $("#login-button").addClass('login-button-disabled');
+
+                                                var  MobileNumbers = $('#mobilenumber').val();
+                                                var  PasswordUser = $('#password').val();
+                                                var  RememberMe = '0';
+                                                if ($('#f-pass').is(":checked")){
+                                                    var  RememberMe = '1';
+                                                }
+                                                $.ajax(
+                                                    {
+                                                        type: 'POST',
+                                                        url: '{% url "nakhll_market:login_to_account" %}',
+                                                        data: {
+                                                            mobilenumber : MobileNumbers,
+                                                            password: PasswordUser,
+                                                            remember_me: RememberMe,
+                                                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                                                        },
+                                                        success: function (json) {
+                                                            console.log('True')
+                                                            if (json.status == true) {
+                                                                if (json.message == '200') {
+                                                                    $('.errorbox').hide();
+                                                                    var base_url = "" + json.next;
+                                                                    window.location.href = base_url;
+                                                                }
+                                                                else if (json.message == '400') {
+                                                                    console.log('400');
+                                                                    $('#errorbox-txt').html('شماره موبایل یا رمز عبور شما اشتباه می باشد.');
+                                                                    $('.errorbox').show();
+                                                                }
+                                                            }
+                                                            else {
+                                                                console.log(json.message);
+                                                                $('errorbox-txt').text();
+                                                                $('.errorbox').show();
+                                                            }
+                                                        },
+                                                        error: function (xhr) {
+                                                            console.log('False')
+                                                            console.log(xhr.status + ": " + xhr.responseText);
+                                                        }
+                                                    }
+                                                ); 
+                                            }
+                                            else if (json.msg === 'is_not_exists') {
+                                                $("#mobilenumber").addClass("fieldEmpty");
+                                                $(".input-mob-login").addClass("fieldEmpty");
+                                                $("#alert-li-mobile-match").show();
+                                                booleans[4] = true;
+                                                // $("#login-button").prop("disabled", true);
+                                                // $("#login-button").addClass('login-button-disabled');
+                                                RegisteredMobileNumber = false;
+                                            }
+                                        }
+                                        else {
+                                            $("#alert-li-system-error").show();
+                                            booleans[7] = true;
+                                            // $("#login-button").prop("disabled", true);
+                                            // $("#login-button").addClass('login-button-disabled');
+                                            RegisteredMobileNumber = false;
+                                        }
+                                        checkIsThereAlert();
+                                    },
+                                    error: function (xhr) {
+                                        $("#alert-li-system-error").show();
+                                        booleans[7] = true;
+                                        console.log(xhr.status + ": " + xhr.responseText);
+                                        RegisteredMobileNumber = false;
+                                        checkIsThereAlert();
+                                    }
+                                }
+                            );
+                        }
+                    }
+                }
+                else {
+                    return false;
+                }
+            })
+    //#endregion
+</script>
+<!-- {% endcompress %} -->
+<!-- headertag-section -->
+
+<!-- menuheader-section -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light navbar-section">
+    <div class="container">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="add-shop-mobile" href="{% url "nakhll_market:Shop_Manager_AddNewShop" %}">حجره دار شوید</a>
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav menu-navbar">
+                    {% for item in MenuList %}
+                        {% if forloop.counter == 5 %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="/pages/connectus/">{{item.Value_1}}</a>
+                            </li>
+                        {% elif forloop.counter == 6 %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="/pages/complaint/">{{item.Value_1}}</a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="/pages/static/{{item.Value_2}}/">{{item.Value_1}}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+                <ul class="navbar-nav menu-navbar mr-auto add-shop">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url "nakhll_market:Shop_Manager_AddNewShop" %}">حجره دار شوید</a>
+                    </li>
+                </ul>
+            </div>
+
+    </div>
+</nav>
+<!-- menuheader-section -->
+
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-xl-3">
+
+                <div class="profile-sidebar-site">
+                    <!-- topsidebar -->
+                    <div class="profile-sidebar">
+                        {% if request.user.is_authenticated %}
+                            {% if userProfile %}
+                                    <img src="{{userProfile.Image_thumbnail_url}}" alt="profile-img">
+                            {% endif %}
+                        {% endif %}
+                        <h4>
+                        {% if request.user.is_authenticated %}
+                            {{request.user.first_name}} {{request.user.last_name}}
+                        {% endif %}
+                        </h4>
+                        <a href="{% url "nakhll_market:Wallet" %}">
+                            <h5>
+                                <img src="https://cdn0.iconfinder.com/data/icons/shopping-and-ecommerce-1/38/Shopping_icons_1_Converted-09-512.png"
+                                    alt=".">
+                                    {% if request.user.is_authenticated %}
+                                        {% if userWallet %}
+                                            کیف پول : <span class="priceline"><span class="numbersprice">{{userWallet.Inverntory}}</span></span> ریال
+                                        {% endif %}
+                                    {% endif %}
+                            </h5>
+                        </a>
+                    </div>
+
+
+
+
+                    <div class="profile-sidebar-icon">
+                        <a href="{% url 'logout' %}">
+                            <div>
+                                <i class="fal fa-sign-out"></i>
+                            </div>
+                        </a>
+                        <a href="{% url "nakhll_market:Message" %}">
+                            <div>
+                                <div class="new-message-count"></div>
+                                <i class="far fa-bell"></i>
+                            </div>
+                        </a>
+                        <a href="{% url "nakhll_market:ShowGetPhoneNumber" %}">
+                            <div>
+                                <i class="fal fa-lock"></i>
+                            </div>
+                        </a>
+                    </div>
+
+                    <script>
+                        // $("#new-message").hide();
+                        $(".new-message-count").hide();
+                        $(document).ready( function () {
+                            $.ajax(
+                                {
+                                    type: 'GET',
+                                    url: '{% url "Profile:CheckUserMessage" %}',
+                                    success: function (json) {
+                                        if(json.status == true)
+                                        {
+                                            $(".new-message-count").show();
+                                            $(".new-message-count").text(json.count);
+                                        }
+                                    },
+                                    error: function () {
+                                        $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات <br> " + json.error +
+                                            "<br><a href='/account/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                                        $("#loaderDiv").hide();
+                                        console.log(xhr.status + ": " + xhr.responseText);
+                                    }
+                                }
+                            );
+                        })
+
+                    </script>
+                    <!-- topsidebar -->
+                    <div class="profile-sidebar-main">
+
+                        <a href="/profile/dashboard/">
+                            <button>
+                                <i class="fas fa-id-badge"></i>
+                                <h5>داشبورد</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/transaction/">
+                            <button>
+                                <i class="fad fa-clipboard-list"></i>
+                                <h5>تراکنش ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/factor/">
+                            <button>
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <h5>فاکتور ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/ticketing/">
+                            <button>
+                                <i class="fad fa-user-headset"></i>
+                                <h5>پشتیبانی</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/shops/">
+                            <button>
+                                <i class="fas fa-store"></i>
+                                <h5>مدیریت حجره</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/review/">
+                            <button>
+                                <i class="fad fa-comments-alt"></i>
+                                <h5>نقد ها و نظرات</h5>
+                            </button>
+                        </a>
+
+                        {% if request.user.is_staff %}
+                            <!-- menu_for_alluser -->
+                            <a href="/profile/alert/">
+                                <button>
+                                    <i class="fas fa-bell"></i>
+                                    <h5>هشدار ها</h5>
+                                </button>
+                            </a>
+                            
+                            <a href="{% url "nakhll_market:Show_All_User_Info" %}">
+                                <button class="activebtn">
+                                    <i class="fas fa-users"></i>
+                                    <h5>کاربران</h5>
+                                </button>
+                            </a>
+                            
+                            <a href="{% url "nakhll_market:ManagementCoupunList" %}">
+                                <button>
+                                    <i class="fad fa-window-maximize"></i>
+                                    <h5>کوپن ها</h5>
+                                </button>
+                            </a>
+                            
+                            <a href="{% url "nakhll_market:Show_All_Content" %}">
+                                <button>
+                                    <i class="fas fa-sliders-h"></i>
+                                    <h5>مدیریت محتوا</h5>
+                                </button>
+                            </a>
+                            
+                            <!-- <a href="/profile/shops/manage_campaign_list/">
+                                <button>
+                                    <i class="fas fa-tag"></i>
+                                    <h5>کمپین ها</h5>
+                                </button>
+                            </a> -->
+                            <!-- menu_for_alluser -->
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-9">
+                <!-- header-profile -->
+                <div class="row">
+                    <div class="col-xl-4">
+                        <div class="body-top-profile">
+                            <span>
+                                {% if request.user.is_authenticated %}
+                                    {% if userProfile %}
+                                        امتیاز کاربر : {{userProfile.Point}}
+                                    {% endif %} 
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-xl-4">
+                        <div class="body-top-profile">
+                        <a href="{% url "nakhll_market:Wallet" %}">
+                            {% if request.user.is_authenticated %}
+                                {% if userWallet %}
+                                        کیف پول : <span class="priceline"><span class="numbersprice">{{userWallet.Inverntory}}</span></span> ریال
+                                {% endif %} 
+                            {% endif %}
+                        </a>
+                        </div>
+                    </div>
+                    <div class="col-xl-4">
+                        <div class="body-top-profile">
+                            <span>
+                                {% if request.user.is_authenticated %}
+                                    {% if userProfile %}
+                                        کد معرف شما : {{userProfile.UserReferenceCode}}
+                                    {% endif %} 
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <!-- header-profile -->
+
+                <div class="alarm-section">
+                    <div class="row">
+
+                        {% if ShowAlart %}
+                        <div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                                <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                                <p>
+                                    {{AlartMessage}}
+                                </p>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                        <div class="dashboard">
+                            <h4>مدیریت کاربران <a class="btn btn-primary btn-all btn-left"
+                                    href="{% url "nakhll_market:Add_New_User" %}">ایجاد کاربر جدید</a></h4>
+                            <br>
+                            <div class="hr-line-under-dashboard">
+
+                            </div>
+                            <div class="dashboard-filters">
+                                <h4>فیلتر</h4>
+                            </div>
+                            <form method="POST" action="{% url "nakhll_market:Show_All_User_Info" %}">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-xl-6 col-lg-6 col-md-6">
+                                        <div class="input-group mb-3">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" id="basic-addon1">نام</span>
+                                            </div>
+                                            <input type="text" class="form-control" aria-label="Username"
+                                                aria-describedby="basic-addon1" name="First_Name">
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-6 col-lg-6 col-md-6">
+                                        <div class="input-group mb-3">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" id="basic-addon1">نام خانوادگی</span>
+                                            </div>
+                                            <input type="text" class="form-control" aria-label="Username"
+                                                aria-describedby="basic-addon1" name="Last_Name">
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-6 col-lg-6 col-md-6">
+                                        <div class="input-group mb-3">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" id="basic-addon1">شماره موبایل</span>
+                                            </div>
+                                            <input type="text" class="form-control"
+                                                aria-label="Username" aria-describedby="basic-addon1" name="PhoneNumber" pattern="[0-9]{,11}">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xl-6 col-lg-6 col-md-6">
+                                        <div class="search-button">
+                                            <button>جستجو</button>
+                                        </div>
+                                        <div class="show-cellars">
+                                            <a href="{% url "nakhll_market:Show_All_Shoper_User_Info" %}">نمایش حجره داران</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                            <br>
+                            <div class="hr-line-under-dashboard">
+
+                            </div>
+                            <table class="table">
+
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>تعداد کاربران</th>
+                                        <th>تعداد حجره ها</th>
+                                        <th>حجره های منتشر نشده</th>
+                                        <th>تعداد حجره داران</th>
+                                        <th>تعداد کاربران مسدود شده</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr style="background-color: #007bff70">
+                                        <td>{{UserCount}}</td>
+                                        <td>{{ShopCount}}</td>
+                                        <td>{{PublishShopCount}}</td>
+                                        <td>{{ShoperCount}}</td>
+                                        <td>{{BlockCount}}</td>
+                                    </tr>
+                                </tbody>
+
+                            </table>
+                            <div class="hr-line-under-dashboard">
+
+                            </div>
+                            <table class="table">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col">نام کاربری</th>
+                                        <th scope="col">نام</th>
+                                        <th scope="col">نام خانوادگی</th>
+                                        <th scope="col">شماره موبایل</th>
+                                        <th scope="col">ایمیل</th>
+                                        <th scope="col">وضعیت</th>
+                                        <th scope="col">نمایش</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in Profiles %}
+                                        <tr>
+                                            <td>{{item.FK_User.username}}</td>
+                                            <td>{{item.FK_User.first_name}}</td>
+                                            <td>{{item.FK_User.last_name}}</td>
+                                            <td>{{item.MobileNumber}}</td>
+                                            <td>{{item.FK_User.email}}</td>
+                                            {% if item.FK_User.is_active %}
+                                            <td title="برای غیر فعال کردن کاربر کلیک کنید."><a
+                                                    href="{% url 'nakhll_market:Change_User_Status' item.FK_User.id %}">
+                                                    <p style="color: green">فعال</p>
+                                                </a></td>
+                                            {% else %}
+                                            <td title="برای فعال کردن کاربر کلیک کنید."><a
+                                                    href="{% url 'nakhll_market:Change_User_Status' item.FK_User.id %}">
+                                                    <p style="color: red">غیر فعال</p>
+                                                </a></td>
+                                            {% endif %}
+                                            <td><a href="{% url 'nakhll_market:Show_User_Info' item.FK_User.id %}"><i class="fad fa-eye"></i></a></td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            <div class="col-12">
+                                <div class="row pagerow">
+                                    <nav aria-label="Page navigation example">
+                                        <ul class="pagination">
+                                            {% if Profiles.has_previous %}
+                                                <li class="page-item"><a class="page-link" href="?page=1">اولی</a></li>
+                                                <li class="page-item"><a class="page-link" href="?page={{Profiles.previous_page_number}}">قبلی</a></li>
+                                            {% endif %}
+                                            {% for num in Profiles.paginator.page_range %}
+                                                {% if num == Profiles.number %}
+                                                    <li class="page-item"><a class="page-link" href="?page={{num}}"><strong>{{num}}</strong></a></li>
+                                                {% elif num > Profiles.number|add:'-3' and num < Profiles.number|add:'3' %}
+                                                    <li class="page-item"><a class="page-link" href="?page={{num}}">{{num}}</a></li>
+                                                {% endif %}
+                                            {% endfor %}
+                                            {% if Profiles.has_next %}
+                                                <li class="page-item"><a class="page-link" href="?page={{Profiles.next_page_number}}">بعدی</a></li>
+                                                <li class="page-item"><a class="page-link" href="?page={{Profiles.paginator.num_pages}}">آخری</a></li>
+                                            {% endif %}
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- footer-section -->
+<footer>
+        <div class="container">
+            <div class="row footer-top">
+                <div class="col-xl-8 col-lg-8 col-md-6 col-sm-12 col-12 text-top-footer">
+                    <p> با خدمات  بازار نخل در ۷ روز هفته همراه ما باشید.</p>
+                </div>
+                <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 col-6 call-footer">
+                    <div>
+                        <i class="fal fa-headphones-alt"></i>
+                    </div>
+
+                    <div>
+                        شماره تماس
+                        <br> 034-32476561
+                    </div>
+                </div>
+
+                <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 col-6 call-footer">
+                    <div>
+                        <i class="fal fa-envelope"></i>
+                    </div>
+
+                    <div>
+                        ایمیل
+                        <br> info[atsine]nakhll.com
+                    </div>
+                </div>
+            </div>
+        </div>
+        <section id="footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 about-footer">
+                        <div class="logo-info">
+                            <div class="logo-footer">
+                                <img src="{% static "images/Page-1.png" %}" alt="logo">
+                            </div>
+                            <div class="about-footer">
+                                <p>
+                                   رویکرد اصلی بازار نخل زمینه سازی جهت حضور کسب و کار هایی است اصیل و پر معنا در سرتاسر ایران، که علاوه بر آن سهم بالایی از تجارب مردم را به خود اختصاص میدهد .
+                                    <a href="/pages/static/aboutus/">بیشتر بخوانید</a>
+                                </p>
+                                <div class="icon-footer">
+                                    <a href="https://www.instagram.com/nakhll1/" target="_blank"><i class="fab fa-instagram"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-6">
+                        <div class="list-footer">
+                            <h6>فهرست عناوین</h6>
+                            <ul>
+                                {% for item in MenuList %}
+                                    {% if forloop.counter == 3 %}
+                                        <li><a href="/pages/static/{{item.Value_2}}/">{{item.Value_1}}</a></li>
+                                    {% elif forloop.counter == 4 %}
+                                        <li><a href="/pages/static/{{item.Value_2}}/">{{item.Value_1}}</a></li>
+                                    {% elif forloop.counter == 5 %}
+                                        <li><a href="/pages/connectus/">{{item.Value_1}}</a></li>                                                
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-6">
+                        <div class="slider-license-footer ">
+
+                        <div id="myCarousel" class="carousel slide footerslidecarousel" data-ride="carousel" data-interval="1500">
+                        <!-- Indicators -->
+                        <ol class="carousel-indicators">
+                            <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                            <li data-target="#myCarousel" data-slide-to="1"></li>
+                            <li data-target="#myCarousel" data-slide-to="2"></li>
+                        </ol>
+
+
+                        <!-- Indicators -->
+                    
+
+                        <!-- The slideshow -->
+                        <div class="carousel-inner height-slider-footer">
+                            <div class="carousel-item active">
+                            <img id = 'jxlzfukzrgvjesgtnbqesizp' style = 'cursor:pointer' onclick = 'window.open("https://logo.samandehi.ir/Verify.aspx?id=163029&p=rfthgvkaxlaoobpduiwkpfvl", "Popup","toolbar=no, scrollbars=no, location=no, statusbar=no, menubar=no, resizable=0, width=450, height=630, top=30")' alt = 'logo-samandehi' src = 'https://logo.samandehi.ir/logo.aspx?id=163029&p=nbpdwlbqqftilymaodrfbsiy' />
+                            </div>
+                            <div class="carousel-item">
+                            <a target="_blank" href="https://trustseal.enamad.ir/?id=135577&amp;Code=4LVJlUntZdqZWSmXWkA1" rel="nofollow"><img src="https://Trustseal.eNamad.ir/logo.aspx?id=135577&amp;Code=4LVJlUntZdqZWSmXWkA1" alt="enemd" style="cursor:pointer" id="4LVJlUntZdqZWSmXWkA1"></a>
+                            </div>
+                            <div class="carousel-item">
+                            <a target="_blank" href="http://kerman.irannsr.org/services/trade_unit/319012-%D8%A7%D8%B9%D8%B6%D8%A7%DB%8C-%D8%AD%D9%82%D9%88%D9%82%DB%8C-%D9%86%D9%88%DB%8C%D8%AF-%D8%AA%DB%8C%D9%85%DA%86%D9%87-%D8%AA%D8%AC%D8%A7%D8%B1%D8%AA-%D9%86%DB%8C%D9%84.html?t=%D8%AC%D8%B3%D8%AA%D8%AC%D9%88%DB%8C-%D9%BE%DB%8C%D8%B4%D8%B1%D9%81%D8%AA%D9%87" rel="nofollow"><img src="{% static "images/socialcer23.png" %}" alt="senfi" style="cursor:pointer"></a>
+                            </div>
+                        </div>
+
+                        <a class="carousel-control-prev" href="#demo" data-slide="prev">
+                            <span class="carousel-control-prev-icon"></span>
+                        </a>
+                        <a class="carousel-control-next" href="#demo" data-slide="next">
+                            <span class="carousel-control-next-icon"></span>
+                        </a>
+                        </div>
+
+                            
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12">
+                        <div class="newslatter-footer">
+                            <h6>عضویت در خبرنامه</h6>  
+                         
+                            <form class="search-top newslatter" method="POST" action="/addemail/">
+                                {% csrf_token %}
+                                <input type="email" placeholder="آدرس ایمیل خود را وارد کنید ..." pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" name="email" id="email">
+                                <button type="submit" value="Submit" class="submit-search">عضویت</button>   
+                            </form>
+                            <div class="loaderDiv" id="loaderfooter">
+                                لطفا منتظر بمانید
+                                <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری">
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="copy-right-footer">
+            <div class="container">
+                <div class="row footercopy">
+                    <div class="col-xl-11 col-lg-11 col-md-10 col-sm-12 col-12">
+                        <p>تمامی خدمات این وب سایت دارای مجوزهای لازم از مراجع مربوطه می باشد و فعالیت های این سایت تابع قوانین و مقررات جمهوری اسلامی ایران است.</p>
+                    </div>
+                    <div class="col-xl-1 col-lg-1 col-md-2 col-sm-12 col-12"><a href="#">©بازار نخل</a></div>
+                </div>
+            </div>
+        </section> 
+
+</footer>
+
+<script type="text/javascript">!function(){function t(){var t=document.createElement("script");t.type="text/javascript",t.async=!0,localStorage.getItem("rayToken")?t.src="https://app.raychat.io/scripts/js/"+o+"?rid="+localStorage.getItem("rayToken")+"&href="+window.location.href:t.src="https://app.raychat.io/scripts/js/"+o;var e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(t,e)}var e=document,a=window,o="1b3710ed-495e-4794-bbc7-842af6728c48";"complete"==e.readyState?t():a.attachEvent?a.attachEvent("onload",t):a.addEventListener("load",t,!1)}();</script>
+
+    <body>
+<!-- footer-section -->
+
+
+
+<!-- footersite -->
+{% compress js file base %}
+    <script type="text/javascript" charset="utf-8" src="{% static "js/jquery-3.2.1.slim.min.js" %}"></script>
+    <script type="text/javascript" charset="utf-8" src="{% static "js/popper.min.js" %}"></script>
+    <script type="text/javascript" charset="utf-8" src="{% static "js/jquery-2.2.0.min.js" %}" ></script>
+    <script type="text/javascript" charset="utf-8" src="{% static "js/slick.min.js" %}" charset="utf-8"></script>
+    <script type="text/javascript" charset="utf-8" src="{% static "js/chosen.jquery.js" %}"></script>
+    <script type="text/javascript" charset="utf-8" src="{% static "js/init.js" %}" ></script>
+    <script type="text/javascript" charset="utf-8" src="{% static "js/main.js" %}" ></script>
+    <script type="text/javascript" charset="utf-8" src="{% static "js/bootstrap.min.js" %}"></script>
+    <script type="text/javascript" charset="utf-8" src="{% static "js/num2persian-min.js" %}"></script>
+{% endcompress %}
+    
+  
+{% compress js inline %}  
+    <script type="text/javascript" charset="utf-8">
+        $(document).on('ready', function() {
+            $(".sliderbox").slick({
+                infinite: true,
+                slidesToShow: 8,
+                slidesToScroll: 1,
+                autoplay: true,
+                autoplaySpeed: 3000,
+                // prevArrow: '<img src="http://uupload.ir/files/5wwj_left-btn.png" />',
+                // nextArrow: '<img src="http://uupload.ir/files/g3zl_right-btn_thumb.png" />',
+                responsive: [{
+                    breakpoint: 1025,
+                    settings: {
+                        slidesToShow: 6,
+                    }
+                }, {
+                    breakpoint: 769,
+                    settings: {
+                        slidesToShow: 4,
+                    }
+                }, {
+                    breakpoint: 480,
+                    settings: {
+                        slidesToShow: 1,
+                    }
+                }]
+            });
+            $(".sliderfull").slick({
+                infinite: true,
+                slidesToShow: 6,
+                slidesToScroll: 1,
+                autoplay: true,
+                autoplaySpeed: 3000,
+                // prevArrow: '<img src="http://uupload.ir/files/5wwj_left-btn.png" />',
+                // nextArrow: '<img src="http://uupload.ir/files/g3zl_right-btn_thumb.png" />',
+                responsive: [{
+                    breakpoint: 1025,
+                    settings: {
+                        slidesToShow: 5,
+                    }
+                }, {
+                    breakpoint: 769,
+                    settings: {
+                        slidesToShow: 4,
+                    }
+                }, {
+                    breakpoint: 480,
+                    settings: {
+                        slidesToShow: 1,
+                    }
+                }]
+            });
+            $(".sliderfullseller").slick({
+                infinite: true,
+                slidesToShow: 7,
+                slidesToScroll: 1,
+                autoplay: true,
+                autoplaySpeed: 3000,
+                // prevArrow: '<img src="http://uupload.ir/files/5wwj_left-btn.png" />',
+                // nextArrow: '<img src="http://uupload.ir/files/g3zl_right-btn_thumb.png" />',
+                responsive: [{
+                    breakpoint: 1025,
+                    settings: {
+                        slidesToShow: 5,
+                    }
+                }, {
+                    breakpoint: 769,
+                    settings: {
+                        slidesToShow: 4,
+                    }
+                }, {
+                    breakpoint: 480,
+                    settings: {
+                        slidesToShow: 1,
+                    }
+                }]
+            });
+            
+
+
+            $(".sliderhalf").slick({
+                infinite: true,
+                slidesToShow: 4,
+                slidesToScroll: 1,
+                autoplay: true,
+                autoplaySpeed: 3000,
+                // prevArrow: '<img src="http://uupload.ir/files/5wwj_left-btn.png" />',
+                // nextArrow: '<img src="http://uupload.ir/files/g3zl_right-btn_thumb.png" />',
+                responsive: [{
+                    breakpoint: 769,
+                    settings: {
+                        slidesToShow: 3,
+                    }
+                }, {
+                    breakpoint: 480,
+                    settings: {
+                        slidesToShow: 1,
+                    }
+                }]
+            });
+        });
+        $(document).on('ready', function() {
+        $('.slider-for').slick({
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        arrows: false,
+        fade: true,
+        asNavFor: '.slider-nav'
+        });
+        $('.slider-nav').slick({
+        slidesToShow: 3,
+        slidesToScroll: 1,
+        asNavFor: '.slider-for',
+        dots: true,
+        focusOnSelect: true
+        });
+
+        $('a[data-slide]').click(function(e) {
+        e.preventDefault();
+        var slideno = $(this).data('slide');
+        $('.slider-nav').slick('slickGoTo', slideno - 1);
+        });
+    });
+    </script>
+{% endcompress %}
+
+</body>
+
+</html>
+<!-- footersite -->

@@ -1,0 +1,265 @@
+{% load jformat %}
+{% load i18n static %}
+
+{% block header %}
+{% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+
+    <title>بازار نخل | جزئیات فاکتور</title>
+</head>
+
+
+{% block headertag %}
+{% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+
+
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-xl-3">
+
+                <div class="profile-sidebar-site">    
+                    {% block topsidebar %}
+                        {% include "nakhll_market/profile/parents/new-topsidebar.html" %}
+                    {% endblock %}
+                    <div class="profile-sidebar-main">
+
+                        <a href="/profile/dashboard/">
+                            <button>
+                                <i class="fas fa-id-badge"></i>
+                                <h5>داشبورد</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/transaction/">
+                            <button>
+                                <i class="fad fa-clipboard-list"></i>
+                            <h5>تراکنش ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/factor/">
+                            <button class="activebtn">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <h5>فاکتور ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/ticketing/">
+                            <button>
+                                <i class="fad fa-user-headset"></i>
+                                <h5>پشتیبانی</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/shops/">
+                            <button>
+                                <i class="fas fa-store"></i>
+                                <h5>مدیریت حجره</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/review/">
+                            <button>
+                                <i class="fad fa-comments-alt"></i>
+                                <h5>نقد ها و نظرات</h5>
+                            </button>
+                        </a>
+
+                        {% if request.user.is_staff %}
+                            {% block review %}
+                                {% include "nakhll_market/profile/parents/menu_for_shop_manage.html" %}
+                            {% endblock %}
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                    {% include "nakhll_market/profile/parents/new-header-profile.html" %}
+                {% endblock %}
+
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                        <div class="factor-profile">
+                            
+                            <div class="modal-header">
+                                <h5 class="modal-title">شماره فاکتور {{factor.FactorNumber}}</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                </button>
+                            </div>
+
+                            <div class="modal-body factor-style" id="{{factor.FactorNumber}}">
+                                <div class="row">
+                                    <div class="col-xl-8 col-12 logo-header">
+                                        <a href="/"><img src="{% static "images/Logo SVG.svg" %}" alt="لوگو" class="img-responsive"></a>                             
+                                    </div>
+                                    <div class="col-xl-4 col-12 text-center left-factor">
+                                        {% if factor.PaymentStatus == True %}<h5 class="green-succeed">پرداخت موفق</h5>{% else %}<h5 class="red-failed">پرداخت ناموفق</h5>{% endif %}
+
+                                        <!-- {% if factor.OrderStatus == '0' %}
+                                            <h5 class="green-delivered">تحویل داده شده</h5>
+                                        {% elif factor.OrderStatus == '1' %}
+                                            <h5 class="blue-sending">در انتظار ارسال</h5>
+                                        {% elif factor.OrderStatus == '2' %}
+                                            <h5 class="yellow-preparing">در حال آماده سازی </h5>
+                                        {% elif factor.OrderStatus == '3' %}
+                                            <h5 class="yellow-checking">در حال بررسی</h5>
+                                        {% elif factor.OrderStatus == '4' %}
+                                            <h5 class="gray-cancelled">لغو شده</h5>
+                                        {% elif factor.OrderStatus == '5' %}
+                                            <h5 class="green-sent">ارسال شده</h5>
+                                        {% endif %} -->
+                                
+                                        <h6 class="black-color">زمان ثبت : <span> {{factor.OrderDate|jformat:'%H:%M - %Y/%m/%d'}}</span></h6>
+                                        <h5 class="black-color">شماره فاکتور : {{factor.FactorNumber}}</h5>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xl-12 col-12">
+                                        <br><br>
+                                        <h4>جزئیات :</h4>
+                                    </div>
+                                    <div class="col-xl-6 col-12">
+                                            <h5>{{factor.Description}}</h5>
+                                            <h5>کد پستی : {{factor.ZipCode}}</h5>
+                                    </div>
+                                    <div class="col-xl-6 col-12">
+                                        <h5>استان : {{factor.State}}</h5>
+                                        <h5>شهر : {{factor.City}}</h5>
+                                        <h5 class="factor-address-title">آدرس : </h5>
+                                        <p class="factor-address-text">
+                                            {{factor.Address}}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-xl-12 col-12">
+                                        <br>
+                                        <h4> محصولات فاکتور :</h4>
+                                    </div>
+
+                                    <div class="col-xl-12 col-12">
+
+                                        <table class="table">
+
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th>نام محصول</th>
+                                                    <th>حجره</th>
+                                                    <th>قیمت واحد</th>
+                                                    <th>تعداد</th>
+                                                    <th>مجموع قیمت</th>
+                                                    <th>وضعیت</th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody class="code">
+                                                {% for item in factor.FK_FactorPost.all %}
+                                                    {% if item.FK_Product.FK_Shop.FK_ShopManager == request.user %}
+                                                    <tr>
+                                                        <td><a href="{{ item.FK_Product.get_url }}" target="_blank"><span>{{item.FK_Product.Title}}</span></a></td>
+                                                        <td>
+                                                            <a href="{{ item.FK_Product.FK_Shop.get_absolute_url }}" target="_blank"><span>{{item.FK_Product.FK_Shop.Title}}</span></a>
+                                                        </td>
+                                                        {% if factor.PaymentStatus %}<td><span class="numbersprice">{{item.get_one_price}}</span> ریال</td>{% else %}<td><span class="numbersprice">{{item.FK_Product.Price}}</span> ریال</td>{% endif %}
+                                                        <td>{{item.ProductCount}}</td>
+                                                        {% if factor.PaymentStatus %}<td><span class="numbersprice">{{ item.EndPrice }}</span> ریال</td>{% else %} <td><span class="numbersprice">{{ item.get_total_item_price }}</span> ریال</td>{% endif %}
+                                                        {% if item.ProductStatus == '0' %}
+                                                            <td>لغو سفارش</td>
+                                                        {% elif item.ProductStatus == '1' %}
+                                                            <td>منتظر تایید حجره دار</td>
+                                                        {% elif item.ProductStatus == '2' %}
+                                                            <td>در حال آماده سازی</td>
+                                                        {% elif item.ProductStatus == '3' %}
+                                                            <td>ارسال شده</td>
+                                                        {% endif %}
+                                                    </tr>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </tbody>
+
+                                        </table>
+
+                                    </div>
+                                </div>
+             
+                                {% if factor.FK_Coupon != None %}
+                                    <div class="row">
+                                        <div class="col-xl-12 col-12">
+                                            <br>
+                                            <span><h4>کوپن استفاده شده : </h4>{{factor.FK_Coupon.Title}}</span>
+                                            <br>
+                                            {% if factor.FK_Coupon.DiscountStatus == '0' %}<span>میزان تخفیف داده شده، توسط بازار آنلاین نخل به شما پرداخت می شود.</span>{% elif factor.FK_Coupon.DiscountStatus == '1' %}<span>میزان تخفیف داده شده از میزان پرداختی به شما کسر می گردد.</span>{% endif %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                {% if factor.FK_Campaign != None %}
+                                    <div class="row">
+                                        <div class="col-xl-12 col-12">
+                                            <br>
+                                            <span><h4>کمپین استفاده شده  : </h4>{{factor.FK_Campaign.Title}}</span>
+                                            <br>
+                                            <span>هزینه ارسال مرسوله توسط بازار آنلاین نخل به شما پرداخت می شود.</span>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                
+                            </div>
+                            <div class="modal-footer">
+                                <script>
+                                function printDiv(id) {
+                                    var printContents = document.getElementById(id).innerHTML;
+                                    var originalContents = document.body.innerHTML;
+                                    document.body.innerHTML = printContents;
+                                    window.print();
+                                    document.body.innerHTML = originalContents;
+                                    }
+                                </script>
+                                <a class="w3-btn" id="btnPrint" name="btnPrint" onclick="printDiv('{{factor.FactorNumber}}')"><button class="btn btn-primary" >چاپ فاکتور</button></a>
+                                <button onclick="closeCurrentTab()" class="btn btn-primary" >بستن</button>
+                                <script>
+                                    closeCurrentTab = function () {
+                                        window.close();
+                                    }
+                                </script>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+{% block footer-section %}
+{% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+
+
+{% block footer %}
+{% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

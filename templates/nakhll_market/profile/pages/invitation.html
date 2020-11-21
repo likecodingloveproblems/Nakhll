@@ -1,0 +1,183 @@
+{% load jformat %}
+{% load i18n static %}
+
+{% block header %}
+{% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+
+<title>بازار نخل | دعوتنامه </title>
+</head>
+
+
+{% block headertag %}
+{% include "nakhll_market/parents/headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+{% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+
+
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-xl-3">
+
+                <div class="profile-sidebar-site">
+                    {% block topsidebar %}
+                    {% include "nakhll_market/profile/parents/topsidebar.html" %}
+                    {% endblock %}
+
+                    <div class="profile-sidebar-main">
+
+                        <a href="/profile/dashboard/">
+                            <button>
+                                <i class="fas fa-id-badge"></i>
+                                <h5>داشبورد</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/transaction/">
+                            <button>
+                                <i class="fad fa-clipboard-list"></i>
+                                <h5>تراکنش ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/factor/">
+                            <button>
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <h5>فاکتور ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/ticketing/">
+                            <button>
+                                <i class="fad fa-user-headset"></i>
+                                <h5>پشتیبانی</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/shops/">
+                            <button>
+                                <i class="fas fa-store"></i>
+                                <h5>مدیریت حجره</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/review/">
+                            <button>
+                                <i class="fad fa-comments-alt"></i>
+                                <h5>نقد ها و نظرات</h5>
+                            </button>
+                        </a>
+
+                        {% if request.user.is_staff %}
+                        {% include "nakhll_market/profile/parents/menu_for_shop_manage.html" %}
+                        {% endif %}
+
+                    </div>
+                </div>
+
+            </div>
+
+
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                {% include "nakhll_market/profile/parents/header-profile.html" %}
+                {% endblock %}
+
+                <div class="alarm-section">
+                    <div class="row">
+
+                        {% if ShowAlart %}
+                        <div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                                <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                                <p>
+                                    {{AlartMessage}}
+                                </p>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="invitation-profile">
+                            <h4>دعوتنامه</h4>
+                            <div class="hr-line-under-dashboard">
+
+                            </div>
+                            <div class="row invitation-element">
+                                <div class="col-xl-6 col-lg-6">
+                                    <h5> <b>عنوان کوپن :</b> <span>"عنوان کوپن"</span></h5>
+                                </div>
+                                <div class="col-xl-6 col-lg-6">
+                                    <h5> <b>سریال کوپن :</b> <span>1111111111</span></h5>
+                                </div>
+                            </div>
+                            <div class="row invitation-element">
+                                <div class="col-xl-12 col-lg-12">
+                                    <h5> <b>توضیحات کوپن :</b> <span>توضیحات کوپن توضیحات کوپن توضیحات کوپن توضیحات کوپن
+                                            توضیحات کوپن توضیحات کوپن</span> </h5>
+                                </div>
+                            </div>
+                            <div class="row invitation-element">
+                                <div class="col-xl-6 col-lg-6">
+                                    <h5> <b>تاریخ شروع کوپن :</b> <span>1398/1/1</span> </h5>
+                                </div>
+                                <div class="col-xl-6 col-lg-6">
+                                    <h5> <b>تاریخ انقضاء کوپن :</b> <span>1399/1/1</span> </h5>
+                                </div>
+                            </div>
+                            <div class="row invitation-element">
+                                <div class="col-xl-6 col-lg-6">
+                                    <h5> <b>نوع تخفیف کوپن :</b> <span>اعتباری</span> </h5>
+                                </div>
+                                <div class="col-xl-6 col-lg-6">
+                                    <h5> <b>میزان تخفیف کوپن :</b> <span>90,000</span> </h5>
+                                </div>
+                            </div>
+                            <div class="row invitation-element">
+                                <div class="col-xl-6 col-lg-6">
+                                    <h5> <b>حداقل میزان خرید :</b> <span>10,000</span> </h5>
+                                </div>
+                                <div class="col-xl-6 col-lg-6">
+                                    <h5> <b>حداکثر میزان خرید :</b> <span>90,000</span> </h5>
+                                </div>
+                            </div>
+                            <div class="row invitation-element">
+                                <div class="col-xl-6 col-lg-6">
+                                    <h5> <b>میزان دفعات مجاز استفاده از کوپن :</b> <span>1</span> </h5>
+                                </div>
+                                <div class="col-xl-6 col-lg-6">
+                                    <button type="button" class="btn btn-primary">
+                                         می پذیرم
+                                    </button>
+                                    <button type="button" class="btn btn-secondary">
+                                        نمی پذیرم
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,956 @@
+{% load jformat %}
+{% load i18n static %}
+
+{% block header %}
+{% include "nakhll_market/parents/headersite.html" %}
+{% endblock %}
+
+<title>بازار نخل | ویرایش محصول {{Product.Title}}</title>
+<link rel="stylesheet" href="{% static "css/cropper.css" %}">
+</head>
+
+{% block headertag %}
+{% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+{% block headersection %}
+{% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+<div class="loading-index loading-add-product">
+    <div class="loadingpage">
+        <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        <p>
+            لطفا منتظر بمانید ...
+        </p>
+    </div>
+</div>
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-3">
+                <div class="profile-sidebar-site">
+                    {% block topsidebar %}
+                    {% include "nakhll_market/profile/parents/new-topsidebar.html" %}
+                    {% endblock %}
+                    <div class="profile-sidebar-main">
+
+                        <a href="/profile/dashboard/">
+                            <button>
+                                <i class="fas fa-id-badge"></i>
+                                <h5>داشبورد</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/transaction/">
+                            <button>
+                                <i class="fad fa-clipboard-list"></i>
+                                <h5>تراکنش ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/factor/">
+                            <button>
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <h5>فاکتور ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/ticketing/">
+                            <button>
+                                <i class="fad fa-user-headset"></i>
+                                <h5>پشتیبانی</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/shops/">
+                            <button class="activebtn">
+                                <i class="fas fa-store"></i>
+                                <h5>مدیریت حجره</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/review/">
+                            <button>
+                                <i class="fad fa-comments-alt"></i>
+                                <h5>نقد ها و نظرات</h5>
+                            </button>
+                        </a>
+
+                        {% if request.user.is_staff %}
+                        {% block review %}
+                        {% include "nakhll_market/profile/parents/menu_for_shop_manage.html" %}
+                        {% endblock %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                {% include "nakhll_market/profile/parents/new-header-profile.html" %}
+                {% endblock %}
+
+                {% if ShowAlart %}
+                <div class="col-xl-6 xol-lg-6 col-md-6 col-sm-12 col-12">
+                    <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                        <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                        <p>
+                            {{AlartMessage}}
+                        </p>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Img -->
+                <div id="alert-div-inputproduct-img-empty"></div>
+
+                <!-- Title -->
+                <div id="alert-div-inputproduct-title-empty"></div>
+                <div id="alert-div-inputproduct-title-minlength"></div>
+                <div id="alert-div-inputproduct-title-maxlength"></div>
+                <!-- <div id="alert-div-inputproduct-title-valid-chars"></div> -->
+                <!-- <div id="alert-div-inputproduct-title-persian"></div> -->
+
+                <!-- Slug -->
+                <!-- <div id="alert-div-inputproduct-slug-empty"></div> -->
+                <!-- <div id="alert-div-inputproduct-slug-english"></div> -->
+                <!-- <div id="alert-div-inputproduct-slug-dup"></div> -->
+
+                <!-- Shop -->
+                <div id="alert-div-inputproduct-shop-empty"></div>
+
+                <!-- About -->
+                <!-- <div id="alert-div-inputproduct-about-empty"></div> -->
+                <!-- <div id="alert-div-inputproduct-about-valid-chars"></div> -->
+                <!-- <div id="alert-div-inputproduct-about-persian"></div> -->
+
+                <!-- Category -->
+                <div id="alert-div-inputproduct-category-empty"></div>
+                <div id="alert-div-inputproduct-category-count-limit"></div>
+
+                <!-- Submarket -->
+                <div id="alert-div-inputproduct-submarket-empty"></div>
+
+                <!-- Introduction -->
+                <div id="alert-div-inputproduct-bio-empty"></div>
+                <!-- <div id="alert-div-inputproduct-intro-valid-chars"></div> -->
+                <!-- <div id="alert-div-inputproduct-introduction-persian"></div> -->
+
+                <!-- Story -->
+                <!-- <div id="alert-div-inputproduct-story-valid-chars"></div> -->
+                <!-- <div id="alert-div-inputproduct-story-persian"></div> -->
+
+                <!-- Real & Sell Price -->
+                <div id="alert-div-inputproduct-price-digits"></div>
+                <div id="alert-div-inputproduct-sell-price-minlength"></div>
+                <!-- <div id="alert-div-inputproduct-real-price-minlength"></div> -->
+                <!-- <div id="alert-div-inputproduct-price-comparison"></div> -->
+                <div id="alert-div-inputproduct-sell-price-empty"></div>
+
+                <!--Off-->
+                <div id="alert-div-inputproduct-off-empty"></div>
+
+                <!-- Pure Weight -->
+                <div id="alert-div-inputproduct-pure-weight-empty"></div>
+
+                <!-- Packing Weight -->
+                <div id="alert-div-inputproduct-packing-weight-empty"></div>
+
+                <div id="alert-div-inputproduct-weight-digits"></div>
+                <div id="alert-div-inputproduct-weight-comparison"></div>
+
+
+                <!-- Dimension -->
+                <div id="alert-div-inputproduct-length-dimension-empty"></div>
+
+                <!-- Product Width -->
+                <div id="alert-div-inputproduct-width-dimension-empty"></div>
+
+                <!-- Product Height -->
+                <div id="alert-div-inputproduct-height-dimension-empty"></div>
+
+
+                <div id="alert-div-inputproduct-dimension-digits"></div>
+
+                <!-- Product Send Area -->
+                <div id="alert-div-inputproduct-send-area-limit"></div>
+
+                <!-- Product Send Area Exception -->
+                <div id="alert-div-inputproduct-send-area-exception-limit"></div>
+
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                        <div class="dashboard" id="edit-product-dashboard">
+                            <h4>ویرایش محصول</h4>
+
+                            <form id="new-prod-form" method="POST" enctype="multipart/form-data"
+                                action="{% url "nakhll_market:Shop_Manager_EditProduct" Product.Slug %}">
+                                {% csrf_token %}
+                                <div class="form-row">
+                                    <label class="label cropper-label w-100">
+                                        <div class="form-group col-md-6">
+                                            <div id="msg"></div>
+                                            <label for="file">عکس محصول <code>*</code></label>
+                                            <br>
+                                            <a class="btn btn-primary choose-pic-btn">انتخاب عکس</a>
+                                            <input type="file" class="sr-only input-pic-file" id="input" name="image"
+                                                accept="image/*">
+                                            <input type="text" class="form-control choose-pic-input-name" disabled
+                                                placeholder="آپلود عکس">
+                                        </div>
+                                        <br>
+                                        <img class="rounded cropper-rounded " id="avatar"
+                                            src="{{Product.Image_thumbnail_url}}" alt="avatar" data-toggle="tooltip"
+                                            title="انتخاب عکس ">
+                                    </label>
+                                </div>
+
+                                <div class="alert cropper-alert" role="alert"></div>
+                                <div class="modal fade" id="modal" tabindex="-1" role="dialog"
+                                    aria-labelledby="modalLabel" aria-hidden="true" data-keyboard="false"
+                                    data-backdrop="static">
+                                    <div class="modal-dialog modal-md" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="modalLabel">برش تصویر ...</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                    aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="img-container cropper-img-container">
+                                                    <img id="image"
+                                                        src="https://avatars0.githubusercontent.com/u/3456749">
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer" id="modal-footer-err">
+                                                <button type="button" class="btn btn-primary right-btn-send-modal"
+                                                    id="crop">انتخاب تصویر</button>
+                                                <button type="button" class="btn btn-secondary "
+                                                    data-dismiss="modal">بستن</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="inputprod_title">عنوان محصول <code>*</code></label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
+                                            data-placement="left"
+                                            title="عنوان باید فارسی و حداکثر 170 کاراکتر باشد."></i>
+                                        <input type="text" name="prod_title" value="{{Product.Title}}"
+                                            class="form-control" id="inputprod_title" minlength="2" maxlength="170"
+                                            required>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="inputslugProd">شناسه محصول <code>*</code></label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
+                                            data-placement="left"
+                                            title='شناسه محصول باید شامل حروف انگلیسی کوچک، خط تیره ("_" یا "-") و بدون فاصله باشد.'></i>
+                                        <input type="text" name="slugProd" class="form-control" value="{{Product.Slug}}"
+                                            id="inputslugProd" readonly pattern="[a-z0-9\-_]{2,}">
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <label for="inpuShop"> حجره <code>*</code></label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
+                                            data-placement="left" title="معرفی مختصری از محصول خود تا حداکثر 200 کاراکتر وارد نمایید."></i>
+                                        <select id="inpuShop" name="ProdShop" class="form-control">
+                                            {% for item in Shops %}
+                                            <option {% if item.ID == Product.FK_Shop.ID %}selected{% endif %}
+                                                value="{{item.ID}}">{{item.Title}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-12">
+                                        <label for="inputProdBio">معرفی محصول <code>*</code></label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
+                                            data-placement="left" title="محصول خود را به صورت کامل معرفی نمایید."></i>
+                                        <textarea name="ProdBio" class="form-control" value="{{Product.Bio}}" id="inputProdBio"
+                                        maxlength="200" rows="1">{{Product.Bio}}</textarea>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-6 category-product-list">
+                                        <label for="inputCat">دسته بندی محصول <code>*</code></label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
+                                            data-placement="left"
+                                            title="محصول شما شامل کدام دسته بندی ها می باشد؟
+                                            در صورتی که دسته بندی مورد نظر شما موجود نبود، این موضوع رو از طریق پشتیبانی سایت پیگیری نمایید."></i>
+                                        <select data-placeholder="انتخاب دسته بندی" multiple
+                                            class="chosen-select-rtl form-control category-product" name="ProdCat"
+                                            tabindex="14">
+                                            {% for shop in Categort %}
+                                            <option {% if shop.Status %}selected{% endif %}>{{shop.Category.Title}}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group col-md-6 submarket-form-group">
+                                        <label for="inputSubMarket">راسته محصول <code>*</code></label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
+                                            data-placement="left"
+                                            title="محصول شما در کدام راسته قرار می گیرد؟
+                                            در صورتی که راسته مورد نظر شما موجود نبود، این موضوع رو از طریق پشتیبانی سایت پیگیری نمایید."></i>
+                                        <div class="loading-chosen-ajax submarket-loading"><img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری">
+                                            در حال بارگزاری
+                                        </div>
+                                        <select id="inputSubMarket" name="ProdSub" class="form-control"></select>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-12">
+                                        <label for="inputProdDes">درباره محصول</label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
+                                        title="توضیح کاملی درباره محصول وارد کنید" data-placement="left"
+                                            ></i>
+                                        <textarea name="ProdDes" class="form-control" 
+                                            id="inputProdDes" rows="2">{{Product.Description}}</textarea>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-12">
+                                        <label for="inputProdStory">داستان محصول</label>
+                                        <textarea name="ProdStory" class="form-control" value="{{Product.Story}}"
+                                            id="inputProdStory" rows="2">{{Product.Story}}</textarea>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="inputprod_sellprice">قیمت فروش محصول <code>*</code></label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
+                                            data-placement="left" title="قیمت را به ریال وارد نمایید."></i>
+                                        <input type="text" name="prod_Price" value="{{Product.Price}}"
+                                            pattern="[0-9]{5,}" class="form-control inputprod_sellprice"
+                                            id="inputprod_sellprice" required>
+                                        <p class="digit-to-persian" id="sellprice-toman"></p>
+                                    </div>
+
+                                    <!-- <div class="form-group col-md-5">
+                                    <label for="inputprod_realprice">قیمت واقعی </label>
+                                    <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="در صورت در نظر گرفتن تخفیف برای محصول، قیمت اصلی محصول را اینجا وارد نمایید.
+                                        قیمت را به ریال وارد نمایید."></i>
+                                    <input type="text" name="Prodoldprice" {% if Product.OldPrice != '0' %}value="{{Product.OldPrice}}"{% endif %}
+                                        pattern="[0-9]{5,}" class="form-control inputprod_realprice" id="inputprod_realprice">
+                                        <p class="digit-to-persian" id="realprice-toman"></p>
+                                </div>
+                                <div class="form-group col-md-2 show-price-status-div">
+                                    <button class="btn btn-primary show-price-status" type="button" data-html='true' data-container="body" data-toggle="popover" data-placement="top" data-content="0">
+                                        وضعیت قیمت
+                                    </button>
+                                </div> -->
+                                    <!-- <div class="form-group col-md-6 off-question-form-group">
+                                    <p class="off-question">در صورتی که برای این محصول تخفیف در نظر گرفته اید <span id="off-yes-clk" class="off-yes">اینجا</span> را کلیک نمائید.</p>
+                                </div> -->
+                                    <div class="form-group col-lg-5 col-md-4 col-xs-4 col-9 offamount-formgroup">
+                                        <label for="inputprod_offamount">میزان تخفیف</label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
+                                            data-placement="left" title="میزان تخفیف محصول را به ریال وارد نمائید."></i>
+                                        <input type="number" name="Prodoffamount"
+                                            class="form-control inputprod_offamount" pattern="[0-9]{5,}"
+                                            id="inputprod_offamount">
+                                        <p class="digit-to-persian" id="offamount-toman"></p>
+                                    </div>
+                                    <div class="form-group col-lg-1 col-md-2 col-3 remove-off-formgroup">
+                                        <p class="off-question off-yes small-size" id="remove-off">حذف تخفیف</p>
+                                    </div>
+                                    <div class="form-group col-md-6 off-question-form-group">
+                                        <p class="off-question"> آیا برای این محصول <span class="redcolor">تخفیف</span>
+                                            در نظر گرفته اید؟<span id="off-yes-clk"
+                                                class="off-yes off-yes-yes">بله</span></p>
+                                    </div>
+                                </div>
+
+                                <h6>وزن محصول</h6>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="input_netweight">وزن خالص محصول <code>*</code></label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
+                                            data-placement="left"
+                                            title="وزن خالص محصول را به صورت گرم وارد نمایید - اگر قادر به محاسبه وزن خالص نیستید در این فیلد 0 وارد کنید "></i>
+                                        <input type="text" value="{{Product.Net_Weight}}" name="product_netweight"
+                                            class="form-control" pattern="[0-9]{1,6}" id="input_netweight" required>
+                                        <p class="digit-to-persian" id="pure-weight"></p>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <label for="input_packingweight">وزن محصول با بسته بندی <code>*</code></label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
+                                            data-placement="left"
+                                            title="وزن محصول با بسته بندی را به صورت گرم وارد نمایید."></i>
+                                        <input type="text" value="{{Product.Weight_With_Packing}}"
+                                            name="product_packingweight" class="form-control" pattern="[0-9]{1,6}"
+                                            id="input_packingweight" required>
+                                        <p class="digit-to-persian" id="packing-weight"></p>
+                                    </div>
+                                </div>
+
+                                <h6>ابعاد محصول</h6>
+                                <div class="form-row">
+                                    <div class="form-group col-md-4">
+                                        <label for="input_lengthwithpackaging">طول بسته بندی محصول
+                                            <code>*</code></label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
+                                            data-placement="left"
+                                            title="طول بسته بندی محصول را به صورت سانتی متر وارد نمایید."></i>
+                                        <input type="text" value="{{Product.Length_With_Packaging}}"
+                                            name="product_lengthwithpackaging" class="form-control" pattern="[0-9]{1,4}"
+                                            id="input_lengthwithpackaging" required>
+                                        <p class="digit-to-persian" id="length-dimension"></p>
+                                    </div>
+
+                                    <div class="form-group col-md-4">
+                                        <label for="input_widthwithpackaging">عرض بسته بندی محصول <code>*</code></label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
+                                            data-placement="left"
+                                            title="عرض بسته بندی محصول را به صورت سانتی متر وارد نمایید."></i>
+                                        <input type="text" value="{{Product.Width_With_Packaging}}"
+                                            name="product_widthwithpackaging" class="form-control" pattern="[0-9]{1,4}"
+                                            id="input_widthwithpackaging" required>
+                                        <p class="digit-to-persian" id="width-dimension"></p>
+                                    </div>
+
+                                    <div class="form-group col-md-4">
+                                        <label for="input_heightwithpackaging">ارتفاع بسته بندی محصول
+                                            <code>*</code></label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
+                                            data-placement="left"
+                                            title="ارتفاع بسته بندی محصول را به صورت سانتی متر وارد نمایید."></i>
+                                        <input type="text" value="{{Product.Height_With_Packaging}}"
+                                            name="product_heightwithpackaging" class="form-control" pattern="[0-9]{1,4}"
+                                            id="input_heightwithpackaging" required>
+                                        <p class="digit-to-persian" id="height-dimension"></p>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+
+                                    <div class="form-group col-md-6">
+                                        <label for="PostRangeType">محدوده ارسال</label>
+                                        <select id="PostRangeType" name="ProdRange" class="form-control">
+                                            {% if Product.PostRangeType == '1' %}
+                                            <option selected>سراسر کشور</option>
+                                            <option>استانی</option>
+                                            <option>شهرستانی</option>
+                                            <option>شهری</option>
+                                            {% elif Product.PostRangeType == '2' %}
+                                            <option>سراسر کشور</option>
+                                            <option selected>استانی</option>
+                                            <option>شهرستانی</option>
+                                            <option>شهری</option>
+                                            {% elif Product.PostRangeType == '3' %}
+                                            <option>سراسر کشور</option>
+                                            <option>استانی</option>
+                                            <option selected>شهرستانی</option>
+                                            <option>شهری</option>
+                                            {% elif Product.PostRangeType == '4' %}
+                                            <option>سراسر کشور</option>
+                                            <option>استانی</option>
+                                            <option>شهرستانی</option>
+                                            <option selected>شهری</option>
+                                            {% endif %}
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group col-md-4" id="detail-now-box">
+                                        <label for="selectProdStatus">وضعیت محصول <code>*</code></label>
+                                        <select id="selectProdStatus" name="ProdPostType"
+                                            class="form-control product-detail-now">
+                                            {% if Product.Status == '1' %}
+                                            <option selected>آماده در انبار</option>
+                                            <option>تولید بعد از سفارش</option>
+                                            <option>سفارشی سازی فروش</option>
+                                            <option>موجود نیست</option>
+                                            {% elif Product.Status == '2' %}
+                                            <option>آماده در انبار</option>
+                                            <option selected>تولید بعد از سفارش</option>
+                                            <option>سفارشی سازی فروش</option>
+                                            <option>موجود نیست</option>
+                                            {% elif Product.Status == '3' %}
+                                            <option>آماده در انبار</option>
+                                            <option>تولید بعد از سفارش</option>
+                                            <option selected>سفارشی سازی فروش</option>
+                                            <option>موجود نیست</option>
+                                            {% elif Product.Status == '4' %}
+                                            <option>آماده در انبار</option>
+                                            <option>تولید بعد از سفارش</option>
+                                            <option>سفارشی سازی فروش</option>
+                                            <option selected>موجود نیست</option>
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-2" id="detail-num-box">
+                                        <label for="prod_num_in_store">تعداد موجودی<code>*</code></label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
+                                            data-placement="left"
+                                            title="تعداد موجودی خود در انبار را میتوانید در این قسمت وارد کنید."></i>
+                                        <input type="text" name="prod_num_in_store" value="{{Product.Inventory}}"
+                                            class="form-control" id="prod_num_in_store" maxlength="3">
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-12 send-area-list">
+                                        <label for="inputPostRange">انتخاب محدوده ارسال محصول</label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
+                                            data-placement="left"
+                                            title="منظور از محدوده ارسال محصول، استان،شهرستان یا شهر هایی است که شما می توانید محصول خود را به آنجا ارسال نمایید."></i>
+                                        <select data-placeholder="محدوده ارسال محصول" multiple
+                                            class="chosen-select-rtl form-control" id="inputPostRange" name="PostRange"
+                                            tabindex="14">
+                                            {% for item in ProPostRange %}
+                                                <option value="{{item.PostRange.id}}"
+                                                    {% if item.Status %}selected{% endif %}>{{item.PostRange}}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-12 send-area-exception-list">
+                                        <label for="inputPostRangeException">انتخاب استثناء محدوده ارسال محصول</label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
+                                            data-placement="left"
+                                            title="منظور از استثناء محدوده ارسال محصول، استان،شهرستان یا شهر هایی که شما نمی توانید محصول خود را به آنجا ارسال نمایید."></i>
+                                        <select data-placeholder="استثناء های محدوده ارسال محصول" multiple
+                                            class="chosen-select-rtl form-control" id="inputPostRangeException"
+                                            name="ExePostRange" tabindex="14">
+                                            {% for item in ProExePostRange %}
+                                                <option value="{{item.PostRange.id}}"
+                                                    {% if item.Status %}selected{% endif %}>{{item.PostRange}}
+                                                </option>
+                                            {% endfor %}
+                                        </select><button type="button" class="btn btn-primary send-area-guide-btn"
+                                            data-toggle="modal" data-target="#exampleModalScrollable">
+                                            راهنما <i class="fal fa-info-circle"></i>
+                                        </button>
+
+                                        <div class="modal fade" id="exampleModalScrollable" tabindex="-1" role="dialog"
+                                            aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-scrollable" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalScrollableTitle">راهنمای
+                                                            تعیین محدوده ارسال</h5>
+                                                        <button type="button" class="close right-close"
+                                                            data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <small class="smallhelp">به عنوان مثال :</small>
+                                                        <ul class="NotePostRange">
+                                                            <li>
+                                                                <span>اگر می خواهید به کل کشور محصول خود را ارسال نمایید
+                                                                    :</span>
+                                                                <br>
+                                                                <span>محدوده ارسال را برابر سراسر کشور قرار دهید.</span>
+                                                            </li>
+                                                            <br>
+                                                            <li>
+                                                                <span>اگر می خواهید به کل کشور به غیر از استان کرمان
+                                                                    محصول خود را ارسال نمایید :</span>
+                                                                <br>
+                                                                <span>محدوده ارسال را برابر استانی قرار دهید و در قسمت
+                                                                    استثناء ارسال استان کرمان را انتخاب نمایید.</span>
+                                                            </li>
+                                                            <br>
+                                                            <li>
+                                                                <span>اگر می خواهید به استان های کرمان و فارس به غیر از
+                                                                    (شهرستان کرمان) و (شهرستان فیروزآباد - شهر
+                                                                    فیروزآباد) ارسال نمایید :</span>
+                                                                <br>
+                                                                <span>محدوده ارسال را برابر استانی قرار دهید و در قسمت
+                                                                    محدوده ارسال استان های کرمان و فارس و در قسمت
+                                                                    استثناء ارسال (استان کرمان - شهرستان کرمان) و (استان
+                                                                    فارس - شهرستان فیروزآباد - شهر فیروزآباد) را انتخاب
+                                                                    نمایید.</span>
+                                                            </li>
+                                                            <br>
+                                                            <li>
+                                                                <span>اگر می خواهید فقط به شهرستان کرمان به غیر از
+                                                                    (شهرستان کرمان - شهر چترود) ارسال نمایید :</span>
+                                                                <br>
+                                                                <span>محدوده ارسال را برابر شهرستانی قرار دهید و در قسمت
+                                                                    محدوده ارسال (استان کرمان - شهرستان کرمان) و در قسمت
+                                                                    استثناء ارسال (استان کرمان - شهرستان کرمان - شهر
+                                                                    چترود) را انتخاب نمایید.</span>
+                                                            </li>
+                                                            <br>
+                                                            <li>
+                                                                <span>اگر می خواهید فقط به شهر کرمان ارسال نکنید
+                                                                    :</span>
+                                                                <br>
+                                                                <span>محدوده ارسال را برابر شهری قرار دهید و در قسمت
+                                                                    محدوده ارسال (استان کرمان - شهرستان کرمان) و در قسمت
+                                                                    استثناء ارسال (استان کرمان - شهرستان کرمان - شهر
+                                                                    کرمان) را انتخاب نمایید.</span>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-dismiss="modal">بستن</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <a class="btn btn-primary mr-auto edit-product-btn" id="send-left">ویرایش محصول</a>
+
+                                <div class="modal fade" id="myModalerror" tabindex="-1" role="dialog"
+                                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title prod-modal-title" id="exampleModalLabel">هشدار
+                                                </h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                    aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body whole-modal-body" id="text_err">
+                                                <div class="whole-content-of-modal">
+                                                    در وارد کردن<span class="Riyal"> قیمت محصول </span>، <span
+                                                        class="Riyal"> وزن محصول </span> و <span class="Riyal">ابعاد
+                                                        محصول </span> دقت فرمایید در صورتی که در زمان ارسال اطلاعات وارد
+                                                    شده ناقص باشد مابه التفاوت هزینه بر عهده شماست ...
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer whole-content-of-footer" id="modal-footer-err">
+                                                <button type="submit"
+                                                    class="btn btn-primary ml-auto edit-and-accept">تایید می کنم و می
+                                                    پذیرم </button>
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-dismiss="modal">بستن</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="clearfix"></div>
+                            </form>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    </div>
+</section>
+<script src="{% static "js/cropper.js" %}"></script>
+<script>
+    var $progress;
+    var $progressBar;
+    var $alert;
+    var initialAvatarURL;
+    var form_Data = new FormData();
+    window.addEventListener('DOMContentLoaded', function () {
+        var avatar = document.getElementById('avatar');
+        var image = document.getElementById('image');
+        var input = document.getElementById('input');
+        $progress = $('.progress');
+        $progressBar = $('.progress-bar');
+        $alert = $('.cropper-alert');
+        var $modal = $('#modal');
+        var cropper;
+
+        $('[data-toggle="tooltip"]').tooltip();
+
+        input.addEventListener('change', function (e) {
+            var files = e.target.files;
+            var done = function (url) {
+                input.value = '';
+                image.src = url;
+                $alert.hide();
+                $modal.modal('show');
+            };
+            var reader;
+            var file;
+            var url;
+
+            if (files && files.length > 0) {
+                file = files[0];
+
+                if (URL) {
+                    done(URL.createObjectURL(file));
+                } else if (FileReader) {
+                    reader = new FileReader();
+                    reader.onload = function (e) {
+                        done(reader.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+
+        $modal.on('shown.bs.modal', function () {
+            cropper = new Cropper(image, {
+                aspectRatio: 1,
+                viewMode: 3,
+            });
+        }).on('hidden.bs.modal', function () {
+            cropper.destroy();
+            cropper = null;
+        });
+        document.getElementById('crop').addEventListener('click', function () {
+            // var initialAvatarURL;
+            var canvas;
+
+            $modal.modal('hide');
+
+            if (cropper) {
+                canvas = cropper.getCroppedCanvas({
+                    width: 900,
+                    height: 900,
+                });
+                initialAvatarURL = avatar.src;
+                avatar.src = canvas.toDataURL();
+                $progress.show();
+                $alert.removeClass('alert-success alert-warning');
+                canvas.toBlob(function (blob) {
+                    form_Data.append('product_image', blob, 'avatar.jpg');
+                });
+            }
+        });
+    });
+
+    var ProductID = '{{Product.ID | safe}}';
+    var prodCategroyList = '';
+    var prodSendAreas = '';
+    var prodSendAreasException = '';
+
+    
+    editProduct = function () {
+        $(".whole-content-of-modal").remove();
+        $(".whole-content-of-footer").remove();
+        $(".whole-modal-body").html('<div class="please-wait"> لطفا منتظر بمانید <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری"> </div>' +
+            '<div class="progress"> ' +
+            '<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>' +
+            '</div>' +
+            '<div class="inprogresstext"> در حال بارگزاری ...</div>');
+        $(".prod-modal-title").html('در حال ویرایش محصول...');
+
+        var crf_token = $('input[name=csrfmiddlewaretoken]').val();
+
+        var prodTitle = $("#inputprod_title").val();
+        // var prodSlug = $("#inputslugProd").val();
+        var prodShop = $("#inpuShop option:selected").val();
+        var prodAbout = $("#inputProdDes").val();
+        var prodSubmarket = $("#inputSubMarket").val();
+        var prodIntro = $("#inputProdBio").val();
+        var prodStory = $("#inputProdStory").val();
+        var prodSellPrice = $("#inputprod_sellprice").val();
+        // var prodRealPrice = $("#inputprod_realprice").val();
+        var prodNetWeight = $("#input_netweight").val();
+        var prodPackWeight = $("#input_packingweight").val();
+        var prodXDimension = $("#input_lengthwithpackaging").val();
+        var prodYDimension = $("#input_widthwithpackaging").val();
+        var prodHDimension = $("#input_heightwithpackaging").val();
+        var prodSendArea = parseInt($("#PostRangeType option:selected").index()) + 1;
+        var prodStatus = parseInt($("#selectProdStatus option:selected").index()) + 1;
+        var prodAvailableCount = $("#prod_num_in_store").val();
+
+        form_Data.append('product_title', prodTitle);
+        // form_Data.append('product_slug', prodSlug);
+        form_Data.append('product_shop', prodShop);
+        form_Data.append('product_category', prodCategroyList);
+        form_Data.append('product_submarket', prodSubmarket);
+        form_Data.append('product_price', prodSellPrice);
+        var offamount = $("#inputprod_offamount").val();
+        var prodRealPrice = '0';
+        if (offamount.length != 0) {
+            prodRealPrice = (parseInt(prodSellPrice) + parseInt(offamount)).toString();
+        }
+        // if (prodRealPrice !== '') {
+        form_Data.append('product_oldprice', prodRealPrice);
+        // }
+        // else {
+        //     form_Data.append('product_oldprice', '0');
+        // }
+        form_Data.append('product_sendtype', prodSendArea);
+        form_Data.append('product_status', prodStatus);
+        form_Data.append('product_netweight', prodNetWeight);
+        form_Data.append('product_packingweight', prodPackWeight);
+        form_Data.append('product_length', prodXDimension);
+        form_Data.append('product_width', prodYDimension);
+        form_Data.append('product_height', prodHDimension);
+        form_Data.append('product_description', prodAbout);
+        form_Data.append('product_bio', prodIntro);
+        form_Data.append('product_story', prodStory);
+        form_Data.append('product_withinrange', prodSendAreas);
+        form_Data.append('product_outofrange', prodSendAreasException);
+        if (prodStatus == 1) {
+            form_Data.append('product_inventory', prodAvailableCount);
+        }
+        else if (prodStatus == 4) {
+            form_Data.append('product_inventory', 0)
+        }
+        form_Data.append('product_id', ProductID);
+
+        
+        // for (var pair of form_Data.entries()) {
+        //     console.log(pair[0]+ ', ' + pair[1]); 
+        // }
+
+        
+        $.ajax(
+            {
+                url: '{% url "restapi:web_edit_product" %}',
+                method: "post",
+                data: form_Data,
+                contentType: false,
+                processData: false,
+                headers: { "X-CSRFToken": crf_token },
+                xhr: function () {
+                    var xhr = new XMLHttpRequest();
+
+                    xhr.upload.onprogress = function (e) {
+                        var percent = '0';
+                        var percentage = '0%';
+
+                        if (e.lengthComputable) {
+                            percent = Math.round((e.loaded / e.total) * 100);
+                            percentage = percent + '%';
+                            $(".progress-bar").width(percentage).attr('aria-valuenow', percent).text(percentage);
+                        }
+                    };
+
+                    return xhr;
+                },
+                success: function (json) {
+                    $(".prod-modal-title").html('ویرایش موفق محصول');
+                    $(".whole-modal-body").html('<div>محصول شما با موفقیت ویرایش گردید.</div>' +
+                        // '<div>آیا قصد ویرایش گالری محصول را نیز دارید؟</div>' +
+                        // '<div>آیا قصد ویرایش محدوده ارسال این محصول را دارید؟</div>' +
+                        '<button type="button" class="btn btn-secondary float-left" data-dismiss="modal">بستن</button>' +
+                        '<a href="/profile/shops/"><button type="button" class="btn btn-primary float-left marginleft">مدیریت حجره</button></a>');
+                        // '<a href="/profile/shops/"><button type="button" class="btn btn-secondary float-left marginleft">خیر</button></a>' +
+                        // '<button type="button" class="btn btn-primary float-left marginleft" id="product-gallery-section-show">بله</button>');
+                    $(".progress").hide();
+
+                },
+                error: function (xhr, status) {
+                    console.log('xhr', xhr);
+                    $(".prod-modal-title").html('خطا در ویرایش محصول');
+                    $(".whole-modal-body").html('<div>ویرایش محصول شما با خطا مواجه گردید.</div>' +
+                        '<div>' + xhr.responseJSON.res + ' </div>' +
+                        '<button type="button" class="btn btn-secondary float-left" data-dismiss="modal">بستن</button>');
+                    $("#alert-div-system-error").show();
+                    console.log('status', status);
+                    console.log(xhr.status + ": " + xhr.responseText);
+                }
+            }
+        )
+    }
+    var checkValidVariable = false;
+    $(".edit-product-btn").on('click', function (e) {
+        e.preventDefault();
+        checkValidVariable = checkValidInputsMakeSomeFieldsEdit();
+        if (checkValidVariable) {
+            $("#myModalerror").modal();
+        }
+    })
+
+    $(".edit-and-accept").on('click', function (e) {
+        e.preventDefault();
+        $(".edit-product-btn").addClass("send-button-disabled disabled");
+        editProduct();
+    })
+
+    var shopid = $("#inpuShop option:selected").val();
+    var productSubmarket;
+    getSubmarkets = function () {
+        $("#inputSubMarket").prop('disabled', true);
+        $("#inputSubMarket").addClass('select-wait');
+        $(".submarket-form-group").addClass('select-wait');
+        $(".submarket-loading").show();
+        shopid = $("#inpuShop option:selected").val();
+        $.ajax(
+            {
+                type: 'POST',
+                url: '{% url "restapi:get_shop_submarkets" %}',
+                data: {
+                    shop_id: shopid,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                },
+                success: function (json) {
+                    $("#inputSubMarket").prop('disabled', false);
+                    $("#inputSubMarket").removeClass('select-wait');
+                    $(".submarket-form-group").removeClass('select-wait');
+                    $(".submarket-loading").hide();
+
+                    var optionID = [];
+                    var optionTitle = [];
+                    for (var i = 0; i < json.length; i++) {
+                        optionID[i] = json[i].ID;
+                        optionTitle[i] = json[i].Title;
+                    }
+                    $('#inputSubMarket').empty();
+                    for (var i = 0; i < optionTitle.length; i++) {
+                        $('#inputSubMarket').append($('<option>', { value: optionID[i], text: optionTitle[i] }));
+                    }
+                    productSubmarket = '{{Product.FK_SubMarket | safe}}'
+                    var foundSub = false;
+                    for (var i = 0; i < $("#inputSubMarket option").length; i++) {
+                        if ($("#inputSubMarket option")[i].innerText == productSubmarket) {
+                            $('#inputSubMarket option').eq(i).prop('selected', true);
+                            foundSub = true;
+                            break;
+                        }
+                    }
+                },
+                error: function () {
+
+                }
+            }
+        )
+    }
+    $("#inpuShop").on('change', function () {
+        getSubmarkets();
+    })
+
+    $(document).ready(function () {
+        getSubmarkets();
+    })
+    
+</script>
+<script src="{% static "js/shop/newProduct.js" %}" type="text/javascript"></script>
+
+
+{% block footer-section %}
+{% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+{% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

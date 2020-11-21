@@ -1,0 +1,221 @@
+{% load jformat %}
+{% load i18n static %}
+
+{% block header %}
+{% include "nakhll_market/parents/headersite.html" %}
+{% endblock %}
+
+
+    <title>بازار نخل | کمپین علیه کرونا</title>
+</head>
+
+
+{% block headertag %}
+{% include "nakhll_market/parents/headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+    <header class="first-pay-header">
+        <div class="top-first-pay">
+            <div class="container">
+                <div class="top-first-pay-content">
+                    <img src="{% static "/images/corona_champain.jpg" %}" alt="کرونا" class="header-camp">
+                    <!-- <h1>تخفیف ویژه خرید اولی ها</h1>
+                    <h2>به ازای هر 100 هزارتومان، 25 هزارتومان تخفیف</h2> -->
+                    <div class="clearfix"></div
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="favorite-products">
+        <div class="container">
+            <div class="row">
+                <div class="col-4">
+
+                </div>
+                <div class="col-4">
+                    <p class="top-title">محصولات منتخب</p>
+                </div>
+                <!-- <div class="col-4 left-time-col">
+                    <div class="left-time">
+                        <div class="clock">
+                            ساعت
+                        </div>
+                        <div class="digital-time">
+                            12 : 22 : 01
+                            <br>
+                            فرصت باقی مانده
+                        </div>
+                    </div>
+                </div> -->
+            </div>
+            <div class="products">
+                <div class="row">
+
+                    {% for products in Products %}
+                        <div class="col-xl-2 col-lg-3 col-md-4 col-12">
+                            <div class="product">
+                                <div class="product-img">
+                                    <img src="{{products.Image_thumbnail_url}}" alt="product">
+                                </div>
+                                <div class="product-info">
+                                    <p>{{products.Title}}</p>
+                                    <div class="product-prices">
+                                        {% if products.Status != '4' %}
+                                            <span class="real-price numbersprice">{{products.Price}} ریال</span>
+                                            {% if products.OldPrice != '0' %}
+                                                <span class="after-off-price numbersprice">{{products.OldPrice}} ریال</span>
+                                            {% else %}{% endif %}
+                                        {% else %}
+                                            <span class="empty">ناموجود</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="logo-rate">
+                                        <div class="company-logo">
+                                            <img src="{{products.FK_Shop.Image_thumbnail_url}}" alt="logo">
+                                            <h5 class="company-name-title">{{products.FK_Shop.Title}}</h5>
+                                        </div>
+                                        <div class="info-icon">
+                                            <i class="fas fa-info-circle"></i>
+                                            <br>
+                                            <span>{{products.FK_Shop.Point}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="buy-button">
+                                        <a href="/product/{{products.FK_Shop.Slug}}/{{products.Slug}}">خرید محصول</a>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+
+                </div>
+            </div>
+            <a href="/camp/corona/products">محصولات بیشتر</a>
+        </div>
+    </div>
+
+<div class="first-pay-get-off">
+        <div class="container">
+            <div class="first-pay-get-off-content">
+                <div class="first-pay-get-off-title">
+                    <h2>
+                        کرونا را شکست می­‌دهیم ...
+                    </h2>
+                </div>
+                <div class="first-pay-get-off-text">
+                   <p>اگر شما هم می‌خواهید که در بسیج همگانی <strong>«کرونا را شکست می­‌دهیم»</strong> سهیم باشید، چراغ نخست را روشن کنید، به شایعات توجه نکنید و از&nbsp;رفتن به فروشگاه‌ها و مغازه‌­ها جداً خودداری نموده و در کنار آن، آرامش روانی خود و خانواده‌­تان را حفظ کنید، چراکه برای گذر از بحرانِ موجود، این روزها&nbsp;بسیار حائز اهمیت هستند.</p>
+                   <p>حفظ سلامت افراد خانواده و همچنین سلامت افرادی که به واسطۀ نوع فعالیت و شغل‌شان هر روز و هر لحظه در خطِّ مقدم مبارزه، در معرض خطر ابتلا قرار دارند نیز باید به‌عنوان عضوی از جامعه و خانوادۀ بزرگ ایرانی مورد توجه باشد.</p>
+                   <p>اگر تا به امروز برای بسیاری از خریدهای خود از خانه بیرون می­‌رفتید و به فروشگاه­‌های متعددی مراجعه می‌کردید، حالا لازم است که با توجه به شیوع ویروس کرونا و ضرورت همراهی تک‌تک‌مان برای شکست‌دادن آن، از هیچ کمکی دریغ نکنیم. برای این‌کار، فقط کافی است خریدهای‌­مان را از طریق اینترنتی انجام دهیم تا هم سلامت خود را حفظ کنیم و هم فرشته‌­ای برای حفاظت از سلامتی و جان هم‌نوعی دیگر در لباس خدمت باشیم و هم در شکست‌دادن &nbsp;کرونا سهمی داشته باشیم. بیاییم&nbsp;با همدلی و رعایت اصول بهداشتی این بیماری را کنترل و ریشه‌کن کنیم.</p>
+                   <p> پس در خانه بمانید و اقلام موردنیاز خود را به‌صورت اینترنتی و از طریق <strong>«بازارِ آنلاینِ نخل»</strong> خریداری نمایید. این­‌گونه با اطمینان بیشتر و در کمترین زمان ممکن، کالای درخواستی خود را با کیفیتی مطلوب و قیمتی مقبول، در منزل تحویل بگیرید. نخل آمده است تا در چنین شرایط حساسی در کنار شما باشد که نگران چیزی نباشید و به‌­راحتی خریدهای شب عید خود را انجام دهید.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <div class="better-category">
+        <div class="container">
+            <p class="top-title">دسته بندی های برتر</p>
+            <div class="row">
+                <div class="col-xl-2 col-md-2 col-12">
+                    <div class="better-category-single">
+                    <a href="#">
+                        <div class="better-category-img">
+                            <img src="{% static "/images/example3.jpg" %}">
+                        </div>
+                        <p> محصولات غذایی </p>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="col-xl-2 col-md-2 col-12">
+                    <div class="better-category-single">
+                    <a href="#">
+                        <div class="better-category-img">
+                            <img src="{% static "/images/example3.jpg" %}">
+                        </div>
+                        <p> محصولات غذایی </p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+
+            <div class="slider-prod-cat better-category">
+                <div class="container-fluid">        
+                    <h4 class="top-title" ><span>دسته بندی محصولات</span></h4>
+                    <div class="postslidebt">
+                        <section class="autoplay slider sliderbox">
+                            {% for category in Coupon.FK_Categories.all %}
+                                <div>
+                                    <a href="/category/{{category.Slug}}">
+                                        <img src="{{category.Image_thumbnail_url}}" alt="{{category.Title}}">
+                                        <h3 class="titbox">{{category.Title}}</h3>
+                                    </a>
+                                </div>
+                            {% endfor %}
+                        </section>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+<div class="chamber-support-campaing">
+    <div class="container">
+        <h4 class="top-title" ><span>حجره های حامی کمپین </span></h4>
+            <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                    <div class="slider-full-width">
+                        <div class="slider-full-seller">
+                            <div class="postslidebt">
+                                <section class="autoplay slider sliderfull">
+
+
+
+                                {% for shop in Coupon.FK_Shops.all %}
+                                    <div class="boxslider-slick">
+                                        <a href="/{{shop.Slug}}">
+                                            <img src="{{shop.Image_thumbnail_url}}"  alt="{{shop.Title}}" class="seller-img">
+                                            <div class="ratecode">{{shop.Point}}</div>
+                                            <div class="nameseller">
+                                                <h3>{{shop.Title}}</h3>
+                                            </div>
+                                        </a>
+                                    </div>
+                                {% endfor %}
+
+
+                                    
+
+                                </section>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% block footer-section %}
+{% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+
+
+{% block footer %}
+{% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}
+
+</body>
+
+</html>

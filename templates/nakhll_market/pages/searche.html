@@ -1,0 +1,203 @@
+{% load i18n static %}
+{% load jformat %}
+
+{% block header %}
+{% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+
+    <title>بازار نخل | جستجو "{{Word}}"</title>
+</head>
+
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+<div class="container">
+    <div class="row name-section-title">
+            <h3>نتایج جستجو برای "<span class="search-word-color">{{Word}}</span>"</h3>
+    </div>
+</div>
+
+<section id="shop-list-sec">
+    <div class="container">
+        {% if Result_In_Shop %}
+            <div class="row name-section-title">
+                <div class="title-tag">
+                    <strong><span>"<span class="search-word-color">{{Word}}</span>"</span> در حجره ها</strong>
+                </div>
+            </div>
+            <br>
+
+            <div class="row">
+                {% for item in Result_In_Shop %}
+                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+                        <div class="shop-list">   
+                            <div class="shoplistbox">
+                                <div class="mohtava">
+                                    <img src="{{item.Shop.Image_thumbnail_url}}" alt="لوگو حجره" class="logo-shop">
+                                    <a href="{% url "nakhll_market:ShopsDetail" item.Shop.Slug %}"><h2><span>{{item.Shop.Title}}</span></h2></a>
+                                    <span class="addr-shop"><img src="{% static "images/maintenance.svg" %}" alt="addr"> 
+                                    <a href="{% url "nakhll_market:ShopsDetail" item.Shop.Slug %}"><span>{{item.Market.Title}}</span></a> - <a href="{% url "nakhll_market:ShopsDetail" item.Shop.Slug %}"><span>{{item.Submarket.Title}}</span></a>
+                                    </span>     
+                                    <p class="loc-p shoploc"><img src="{% static "images/maps-and-flags.svg" %}" alt="l" > 
+                                    استان {{item.Shop.State}},  شهرستان {{item.Shop.BigCity}}, {{item.Shop.City}}
+                                    </p> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="hr-line-alert"></div>
+        {% endif %}
+    </div>
+</section>
+
+{% if Result_In_Product %}
+    <div class="container">
+        <div class="row name-section-title">
+            <div class="title-tag">
+                <strong><span>"<span class="search-word-color">{{Word}}</span>"</span> در محصولات</strong>
+            </div>
+        </div>
+    </div>
+    <br>
+
+    <div class="container">
+        <div class="row">
+            {% for item in Result_In_Product %}
+                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12 pageinprod">
+                    <div class="prod-sec whitebg">
+                        <a href="/product/{{item.FK_Shop.Slug}}/{{item.Slug}}"><img class="prodimg" src="{{item.Image_thumbnail_url}}" alt="prodname"></a>
+                        
+                        <div class="bottom-product-bar">
+                            <a href="/product/{{item.FK_Shop.Slug}}/{{item.Slug}}"><h3>{{item.Title}}</h3></a>
+                            {% if item.Status != '4' %}<span class="numbersprice">{{item.Price}} ریال</span>{% else %}<span class="empty">ناموجود</span>{% endif %}
+                            <span class="add-to-cart-link"><span class="add-cart"><i class="far fa-plus"><span class="hide">{{item.ID}}</span></i></span></span>
+                        </div>
+
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+
+{% if not Result_In_Shop %}
+    {% if not Result_In_Product %}
+        <section id="shop-list-sec">
+            <div class="container">
+                <div class="row">
+                    <h4 class="Riyal center-screen">هیچ موردی یافت نشد!</h4>
+                </div>
+            </div>
+        </section>
+    {% endif %}
+{% endif %}
+
+<!-- Modal and script a-t-c -->
+<div class="modal fade" id="add-to-cart-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="title-modal-add-to-cart">عنوان</h5>
+          <button type="button" class="close right-close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p id="text-modal-add-to-cart">توضیحات</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-right" data-dismiss="modal">بستن</button>
+            <a href="/cart/detail/" class="btn btn-primary" id="go-to-card">سبدخرید</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+    function handler( event ) {
+        var product_ID = $(event.target).text();
+        var attrprice_list = [];
+        $.ajax(
+            {
+                type: 'POST',
+                url: '{% url "nakhll_market:add_to_cart_with_price_attribute" %}',
+                data: {
+                    product_id : product_ID ,
+                    attrpriceitem : attrprice_list ,
+                    csrfmiddlewaretoken : $('input[name=csrfmiddlewaretoken]').val(),
+                },
+                success: function (json) {
+                    if (json.status) {
+                        if (json.code === '200') {
+                            $('#title-modal-add-to-cart').html(" انجام شد ...");
+                            $('#text-modal-add-to-cart').html("<i class='fas fa-check ok-add-cart'></i><br> محصول در سبدخرید شما موجود است، به تعداد آن افزوده شد.");
+                            $("#go-to-card").show();
+                            $('#add-to-cart-modal').modal('show');
+                        }
+                        else if (json.code === '201') {
+                            $('#title-modal-add-to-cart').html("انجام شد ...");
+                            $('#text-modal-add-to-cart').html("<i class='fas fa-check ok-add-cart'></i><br> محصول موردنظر با موفقیت به سبدخرید شما اضافه شد.");
+                            $("#go-to-card").show();
+                            $('#add-to-cart-modal').modal('show');
+                        }
+                    }
+                    else {
+                        if (json.code === '404') {
+                            $('#title-modal-add-to-cart').html("خطا");
+                            $('#text-modal-add-to-cart').html("<i class='far fa-times cancel-add-cart'></i><br>موجودی محصول کافی نمی باشد ...");
+                            $("#go-to-card").show();
+                            $('#add-to-cart-modal').modal('show');
+                        }
+                        else if (json.code === '500') {
+                            $('#title-modal-add-to-cart').html("خطا");
+                            $('#text-modal-add-to-cart').html("<i class='far fa-times cancel-add-cart'></i><br> خطایی رخ داده است <br>" + json.msg );
+                            $("#go-to-card").show();
+                            $('#add-to-cart-modal').modal('show');
+                        }
+                        else if (json.code === '400') {
+                            $('#title-modal-add-to-cart').html("خطا");
+                            $('#text-modal-add-to-cart').html("<i class='far fa-times cancel-add-cart'></i><br> محصول مورد نظر یافت نشد.");
+                            $("#go-to-card").show();
+                            $('#add-to-cart-modal').modal('show');
+                        }
+                        else if (json.code === '401') {
+                            $('#title-modal-add-to-cart').html("خطا");
+                            $('#text-modal-add-to-cart').html("<i class='far fa-times cancel-add-cart'></i><br> ابتدا به حساب کاربری خود وارد شوید و یا ثبت نام کنید ...");
+                            $("#go-to-card").hide();
+                            $('#add-to-cart-modal').modal('show');
+                        }
+                    }
+                    shopping_cart();
+                },
+                error: function () {
+                    $('#title-modal-add-to-cart').html("خطا");
+                    $('#text-modal-add-to-cart').html("ابتدا به حساب کاربری خود وارد شوید و یا ثبت نام کنید ...");
+                    $("#go-to-card").hide();
+                    $('#add-to-cart-modal').modal('show');
+                    console.log(xhr.status + ": " + xhr.responseText);
+                    RegisteredMobileNumber = false;
+                    shopping_cart();
+                }
+            }
+        );
+    }
+    $( ".add-to-cart-link" ).click( handler );
+</script>
+ <!-- end atc -->
+{% block footer-section %}
+    {% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+    {% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

@@ -1,0 +1,196 @@
+{% load jformat %}
+
+{% block header %}
+    {% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+
+    <title>بازار نخل | هشدار ها</title>
+</head>
+
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+
+
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-3">
+                <div class="profile-sidebar-site">    
+                    {% block topsidebar %}
+                        {% include "nakhll_market/profile/parents/new-topsidebar.html" %}
+                    {% endblock %}
+                    <div class="profile-sidebar-main">
+
+                        <a href="/profile/dashboard/">
+                            <button>
+                                <i class="fas fa-id-badge"></i>
+                                <h5>داشبورد</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/transaction/">
+                            <button>
+                                <i class="fad fa-clipboard-list"></i>
+                            <h5>تراکنش ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/factor/">
+                            <button>
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <h5>فاکتور ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/ticketing/">
+                            <button>
+                                <i class="fad fa-user-headset"></i>
+                                <h5>پشتیبانی</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/shops/">
+                            <button>
+                                <i class="fas fa-store"></i>
+                                <h5>مدیریت حجره</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/review/">
+                            <button>
+                                <i class="fad fa-comments-alt"></i>
+                                <h5>نقد ها و نظرات</h5>
+                            </button>
+                        </a>
+
+                        {% if request.user.is_staff %}
+                            {% block review %}
+                                {% include "nakhll_market/alert/pages/menu_for_alert.html" %}
+                            {% endblock %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                    {% include "nakhll_market/profile/parents/new-header-profile.html" %}
+                {% endblock %}
+
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                        <div class="profile-box">
+                            <div class="row">
+                                
+                                <div class="col-lg-6">
+                                    <div class="form-ticket">
+                                        <h5>پیام ها</h5>
+                                        <div class="messages-suppurt">
+                                            <img src="{{ThisTicket.get_importer_profile}}">
+                                            <h5>{{ThisTicket.Title}} <span>{{ThisTicket.Date|jformat:'%Y/%m/%d'}}</span></h5>
+                                            <p>{{ThisTicket.Description}}</p>
+
+                                            {% if ThisTicket.Image != '' %}
+                                                <br>
+                                                <a href="{{ThisTicket.Image.url}}" target="_blank"><span class="Riyal button-alert">تصویر ارسال شده</span></a>
+                                                <br>
+                                            {% endif %}
+                                            <div class="hr-line-alert"></div>
+                                            {% for item in ReplayTicket %}
+                                                <div class="messages-suppurt form-ticket-floats">
+                                                    <img src="{{item.image}}">
+                                                    <h6>{{item.name}}</h6>
+                                                    <span class="ticket-date">{{item.date|jformat:'%Y/%m/%d'}}</span>
+                                                    <div class="clearfix"></div>
+                                                    <br>
+                                                    <p>{{item.descriptino}}</p>
+                                                </div>
+                                                <div class="hr-line-alert"></div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                
+                                <div class="col-lg-6">
+                                    <div class="form-ticket">
+                                        <h5>پاسخ تیکت</h5>
+                                        <form method="POST" action="{% url "nakhll_market:RecordTicketReplayAlert" ThisTicket.ID %}">
+                                            {% csrf_token %}
+
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <label for="texts-input" class="col-sm-12 col-form-label">متن پیام</label>
+                                                    <div class="col-sm-12">
+                                                        <textarea name="Ticket_Description" class="form-control" id="texts-input" rows="4" required></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <label for="sec-input" class="col-sm-2 col-form-label">وضعیت تیکت</label>
+                                                    <div class="col-sm-10">
+                                                        <select class="custom-select" name="Ticket_Status" required id="sec-input">
+                                                            {% if ThisTicket.SeenStatus == '0' %}
+                                                                <option value="0" selected>خوانده نشده</option>
+                                                                <option value="1">در حال بررسی</option>
+                                                                <option value="2">بررسی شده</option>
+                                                                <option value="3">بسته شده</option>
+                                                            {% elif ThisTicket.SeenStatus == '1' %}
+                                                                <option value="1">در حال بررسی</option>
+                                                                <option value="1" selected>در حال بررسی</option>
+                                                                <option value="2">بررسی شده</option>
+                                                                <option value="3">بسته شده</option>
+                                                            {% elif ThisTicket.SeenStatus == '2' %}
+                                                                <option value="2">بررسی شده</option>
+                                                                <option value="1">در حال بررسی</option>
+                                                                <option value="2" selected>بررسی شده</option>
+                                                                <option value="3">بسته شده</option>
+                                                            {% elif ThisTicket.SeenStatus == '3' %}
+                                                                <option value="3">بسته شده</option>
+                                                                <option value="1">در حال بررسی</option>
+                                                                <option value="2">بررسی شده</option>
+                                                                <option value="3" selected>بسته شده</option>
+                                                            {% endif %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <button class="btn btn-primary mr-auto">ثبت</button> 
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+{% block footer-section %}
+{% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+
+
+{% block footer %}
+{% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

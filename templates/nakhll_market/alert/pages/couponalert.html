@@ -1,0 +1,254 @@
+{% load jformat %}
+
+{% block header %}
+    {% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+    <title>بازار نخل | هشدار ها</title>
+</head>
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-3">
+                <div class="profile-sidebar-site">   
+                    {% block topsidebar %}
+                        {% include "nakhll_market/profile/parents/new-topsidebar.html" %}
+                    {% endblock %}
+                    <div class="profile-sidebar-main">
+                        <a href="/profile/dashboard/">
+                            <button>
+                                <i class="fas fa-id-badge"></i>
+                                <h5>داشبورد</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/transaction/">
+                            <button>
+                                <i class="fad fa-clipboard-list"></i>
+                            <h5>تراکنش ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/factor/">
+                            <button>
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <h5>فاکتور ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/ticketing/">
+                            <button>
+                                <i class="fad fa-user-headset"></i>
+                                <h5>پشتیبانی</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/shops/">
+                            <button class="activebtn">
+                                <i class="fas fa-store"></i>
+                                <h5>مدیریت حجره</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/review/">
+                            <button>
+                                <i class="fad fa-comments-alt"></i>
+                                <h5>نقد ها و نظرات</h5>
+                            </button>
+                        </a>
+
+                        {% if request.user.is_staff %}
+                            {% block review %}
+                                {% include "nakhll_market/alert/pages/menu_for_alert.html" %}
+                            {% endblock %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                    {% include "nakhll_market/profile/parents/new-header-profile.html" %}
+                {% endblock %}
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                        <div class="dashboard"> 
+                            <h4>ایجاد کوپن حجره</h4>  
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                <label for="inputCopun_Number">سریال کوپن</label>
+                                <fieldset disabled>
+                                    <input type="text" value="{{Coupon.SerialNumber}}" class="form-control" id="inputCopun_Number">
+                                </fieldset>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <label for="inputCopun_Title">عنوان کوپن</label>
+                                    <fieldset disabled>
+                                        <input type="text" value="{{Coupon.Title}}" class="form-control" id="inputCopun_Title" required>
+                                    </fieldset>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                <label for="inputCopun_Creator">سازنده کوپن</label>
+                                <fieldset disabled>
+                                    <input type="text" value="{{ Coupon.get_user_fullname }}" class="form-control" id="inputCopun_Creator">
+                                </fieldset>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                <label for="inputCopun_Type">نوع کوپن</label>
+                                <fieldset disabled>
+                                    <input type="text" value="{{ Coupon.get_discount_status }}" class="form-control" id="inputCopun_Type">
+                                </fieldset>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                <label for="inputCopun_Des">توضیحات کوپن</label>
+                                <fieldset disabled>
+                                    <textarea class="form-control" name="copun_des" id="inputCopun_Des" rows="1">{{Coupon.Description}}</textarea>
+                                </fieldset>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="inputCopun_Shops"> حجره ها </label>
+                                    <fieldset disabled>
+                                        <select data-placeholder="حجره ها" multiple class="chosen-select-rtl form-control" id="inputCopun_Shops" tabindex="14">
+                                            {% for item in Coupon.FK_Shops.all %}
+                                                <option selected>{{item.Title}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </fieldset>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <label for="inputCopun_Products"> محصولات </label>
+                                    <fieldset disabled>
+                                        <select data-placeholder="محصولات" multiple class="chosen-select-rtl form-control" id="inputCopun_Products" tabindex="14">
+                                            {% for item in Coupon.FK_Products.all %}
+                                                <option selected>{{item.Title}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </fieldset>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="inputCopun_StartDay">تاریخ شروع کوپن</label>
+                                    <fieldset disabled>
+                                        <input type="text" value="{{Coupon.StartDate|jformat:'%Y/%m/%d'}}" class="form-control" id="inputCopun_StartDay" required >
+                                    </fieldset>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <label for="inputCopun_EndDay">تاریخ انقضاء کوپن</label>
+                                    <fieldset disabled>
+                                        <input type="text" value="{{Coupon.EndDate|jformat:'%Y/%m/%d'}}" class="form-control" id="inputCopun_EndDay" required >
+                                    </fieldset>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="inputCopun_DiscountType">نوع تخفیف کوپن</label>
+                                    <fieldset disabled>
+                                        <input type="text" value="{{ Coupon.get_discount_type }}" class="form-control" id="inputCopun_DiscountType">
+                                    </fieldset>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                <label for="inputCopun_DiscountRate">میزان تخفیف کوپن</label>
+                                <fieldset disabled>
+                                    <input type="text" value="{{Coupon.DiscountRate}}" class="form-control" id="inputCopun_DiscountRate" required>
+                                </fieldset>
+                                    <small class="smallhelp">اگر نوع تخفیف به صورت می باشد، باید عددی از 1 تا 100 را اینجا قرار داشته باشد. در غیر اینصورت کوپن را تایید نکنید!</small>
+                                    <br>
+                                    <small class="smallhelp">اگر نوع تخفیف به صورت اعتباری می باشد، باید عدد وارد شده از 10000 ریال به بالا باشد. در غیر اینصورت کوپن را تایید نکنید!</small>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                <label for="inputCopun_MinimumAmount">حداقل میزان خرید</label>
+                                <fieldset disabled>
+                                    <input type="text" value="{{Coupon.MinimumAmount}}" class="form-control"  id="inputCopun_MinimumAmount">
+                                </fieldset>
+                                    <small class="smallhelp">این فیلد می تواند خالی باشد یا میزان اعتباری باشد که خریدار در صورت خرید بیش از این مقدار می تواند از این کوپن استفاده کند. در غیر اینصورت کوپن را تایید نکنید!</small>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                <label for="inputCopun_MaximumAmount">حداکثر میزان خرید</label>
+                                <fieldset disabled>
+                                    <input type="text" value="{{Coupon.MaximumAmount}}" class="form-control" id="inputCopun_MaximumAmount">
+                                </fieldset>
+                                    <small class="smallhelp">این فیلد می تواند خالی باشد یا میزان اعتباری باشد که خریدار در صورت خرید بیش از این مقدار نمی تواند از این کوپن استفاده کند. در غیر اینصورت کوپن را تایید نکنید!</small>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                <label for="inputCopun_NumberOfUse">میزان دفعات مجاز استفاده از کوپن</label>
+                                <fieldset disabled>
+                                    <input type="text" value="{{Coupon.NumberOfUse}}" class="form-control" id="inputCopun_NumberOfUse" required>
+                                </fieldset>
+                                    <small class="smallhelp">تعداد دفعاتی که هر فرد می تواند از کوپن شما استفاده کند. این مقدار نمی تواند صفر باشد!</small>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="hr-line-alert"></div>
+                            <form method="POST" action="/profile/alert/record/addcoupon/{{Coupon.id}}">
+                                {% csrf_token %}
+                                <div class="col-xl-12 col-12">
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="radio" id="accept-btn" name="accept-btn" value="1" class="custom-control-input" checked>
+                                        <label class="custom-control-label" for="accept-btn">تایید</label>
+                                      </div>
+                                      <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="radio" id="customRadioInline2" name="accept-btn" value="0" class="custom-control-input">
+                                        <label class="custom-control-label" for="customRadioInline2">عدم تایید</label>
+                                    </div>
+                                    <br>
+                                    <div class="form-group mg-10">
+                                        <label for="descriptionalert">توضیحات :</label>
+                                        <textarea class="form-control" id="descriptionalert" name="Des" rows="1" required></textarea>
+                                    </div>
+                                    <button class="btn btn-primary btn-left">ثبت</button>
+                                </div>
+                            </form>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% block footer-section %}
+    {% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+    {% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

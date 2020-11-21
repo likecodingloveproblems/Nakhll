@@ -1,0 +1,126 @@
+{% load i18n static %}
+{% load jformat %}
+
+{% block header %}
+{% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+
+    <title>بازار نخل | تماس ما</title>
+</head>
+
+
+{% block headertag %}
+{% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+
+
+<div class="container">
+    <div class="row">
+        <div class="title-pages">
+            <h4>" تماس با ما "</h4>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-xl-12">
+            {% if ShowAlart %}
+                <div class="col-xl-6 xol-lg-6 col-md-6 col-sm-12 col-12">
+                    <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                        <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                        <p>
+                            {{AlartMessage}}
+                        </p>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="page-content">
+                <p>
+                این که بازار اجتماعی نخل را برگزیده اید، افتخار ماست. خشنودیم بتوانیم در کنار شما به رونق کسب و کارتان کمک کنیم. <br> شما از راه های زیر میتوانید با ما در تماس باشید.
+                </p>
+                 <h5>شماره های تماس</h5>
+
+                    <div class="row">
+                        {% for connect in ConnectRoad %}
+                            <div class="col-xl-3">
+                                <div class="box-about-us">
+                                    <i class="{{connect.Icon}}"></i>
+                                    <h3>{{connect.Title}}</h3>
+                                    <ul>
+                                        {% for phone in connect.PhoneNumber %}
+                                            <li>{{phone}}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    </br>
+                    </br>
+                <h5>فرم تماس با ما</h5>   
+                    <form method="POST" action="add">
+                        {% csrf_token %}
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                            <label for="inputTitle">عنوان پیام <code> * </code></label>
+                                <input type="text" name="Input_Title" class="form-control" id="inputTitle" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                            <label for="inputphone">شماره تماس</label>
+                                <input type="text" name="Input_Phone" class="form-control" maxlength="11" id="inputphone">
+                                <small class="smallhelp">برای پاسخگویی به پیام ها لطفا حداقل یکی از فیلد های شماره تماس و ایمیل را تکمیل کنید.</small>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                            <label for="inputemail">ایمیل</label>
+                                <input type="email" name="Input_Email" class="form-control" id="inputemail">
+                                <small class="smallhelp">برای پاسخگویی به پیام ها لطفا حداقل یکی از فیلد های شماره تماس و ایمیل را تکمیل کنید.</small>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-7">
+                                <label for="inputText">متن پیام  <code> * </code></label>
+                                <textarea class="form-control" name="Input_Text" id="inputText" rows="5" required></textarea>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary mr-auto">ثبت</button>
+                    </form>
+
+                    </br>
+                    </br>
+                   
+                    <h5>آدرس ما</h5>
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d215.33981079777956!2d57.06208950999807!3d30.281619439852484!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2s!4v1577883561367!5m2!1sen!2s" width="100%" height="250" frameborder="0" style="border:0;" allowfullscreen=""></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% block footer-section %}
+{% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+
+
+{% block footer %}
+{% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

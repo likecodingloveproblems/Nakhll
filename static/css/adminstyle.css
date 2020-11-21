@@ -1,0 +1,186 @@
+body{
+    font-family: IRANSans;
+    font-style: normal;
+    background: url(https://upload.wikimedia.org/wikipedia/commons/b/b9/Grand_Bazaar%2C_Tehran_14.jpg);
+    background: url('/static/Pictures/bg-admin.jpg');
+    background-size: cover;
+    background-attachment: fixed;
+}
+td, th {
+    font-family: IRANSans,"Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
+}
+.dashboard a:link,.dashboard a:visited,.dashboard a{
+    color: #000;
+    text-decoration: none;
+    text-shadow: none;
+}
+
+.a:link, a:visited ,a{
+    color: #fff;
+    text-decoration: none;
+}
+.module table {
+    width: 100%;
+}
+.inline-related h3 span.delete label {
+    color: #000;
+    text-shadow: 0px 0px 5px #fff;
+}
+#content h1{
+    font-size: 20px;
+    color: #fff;
+    text-shadow: 0px 0px 10px #000;
+}
+.dashboard #content h1{
+    color: #fff;
+    text-shadow: 0px 0px 15px #ccc;
+}
+#header{
+    background: rgba(39, 0, 42, 0.72);
+    color: #ccd6ff;
+    overflow: hidden;
+    position: sticky;
+    top: 0px;
+    z-index: 99999;
+}
+.module h2, .module caption, .inline-group h2 {
+    background: #001554;
+    color: #fff;
+    font-size: 16px !important;
+}
+div.breadcrumbs {
+    background: #001554;
+}
+.dashboard .module{
+    background: #ffffff !important;
+    color: #000;
+}
+.module {
+    background: rgba(39, 0, 42, 0.46) !important;
+    color: #ffff;
+}
+form .aligned p.help, form .aligned div.help {
+    color: #ddf;
+}
+.help, p.help, form p.help, div.help, form div.help, div.help li {
+    font-size: 11px;
+    color: #e1e1e1;
+}
+.dashboard #content p{
+    color: #000;
+    text-shadow: 0px 0px 2px #000;
+}
+#content p{
+    color: #fff;
+    text-shadow: 0px 0px 2px #000;
+}
+.dashboard #content-main p{
+    color: #000 !important;
+    text-shadow: none !important;
+}
+.form-row {
+    border-bottom: none;
+}
+label {
+    font-size: 13px;
+    font-weight: normal;
+    color: #fff;
+}
+.required label, label.required {
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0px 0px 5px #fff;
+}
+.submit-row {
+    background: rgba(0, 11, 37, 0.32);
+    border: none;
+    border-radius: 4px;
+}
+.button:active, input[type=submit]:active, input[type=button]:active, .button:focus, input[type=submit]:focus, input[type=button]:focus, .button:hover, input[type=submit]:hover, input[type=button]:hover {
+    font-family: IRANSans,"Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
+    background: #27002a;
+}
+.button, input[type=submit], input[type=button], .submit-row input, a.button {
+    font-family: IRANSans,"Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
+    background: #27002a;
+}
+.button.default, input[type=submit].default, .submit-row input.default {
+    background: #27002a;
+}
+.button.default:hover, input[type=submit].default:hover, .submit-row input.default:hover{
+    background: #5b1760;
+}
+input, textarea, select, .form-row p, form .button{
+    font-family: IRANSans,"Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
+}
+#changelist-filter {
+    margin: 15px;
+}
+#changelist-form{
+    padding:15px 15px 15px 0px;
+}
+ul.messagelist li {
+    border: 2px solid #f80000;
+    background: #fff ;
+}
+#result_list td{
+    color: #000;
+}
+#content-related .actionlist li{
+    list-style: none;
+}
+.change-related,.add-related,.delete-related{
+    background: #fff;
+    padding: 3px 7px;
+    border-radius: 3px;
+}
+img.ui-datepicker-trigger {
+    background: #ffff;
+    height: 17px;
+    padding: 3px;
+    margin: 5px;
+    border-radius: 15px;
+}
+.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
+    font-family: IRANSans,"Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
+    font-size: 12px !important;
+}
+a.section:link, a.section:visited {
+    color: #fff !important;
+    text-decoration: none;
+}
+#content-related {
+    background: #ffffff;
+}
+.row1 a ,.row2 a{
+    color: #140031;
+}
+
+@media (max-width: 500px){
+    #changelist-form{
+        padding:15px;
+    }
+}
+.errornote{
+    color: #000!important;
+    text-shadow: none !important;
+}
+.success a{
+    color: #000 !important;
+}
+.delete-selected-confirmation #content{
+    color: #fff;
+}
+.delete-selected-confirmation #content a{
+    color: #fff !important;
+}
+.mce-panel {
+    width: 100% !important;
+    float: left !important;
+}
+
+
+.mce-container{
+    font-family: IRANSans !important;
+}

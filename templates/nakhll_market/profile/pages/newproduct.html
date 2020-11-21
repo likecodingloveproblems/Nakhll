@@ -1,0 +1,2848 @@
+{% load jformat %}
+{% load i18n static %}
+
+{% block header %}
+{% include "nakhll_market/parents/headersite.html" %}
+{% endblock %}
+
+
+    <title>بازار نخل | ثبت محصول جدید</title>
+    <link rel="stylesheet" href="{% static "css/cropper.css" %}">
+</head>
+
+
+{% block headertag %}
+{% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+<div class="loading-index loading-add-product">
+    <div class="loadingpage">
+        <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        <p>
+            لطفا منتظر بمانید ...
+        </p>
+    </div>
+</div>
+<div class="modal fade" id="myModalerror" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title prod-modal-title" id="exampleModalLabel">هشدار</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body whole-modal-body" id="text_err">
+            <div class="whole-content-of-modal">
+                در وارد کردن<span class="Riyal"> قیمت محصول </span> ، <span class="Riyal"> وزن محصول </span> و <span class="Riyal">ابعاد محصول </span> دقت فرمایید در صورتی که در زمان ارسال اطلاعات وارد شده ناقص باشد مابه التفاوت هزینه بر عهده شماست  ....
+            </div>
+        </div>
+        <div class="modal-footer whole-content-of-footer" id="modal-footer-err">
+            <button type="submit" class="btn btn-primary ml-auto submit-and-accept">تایید می کنم و می پذیرم </button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
+        </div>
+        </div>
+    </div>
+</div>
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-3">
+                <div class="profile-sidebar-site">    
+                    {% block topsidebar %}
+                        {% include "nakhll_market/profile/parents/new-topsidebar.html" %}
+                    {% endblock %}
+                    <div class="profile-sidebar-main">
+                        <a href="/profile/dashboard/">
+                            <button>
+                                <i class="fas fa-id-badge"></i>
+                                <h5>داشبورد</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/transaction/">
+                            <button>
+                                <i class="fad fa-clipboard-list"></i>
+                            <h5>تراکنش ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/factor/">
+                            <button>
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <h5>فاکتور ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/ticketing/">
+                            <button>
+                                <i class="fad fa-user-headset"></i>
+                                <h5>پشتیبانی</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/shops/">
+                            <button class="activebtn">
+                                <i class="fas fa-store"></i>
+                                <h5>مدیریت حجره</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/review/">
+                            <button>
+                                <i class="fad fa-comments-alt"></i>
+                                <h5>نقد ها و نظرات</h5>
+                            </button>
+                        </a>
+
+                        {% if request.user.is_staff %}
+                            {% block review %}
+                                {% include "nakhll_market/profile/parents/menu_for_shop_manage.html" %}
+                            {% endblock %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                    {% include "nakhll_market/profile/parents/new-header-profile.html" %}
+                {% endblock %}
+
+                <div class="row">
+                    {% if ShowAlart %}
+                    <div class="col-xl-6 xol-lg-6 col-md-6 col-sm-12 col-12">
+                        <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                            <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                            <p>
+                                {{AlartMessage}}
+                            </p>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <span class="titlemap-new">مراحل ثبت محصول : &nbsp; &nbsp;</span>
+                                <li class="breadcrumb-item active" id="new-product-map"> ثبت محصول </li>
+                                <li class="breadcrumb-item" id="post-range-map">اطلاعات محدوده ارسال</li>
+                                <li class="breadcrumb-item" id="attribute-map">ثبت ویژگی</li>
+                                <li class="breadcrumb-item" id="gallery-product-map">گالری محصول</li>
+                                <li class="breadcrumb-item" id="optional-attribute-product-map">ثبت ویژگی انتخابی</li>
+                                <li class="breadcrumb-item" id="end-add-map">ثبت نهایی</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+                <div class="alert alert-danger" role="alert">
+                    <i class="fas fa-exclamation-triangle float-right warning-back-browser-submit-product"></i> <b>هشدار!</b> لطفا هنگام تکمیل مراحل ثبت محصول از استفاده از دکمه ی برگشت (back) مرورگر برای رفتن به مراحل قبل خودداری نمائید. پس از ثبت نهایی محصول با مراجعه به بخش مدیریت حجره میتوانید اطلاعات محصول خود را ویرایش کنید.
+                  </div>
+
+                <!-- Img -->
+                <div id="alert-div-inputproduct-img-empty"></div>
+
+                <!-- Title -->
+                <div id="alert-div-inputproduct-title-empty"></div>
+                <div id="alert-div-inputproduct-title-minlength"></div>
+                <div id="alert-div-inputproduct-title-maxlength"></div>
+                <!-- <div id="alert-div-inputproduct-title-valid-chars"></div> -->
+                <!-- <div id="alert-div-inputproduct-title-persian"></div> -->
+
+                <!-- Slug -->
+                <div id="alert-div-inputproduct-slug-empty"></div>
+                <div id="alert-div-inputproduct-slug-english"></div>
+                <div id="alert-div-inputproduct-slug-dup"></div>
+
+                <!-- Shop -->
+                <div id="alert-div-inputproduct-shop-empty"></div>
+
+                <!-- About -->
+                <!-- <div id="alert-div-inputproduct-about-empty"></div> -->
+                <!-- <div id="alert-div-inputproduct-about-valid-chars"></div> -->
+                <!-- <div id="alert-div-inputproduct-about-persian"></div> -->
+
+                <!-- Category -->
+                <div id="alert-div-inputproduct-category-empty"></div>
+                <div id="alert-div-inputproduct-category-count-limit"></div>
+
+                <!-- Submarket -->
+                <div id="alert-div-inputproduct-submarket-empty"></div>
+
+                <!-- Introduction -->
+                <div id="alert-div-inputproduct-bio-empty"></div>
+                <!-- <div id="alert-div-inputproduct-intro-valid-chars"></div> -->
+                <!-- <div id="alert-div-inputproduct-introduction-persian"></div> -->
+
+                <!-- Story -->
+                <!-- <div id="alert-div-inputproduct-story-valid-chars"></div> -->
+                <!-- <div id="alert-div-inputproduct-story-persian"></div> -->
+
+                <!-- Real & Sell Price -->
+                <div id="alert-div-inputproduct-price-digits"></div>
+                <div id="alert-div-inputproduct-sell-price-minlength"></div>
+                <!-- <div id="alert-div-inputproduct-real-price-minlength"></div> -->
+                <!-- <div id="alert-div-inputproduct-price-comparison"></div> -->
+                <div id="alert-div-inputproduct-sell-price-empty"></div>
+
+                <!--Off-->
+                <div id="alert-div-inputproduct-off-empty"></div>
+                <div id="alert-div-inputproduct-off-length"></div>
+
+                <!-- Pure Weight -->
+                <div id="alert-div-inputproduct-pure-weight-empty"></div>
+
+                <!-- Packing Weight -->
+                <div id="alert-div-inputproduct-packing-weight-empty"></div>
+
+                <div id="alert-div-inputproduct-weight-digits"></div>
+                <div id="alert-div-inputproduct-weight-comparison"></div>
+
+
+                <!-- Dimension -->
+                <div id="alert-div-inputproduct-length-dimension-empty"></div>
+
+                <!-- Product Width -->
+                <div id="alert-div-inputproduct-width-dimension-empty"></div>
+
+                <!-- Product Height -->
+                <div id="alert-div-inputproduct-height-dimension-empty"></div>
+
+
+                <div id="alert-div-inputproduct-dimension-digits"></div>
+                
+                <!-- Product Send Area -->
+                <div id="alert-div-inputproduct-send-area-limit"></div>
+
+                <!-- Product Send Area Exception -->
+                <div id="alert-div-inputproduct-send-area-exception-limit"></div>
+
+                <!-- Product Available Count -->
+                <div id="alert-div-inputproduct-available-count-empty"></div>
+                <div id="alert-div-inputproduct-available-count-digits"></div>
+                <div id="alert-div-inputproduct-available-count-zero-value"></div>
+
+                <!-- System Error -->
+                <div id="alert-div-system-error"></div>
+
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                        <div class="dashboard" id="new-product-box-section"> 
+                            <h4>اضافه کردن محصول</h4>  
+
+                            <form id="new-prod-form" method="POST" enctype="multipart/form-data" action="{% url "nakhll_market:Shop_Manager_AddNewProduct" %}">
+                                {% csrf_token %}
+                                    <div class="form-row">                            
+                                        <label class="label cropper-label w-100">  
+                                            <div class="form-group col-md-6"> 
+                                                <div id="msg"></div>
+                                                <label for="file">عکس محصول <code>*</code></label>      
+                                                <br>  
+                                                <a class="btn btn-primary choose-pic-btn" >انتخاب عکس</a>
+                                                <input type="file" class="sr-only input-pic-file" id="input" name="image" accept="image/*">
+                                                <input type="text" class="form-control choose-pic-input-name" disabled placeholder="آپلود عکس">
+                                            </div>
+                                            <br>
+                                            <img class="rounded cropper-rounded " id="avatar" src="{% static "images/image_upload.jpg" %}" alt="avatar"  data-toggle="tooltip" title="انتخاب عکس ">
+                                        </label>
+                                    </div>
+                                    <div class="alert cropper-alert" role="alert"></div>
+                                    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+                                        <div class="modal-dialog modal-md" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                            <h5 class="modal-title" id="modalLabel">برش تصویر ...</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="img-container cropper-img-container">
+                                                    <img id="image" src="https://avatars0.githubusercontent.com/u/3456749">
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer" id="modal-footer-err">
+                                                <button type="button" class="btn btn-primary right-btn-send-modal" id="crop">انتخاب تصویر</button>
+                                                <button type="button" class="btn btn-secondary " data-dismiss="modal">بستن</button>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="inputprod_title">عنوان محصول <code>*</code></label>
+                                            <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="عنوان باید فارسی و حداکثر 170 کاراکتر باشد."></i>
+                                            <input type="text" name="prod_title" class="form-control" id="inputprod_title" minlength="2" maxlength="170" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="inputslugProd">شناسه محصول <code>*</code></label>
+                                            <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title='شناسه محصول باید شامل حروف انگلیسی کوچک، خط تیره ("_" یا "-") و بدون فاصله باشد.'></i>
+                                            <input type="text" name="slugProd" class="form-control" id="inputslugProd" pattern="[a-z0-9\-_]{2,}" required>
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="inpuShop">حجره <code>*</code></label>
+                                            <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="این محصول متعلق به کدام حجره شماست؟"></i>
+                                            <select id="inpuShop" name="ProdShop" class="form-control">
+                                                {% for shop in Shops %}
+                                                    <option value="{{shop.ID}}">{{shop.Title}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-12">
+                                            <label for="inputProdBio">معرفی محصول <code>*</code></label>
+                                            <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="معرفی مختصری از محصول خود تا حداکثر 200 کاراکتر وارد نمایید."></i>
+                                            <textarea name="ProdBio" maxlength="200" class="form-control" id="inputProdBio" rows="1"></textarea>
+                                        </div>  
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6 category-product-list">
+                                            <label for="inputCat">دسته بندی محصول <code>*</code></label>
+                                            <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="محصول شما شامل کدام دسته بندی ها می باشد؟
+                                            در صورتی که دسته بندی مورد نظر شما موجود نبود، این موضوع رو از طریق پشتیبانی سایت پیگیری نمایید."></i>
+                                            <select id="select-cat" data-placeholder="انتخاب دسته بندی" multiple class="chosen-select-rtl form-control category-product" name="ProdCat" tabindex="14">
+                                                {% for shop in Categort %}
+                                                    <option value="{{shop.id}}">{{shop.Title}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-6 submarket-form-group">
+                                            <label for="inputSubMarket">راسته محصول <code>*</code></label>
+                                            <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="محصول شما در کدام راسته قرار می گیرد؟
+                                            در صورتی که راسته مورد نظر شما موجود نبود، این موضوع رو از طریق پشتیبانی سایت پیگیری نمایید."></i>
+                                            <div class="loading-chosen-ajax submarket-loading"><img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری">
+                                                در حال بارگزاری
+                                            </div>
+                                            <select id="inputSubMarket" name="ProdSub" class="form-control">
+                                                {% for shop in SubMarket %}
+                                                    <option value="{{shop.ID}}">{{shop.Title}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-12">
+                                        <label for="inputProdDes">درباره محصول</label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="محصول خود را به صورت کامل معرفی نمایید."></i>
+                                            <textarea name="ProdDes" class="form-control" id="inputProdDes" rows="2"></textarea>
+                                        </div>  
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-12">
+                                            <label for="inputProdStory">داستان محصول</label>
+                                            <textarea name="ProdStory" class="form-control" id="inputProdStory" rows="2"></textarea>
+                                        </div>  
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6 ">
+                                            <label for="inputprod_sellprice">قیمت فروش محصول <code>*</code></label>
+                                            <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="قیمت را به ریال وارد نمایید."></i>
+                                            <input type="number" name="prod_Price" class="form-control inputprod_sellprice" pattern="[0-9]{5,}" id="inputprod_sellprice" required>
+                                            <p class="digit-to-persian" id="sellprice-toman"></p>
+                                        </div>
+                                
+                                        <div class="form-group col-lg-5 col-md-4 col-xs-4 col-9 offamount-formgroup">
+                                            <label for="inputprod_offamount">میزان تخفیف</label>
+                                            <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="میزان تخفیف محصول را به ریال وارد نمائید."></i>
+                                            <input type="number" name="Prodoffamount" class="form-control inputprod_offamount" pattern="[0-9]{5,}" id="inputprod_offamount">
+                                            <p class="digit-to-persian" id="offamount-toman"></p>
+                                        </div>
+                                        <div class="form-group col-lg-1 col-md-2 col-3 remove-off-formgroup">
+                                            <p class="off-question off-yes small-size" id="remove-off">حذف تخفیف</p>
+                                        </div>
+                                        <div class="form-group col-md-6 off-question-form-group">
+                                            <p class="off-question"> آیا برای این محصول <span class="redcolor">تخفیف</span> در نظر گرفته اید؟<span id="off-yes-clk" class="off-yes off-yes-yes">بله</span></p>
+                                        </div>
+                                    </div>
+                                    <h6>وزن محصول</h6>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                        <label for="input_netweight">وزن خالص محصول <code>*</code></label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="وزن خالص محصول را به صورت گرم وارد نمایید - اگر قادر به محاسبه وزن خالص نیستید در این فیلد 0 وارد کنید "></i>
+                                            <input type="number" name="product_netweight" class="form-control" pattern="[0-9]{1,6}" id="input_netweight" required>
+                                            <p class="digit-to-persian" id="pure-weight"></p>
+                                        </div>
+    
+                                        <div class="form-group col-md-6">
+                                        <label for="input_packingweight">وزن محصول با بسته بندی <code>*</code></label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="وزن محصول با بسته بندی را به صورت گرم وارد نمایید."></i>
+                                            <input type="number" name="product_packingweight" class="form-control" pattern="[0-9]{1,5}" id="input_packingweight" required>
+                                            <p class="digit-to-persian" id="packing-weight"></p>
+                                        </div>
+                                    </div>
+    
+                                    <h6>ابعاد محصول</h6>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-4">
+                                        <label for="input_lengthwithpackaging">طول بسته بندی محصول <code>*</code></label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="طول بسته بندی محصول را به صورت سانتی متر وارد نمایید."></i>
+                                            <input type="number" name="product_lengthwithpackaging" class="form-control" pattern="[0-9]{1,4}" id="input_lengthwithpackaging" required>
+                                            <p class="digit-to-persian" id="length-dimension"></p>
+                                        </div>
+    
+                                        <div class="form-group col-md-4">
+                                        <label for="input_widthwithpackaging">عرض بسته بندی محصول <code>*</code></label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="عرض بسته بندی محصول را به صورت سانتی متر وارد نمایید."></i>
+                                            <input type="number" name="product_widthwithpackaging" class="form-control" pattern="[0-9]{1,4}" id="input_widthwithpackaging" required>
+                                            <p class="digit-to-persian" id="width-dimension"></p>
+                                        </div>
+    
+                                        <div class="form-group col-md-4">
+                                        <label for="input_heightwithpackaging">ارتفاع بسته بندی محصول <code>*</code></label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="ارتفاع بسته بندی محصول را به صورت سانتی متر وارد نمایید."></i>
+                                            <input type="number" name="product_heightwithpackaging" class="form-control" pattern="[0-9]{1,4}" id="input_heightwithpackaging" required>
+                                            <p class="digit-to-persian" id="height-dimension"></p>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="PostRangeType">محدوده ارسال</label>
+                                            <select id="PostRangeType" name="ProdRange" class="form-control">
+                                                <option selected>سراسر کشور</option>
+                                                <option>استانی</option>
+                                                <option>شهرستانی</option>
+                                                <option>شهری</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-4" id="detail-now-box">
+                                            <label for="product_Status">وضعیت محصول<code>*</code></label>
+                                            <select id="selectProdStatus" name="product_Status" class="form-control product-detail-now">
+                                                <option selected id="in-store">آماده در انبار</option>
+                                                <option>تولید بعد از سفارش</option>
+                                                <option>سفارشی سازی فروش</option>
+                                                <option>موجود نیست</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-2" id="detail-num-box">
+                                            <label for="product_available_count">تعداد موجودی <code>*</code></label>
+                                            <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="تعداد موجودی خود در انبار را میتوانید در این قسمت وارد کنید."></i>
+                                            <input type="text" name="product_available_count" class="form-control" id="prod_num_in_store" maxlength="2">
+                                        </div>
+                                    </div>
+
+                                    <a class="btn btn-primary mr-auto submit-product-btn" id="send-left">ثبت محصول</a>
+                                    
+                                    <div class="clearfix"></div>
+                                </form>
+                            </div>
+                            
+                         
+                        
+
+                        
+                        <div class="dashboard" id="sendrange-box-section">
+                            <form id="inlocation-product-form" method="POST" enctype="multipart/form-data" >
+                                <h6>انتخاب محدوده ارسال محصول
+                                    <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="به جایی که می خواهید فقط محصول به آن قابل ارسال باشد."></i>
+                                </h6>
+                                
+                                
+                                <div class="row">
+                                    
+                                    <div class="col-xl-11">
+                                         <div class="form-row">
+                                             <div class="form-group col-md-4">
+                                                 <label for="inputshopState">استان <code>*</code></label>
+                                                 <select name="Shop_State" class="chosen-select-rtl form-control choose-state-chosen" id="inputshopState">
+                                                     <option value="0">استان خود را انتخاب نمائید...</option>
+                                                     <option value="2">مرکزی</option>
+                                                     <option value="3">خراسان شمالی</option>
+                                                     <option value="4">گلستان</option>
+                                                     <option value="5">قزوین</option>
+                                                     <option value="6">قم</option>
+                                                     <option value="7">اردبیل</option>
+                                                     <option value="8">تهران</option>
+                                                     <option value="9">هرمزگان</option>
+                                                     <option value="10">یزد</option>
+                                                     <option value="11">سمنان</option>
+                                                     <option value="12">زنجان</option>
+                                                     <option value="13">بوشهر</option>
+                                                     <option value="14">کهگیلویه وبویراحمد</option>
+                                                     <option value="15">ایلام</option>
+                                                     <option value="16">خراسان جنوبی</option>
+                                                     <option value="17">لرستان</option>
+                                                     <option value="18">همدان</option>
+                                                     <option value="19">کردستان</option>
+                                                     <option value="20">سیستان وبلوچستان</option>
+                                                     <option value="21">اصفهان</option>
+                                                     <option value="22">خراسان رضوی</option>
+                                                     <option value="23">کرمان</option>
+                                                     <option value="24">فارس</option>
+                                                     <option value="25">خوزستان</option>
+                                                     <option value="26">کرمانشاه</option>
+                                                     <option value="27">آذربایجان غربی</option>
+                                                     <option value="28">آذربایجان شرقی</option>
+                                                     <option value="29">مازندران</option>
+                                                     <option value="30">گیلان</option>
+                                                     <option value="31">چهارمحال وبختیاری</option>
+                                                     <option value="32">البرز</option>
+                                                 </select>
+                                             </div>
+                                             
+                                             <div class="form-group col-md-4 bigcity-form-group">
+                                                 <label for="inputshopBigCity">شهرستان</label>
+                                                 <div class="loading-chosen-ajax bigcity-loading"><img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری">
+                                                    در حال بارگزاری
+                                                </div>
+                                                 <select name="Shop_BigCity" class="chosen-select-rtl form-control choose-bigcity-chosen" id="inputshopBigCity">
+                                                     <option value="0">شهرستان خود را انتخاب نمائید...</option>
+                                                 </select>
+                                             </div>
+             
+                                             <div class="form-group col-md-4 city-form-group">
+                                                 <label class="BigCitySelect" for="inputCityShop">شهر </label>
+                                                 <div class="loading-chosen-ajax city-loading"><img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری">
+                                                    در حال بارگزاری
+                                                </div>
+                                                 <select name="Shop_City" class="chosen-select-rtl form-control choose-city-chosen" id="inputshopCity">
+                                                     <option value="0">شهر خود را انتخاب نمائید...</option>
+                                                 </select>
+                                             </div>
+                                         </div>
+                                    </div>
+ 
+                                    <div class="col-xl-1">
+                                         <button class="save-location-rate" title="ثبت این محدوده" id="submitAllowSendArea"><i class="far fa-plus"></i></button>
+                                     </div>
+                                 </div>
+    
+                                <br>
+                                <div>
+                                    محصول شما قابل ارسال می باشد فقط به  : 
+                                    <div>
+                                        <ul id="allowed-send-areas">
+                                        </ul>
+                                        <div id="loaderDiv1"> لطفا منتظر بمانید <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری"></div>
+                                    </div>    
+                                </div>
+
+                            </form>
+                            
+                            <br><br><br>
+
+                            <form id="outlocation-product-form" method="POST" enctype="multipart/form-data" >
+                                <h6>انتخاب محدوده عدم ارسال محصول
+                                    <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="به جایی که می خواهید محصول به آن قابل ارسال نباشد."></i>
+                                </h6>
+
+                       
+                                <div class="row">
+                                    
+                                   <div class="col-xl-11">
+                                        <div class="form-row">
+                                            <div class="form-group col-md-4">
+                                                <label for="inputshopState">استان <code>*</code></label>
+                                                <select name="Shop_State" class="chosen-select-rtl form-control choose-state-chosen2" id="inputshopState_cancel">
+                                                    <option value="0">استان خود را انتخاب نمائید...</option>
+                                                    <option value="2">مرکزی</option>
+                                                    <option value="3">خراسان شمالی</option>
+                                                    <option value="4">گلستان</option>
+                                                    <option value="5">قزوین</option>
+                                                    <option value="6">قم</option>
+                                                    <option value="7">اردبیل</option>
+                                                    <option value="8">تهران</option>
+                                                    <option value="9">هرمزگان</option>
+                                                    <option value="10">یزد</option>
+                                                    <option value="11">سمنان</option>
+                                                    <option value="12">زنجان</option>
+                                                    <option value="13">بوشهر</option>
+                                                    <option value="14">کهگیلویه وبویراحمد</option>
+                                                    <option value="15">ایلام</option>
+                                                    <option value="16">خراسان جنوبی</option>
+                                                    <option value="17">لرستان</option>
+                                                    <option value="18">همدان</option>
+                                                    <option value="19">کردستان</option>
+                                                    <option value="20">سیستان وبلوچستان</option>
+                                                    <option value="21">اصفهان</option>
+                                                    <option value="22">خراسان رضوی</option>
+                                                    <option value="23">کرمان</option>
+                                                    <option value="24">فارس</option>
+                                                    <option value="25">خوزستان</option>
+                                                    <option value="26">کرمانشاه</option>
+                                                    <option value="27">آذربایجان غربی</option>
+                                                    <option value="28">آذربایجان شرقی</option>
+                                                    <option value="29">مازندران</option>
+                                                    <option value="30">گیلان</option>
+                                                    <option value="31">چهارمحال وبختیاری</option>
+                                                    <option value="32">البرز</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <div class="form-group col-md-4 bigcity-form-group2">
+                                                <label for="inputshopBigCity">شهرستان <code>*</code></label>
+                                                <div class="loading-chosen-ajax bigcity-loading2"><img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری">
+                                                    در حال بارگزاری
+                                                </div>
+                                                <select name="Shop_BigCity" class="chosen-select-rtl form-control choose-bigcity-chosen2" id="inputshopBigCity_cancel">
+                                                    <option value="0">شهرستان خود را انتخاب نمائید...</option>
+                                                </select>
+                                            </div>
+            
+                                            <div class="form-group col-md-4 city-form-group2">
+                                                <label class="BigCitySelect" for="inputCityShop">شهر </label>
+                                                <div class="loading-chosen-ajax city-loading2"><img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری">
+                                                    در حال بارگزاری
+                                                </div>
+                                                <select name="Shop_City" class="chosen-select-rtl form-control choose-city-chosen2" id="inputshopCity_cancel">
+                                                    <option value="0">شهر خود را انتخاب نمائید...</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                   </div>
+
+                                   <div class="col-xl-1">
+                                        <button id="submitUnallowSendArea" class="save-location-rate" title="ثبت این محدوده"><i class="far fa-plus"></i></button>
+                                    </div>
+                                </div>
+    
+                                <script>
+                                    var selectedState;
+                                    createBigCity = function () { $.ajax (
+                                        {
+                                            type:'POST',
+                                            url: '{% url "restapi:get_state_bigcity" %}',
+                                            data: {
+                                                id: selectedState,
+                                                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                                            },
+                                            success: function (json) {
+                                                $('.choose-bigcity-chosen').empty(); //remove all child nodes
+                                                $('.choose-bigcity-chosen').append('<option value="0">شهرستان خود را انتخاب نمائید...</option>');
+                                                for( i=0; i < json.length; i++) {
+                                                    $(".choose-bigcity-chosen").append('<option value="'+ json[i].id + '">' + json[i].name + '</option>');
+                                                }
+                                                $(".choose-bigcity-chosen").prop('disabled', false);
+                                                $(".bigcity-form-group").removeClass('select-wait');
+                                                $(".bigcity-loading").hide();
+                                                $(".choose-bigcity-chosen").trigger("chosen:updated");
+                                        },
+                                        error: function () {
+                                            
+                                        }
+                                    }
+                                    )
+                                }
+                                var selectedBigCity;
+                                        createCity = function () { $.ajax (
+                                            {
+                                                type:'POST',
+                                                url: '{% url "restapi:get_bigcity_city" %}',
+                                                data: {
+                                                    id: selectedBigCity,
+                                                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                                                },
+                                                success: function (json) {
+                                                    $('.choose-city-chosen').empty(); //remove all child nodes
+                                                    $('.choose-city-chosen').append('<option value="0">شهر خود را انتخاب نمائید...</option>');
+                                                    for( i=0; i < json.length; i++) {
+                                                        $(".choose-city-chosen").append('<option value="'+ json[i].id + '">' + json[i].name + '</option>');
+                                                    }
+                                                    $(".choose-city-chosen").prop('disabled', false);
+                                                    $(".city-form-group").removeClass('select-wait');
+                                                    $(".city-loading").hide();
+                                                    $(".choose-city-chosen").trigger("chosen:updated");
+                                            },
+                                            error: function () {
+                                                
+                                            }
+                                        }
+                                        )
+                                    }
+                                    $(document).ready( function () {
+                                        $('.choose-state-chosen').chosen().change(function() {
+                                            $(".choose-bigcity-chosen").prop('disabled', true);
+                                            $(".choose-bigcity-chosen").trigger("chosen:updated");
+                                            $(".bigcity-form-group").addClass('select-wait');
+                                            $(".bigcity-loading").show();
+                                            selectedState = $(this).val();
+                                            $('.choose-city-chosen').empty(); //remove all child nodes
+                                            $('.choose-city-chosen').append('<option value="0">شهر خود را انتخاب نمائید...</option>');
+                                            $(".choose-city-chosen").trigger("chosen:updated");
+                                            if (selectedState != 0) {
+                                                createBigCity();
+                                            }
+                                            else {
+                                                $('.choose-bigcity-chosen').empty(); //remove all child nodes
+                                                $('.choose-bigcity-chosen').append('<option value="0">شهرستان خود را انتخاب نمائید...</option>');
+                                                $(".choose-bigcity-chosen").prop('disabled', false);
+                                                $(".bigcity-form-group").removeClass('select-wait');
+                                                $(".bigcity-loading").hide();
+                                                $(".choose-bigcity-chosen").trigger("chosen:updated");
+                                            }
+                                        })
+                                        $(".choose-bigcity-chosen").chosen().change(function () {
+                                            $(".choose-city-chosen").prop('disabled', true);
+                                            $(".choose-city-chosen").trigger("chosen:updated");
+                                            $(".city-form-group").addClass('select-wait');
+                                            $(".city-loading").show();
+                                            selectedBigCity = $(this).val();
+                                            if (selectedBigCity != 0) {
+                                                createCity();
+                                            }
+                                            else {
+                                                $('.choose-city-chosen').empty(); //remove all child nodes
+                                                $('.choose-city-chosen').append('<option value="0">شهر خود را انتخاب نمائید...</option>');
+                                                $(".choose-city-chosen").prop('disabled', false);
+                                                $(".city-form-group").removeClass('select-wait');
+                                                $(".city-loading").hide();
+                                                $(".choose-city-chosen").trigger("chosen:updated");
+                                            }
+                                        });
+                                    })
+                                </script>
+                                
+                                <br>
+                                <div>
+                                    <div>
+                                        محصول شما غیر قابل ارسال می باشد به  :
+                                        <ul id="unallowed-send-areas">
+                                        </ul>
+                                    </div>
+                                    <div id="loaderDiv2"> لطفا منتظر بمانید <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری"></div>
+                                </div>
+
+                            </form>
+                            <script>
+                                var selectedState2;
+                                createBigCity2 = function () { $.ajax (
+                                    {
+                                        type:'POST',
+                                        url: '{% url "restapi:get_state_bigcity" %}',
+                                        data: {
+                                            id: selectedState2,
+                                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                                        },
+                                        success: function (json) {
+                                            $('.choose-bigcity-chosen2').empty(); //remove all child nodes
+                                            $('.choose-bigcity-chosen2').append('<option value="0">شهرستان خود را انتخاب نمائید...</option>');
+                                            for( i=0; i < json.length; i++) {
+                                                $(".choose-bigcity-chosen2").append('<option value="'+ json[i].id + '">' + json[i].name + '</option>');
+                                            }
+                                            $(".choose-bigcity-chosen2").prop('disabled', false);
+                                            $(".bigcity-form-group2").removeClass('select-wait');
+                                            $(".bigcity-loading2").hide();
+                                            $(".choose-bigcity-chosen2").trigger("chosen:updated");
+                                    },
+                                    error: function () {
+                                        
+                                    }
+                                }
+                                )
+                            }
+                            var selectedBigCity2;
+                                    createCity2 = function () { $.ajax (
+                                        {
+                                            type:'POST',
+                                            url: '{% url "restapi:get_bigcity_city" %}',
+                                            data: {
+                                                id: selectedBigCity2,
+                                                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                                            },
+                                            success: function (json) {
+                                                $('.choose-city-chosen2').empty(); //remove all child nodes
+                                                $('.choose-city-chosen2').append('<option value="0">شهر خود را انتخاب نمائید...</option>');
+                                                for( i=0; i < json.length; i++) {
+                                                    $(".choose-city-chosen2").append('<option value="'+ json[i].id + '">' + json[i].name + '</option>');
+                                                }
+                                                $(".choose-city-chosen2").prop('disabled', false);
+                                                $(".city-form-group2").removeClass('select-wait');
+                                                $(".city-loading2").hide();
+                                                $(".choose-city-chosen2").trigger("chosen:updated");
+                                        },
+                                        error: function () {
+                                            
+                                        }
+                                    }
+                                    )
+                                }
+                                $(document).ready( function () {
+                                    $('.choose-state-chosen2').chosen().change(function() {
+                                        $(".choose-bigcity-chosen2").prop('disabled', true);
+                                        $(".choose-bigcity-chosen2").trigger("chosen:updated");
+                                        $(".bigcity-form-group2").addClass('select-wait');
+                                        $(".bigcity-loading2").show();
+                                        selectedState2 = $(this).val();
+                                        $('.choose-city-chosen2').empty(); //remove all child nodes
+                                        $('.choose-city-chosen2').append('<option value="0">شهر خود را انتخاب نمائید...</option>');
+                                        $(".choose-city-chosen2").trigger("chosen:updated");
+                                        if (selectedState2 != 0) {
+                                            createBigCity2();
+                                        }
+                                        else {
+                                            $('.choose-bigcity-chosen2').empty(); //remove all child nodes
+                                            $('.choose-bigcity-chosen2').append('<option value="0">شهرستان خود را انتخاب نمائید...</option>');
+                                            $(".choose-bigcity-chosen2").prop('disabled', false);
+                                            $(".bigcity-form-group2").removeClass('select-wait');
+                                            $(".bigcity-loading2").hide();
+                                            $(".choose-bigcity-chosen2").trigger("chosen:updated");
+                                        }
+                                    })
+                                    $(".choose-bigcity-chosen2").chosen().change(function () {
+                                        $(".choose-city-chosen2").prop('disabled', true);
+                                        $(".choose-city-chosen2").trigger("chosen:updated");
+                                        $(".city-form-group2").addClass('select-wait');
+                                        $(".city-loading2").show();
+                                        selectedBigCity2 = $(this).val();
+                                        if (selectedBigCity2 != 0) {
+                                            createCity2();
+                                        }
+                                        else {
+                                            $('.choose-city-chosen2').empty(); //remove all child nodes
+                                            $('.choose-city-chosen2').append('<option value="0">شهر خود را انتخاب نمائید...</option>');
+                                            $(".choose-city-chosen2").prop('disabled', false);
+                                            $(".city-form-group2").removeClass('select-wait');
+                                            $(".city-loading2").hide();
+                                            $(".choose-city-chosen2").trigger("chosen:updated");
+                                        }
+                                    });
+                                })
+                            </script>
+
+                            <button class="btn btn-primary mr-auto next-level-postrange-section" id="send-left">مرحله بعد</button>
+                            <div class="clearfix"></div>
+                        </div>
+                        
+                        <div class="dashboard" id="attribute-box-section">
+                            <form id="attribute-product-form">
+                                <h5>ثبت ویژگی محصول</h5>
+                                <div class="row">
+                                    <div class="col-xl-11">
+                                        <div class="form-row">
+                                            <div class="form-group col-md-5">
+                                                <label for="inputshopAttr">ویژگی <code>*</code></label>
+                                                <select name="Shop_Attr" class="chosen-select-rtl form-control choose-attribute-chosen" id="product_attr_title">
+                                                    <option value="0">ویژگی خود را انتخاب نمائید...</option>
+                                                    {% for item in Attribute %}
+                                                        <option value="{{item.id}}" data-unit="{{item.Unit}}" id="{{item.id}}">{{item.Title}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            
+                                            <div class="form-group col-md-5">
+                                                <label for="product_attr_value">مقدار <code>*</code></label>
+                                                <input type="text" name="product_attr_value" class="form-control" id="product_attr_value" required>
+                                            </div>
+            
+                                            <div class="form-group col-md-2">
+                                                <label class="BigCitySelect" for="product_attr_unit">واحد </label>
+                                                <p class="text-center" id="product_attr_unit"></p><span class="hide" id="title-attr-field"></span>
+                                                <script>
+                                                    var attrname = '';
+                                                    $(document).ready( function () {
+                                                        $('.choose-attribute-chosen').chosen().change(function(){
+                                                            var x = $('#product_attr_title option:selected').data('unit');
+                                                            attrname = $('#product_attr_title option:selected').text();
+                                                            if(x == '-'){
+                                                                document.getElementById('product_attr_unit').innerHTML = 'واحد ندارد';
+
+                                                            }
+                                                            else{
+                                                                document.getElementById('product_attr_unit').innerHTML = x;
+                                                            }
+                                                            var attrid = $('#product_attr_title option:selected').attr('id');
+                                                             document.getElementById('title-attr-field').innerHTML = attrid;
+                                                        })
+                                                    });
+                                                </script>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-1">
+                                         <button class="save-location-rate save-attr-product"><i class="far fa-plus"></i></button>
+                                     </div>
+                                </div>
+                                <p class="result-add-attr"></p>
+                                <small class="add-attr-section-hint-text"><code>*</code>در صورتی که ویژگی مورد نظر شما در لیست ویژگی های فوق موجود نیست از بخش افزودن ویژگی در پایین همین صفحه اقدام به اضافه کردن آن نمائید.</small>
+                                <p class="attr-list">ویژگی ها :</p>
+
+                                <div class="tab-pane fade show active" id="detail">   
+                                    <table class="table table-striped attr-table text-right">
+                                        <tbody id="new-attr-add-product">
+                                            <tr>
+                                                <th scope="row" class="titletable">وزن خالص محصول</th>
+                                                <td><span class="pure-weight-td"> </span><span class="Riyal"> گرم</span></td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row" class="titletable">وزن محصول با بسته بندی</th>
+                                                <td><span class="pack-weight-td"></span><span class="Riyal"> گرم</span></td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row" class="titletable">ابعاد محصول با بسته بندی</th>
+                                                <td><span class="dimensions-td"></span><span class="Riyal"> سانتی متر</span></td>
+                                                <td></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="add-attr-section">
+                                            <div class="add-attr-section-showhide">افزودن ویژگی جدید
+                                                <i class="fas fa-plus dropdown-add-attr-sign"></i>
+                                            </div>
+                                                <div class="form-row add-attr-section-form">
+                                                    <div class="form-group col-md-4">
+                                                        <label for="new_product_attr_name">عنوان ویژگی جدید <code>*</code></label>
+                                                        <input type="text" name="new_product_attr_name" class="form-control" id="new_product_attr_name" required>
+                                                    </div>
+                                                    <div class="form-group col-md-4">
+                                                        <label for="new_product_attr_unit">واحد ویژگی جدید</label>
+                                                        <input type="text" name="new_product_attr_unit" class="form-control" id="new_product_attr_unit" required>
+                                                    </div>
+                                                    <div class="form-group col-md-3">
+                                                        <label for="new_product_attr_value">مقدار ویژگی جدید <code>*</code></label>
+                                                        <input type="text" name="new_product_attr_value" class="form-control" id="new_product_attr_value" required>
+                                                    </div>
+                                                    <div class="form-group col-md-1 add-new-attr-btn-div">
+                                                        <button class="btn btn-primary" id="add-new-attr-btn">افزودن</button>
+                                                    </div>
+                                                    <p class="result-add-attr2"></p>
+                                                </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                            <button class="btn btn-primary mr-auto next-level-attr-section" id="send-left">مرحله بعد</button>
+                            <div class="clearfix"></div>
+                        </div>
+
+                        <div class="dashboard" id="gallery-box-section">
+                            <form id="gallery-product-form">
+                                <h5>گالری تصاویر محصول</h5>
+                                <br>
+                                <div class="row product-gallery-pics">
+                                    <div class="plz-wait-gallery-pic">
+                                        <div class="progress-hide-parent progress-hide">
+                                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                                        </div>
+                                        <br>
+                                        <div id="loaderDiv3"><div> لطفا منتظر بمانید </div> <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری"></div>
+                                    </div>
+                                    <div class="col-xl-3 prod-gallery-pic-box">
+                                        <div class="box-gallery-img-section">
+                                            <label id="label-of-gallery" class="label cropper-label w-100">
+                                                <input type="file" class="sr-only" id="input2" name="image" accept="image/*">
+                                                <img class="rounded cropper-rounded " id="avatar2" src="{% static "images/image_upload.jpg" %}" alt="avatar"  data-toggle="tooltip" title="انتخاب عکس ">
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="alert cropper-alert" role="alert"></div>
+                                    <div class="modal fade" id="modal2" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+                                        <div class="modal-dialog modal-md" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                            <h5 class="modal-title" id="modalLabel">برش تصویر ...</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                            </div>
+                                            <div class="modal-body">
+                                            <div class="img-container cropper-img-container">
+                                                <img id="image2" src="https://avatars0.githubusercontent.com/u/3456749">
+                                            </div>
+                                            </div>
+                                            <div class="modal-footer" id="modal-footer-err">
+                                                <button type="button" class="btn btn-primary right-btn-send-modal" id="crop2">انتخاب تصویر</button>
+                                                <button type="button" class="btn btn-secondary " data-dismiss="modal">بستن</button>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                            <button class="btn btn-primary mr-auto next-level-gallery-section" id="send-left">مرحله بعد</button>
+                            <div class="clearfix"></div>
+                        </div>
+
+                        <div class="dashboard" id="optional-attribute-box-section">
+                            <form id="optional-attribute-product-form">
+                                <h5>ثبت ویژگی انتخابی محصول</h5>
+                                <br>
+                                <div class="opt-attr-main-title-question-section">
+                                    <div class="row optional-attr-main-inputs-row">
+                                        <div class="col-xl-5">
+                                            <div class="form-row">
+                                                <div class="form-group col-md-12 opt-attr-title-input">
+                                                    <label for="product_optattr_title">عنوان ویژگی انتخابی<code>*</code></label>
+                                                    <input type="text" name="product_optattr_title" autocomplete="off" class="form-control" id="product_optattr_title" required>
+                                                </div>
+                                            </div>
+                                            <div class="opt-attr-suggestions">
+                                                <div class="opt-attr-suggestion">سایز</div>
+                                                <div class="opt-attr-suggestion">رنگ</div>
+                                                <div class="opt-attr-suggestion">مدل</div>
+                                                <div class="opt-attr-suggestion">جنس</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-7">
+                                            <ul class="optional-attr-question-list">
+                                                <li>
+                                                    <span> آیا این ویژگی باعث افزایش قیمت اصلی محصول می شود؟ </span>
+                                                    <span>
+                                                        <label><input id="opt-attr-radio-extra-price-y" type="radio" name="optradio1"> بله </label>
+                                                        <label><input id="opt-attr-radio-extra-price-n" type="radio" name="optradio1" checked> خیر </label>
+                                                    </span>
+                                                </li>
+                                                <li>
+                                                    <span> آیا این ویژگی باعث تغییر در وزن محصول می شود؟ </span>
+                                                    <span>
+                                                        <label><input id="opt-attr-radio-change-weight-y" type="radio" name="optradio2"> بله </label>
+                                                        <label><input id="opt-attr-radio-change-weight-n" type="radio" name="optradio2" checked> خیر </label>
+                                                    </span>
+                                                </li>
+                                                <li>
+                                                    <span> آیا این ویژگی باعث تغییر در ابعاد محصول می شود؟ </span>
+                                                    <span>
+                                                        <label><input id="opt-attr-radio-change-dimension-y" type="radio" name="optradio3"> بله </label>
+                                                        <label><input id="opt-attr-radio-change-dimension-n" type="radio" name="optradio3" checked> خیر </label>
+                                                    </span>
+                                                </li>
+                                                <li>
+                                                    <span> نوع انتخاب مقدار ها به چه صورت است؟ </span>
+                                                    <span>
+                                                        <label><input id="opt-attr-radio-type-choice-choose" type="radio" name="optradio4" checked> تک انتخابی </label>
+                                                        <label><input id="opt-attr-radio-type-choice-select" type="radio" name="optradio4"> چند انتخابی </label>
+                                                    </span>
+                                                </li>
+                                                <li>
+                                                    <span> آیا تعیین این ویژگی برای خرید محصول اجباریست؟ </span>
+                                                    <span>
+                                                        <label><input id="opt-attr-radio-necessary-y" type="radio" name="optradio5"> بله </label>
+                                                        <label><input id="opt-attr-radio-necessary-n" type="radio" name="optradio5" checked> خیر </label>
+                                                    </span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xl-12 continue-error-box">
+                                            <button class="btn btn-primary mr-auto opt-attr-continue-to-values" id="send-left">ادامه</button>
+                                            <p></p>
+                                        </div>
+                                    </div>
+                                    <div class="row opt-attr-show-table">
+                                        <div class="col-xl-12">
+                                            <table class="table table-striped attr-table text-right opt-attr-table">
+                                                <tbody id="new-opt-attr-add-product">
+                                                    <tr>
+                                                        <th scope="row" class="titletable">
+                                                            عنوان
+                                                        </th>
+                                                        <th scope="row" class="titletable">
+                                                            اجباری
+                                                        </th>
+                                                        <th scope="row" class="titletable">
+                                                            نوع انتخاب
+                                                        </th>
+                                                        <th scope="row" class="titletable">
+                                                            مقادیر
+                                                        </th>
+                                                        <th scope="row" class="titletable">
+                                                            حذف ویژگی
+                                                        </th>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="opt-attr-values-section">
+                                    <div class="row">
+                                                <div class="form-group col-xl-5">
+                                                    <label for="product_optattr_value">مقدار ویژگی انتخابی<code>*</code></label>
+                                                    <input type="text" name="product_optattr_value" class="form-control" id="product_optattr_value" required>
+                                                </div>
+                                                <div class="form-group col-xl-5">
+                                                    <div class="row">
+                                                        <div class="form-group col-md-8" id="detail-now-box-for_opt_attr">
+                                                            <label for="product_Status_for_opt_attr">وضعیت محصول<code>*</code></label>
+                                                            <select id="selectProdStatusForOptAttr" name="product_Status_for_opt_attr" class="form-control product-detail-now_for_opt_attr">
+                                                                <option selected id="in-store-for-opt-attr">آماده در انبار</option>
+                                                                <option>تولید بعد از سفارش</option>
+                                                                <option>سفارشی سازی فروش</option>
+                                                                <option>موجود نیست</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-4" id="detail-num-box-for-opt-attr">
+                                                            <label for="product_available_count_for_opt_attr">موجودی<code>*</code></label>
+                                                            <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="تعداد موجودی خود در انبار را میتوانید در این قسمت وارد کنید."></i>
+                                                            <input type="number" name="product_available_count_for_opt_attr" class="form-control" id="prod_num_in_store_for_opt_attr" maxlength="2">
+                                                        </div>
+                                                    </div>
+                                        </div>
+                                        <div id="opt-attr-extra-price-sec" class="form-group col-xl-5">
+                                            <label for="product_optattr_price">مقدار قیمت جدید<code>*</code></label>
+                                            <input type="number" name="product_optattr_price" class="form-control" id="product_optattr_price">
+                                        </div>
+                                        <div id="opt-attr-extra-weight-sec" class="form-group col-xl-5">
+                                            <label for="product_optattr_extra_weight">وزن جدید محصول با بسته بندی<code>*</code></label>
+                                            <input type="number" name="product_optattr_extra_weight" class="form-control" id="product_optattr_extra_weight">
+                                        </div>
+                                        <div id="opt-attr-change-dimension-sec" class="form-group col-xl-5">
+                                            <div class="row">
+                                                <div class="col-xl-4">
+                                                    <label for="product_optattr_change_dimension_x">طول<code>*</code></label>
+                                                    <input type="number" name="product_optattr_change_dimension_x" class="form-control" id="product_optattr_change_dimension_x">
+                                                </div>
+                                                <div class="col-xl-4">
+                                                    <label for="product_optattr_change_dimension_y">عرض<code>*</code></label>
+                                                    <input type="number" name="product_optattr_change_dimension_y" class="form-control" id="product_optattr_change_dimension_y">
+                                                </div>
+                                                <div class="col-xl-4">
+                                                    <label for="product_optattr_change_dimension_z">ارتفاع<code>*</code></label>
+                                                    <input type="number" name="product_optattr_change_dimension_z" class="form-control" id="product_optattr_change_dimension_z">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-1">
+                                            <button class="save-location-rate add-opt-attr-values" id="send-left">
+                                                <i class="far fa-plus"></i>
+                                            </button>
+                                        </div>
+                                        <div class="error-complete-fields">
+                                            
+                                        </div>
+                                        <div class="new-opt-attr-value-added-info">
+                                        
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row bottom-of-opt-attr">
+                                    <div class="col-xl-12 btn-add-opt-attr">
+                                        <button class="btn btn-primary mr-auto final-btn-product-submit" id="send-left"> ثبت نهایی </button>
+                                        <button disabled="disabled" class="btn btn-primary mr-auto add-new add-new-disabled" id="send-left">
+                                            افزودن ویژگی انتخابی جدید
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+
+                        <div class="dashboard" id="end-box-section">
+                            <div class="text-center">
+                                <br>
+                                <h5>محصول شما با موفقیت ثبت شد</h5>
+                                <h5>با تشکر از شما</h5>
+                                <h6>بعد از بررسی کارشناسان محصول شما قابل مشاهده می باشد</h6>
+                                <br>
+                            </div>
+                                
+                            <a href="/profile/shops/" class="btn btn-primary mr-auto " id="send-left">مدیریت حجره</a>
+                            <div class="clearfix"></div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="{% static "js/shop/newProduct.js" %}" type="text/javascript"></script>
+<script src="{% static "js/cropper.js" %}"></script>
+<script>
+    var prodSellPrice;
+    var prodNetWeight;
+    var prodPackWeight;
+    var prodXDimension;
+    var prodYDimension;
+    var prodHDimension;
+    var ProductID;
+
+    var $progress;
+    var $progressBar;
+    var $alert;
+    var initialAvatarURL;
+    var form_Data = new FormData();
+    window.addEventListener('DOMContentLoaded', function () {
+      var avatar = document.getElementById('avatar');
+      var image = document.getElementById('image');
+      var input = document.getElementById('input');
+      $progress = $('.progress');
+      $progressBar = $('.progress-bar');
+      $alert = $('.cropper-alert');
+      var $modal = $('#modal');
+      var cropper;
+
+      $('[data-toggle="tooltip"]').tooltip();
+
+      input.addEventListener('change', function (e) {
+        var files = e.target.files;
+        var done = function (url) {
+          input.value = '';
+          image.src = url;
+          $alert.hide();
+          $modal.modal('show');
+        };
+        var reader;
+        var file;
+        var url;
+
+        if (files && files.length > 0) {
+          file = files[0];
+
+          if (URL) {
+            done(URL.createObjectURL(file));
+          } else if (FileReader) {
+            reader = new FileReader();
+            reader.onload = function (e) {
+              done(reader.result);
+            };
+            reader.readAsDataURL(file);
+          }
+        }
+      });
+
+      $modal.on('shown.bs.modal', function () {
+        cropper = new Cropper(image, {
+          aspectRatio: 1,
+          viewMode: 3,
+        });
+      }).on('hidden.bs.modal', function () {
+        cropper.destroy();
+        cropper = null;
+      });
+      document.getElementById('crop').addEventListener('click', function () {
+        // var initialAvatarURL;
+        var canvas;
+
+        $modal.modal('hide');
+        if (cropper) {
+          canvas = cropper.getCroppedCanvas({
+            width: 900,
+            height: 900,
+          });
+          initialAvatarURL = avatar.src;
+          avatar.src = canvas.toDataURL();
+          $progress.show();
+          $alert.removeClass('alert-success alert-warning');
+          canvas.toBlob(function (blob) {
+          form_Data.append('product_image', blob, 'avatar.jpg');
+        });
+        }
+      });
+    });
+
+    var $progress;
+    var $progressBar;
+    var $alert;
+    var initialAvatarURL;
+    var formData = new FormData();
+    window.addEventListener('DOMContentLoaded', function () {
+      var avatar = document.getElementById('avatar2');
+      var image = document.getElementById('image2');
+      var input = document.getElementById('input2');
+    //   $progress = $('.progress');
+    //   $progressBar = $('.progress-bar');
+      $alert = $('.cropper-alert');
+      var $modal = $('#modal2');
+      var cropper;
+
+      $('[data-toggle="tooltip"]').tooltip();
+
+      input.addEventListener('change', function (e) {
+        var files = e.target.files;
+        var done = function (url) {
+          input.value = '';
+          image.src = url;
+          $alert.hide();
+          $modal.modal('show');
+        };
+        var reader;
+        var file;
+        var url;
+
+        if (files && files.length > 0) {
+          file = files[0];
+
+          if (URL) {
+            done(URL.createObjectURL(file));
+          } else if (FileReader) {
+            reader = new FileReader();
+            reader.onload = function (e) {
+              done(reader.result);
+            };
+            reader.readAsDataURL(file);
+          }
+        }
+      });
+
+      $modal.on('shown.bs.modal', function () {
+        cropper = new Cropper(image, {
+          aspectRatio: 1,
+          viewMode: 3,
+        });
+      }).on('hidden.bs.modal', function () {
+        cropper.destroy();
+        cropper = null;
+      });
+      document.getElementById('crop2').addEventListener('click', function (e) {
+          e.preventDefault();
+        var initialAvatarURL;
+        var canvas;
+
+        
+        $("#loaderDiv3").show();
+        $("#input2").prop('disabled', true);
+        $("#avatar2").fadeTo('fast', 0.3);
+        $("#label-of-gallery").css('cursor', 'default');
+
+        if (cropper) {
+          canvas = cropper.getCroppedCanvas({
+            width: 900,
+            height: 900,
+          });
+            $modal.modal('hide');
+          
+
+
+
+          initialAvatarURL = avatar.src;
+        //   avatar.src = canvas.toDataURL();
+        //  $progress.show();
+          $alert.removeClass('alert-success alert-warning');
+          canvas.toBlob(function (blob) {
+          formData.append('gallery_image', blob, 'avatar.jpg');
+          
+        formData.append('product_id', ProductID);
+        var crf_token = $('input[name=csrfmiddlewaretoken]').val();
+        $(".progress-hide").show();
+        $.ajax (
+                {
+                    url: '{% url "restapi:web_product_add_imagetogallery" %}',
+                    method:"post",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    headers:{"X-CSRFToken": crf_token},
+                    xhr: function () {
+                    var xhr = new XMLHttpRequest();
+                    xhr.upload.onprogress = function (e) {
+                        var percent = '0';
+                        var percentage = '0%';
+                        
+                        if (e.lengthComputable) {
+                            percent = Math.round((e.loaded / e.total) * 100);
+                            percentage = percent + '%';
+                            $(".progress-bar").width(percentage).attr('aria-valuenow', percent).text(percentage);
+                        }
+                    };
+                    
+                    return xhr;
+                },
+                    success: function (json, status) {
+                        $("#input2").prop('disabled', false);
+                        $("#label-of-gallery").css('cursor', 'pointer');
+                        $("#avatar2").fadeTo('fast', 1);
+                        $(".progress-hide").hide();
+                        $(".progress-bar").width('0%').attr('aria-valuenow', 0).text('0%');
+                        $("#loaderDiv3").hide();
+                        if (json.status)
+                        {
+                            $(".product-gallery-pics").prepend('<div val="' + json.id + '" class="col-xl-3 prod-gallery-pic-box">' +
+                                    '<div class="box-gallery-img-section gallery-img-show">' +
+                                        '<img src="'+ canvas.toDataURL() +'" alt="عکس محصول">' +
+                                        '<div class="item-gallery-option">' +
+                                            '<a href="' + json.image + '" id="show-image-gallery-product" title="مشاهده" target="_blank"><i class="fas fa-eye"></i></a>' +
+                                            '<button val="' + json.id + '" class="delete-prod-pic" href="#" id="delete-image-gallery-product"  title="حذف"><i class="fas fa-minus-circle"></i></button>' +
+                                        '</div>' +
+                                    '</div>' +
+                                '</div>');
+                        }
+                        else {
+                            console.log(json.message);
+                        }
+                    },
+                    error: function (xhr, erstatus) {
+                        $(".progress-bar").width('0%').attr('aria-valuenow', 0).text('0%');
+                        $("#loaderDiv3").hide();
+                        $(".progress-hide").hide();
+                        $("#label-of-gallery").css('cursor', 'pointer');
+                        console.log(xhr);
+                        console.log(xhr.responseJSON);
+                        console.log(xhr.responseJSON.status);
+                        console.log(xhr.responseJSON.message);
+                        console.log(erstatus);
+                    }
+                }
+            )
+        });
+        }
+      });
+    });
+
+    var prodCategroyList = '';
+    var prodSendAreas = '';
+    var prodSendAreasException = '';
+    
+
+    postrangebtn = function() {
+        $("#yes-post-range").on('click' , function (e) {
+            $('.loading-add-product').show();
+            $('#new-product-box-section').remove();
+            $('#sendrange-box-section').show();
+            $("#new-product-map").removeClass("active");
+            $("#post-range-map").addClass("active");
+            $("html, body").animate({ 
+                    scrollTop: 220 
+                }, "slow");
+            $('.loading-add-product').hide();
+        });
+
+        $("#no-post-range").on('click' , function (e) {
+            $('.loading-add-product').show();
+            $('#new-product-box-section').remove();
+            $('#sendrange-box-section').remove();
+            $('#attribute-box-section').show();
+            $("#new-product-map").removeClass("active");
+            $("#post-range-map").removeClass("active");
+            $("#attribute-map").addClass("active");
+            $("html, body").animate({ 
+                    scrollTop: 220 
+                }, "slow");
+            $('.loading-add-product').hide();
+        });
+    }
+
+    submitProduct = function() {
+        $(".whole-content-of-modal").remove();
+        $(".whole-content-of-footer").remove();
+        $(".whole-modal-body").html('<div class="please-wait"> لطفا منتظر بمانید <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری"> </div>' +
+        '<div class="progress"> ' +
+        '<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>' +
+        '</div>' +
+        '<div class="inprogresstext"> در حال بارگزاری ...</div>');
+        $(".prod-modal-title").html('در حال ثبت محصول...');
+        
+        var crf_token = $('input[name=csrfmiddlewaretoken]').val();
+        
+        var prodTitle = $("#inputprod_title").val();
+        var prodSlug = $("#inputslugProd").val();
+        var prodShop = $("#inpuShop option:selected").val();
+        var prodAbout = $("#inputProdDes").val();
+        var prodSubmarket = $("#inputSubMarket").val();
+        var prodIntro = $("#inputProdBio").val();
+        var prodStory = $("#inputProdStory").val();
+        prodSellPrice = $("#inputprod_sellprice").val();
+        var offamount = $("#inputprod_offamount").val();
+        var prodRealPrice = '0';
+        if (offamount.length != 0) {
+            prodRealPrice = (parseInt(prodSellPrice) + parseInt(offamount)).toString();
+        }
+
+        // var prodRealPrice = $("#inputprod_realprice").val();
+        prodNetWeight = $("#input_netweight").val();
+        prodPackWeight = $("#input_packingweight").val();
+        prodXDimension = $("#input_lengthwithpackaging").val();
+        prodYDimension = $("#input_widthwithpackaging").val();
+        prodHDimension = $("#input_heightwithpackaging").val();
+        var prodSendArea = parseInt($("#PostRangeType option:selected").index()) + 1;
+        var prodStatus = parseInt($("#selectProdStatus option:selected").index()) + 1;
+        var prodAvailableCount = $("#prod_num_in_store").val();
+        
+        form_Data.append('product_title', prodTitle);
+        form_Data.append('product_slug', prodSlug);
+        form_Data.append('product_shop', prodShop);
+        form_Data.append('product_category', prodCategroyList);
+        form_Data.append('product_submarket', prodSubmarket);
+        form_Data.append('product_price', prodSellPrice);
+        // if (prodRealPrice !== '') {
+        form_Data.append('product_oldprice', prodRealPrice);
+        // }
+        // else {
+            // form_Data.append('product_oldprice', '0');
+        // }
+        form_Data.append('product_sendtype', prodSendArea);
+        form_Data.append('product_status', prodStatus);
+        form_Data.append('product_netweight', prodNetWeight);
+        form_Data.append('product_packingweight', prodPackWeight);
+        form_Data.append('product_length', prodXDimension);
+        form_Data.append('product_width', prodYDimension);
+        form_Data.append('product_height', prodHDimension);
+        form_Data.append('product_description', prodAbout);
+        form_Data.append('product_bio', prodIntro);
+        form_Data.append('product_story', prodStory);
+        // form_Data.append('product_withinrange', prodSendAreas);
+        // form_Data.append('product_outofrange', prodSendAreasException);
+        if (prodStatus == 1) {
+            form_Data.append('product_inventory', prodAvailableCount);
+        }
+        else if (prodStatus == 4) {
+            form_Data.append('product_inventory', 0)
+        }
+        
+        $.ajax (
+            {
+                url: '{% url "restapi:web_create_new_product" %}',
+                method:"post",
+                data: form_Data,
+                contentType: false,
+                processData: false,
+                headers:{"X-CSRFToken": crf_token},
+                xhr: function () {
+                    var xhr = new XMLHttpRequest();
+                    
+                    xhr.upload.onprogress = function (e) {
+                        var percent = '0';
+                        var percentage = '0%';
+                        
+                        if (e.lengthComputable) {
+                            percent = Math.round((e.loaded / e.total) * 100);
+                            percentage = percent + '%';
+                            $(".progress-bar").width(percentage).attr('aria-valuenow', percent).text(percentage);
+                        }
+                    };
+                    
+                    return xhr;
+                },
+                success: function (json) {
+                    ProductID = json.id;
+                    $(".progress-bar").width('0%').attr('aria-valuenow', 0).text('0%');
+                    $(".pure-weight-td").text(prodNetWeight);
+                    $(".pack-weight-td").text(prodPackWeight);
+                    $(".dimensions-td").text(prodXDimension + ' * ' + prodYDimension + ' * ' + prodHDimension);
+
+                    $(".prod-modal-title").html('ثبت موفق محصول');
+                    $(".whole-modal-body").html('<div>محصول شما با موفقیت ثبت گردید.</div>' +
+                    '<div>آیا محدوده خاصی برای ارسال این محصول در نظر دارید؟</div>' +
+                    '<button type="button" class="btn btn-secondary float-left" id="no-post-range" data-dismiss="modal">خیر</button>' +
+                    '<button type="button" class="btn btn-primary float-left marginleft" id="yes-post-range" data-dismiss="modal">بله</button>');
+                    postrangebtn();
+                    $(".progress").hide();
+                },
+                error: function (xhr, status) {
+                    $(".progress-bar").width('0%').attr('aria-valuenow', 0).text('0%');
+                    $(".progress").hide();
+                    $(".prod-modal-title").html('خطا در ثبت محصول');
+                    $(".whole-modal-body").html('<div>ثبت محصول شما با خطا مواجه گردید.</div>' +
+                    '<div>' + xhr.responseJSON.res +' </div>' +
+                    '<button type="button" class="btn btn-secondary float-left" data-dismiss="modal">بستن</button>');
+                    $("#alert-div-system-error").show();
+                    console.log('status', status);
+                    console.log(xhr.status + ": " + xhr.responseText);
+                }
+            }
+        )
+    }
+    
+      
+
+    var checkValidVariable = false;
+    $(".submit-product-btn").on('click' , function (e) {
+        e.preventDefault();
+        checkValidVariable = checkValidInputsMakeSomeFields();
+        if (checkValidVariable)
+        {
+            $("#myModalerror").modal();
+        }
+    })
+    $(".submit-and-accept").on('click', function(e) {
+        e.preventDefault();
+        $(".submit-product-btn").addClass("send-button-disabled disabled");
+        submitProduct();
+    })
+    
+    var SlugDup = false;
+    $("#inputslugProd").on("input", function () {
+        setTimeout(function(){
+        var ProductSlug = $("#inputslugProd").val();
+        if(ProductSlug !== '') {
+            $.ajax(
+                {
+                    type: 'POST',
+                    url: '{% url "nakhll_market:Check_New_Product_Slug" %}',
+                    data: {
+                        product_slug: ProductSlug,
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                    },
+                    success: function (json) {
+                        if (json.status) {
+                            if (json.msg === 'Slug Is Exists') {
+                                $("#inputslugProd").addClass('inputshopempty');
+                                $("#alert-div-inputproduct-slug-dup").show();
+                                SlugDup = false;
+                            }
+                            else if (json.msg === 'Slug Is Not Exists') {
+                                $("#alert-div-inputproduct-slug-dup").hide();
+                                $("#inputslugProd").removeClass('inputshopempty');
+                                SlugDup = true;
+                            }
+                            else if (json.msg === 'Error In Get Data') {
+                                $("#alert-div-system-error").show();
+                                SlugDup = false;
+                            }
+                        }
+                        else {
+                            $("#alert-div-system-error").show();
+                            SlugDup = false;
+                        }
+                    },
+                    error: function (xhr) {
+                        $("#alert-div-system-error").show();
+                        console.log(xhr.status + ": " + xhr.responseText);
+                    }
+                }
+            );
+        }
+        }, 1000)
+    })
+
+    var shopid = $("#inpuShop option:selected").val();
+    getSubmarkets = function () {
+        $("#inputSubMarket").prop('disabled', true);
+        $("#inputSubMarket").addClass('select-wait');
+        $(".submarket-form-group").addClass('select-wait');
+        $(".submarket-loading").show();
+        shopid = $("#inpuShop option:selected").val();
+        $.ajax (
+            {
+                type: 'POST',
+                url: '{% url "restapi:get_shop_submarkets" %}',
+                data: {
+                        shop_id: shopid,
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                    },
+                    success: function (json) {
+                        $("#inputSubMarket").prop('disabled', false);
+                        $("#inputSubMarket").removeClass('select-wait');
+                        $(".submarket-form-group").removeClass('select-wait');
+                        $(".submarket-loading").hide();
+                        
+                        var optionID = [];
+                        var optionTitle = [];
+                        for (var i=0; i<json.length; i++)
+                        {
+                            optionID[i] = json[i].ID;
+                            optionTitle[i] = json[i].Title;
+                        }
+                        $('#inputSubMarket').empty();
+                    for (var i=0; i<optionTitle.length; i++)
+                    {
+                        $('#inputSubMarket').append($('<option>', {value:optionID[i], text:optionTitle[i]}));
+                    }
+                },
+                error: function () {
+                    
+                }
+            }
+        )
+    }
+    $("#inpuShop").on('change', function () {
+        getSubmarkets();
+    })
+
+    $(document).ready(function () {
+        getSubmarkets();
+    })
+
+    var allowedAreas = [];
+    var fncDefined = false;
+
+    // sendAreas
+    addSendArea = function (statusRange) {
+        var stateSelected;
+        var bigCitySelected;
+        var citySelected;
+        var ulSelect;
+        var cancelClass;
+        if (statusRange == 1)
+        {
+            $("#submitAllowSendArea").attr('disabled', true);
+            $("#submitAllowSendArea").addClass('plus-disabled');
+            $("#loaderDiv1").show();
+            ulSelect = '#allowed-send-areas';
+            cancelClass = 'cancel-area-allow';
+            stateSelected = {'stateID': $("#inputshopState option:selected").val(), 'stateName': $("#inputshopState option:selected").text()};
+            bigCitySelected = {'bigCityID': $("#inputshopBigCity option:selected").val(), 'bigCityName': $("#inputshopBigCity option:selected").text()};
+            citySelected = {'cityID': $("#inputshopCity option:selected").val(), 'cityName': $("#inputshopCity option:selected").text()};
+        }
+        else if (statusRange == 0)
+        {
+            $("#submitUnallowSendArea").attr('disabled', true);
+            $("#submitUnallowSendArea").addClass('plus-disabled');
+            $("#loaderDiv2").show();
+            ulSelect = '#unallowed-send-areas';
+            cancelClass = 'cancel-area-unallow';
+            stateSelected = {'stateID': $("#inputshopState_cancel option:selected").val(), 'stateName': $("#inputshopState_cancel option:selected").text()};
+            bigCitySelected = {'bigCityID': $("#inputshopBigCity_cancel option:selected").val(), 'bigCityName': $("#inputshopBigCity_cancel option:selected").text()};
+            citySelected = {'cityID': $("#inputshopCity_cancel option:selected").val(), 'cityName': $("#inputshopCity_cancel option:selected").text()};
+        }
+
+
+        if (stateSelected.stateID != '0')
+        {   
+            sendAreaobj = {
+                'state': stateSelected.stateName,
+                'bigCity': bigCitySelected.bigCityName,
+                'city': citySelected.cityName
+            }
+            if(bigCitySelected.bigCityID == '0')
+            {
+                sendAreaobj.bigCity = 'null';
+                bigCitySelected.bigCityName = '';
+                citySelected.cityName = '';
+            }
+            else {
+                stateSelected.stateName += ' - ';
+            }
+            if(citySelected.cityID == '0')
+            {
+                sendAreaobj.city = 'null';
+                citySelected.cityName = '';
+            }
+            else {
+                bigCitySelected.bigCityName += ' - ';
+            }
+
+            $.ajax (
+            {
+                type: 'POST',
+                url: '{% url "restapi:web_getorcreate_postrange" %}',
+                data: {
+                        product_id: ProductID,
+                        state_range: sendAreaobj.state,
+                        bigcity_range: sendAreaobj.bigCity,
+                        city_range: sendAreaobj.city,
+                        status_range: statusRange,
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                    },
+                success: function (json, status) {
+                    $("#loaderDiv1").hide();
+                    $("#loaderDiv2").hide();
+                    $("#submitAllowSendArea").attr('disabled', false);
+                    $("#submitAllowSendArea").removeClass('plus-disabled');
+                    $("#submitUnallowSendArea").attr('disabled', false);
+                    $("#submitUnallowSendArea").removeClass('plus-disabled');
+                    if (json.status)
+                    {
+                        var dupCheck = true;
+                        for (var i=0; i<$(ulSelect).find('li').length; i++)
+                        {
+                            if ($($(ulSelect).find('li')[i]).attr('val') == json.id) {
+                                dupCheck = false;
+                            }
+                        }
+                            if (dupCheck) {
+                                $(ulSelect).append('<li val="' + json.id + '"><div class="send-area-info">' +
+                                    stateSelected.stateName +
+                                    bigCitySelected.bigCityName +
+                                    citySelected.cityName +
+                                    '</div><div val="' + json.id + '" class="' + cancelClass + '"><i class="far fa-times"></i></li>');
+                                    // validUnallowForm();
+                            }
+                    }
+                    if (!fncDefined) {
+                        deleteAreaButton();
+                    }
+                    else {
+                        console.log(json.message);
+                    }
+                },
+                error: function (xhr, status) {
+                    $("#loaderDiv1").hide();
+                    $("#loaderDiv2").hide();
+                    $("#submitAllowSendArea").attr('disabled', false);
+                    $("#submitAllowSendArea").removeClass('plus-disabled');
+                    $("#submitUnallowSendArea").attr('disabled', false);
+                    $("#submitUnallowSendArea").removeClass('plus-disabled');
+                    console.log(xhr);
+                    console.log(xhr.responseJSON);
+                    console.log(xhr.responseJSON.status);
+                    console.log(xhr.responseJSON.message);
+                    console.log(status);
+                }
+            }
+            )
+        }
+        else {
+            $("#loaderDiv1").hide();
+            $("#loaderDiv2").hide();
+            $("#submitAllowSendArea").attr('disabled', false);
+            $("#submitAllowSendArea").removeClass('plus-disabled');
+            $("#submitUnallowSendArea").attr('disabled', false);
+            $("#submitUnallowSendArea").removeClass('plus-disabled');
+            return;
+        }
+    }
+    // validUnallowForm = function() {
+    //     $("#outlocation-product-form").removeClass('outlocation-product-form');
+    //     $("#inputshopState_cancel").attr('disabled', false).trigger("chosen:updated");
+    //     $("#inputshopBigCity_cancel").attr('disabled', false).trigger("chosen:updated");
+    //     $("#inputshopCity_cancel").attr('disabled', false).trigger("chosen:updated");
+    //     $("#submitUnallowSendArea").removeClass('plus-disabled');
+    //     $("#submitUnallowSendArea").prop('disabled', false);
+    // }
+    // unvalidUnallowForm = function() {
+    //     $("#outlocation-product-form").addClass('outlocation-product-form');
+    //     $("#inputshopState_cancel").attr('disabled', true).trigger("chosen:updated");
+    //     $("#inputshopBigCity_cancel").attr('disabled', true).trigger("chosen:updated");
+    //     $("#inputshopCity_cancel").attr('disabled', true).trigger("chosen:updated");
+    //     $("#submitUnallowSendArea").addClass('plus-disabled');
+    //     $("#submitUnallowSendArea").prop('disabled', true);
+    // }
+
+    deleteArea = function (rngID, statusRange) {
+        $.ajax (
+            {
+                type: 'POST',
+                url: '{% url "restapi:web_delete_postrange" %}',
+                data: {
+                        product_id: ProductID,
+                        postrange_id: rngID,
+                        status_range: statusRange,
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                    },
+                success: function (json, status) {
+                    if (json.status)
+                    {
+                        if(statusRange == 1) {
+                            var valrngid = 'ul#allowed-send-areas li[val=' + rngID + ']';
+                            $(valrngid).remove();
+                            // var liCount = $("#allowed-send-areas").find('li').length;
+                            // if(liCount <= 0)
+                            // {
+                            //     unvalidUnallowForm();
+                            // }
+                        }
+                        else if (statusRange == 0) {
+                            var valrngid = 'ul#unallowed-send-areas li[val=' + rngID + ']';
+                            $(valrngid).remove();
+                        }
+                    }
+                    else {
+                        console.log(json.message);
+                    }
+                },
+                error: function (xhr, status) {
+                    console.log(xhr);
+                    console.log(xhr.responseJSON);
+                    console.log(xhr.responseJSON.status);
+                    console.log(xhr.responseJSON.message);
+                    console.log(status);
+                }
+            }
+            )
+    }
+
+    $("#submitAllowSendArea").click(function (e) {
+        e.preventDefault();
+        addSendArea(1);
+    })
+
+    $("#submitUnallowSendArea").click(function (e) {
+        e.preventDefault();
+        addSendArea(0);
+    })
+
+    deleteAreaButton = function () {
+        $(".cancel-area-allow").click(function () {
+            var rngID = $(this).attr('val');
+            deleteArea(rngID, 1);
+        })
+        $(".cancel-area-unallow").click(function () {
+            var rngID = $(this).attr('val');
+            deleteArea(rngID, 0);
+        })
+    }
+</script>
+
+
+<script>
+    // add attribute
+    $(".save-attr-product").on('click', function(e) {
+        e.preventDefault();
+        var attrid = $('#title-attr-field').text();
+        var valueattr = $('#product_attr_value').val();
+        var attridselected = $('#product_attr_title option:selected').val();
+        var nameattr = attrname;
+        if ($('#product_attr_unit').text() !='واحد ندارد'){
+            var unitattr = $('#product_attr_unit').text();
+        }
+        else{
+            var unitattr = ' ';
+        }
+        if (attridselected != '0' && $("#product_attr_value").val().length != 0) {
+            $('.loading-add-product').show();
+            $.ajax (
+                {
+                    type: 'POST',
+                    url: '{% url "restapi:web_product_add_attribute" %}',
+                    data: {
+                            product_id:  ProductID,
+                            attribute_id : attrid,
+                            attribute_value : valueattr,
+                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                        },
+                    success: function (json) {
+                        var dupCheck = true;
+                        for (var i=2; i<$("#new-attr-add-product").find('tr').length ;i++) {
+                            if ($($("#new-attr-add-product").find('tr')[i]).attr('val') == json.id) {
+                                    dupCheck = false;
+                                }
+                        }
+                        if (dupCheck) {
+                            $('#new-attr-add-product').append(
+                                '<tr val="' + json.id + '">'+
+                                    '<th scope="row" class="titletable">'+ nameattr +'</th>'+
+                                    '<td>'+ valueattr +'<span class="Riyal"> '+ unitattr +' </span></td>'+
+                                    '<td><button class="delete-attr-btn" val="' + json.id + '" val2="' + attridselected + '">حذف این ویژگی</button></td>'+
+                                '</tr>'
+                            );
+                        }
+
+
+                        var disableAttr = '#product_attr_title option[id=' + attridselected + ']';
+                        $(disableAttr).attr('disabled', true);
+                        $('#product_attr_title option:selected').trigger('chosen:updated');
+                            
+                        $('.result-add-attr').text(
+                            'با موفقیت ثبت شد ...'
+                        );
+                        
+                        $('.loading-add-product').hide();
+                    },
+                    error: function (xhr, status) {
+                        $('.result-add-attr').append(
+                            xhr.status + ": " + xhr.responseText
+                        );
+                        $('.loading-add-product').hide();
+                    }
+                }
+            )
+        }
+    })
+    $(document).on('click','.delete-attr-btn',function(e) {
+        e.preventDefault();
+        var attrid = $(this).attr('val');
+        var attridselected = $(this).attr('val2');
+        $('.loading-add-product').show();
+        $.ajax (
+            {
+                type: 'POST',
+                url: '{% url "restapi:web_product_delete_attribute" %}',
+                data: {
+                        product_id: ProductID,
+                        product_attribute_id: attrid,
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                    },
+                success: function (json, status) {
+                    if (json.status)
+                    {
+                        var valattrid = '#new-attr-add-product tr[val=' + attrid + ']';
+                        $(valattrid).remove();
+                        var disableAttr = '#product_attr_title option[id=' + attridselected + ']';
+                        $(disableAttr).attr('disabled', false);
+                        $('#product_attr_title option:selected').trigger('chosen:updated');
+                        $('.loading-add-product').hide();
+                    }
+                    else {
+                        console.log(json.message);
+                        $('.loading-add-product').hide();
+                    }
+                },
+                error: function (xhr, status) {
+                    console.log(xhr);
+                    console.log(xhr.responseJSON);
+                    console.log(xhr.responseJSON.status);
+                    console.log(xhr.responseJSON.message);
+                    console.log(status);
+                    $('.loading-add-product').hide();
+                }
+            }
+        )
+    })
+
+    $(document).on('click','.delete-prod-pic',function(e) {
+        e.preventDefault();
+        var imgID = $(this).attr('val');
+        $(".product-gallery-pics div[val='" + imgID + "']").fadeTo( "slow", 0.2);
+        $(this).prop('disabled', true);
+        // $('.loading-add-product').show();
+        $.ajax (
+            {
+                type: 'POST',
+                url: '{% url "restapi:web_product_delete_imagetogallery" %}',
+                data: {
+                        product_id: ProductID,
+                        gallery_image_id: imgID,
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                    },
+                success: function (json, status) {
+                    if (json.status)
+                    {
+                        $(".product-gallery-pics div[val='" + imgID + "']").remove();
+                        // $('.loading-add-product').hide();
+                    }
+                    else
+                    {
+                        console.log(json.message);
+                        // $('.loading-add-product').hide();
+                    }
+                    
+                },
+                error: function (xhr, status) {
+                    console.log(xhr);
+                    console.log(xhr.responseJSON);
+                    console.log(xhr.responseJSON.status);
+                    console.log(xhr.responseJSON.message);
+                    console.log(status);
+                    // $('.loading-add-product').hide();
+                }
+            }
+        )
+    })
+
+
+    
+
+
+
+    $(".next-level-postrange-section").on('click' , function (e) {
+        $('.loading-add-product').show();
+        $('#sendrange-box-section').remove();
+        $('#attribute-box-section').show();
+        $("#new-product-map").removeClass("active");
+        $("#post-range-map").removeClass("active");
+        $("#attribute-map").addClass("active");
+        $('.loading-add-product').hide();
+    });
+
+    $(".next-level-attr-section").on('click' , function (e) {
+        $('.loading-add-product').show();
+        $('#attribute-box-section').remove();
+        $('#gallery-box-section').show();
+        $("#attribute-map").removeClass("active");
+        $("#post-range-map").removeClass("active");
+        $("#gallery-product-map").addClass("active");
+        $('.loading-add-product').hide();
+    });
+
+    $(".next-level-gallery-section").on('click' , function (e) {
+        $('.loading-add-product').show();
+        $('#gallery-box-section').remove();
+        $('#optional-attribute-box-section').show();
+        $("#gallery-product-map").removeClass("active");
+        $("#optional-attribute-product-map").addClass("active");
+        $('.loading-add-product').hide();
+    });
+
+    $(".final-btn-product-submit").on('click' , function (e) {
+        $('.loading-add-product').show();
+        $('#optional-attribute-box-section').remove();
+        $('#end-box-section').show();
+        $("#optional-attribute-product-map").removeClass("active");
+        $("#end-add-map").addClass("active");
+        $('.loading-add-product').hide();
+    });
+
+
+    $(".add-attr-section-showhide").click(function () {
+                if ($(".add-attr-section-form").css('display') == 'none')
+                {
+                    $(".add-attr-section-form").show(700);
+                    $(".add-attr-section-form").css('display', 'flex');
+                    $(".dropdown-add-attr-sign").addClass('fa-minus');
+                    $(".dropdown-add-attr-sign").removeClass('fa-plus');
+                }
+                else if ($(".add-attr-section-form").css('display') == 'flex')
+                {
+                    $(".add-attr-section-form").hide(700);
+                    $(".dropdown-add-attr-sign").removeClass('fa-minus');
+                    $(".dropdown-add-attr-sign").addClass('fa-plus');
+                }
+                setTimeout(function () {
+                    $(".add-new-attr-btn-div").css('margin-top', 'inherit');
+                    $(".add-new-attr-btn-div").css('align-self', 'flex-end');
+                }, 700);
+            })
+        
+            $("#add-new-attr-btn").click(function (e) {
+                e.preventDefault();
+        
+                var attrTitle = $("#new_product_attr_name").val();
+                var attrUnit = $("#new_product_attr_unit").val();
+                if (attrUnit == '')
+                {
+                    attrUnit = '-';
+                }
+                var attrValue = $("#new_product_attr_value").val();
+                if (attrTitle != '' && attrValue != '')
+                {
+                    $.ajax (
+                        {
+                            type: 'POST',
+                            url: '{% url "restapi:web_add_new_attribute" %}',
+                            data: {
+                                    attribute_title: attrTitle,
+                                    attribute_unit: attrUnit,
+                                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                                },
+                            success: function (json, status) {
+                                console.log(json);
+                                console.log(json.data.id);
+                                console.log(json.data.Title);
+                                console.log(status);
+                                if (json.status)
+                                {
+                                    $.ajax (
+                                        {
+                                            type: 'POST',
+                                            url: '{% url "restapi:web_product_add_attribute" %}',
+                                            data: {
+                                                    product_id:  ProductID,
+                                                    attribute_id : json.data.id,
+                                                    attribute_value : attrValue,
+                                                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                                                },
+                                            success: function (json2) {
+                                                var dupCheck = true;
+                                                for (var i=2; i<$("#new-attr-add-product").find('tr').length ;i++) {
+                                                    if ($($("#new-attr-add-product").find('tr')[i]).attr('val') == json2.id) {
+                                                            dupCheck = false;
+                                                        }
+                                                }
+                                                if (dupCheck) {
+                                                    var attrUnit2 = json.data.Unit;
+                                                    if (json.data.Unit == '-')
+                                                    {
+                                                        attrUnit2 = '';
+                                                    }
+                                                    $('#new-attr-add-product').append(
+                                                        '<tr val="' + json2.id + '">'+
+                                                            '<th scope="row" class="titletable">'+ json.data.Title +'</th>'+
+                                                            '<td>'+ attrValue +' </span><span class="Riyal"> '+ attrUnit2 + ' </span></td>' +
+                                                            '<td><button class="delete-attr-btn" val="' + json2.id + '" pre="1">حذف این ویژگی</button></td>'+
+                                                        '</tr>'
+                                                    );
+                                                }
+        
+        
+                                                // var disableAttr = '#product_attr_title option[id=' + attridselected + ']';
+                                                // $(disableAttr).attr('disabled', true);
+                                                // $('#product_attr_title option:selected').trigger('chosen:updated');
+                                                    
+                                                $('.result-add-attr2').text(
+                                                    'با موفقیت ثبت شد ...'
+                                                );
+                                                
+                                                $('.loading-add-product').hide();
+                                            },
+                                            error: function (xhr, status) {
+                                                // $('.result-add-attr').append(
+                                                //     xhr.status + ": " + xhr.responseText
+                                                // );
+                                                console.log(xhr, status);
+                                                $('.result-add-attr').text(
+                                                    '' + xhr.responseJSON.status + ' ' + xhr.responseJSON.message
+                                                );
+                                                $('.loading-add-product').hide();
+                                            }
+                                        }
+                                    )
+                                }
+                                else {
+                                    console.log(json.message);
+                                    $('.result-add-attr2').text(
+                                        'ویژگی با این عنوان قبلا به ثبت رسیده است!'
+                                    );
+                                }
+                            },
+                            error: function (xhr, status) {
+                                console.log(xhr);
+                                console.log(xhr.responseJSON);
+                                console.log(xhr.responseJSON.status);
+                                console.log(xhr.responseJSON.message);
+                                if (xhr.responseJSON.message == 'The entered data is duplicate')
+                                {
+                                    $('.result-add-attr2').text(
+                                        'ویژگی با این عنوان و واحد قبلا به ثبت رسیده است!'
+                                    );
+                                }
+                                console.log(status);
+                            }
+                        }
+                    )
+                }
+                else {
+                    return;
+                }
+            })
+
+
+            var optAttrExtraPrice = false;
+            var optAttrExtraWeight = false;
+            var optAttrChangeDimension = false;
+            var optAttr;
+            
+                
+
+            var defFuncOptAttrDelete = true;
+            var defFuncOptAttrValueDelete = true;
+
+            var optAttrValuSectionValid = false;
+
+            $(document).on('click', '.opt-attr-continue-to-values', function (e) {
+                e.preventDefault();
+                if ($("#product_optattr_title").val() != '' || $("#product_optattr_title").val().length != 0)
+                {
+                    var newOptAttrTitle = $("#product_optattr_title").val();
+                    var newOptAttrType = $("#opt-attr-radio-type-choice-choose").is(":checked") ? '0' : '1';
+                    var newOptAttrStatus = $("#opt-attr-radio-necessary-y").is(":checked") ? '1' : '0';
+
+                    optAttrExtraPrice = $("#opt-attr-radio-extra-price-y").is(":checked");
+                    optAttrExtraWeight = $("#opt-attr-radio-change-weight-y").is(":checked");
+                    optAttrChangeDimension = $("#opt-attr-radio-change-dimension-y").is(":checked");
+
+                    $.ajax (
+                        {
+                            type: 'POST',
+                            url: '{% url "restapi:web_product_add_optional_attribute" %}',
+                            data: {
+                                product_id:  ProductID,
+                                this_title : newOptAttrTitle,
+                                this_type : newOptAttrType,
+                                this_status : newOptAttrStatus,
+                                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                            },
+                            success: function (json, status) {
+                                if (json.status)
+                                {
+                                    optAttr = json.data;
+                                    $(".continue-error-box p").hide();
+                                    $(".opt-attr-continue-to-values").addClass('btn-continue-opt-attr-disabled');
+                                    if($("#opt-attr-radio-extra-price-n").is(":checked"))
+                                    {
+                                        $("#opt-attr-extra-price-sec").hide();
+                                    }
+                                    else if ($("#opt-attr-radio-extra-price-y").is(":checked"))
+                                    {
+                                        $("#opt-attr-extra-price-sec").show();
+                                    }
+                                    if($("#opt-attr-radio-change-weight-n").is(":checked"))
+                                    {
+                                        $("#opt-attr-extra-weight-sec").hide();
+                                    }
+                                    else if ($("#opt-attr-radio-change-weight-y").is(":checked"))
+                                    {
+                                        $("#opt-attr-extra-weight-sec").show();
+                                    }
+                                    if($("#opt-attr-radio-change-dimension-n").is(":checked"))
+                                    {
+                                        $("#opt-attr-change-dimension-sec").hide();
+                                    }
+                                    else if ($("#opt-attr-radio-change-dimension-y").is(":checked"))
+                                    {
+                                        $("#opt-attr-change-dimension-sec").show();
+                                    }
+                                    $(".opt-attr-values-section").show();
+                                    $(".opt-attr-main-title-question-section *").attr("disabled", "disabled").off('click');
+
+                                    $(".opt-attr-main-title-question-section").addClass('opt-attr-main-title-question-section-disabled');
+                                    optAttrValuSectionValid = true;
+
+                                    var showNecessary = $("#opt-attr-radio-necessary-y").is(":checked") ? '<i class="far fa-check"></i>' : '<i class="far fa-times"></i>';
+                                    var showChooseType = $("#opt-attr-radio-type-choice-select").is(':checked') ? 'چند انتخابی' : 'تک انتخابی';
+                                    $("#new-opt-attr-add-product").append(
+                                    '<tr id="optAttr-' + json.data.id + '">' +
+                                    '<td>' + newOptAttrTitle + '</td>' +
+                                    '<td>' + showNecessary + '</td>' +
+                                    '<td>' + showChooseType + '</td>' +
+                                    '<td class="opt-attr-val-td"></td>' +
+                                    '<td> <div class="point-mouse delete-entire-opt-attr" val="' + json.data.id + '"> حذف ویژگی </div> </td>' +
+                                    '</tr>'
+                                    );
+                                    optAttrEmpty = false;
+                                    $(".btn-add-opt-attr button.add-new-disabled").prop('disabled', false);
+                                    $(".btn-add-opt-attr button.add-new").removeClass('add-new-disabled');
+
+                                    // var scrollPos = $(".opt-attr-values-section").offset().top;
+                                    // var scrollPosDown = $("button.add-new").offset().top;
+                                    // $('.opt-attr-values-section').animate({
+                                    // scrollTop: scrollPosDown
+                                    // }, 500);
+                                }
+                                else
+                                {
+                                    console.log(json.message);
+                                    $(".continue-error-box p").html('<i class="fas fa-exclamation-triangle"></i> خطا! : ' + json.message).show();
+                                }
+                            },
+                            error: function (xhr, status) {
+                                console.log(xhr);
+                                console.log(xhr.responseJSON);
+                                console.log(status);
+                                $(".continue-error-box p").html('<i class="fas fa-exclamation-triangle"></i> خطا! : ' + xhr.responseJSON.message).show();
+                            }
+                        }
+                    )
+                }
+            })
+
+            $(document).on('click', '.add-opt-attr-values', function (e) {
+                e.preventDefault();
+                if (($("#product_optattr_value").val() != '' || 
+                    $("#product_optattr_value").val().length != 0) &&
+                    ($("#selectProdStatusForOptAttr").prop('selectedIndex') != 0 || ($("#prod_num_in_store_for_opt_attr").val() != '' || $("#prod_num_in_store_for_opt_attr").val().length != 0)) &&
+                    (!optAttrExtraPrice || $("#product_optattr_price").val() != '' || $("#product_optattr_price").val().length != 0) &&
+                    (!optAttrExtraWeight || $("#product_optattr_extra_weight").val() != '' || $("#product_optattr_extra_weight").val().length != 0) &&
+                    (!optAttrChangeDimension || (($("#product_optattr_change_dimension_x").val() != '' || $("#product_optattr_change_dimension_x").val().length != 0) && ($("#product_optattr_change_dimension_y").val() != '' || $("#product_optattr_change_dimension_y").val().length != 0) && ($("#product_optattr_change_dimension_z").val() != '' || $("#product_optattr_change_dimension_z").val().length != 0))))
+                    {
+                        var optAttrValue = $("#product_optattr_value").val();
+                        var optAttrPrice;
+                        var optAttrWeight;
+                        var optAttrLength;
+                        var optAttrWidth;
+                        var optAttrHeight;
+                        var optAttrInventory;
+                        var optAttrStatus;
+
+                        optAttrPrice = $("#opt-attr-radio-extra-price-y").is(':checked') ? $("#product_optattr_price").val() : prodSellPrice;
+                        optAttrWeight = $("#opt-attr-radio-change-weight-y").is(':checked') ? $("#product_optattr_extra_weight").val() : prodPackWeight;
+                        if ($("#opt-attr-radio-change-dimension-y").is(':checked'))
+                        {
+                            optAttrLength = $("#product_optattr_change_dimension_x").val();
+                            optAttrWidth = $("#product_optattr_change_dimension_y").val();
+                            optAttrHeight = $("#product_optattr_change_dimension_z").val();
+                        }
+                        else
+                        {
+                            optAttrLength = prodXDimension;
+                            optAttrWidth = prodYDimension;
+                            optAttrHeight = prodHDimension;
+                        }
+                        optAttrInventory = $("#selectProdStatusForOptAttr").prop('selectedIndex') == 0 ? $("#prod_num_in_store_for_opt_attr").val() : '0';
+                        optAttrStatus = $("#selectProdStatusForOptAttr").prop('selectedIndex') + 1;
+
+                        $.ajax (
+                            {
+                                type:'POST',
+                                url: '{% url "restapi:web_optional_attribute_add_detail" %}',
+                                data: {
+                                    product_id: ProductID,
+                                    optional_attribute_id: optAttr.id,
+                                    this_value: optAttrValue,
+                                    this_price: optAttrPrice,
+                                    this_weight: optAttrWeight,
+                                    this_length: optAttrLength,
+                                    this_width: optAttrWidth,
+                                    this_height: optAttrHeight,
+                                    this_inventory: optAttrInventory,
+                                    this_status: optAttrStatus,
+                                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                                },
+                                success: function (json, status) {
+                                    if (json.status)
+                                    {
+                                        $(".new-opt-attr-value-added-info").html('<i class="fas fa-check-circle"></i> مقدار ویژگی انتخابی با موفقیت ثبت شد.');
+                                        $(".new-opt-attr-value-added-info").show();
+                                        $(".new-opt-attr-value-added-info").fadeOut(3000);
+                                        var optAttrValueTdDiv = '';
+                                        for (var i=0; i<json.data.FK_Details.length; i++)
+                                        {
+                                            optAttrValueTdDiv += '<div val2="' + optAttr.id + '" val1="' + json.data.FK_Details[i].id + '" class="opt-attr-item point-mouse">' + json.data.FK_Details[i].Value + '<i val2="' + optAttr.id + '" val1="' + json.data.FK_Details[i].id + '" class="far fa-times delete-opt-attr-value"></i></div>';
+                                        }
+                                        var tdOptAttrVal = "#new-opt-attr-add-product tr#optAttr-" + optAttr.id + " td.opt-attr-val-td";
+                                        $(tdOptAttrVal).html(optAttrValueTdDiv);
+                                        optAttrEmpty = true;
+                                    }
+                                    else {
+                                        $(".error-complete-fields").html('<i class="fas fa-exclamation-triangle"></i> ' + json.message);
+                                        $(".error-complete-fields").show();
+                                        $(".error-complete-fields").fadeOut(3000);
+                                    }
+
+                                },
+                                error: function (xhr, status) {
+                                    console.log(xhr);
+                                    console.log(status);
+                                    console.log(xhr.responseJSON);
+                                    $(".error-complete-fields").html('<i class="fas fa-exclamation-triangle"></i> ' + xhr.responseJSON.message);
+                                    $(".error-complete-fields").show();
+                                    $(".error-complete-fields").fadeOut(3000);
+                                }
+                            }
+                        )
+                    }
+                else {
+                    $(".error-complete-fields").html('<i class="fas fa-exclamation-triangle"></i> لطفا اطلاعات خواسته شده را تکمیل نمائید.');
+                    $(".error-complete-fields").show();
+                    $(".error-complete-fields").fadeOut(3000);
+                }
+            })
+
+            readyNewOptAttr = function () {
+                $("#product_optattr_value").val('');
+                $("#prod_num_in_store_for_opt_attr").val('');
+                $("#product_optattr_price").val('');
+                $("#product_optattr_extra_weight").val('');
+                $("#product_optattr_change_dimension_x").val('');
+                $("#product_optattr_change_dimension_y").val('');
+                $("#product_optattr_change_dimension_z").val('');
+                $(".opt-attr-values-section").hide();
+                $(".opt-attr-main-title-question-section *").attr("disabled", false).on('click');
+                $(".opt-attr-main-title-question-section").removeClass('opt-attr-main-title-question-section-disabled');
+                $(".opt-attr-continue-to-values").removeClass('btn-continue-opt-attr-disabled');
+                $(".btn-add-opt-attr button.add-new").prop('disabled', true);
+                $(".btn-add-opt-attr button.add-new").addClass('add-new-disabled');
+                optAttrValuSectionValid = false;
+            }
+
+            $(document).on('click', '.add-new', function (e) {
+                e.preventDefault();
+                if ($("#new-opt-attr-add-product tr#optAttr-" + optAttr.id + " td.opt-attr-val-td").text() == '')
+                {
+                    $(".prod-modal-title").html('هشدار');
+                    $(".whole-modal-body").html('<div>شما برای ویژگی انتخابی خود مقداری در نظر نگرفته اید!</div>' +
+                    '<div>آیا مایلید این ویژگی انتخابی حذف شود؟</div>' +
+                    '<button type="button" class="btn btn-secondary float-left" data-dismiss="modal">خیر</button>' +
+                    '<button type="button" class="btn btn-primary float-left marginleft" id="delete-opt-attr-y" data-dismiss="modal">بله</button>');
+                    $("#myModalerror").modal();
+                }
+                else {
+                    readyNewOptAttr();
+                }
+            })
+
+            $(document).on('click', '#delete-opt-attr-y', function (e)
+            {
+                e.preventDefault();
+                var optAttrtr = optAttr.id;
+                $.ajax (
+                    {
+                        type: 'POST',
+                        url: '{% url "restapi:web_product_optional_attribute" %}',
+                        data: {
+                            product_id: ProductID,
+                            optional_attribute_id: optAttrtr,
+                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                        },
+                        success: function (json, status) {
+                            if (json.status)
+                            {
+                                $(".new-opt-attr-value-added-info").html('<i class="fas fa-check-circle"></i> مقدار ویژگی انتخابی با موفقیت حذف شد.');
+                                $(".new-opt-attr-value-added-info").show();
+                                $(".new-opt-attr-value-added-info").fadeOut(3000);
+                                var optAttrDeleteAddress = "#new-opt-attr-add-product tr#optAttr-" + optAttrtr;
+                                $(optAttrDeleteAddress).remove();
+                                readyNewOptAttr();
+                            }
+                            else {
+                                $(".error-complete-fields").html('<i class="fas fa-exclamation-triangle"></i> ' + json.message);
+                                $(".error-complete-fields").show();
+                                $(".error-complete-fields").fadeOut(3000);
+                            }
+                        },
+                        error: function (xhr, status) {
+                            console.log(xhr);
+                            console.log(status);
+                            console.log(xhr.responseJSON);
+                            $(".error-complete-fields").html('<i class="fas fa-exclamation-triangle"></i> ' + xhr.responseJSON.message);
+                            $(".error-complete-fields").show();
+                            $(".error-complete-fields").fadeOut(3000);
+                        }
+                    }
+                )
+            })
+
+                $(document).on('click', '.delete-opt-attr-value', function () {
+                    var optAttrtr = $(this).attr('val2');
+                    var optAttrtd = $(this).attr('val1');
+                    $.ajax (
+                        {
+                            type: 'POST',
+                            url: '{% url "restapi:web_optional_attribute_delete_detail" %}',
+                            data: {
+                                product_id: ProductID,
+                                optional_attribute_id: optAttrtr,
+                                detail_id: optAttrtd,
+                                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                            },
+                            success: function (json, status) {
+                                if (json.status)
+                                {
+                                    $(".new-opt-attr-value-added-info").html('<i class="fas fa-check-circle"></i> مقدار ویژگی انتخابی با موفقیت حذف شد.');
+                                    $(".new-opt-attr-value-added-info").show();
+                                    $(".new-opt-attr-value-added-info").fadeOut(3000);
+                                    var optAttrValueTdDiv = '';
+                                    for (var i=0; i<json.data.FK_Details.length; i++)
+                                    {
+                                        optAttrValueTdDiv += '<div val2="' + optAttrtr + '" val1="' + json.data.FK_Details[i].id + '" class="opt-attr-item point-mouse">' + json.data.FK_Details[i].Value + '<i val2="' + optAttrtr + '" val1="' + json.data.FK_Details[i].id + '" class="far fa-times delete-opt-attr-value"></i></div>';
+                                    }
+                                    var tdOptAttrVal = "#new-opt-attr-add-product tr#optAttr-" + optAttrtr + " td.opt-attr-val-td";
+                                    $(tdOptAttrVal).html(optAttrValueTdDiv);
+                                    if ((optAttrValueTdDiv == '' || optAttrValueTdDiv.length == 0))
+                                    {
+                                        if (optAttrValuSectionValid && optAttrtr == optAttr.id)
+                                        {
+                                            $(".prod-modal-title").html('هشدار');
+                                            $(".whole-modal-body").html('<div>شما برای ویژگی انتخابی خود مقداری در نظر نگرفته اید!</div>' +
+                                            '<div>آیا مایلید این ویژگی انتخابی حذف شود؟</div>' +
+                                            '<button type="button" class="btn btn-secondary float-left" data-dismiss="modal">خیر</button>' +
+                                            '<button type="button" class="btn btn-primary float-left marginleft" id="delete-opt-attr-y" data-dismiss="modal">بله</button>');
+                                            $("#myModalerror").modal();
+                                        }
+                                        else
+                                        {
+                                            $(".whole-modal-body").html('<div>شما برای ویژگی انتخابی خود مقداری در نظر نگرفته اید!</div>' +
+                                            '<div>این ویژگی انتخابی به صورت خودکار از محصول شما حذف میگردد!</div>' +
+                                            '<button type="button" class="btn btn-secondary float-left" data-dismiss="modal">بستن</button>');
+                                            $("#myModalerror").modal();
+                                            $.ajax (
+                                            {
+                                                type: 'POST',
+                                                url: '{% url "restapi:web_product_optional_attribute" %}',
+                                                data: {
+                                                    product_id: ProductID,
+                                                    optional_attribute_id: optAttrtr,
+                                                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                                                },
+                                                success: function (json, status) {
+                                                    if (json.status)
+                                                    {
+                                                        var optAttrDeleteAddress = "#new-opt-attr-add-product tr#optAttr-" + optAttrtr;
+                                                        $(optAttrDeleteAddress).remove();
+                                                    }
+                                                    else {
+                                                        $(".error-complete-fields").html('<i class="fas fa-exclamation-triangle"></i> ' + json.message);
+                                                        $(".error-complete-fields").show();
+                                                        $(".error-complete-fields").fadeOut(3000);
+                                                    }
+                                                },
+                                                error: function (xhr, status) {
+                                                    console.log(xhr);
+                                                    console.log(status);
+                                                    console.log(xhr.responseJSON);
+                                                    $(".error-complete-fields").html('<i class="fas fa-exclamation-triangle"></i> ' + xhr.responseJSON.message);
+                                                    $(".error-complete-fields").show();
+                                                    $(".error-complete-fields").fadeOut(3000);
+                                                }
+                                            }
+                                            )
+                                        }
+                                    }
+                                }
+                                else {
+                                    $(".error-complete-fields").html('<i class="fas fa-exclamation-triangle"></i> ' + json.message);
+                                    $(".error-complete-fields").show();
+                                    $(".error-complete-fields").fadeOut(3000);
+                                }
+                            },
+                            error: function (xhr, status) {
+                                console.log(xhr);
+                                console.log(status);
+                                console.log(xhr.responseJSON);
+                                $(".error-complete-fields").html('<i class="fas fa-exclamation-triangle"></i> ' + xhr.responseJSON.message);
+                                $(".error-complete-fields").show();
+                                $(".error-complete-fields").fadeOut(3000);
+                            }
+                        }
+                    )
+                })
+
+                $(document).on('click', '.delete-entire-opt-attr', function () {
+                    var optAttrtr = $(this).attr('val');
+                    $.ajax (
+                        {
+                            type: 'POST',
+                            url: '{% url "restapi:web_product_optional_attribute" %}',
+                            data: {
+                                product_id: ProductID,
+                                optional_attribute_id: optAttrtr,
+                                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                            },
+                            success: function (json, status) {
+                                if (json.status)
+                                {
+                                    $(".new-opt-attr-value-added-info").html('<i class="fas fa-check-circle"></i> ویژگی انتخابی با موفقیت حذف شد.');
+                                    $(".new-opt-attr-value-added-info").show();
+                                    $(".new-opt-attr-value-added-info").fadeOut(3000);
+                                    var optAttrDeleteAddress = "#new-opt-attr-add-product tr#optAttr-" + optAttrtr;
+                                    $(optAttrDeleteAddress).remove();
+                                    if (optAttrtr == optAttr.id)
+                                    {
+                                        readyNewOptAttr();
+                                    }
+                                }
+                                else {
+                                    $(".error-complete-fields").html('<i class="fas fa-exclamation-triangle"></i> ' + json.message);
+                                    $(".error-complete-fields").show();
+                                    $(".error-complete-fields").fadeOut(3000);
+                                }
+                            },
+                            error: function (xhr, status) {
+                                console.log(xhr);
+                                console.log(status);
+                                console.log(xhr.responseJSON);
+                                $(".error-complete-fields").html('<i class="fas fa-exclamation-triangle"></i> ' + xhr.responseJSON.message);
+                                $(".error-complete-fields").show();
+                                $(".error-complete-fields").fadeOut(3000);
+                            }
+                        }
+                    )
+                })
+
+                $("#product_optattr_title").focusin(function () {
+                    $(".opt-attr-suggestions").show();
+                })
+                $("#product_optattr_title").focusout(function () {
+                    setTimeout( function () {
+                        $(".opt-attr-suggestions").hide();
+                    }, 150);
+                })
+                $(".opt-attr-suggestion").click( function () {
+                    $("#product_optattr_title").val($(this).text());
+                });
+
+                $("#product_optattr_title").on('input', function () {
+                    if ($(this).val() != '' || $(this).val().length != 0)
+                    {
+                        $(".opt-attr-suggestions").hide();
+                    }
+                    else {
+                        $(".opt-attr-suggestions").show();
+                    }
+                })
+                $("#product_optattr_title").on('input', function () {
+                    var textLength = $(this).val().length;
+                    if (textLength >= 255) {
+                        $(this).val($(this).val().substr(0, 255));
+                        $(this).prop("maxlength", 255);
+                        return false;
+                    }
+                })
+
+                $("#product_optattr_value").on('input', function () {
+                    var textLength = $(this).val().length;
+                    if (textLength >= 255) {
+                        $(this).val($(this).val().substr(0, 255));
+                        $(this).prop("maxlength", 255);
+                        return false;
+                    }
+                })
+
+                $("#product_optattr_price").on("keypress", function () {
+                    var textLength = $(this).val().length;
+                    if (textLength >= 15) {
+                        $(this).val($(this).val().substr(0, 15));
+                        $(this).prop("maxlength", 15);
+                        return false;
+                    }
+                })
+
+
+                $("#product_optattr_extra_weight").on("paste", function () {
+                    setTimeout(function(){
+                        var textLength = $("#product_optattr_extra_weight").val().length;
+                        if (textLength >= 4) {
+                            $("#product_optattr_extra_weight").val($("#product_optattr_extra_weight").val().substr(0, 6));
+                            $("#product_optattr_extra_weight").prop("maxlength", 6);
+                        }
+                        var data = $("#product_optattr_extra_weight").val();
+                        for(var i=0; i<data.length; i++)
+                        {
+                            var ewt = data.charCodeAt(i);
+                            if (48 <= ewt && ewt <= 57) {
+                                
+                            }
+                            else {
+                                $("#product_optattr_extra_weight").val('');
+                                $("#product_optattr_extra_weight").addClass("inputshopempty");	
+                                return false;
+                            }
+                        }
+                }, 10)
+                    setTimeout(function () {
+                        if($("#product_optattr_extra_weight").val() !== '')
+                        {
+                            $("#product_optattr_extra_weight").removeClass("inputshopempty");
+                        }
+                    }, 20)
+                })
+
+
+                $("#product_optattr_extra_weight").on("keypress", function () {
+                    var textLength = $(this).val().length;
+                    if (textLength >= 6) {
+                        $(this).val($(this).val().substr(0, 6));
+                        $(this).prop("maxlength", 6);
+                        return false;
+                    }
+                })
+
+                $("#product_optattr_change_dimension_z").on("paste", function () {
+                    setTimeout(function(){
+                        var textLength = $("#product_optattr_change_dimension_z").val().length;
+                        if (textLength >= 4) {
+                            $("#product_optattr_change_dimension_z").val($("product_optattr_change_dimension_z").val().substr(0, 4));
+                            $("#product_optattr_change_dimension_z").prop("maxlength", 4);
+                        }
+                        var data = $("#product_optattr_change_dimension_z").val();
+                        for(var i=0; i<data.length; i++)
+                        {
+                            var ewt = data.charCodeAt(i);
+                            if (48 <= ewt && ewt <= 57) {
+                                
+                            }
+                            else {
+                                $("#product_optattr_change_dimension_z").val('');
+                                $("#product_optattr_change_dimension_z").addClass("inputshopempty");	
+                                return false;
+                            }
+                        }
+                }, 10)
+                    setTimeout(function () {
+                        if($("#product_optattr_change_dimension_z").val() !== '')
+                        {
+                            $("#product_optattr_change_dimension_z").removeClass("inputshopempty");
+                        }
+                    }, 20)
+                })
+
+                $("#product_optattr_change_dimension_y").on("paste", function () {
+                    setTimeout(function(){
+                        var textLength = $("#product_optattr_change_dimension_y").val().length;
+                        if (textLength >= 4) {
+                            $("#product_optattr_change_dimension_y").val($("product_optattr_change_dimension_y").val().substr(0, 4));
+                            $("#product_optattr_change_dimension_y").prop("maxlength", 4);
+                        }
+                        var data = $("#product_optattr_change_dimension_y").val();
+                        for(var i=0; i<data.length; i++)
+                        {
+                            var ewt = data.charCodeAt(i);
+                            if (48 <= ewt && ewt <= 57) {
+                                
+                            }
+                            else {
+                                $("#product_optattr_change_dimension_y").val('');
+                                $("#product_optattr_change_dimension_y").addClass("inputshopempty");	
+                                return false;
+                            }
+                        }
+                }, 10)
+                    setTimeout(function () {
+                        if($("#product_optattr_change_dimension_y").val() !== '')
+                        {
+                            $("#product_optattr_change_dimension_y").removeClass("inputshopempty");
+                        }
+                    }, 20)
+                })
+
+                $("#product_optattr_change_dimension_x").on("paste", function () {
+                    setTimeout(function(){
+                        var textLength = $("#product_optattr_change_dimension_x").val().length;
+                        if (textLength >= 4) {
+                            $("#product_optattr_change_dimension_x").val($("#product_optattr_change_dimension_x").val().substr(0, 4));
+                            $("#product_optattr_change_dimension_x").prop("maxlength", 4);
+                        }
+                        var data = $("#product_optattr_change_dimension_x").val();
+                        for(var i=0; i<data.length; i++)
+                        {
+                            var ewt = data.charCodeAt(i);
+                            if (48 <= ewt && ewt <= 57) {
+                                
+                            }
+                            else {
+                                $("#product_optattr_change_dimension_x").val('');
+                                $("#product_optattr_change_dimension_x").addClass("inputshopempty");
+                                return false;
+                            }
+                        }
+                }, 10)
+                    setTimeout(function () {
+                        if($("#product_optattr_change_dimension_x").val() !== '')
+                        {
+                            $("#product_optattr_change_dimension_x").removeClass("inputshopempty");
+                        }
+                    }, 20)
+                })
+                $("#product_optattr_change_dimension_x").on("keypress", function () {
+                    var textLength = $(this).val().length;
+                    if (textLength >= 4) {
+                        $(this).val($(this).val().substr(0, 4));
+                        $(this).prop("maxlength", 4);
+                        return false;
+                    }
+                })
+                $("#product_optattr_change_dimension_y").on("keypress", function () {
+                    var textLength = $(this).val().length;
+                    if (textLength >= 4) {
+                        $(this).val($(this).val().substr(0, 4));
+                        $(this).prop("maxlength", 4);
+                        return false;
+                    }
+                })
+                $("#product_optattr_change_dimension_z").on("keypress", function () {
+                    var textLength = $(this).val().length;
+                    if (textLength >= 4) {
+                        $(this).val($(this).val().substr(0, 4));
+                        $(this).prop("maxlength", 4);
+                        return false;
+                    }
+                })
+                $("#prod_num_in_store_for_opt_attr").on("paste", function () {
+                    setTimeout(function(){
+                        var textLength = $("#prod_num_in_store_for_opt_attr").val().length;
+                        if (textLength >= 2) {
+                            $("#prod_num_in_store_for_opt_attr").val($("#prod_num_in_store_for_opt_attr").val().substr(0, 2));
+                            $("#prod_num_in_store_for_opt_attr").prop("maxlength", 2);
+                        }
+                        var data = $("#prod_num_in_store_for_opt_attr").val();
+                        for(var i=0; i<data.length; i++)
+                        {
+                            var ewt = data.charCodeAt(i);
+                            if (48 <= ewt && ewt <= 57) {
+                                
+                            }
+                            else {
+                                $("#prod_num_in_store_for_opt_attr").val('');
+                                $("#prod_num_in_store_for_opt_attr").addClass("inputshopempty");
+                                return false;
+                            }
+                        }
+                }, 10)
+                    setTimeout(function () {
+                        if($("#prod_num_in_store_for_opt_attr").val() !== '')
+                        {
+                            $("#prod_num_in_store_for_opt_attr").removeClass("inputshopempty");
+                        }
+                    }, 20)
+                })
+                $("#prod_num_in_store_for_opt_attr").on("keypress", function () {
+                    var textLength = $(this).val().length;
+                    if (textLength >= 2) {
+                        $(this).val($(this).val().substr(0, 2));
+                        $(this).prop("maxlength", 2);
+                        return false;
+                    }
+                })
+</script>
+{% block footer-section %}
+{% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+
+
+{% block footer %}
+{% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

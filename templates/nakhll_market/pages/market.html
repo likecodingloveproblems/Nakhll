@@ -1,0 +1,99 @@
+{% load i18n static %}
+{% load jformat %}
+
+{% block header %}
+ {% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+
+    <meta name="keywords" content="بازارچه ها , بازارچه های بازار نخل , راسته های بازار نخل , بازارچه بازار نخل , {% for item in MarketList %} {{item.Market.Title}} , {% endfor %} ">
+    <meta name="description" content="همه حجره ها ( فروشگاه های آنلاین ) بازار اجتماعی نخل">
+    <title>بازار نخل | بازارچه ها</title>
+</head>
+
+
+{% block headertag %}
+ {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+<h1 class="hide">بازارچه های بازار نخل</h1>
+<div id="slider-index-top" class="marketslider">
+        <div class="slidertop">
+            <div class="container">
+                <div class="bd-example">
+                    <div id="carouselmarketCaptions" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner">
+                            {% for item in Sliders %}
+                                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                    <a href="{{item.URL}}"><img src="/{{item.Image}}" class="d-block w-100" alt="{{item.Title}}">
+                                        {% if item.ShowInfo %}
+                                            <div class="carousel-caption">
+                                                <h3>{{item.Title}}</h3>
+                                                <p>{{item.Description}}</p>
+                                            </div>
+                                        {% endif %}
+                                    </a>
+                                </div>
+                            {% endfor %} 
+                        </div>   
+                        <a class="carousel-control-prev" href="#carouselmarketCaptions" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">قبلی</span>
+                        </a>
+                        <a class="carousel-control-next" href="#carouselmarketCaptions" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">بعدی</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% for item in MarketList %}
+    <section id="market-sec">
+        <div class="container">
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-sm-12 col-12">                  
+                        <div class="market-row">
+                            <div class="row">
+                                <div class="col-xl-3 col-lg-3 col-md-5 col-sm-6 col-12">
+                                    <div class="slider-bnr-markets">
+                                        <img src="/{{item.Market.Image}}" alt="{{item.Market.Title}}" >
+                                        <h2>{{item.Market.Title}}</h2>
+                                    </div>
+                                </div>
+                                <div class="col-xl-9 col-lg-9 col-md-7 col-sm-6 col-12">
+                                    <div class="row">
+                                        {% for sub_item in item.SubMarkets %} 
+                                            <div class="col-xl-3">
+                                                <div class="submarketlist">
+                                                    <a href="{% url "nakhll_market:SubMarkets" sub_item.Slug %}">
+                                                        <h3><img src="{% static "images/dot_icon.svg" %}" alt="{{sub_item.Title}}" > {{sub_item.Title}}</h3>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endfor %}
+
+{% block footer-section %}
+    {% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+    {% include "nakhll_market/parents/footermain.html" %}
+{% endblock %}

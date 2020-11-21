@@ -1,0 +1,321 @@
+{% load jformat %}
+
+{% block header %}
+    {% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+    <title>بازار نخل | هشدار ها</title>
+</head>
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-3">
+                <div class="profile-sidebar-site">    
+                    {% block topsidebar %}
+                        {% include "nakhll_market/profile/parents/new-topsidebar.html" %}
+                    {% endblock %}
+                    <div class="profile-sidebar-main">
+                        <a href="/profile/dashboard/">
+                            <button>
+                                <i class="fas fa-id-badge"></i>
+                                <h5>داشبورد</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/transaction/">
+                            <button>
+                                <i class="fad fa-clipboard-list"></i>
+                            <h5>تراکنش ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/factor/">
+                            <button>
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <h5>فاکتور ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/ticketing/">
+                            <button>
+                                <i class="fad fa-user-headset"></i>
+                                <h5>پشتیبانی</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/shops/">
+                            <button>
+                                <i class="fas fa-store"></i>
+                                <h5>مدیریت حجره</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/review/">
+                            <button>
+                                <i class="fad fa-comments-alt"></i>
+                                <h5>نقد ها و نظرات</h5>
+                            </button>
+                        </a>
+
+                        {% if request.user.is_staff %}
+                            {% block review %}
+                                {% include "nakhll_market/alert/pages/menu_for_alert.html" %}
+                            {% endblock %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                    {% include "nakhll_market/profile/parents/new-header-profile.html" %}
+                {% endblock %}
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                        <div class="dashboard"> 
+                            <h4>بررسی ویرایش محصول</h4>
+                            <div class="hr-line-alert"></div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="inputshoptitle">نام حجره دار</label>
+                                        <p class="show-title-in-alert">{{Product.FK_Shop.FK_ShopManager.first_name}} {{Product.FK_Shop.FK_ShopManager.last_name}}</p>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="inputshoplink">لینک محصول</label>
+                                        <a href="{{ Product.get_url }}" target="_blank"><p class="Riyal button-link">محصول {{Product.Title}}</p></a>
+                                    </div>
+                                </div>
+                            <div class="hr-line-alert"></div> 
+
+                            {% for field in Alert.FK_Field.all %}
+                                <div class="form-row">
+                                    {% if field.Title == 'Title' %}
+                                        <div class="form-group col-md-6">
+                                            <label for="inputAttribute">عنوان</label>
+                                            <fieldset disabled>
+                                                <input type="text" name="Value" value="{{field.Value}}" class="form-control" id="input">
+                                            </fieldset>
+                                        </div>
+                                    {% elif field.Title == 'Image' %}
+                                        <div class="form-group col-md-6">
+                                            <label for="inputAttribute">عکس</label>
+                                            <img src="{{Product.NewImage.url}}" id="preview" height="80" width="80" class="img-thumbnail">
+                                        </div>
+                                    {% elif field.Title == 'Shop' %}
+                                        <div class="form-group col-md-6">
+                                            <label for="inputAttribute">حجره</label>
+                                            <fieldset disabled>
+                                                <input type="text" name="Value" value="{{Product.FK_Shop.Title}}" class="form-control" id="input">
+                                            </fieldset>
+                                        </div>
+                                    {% elif field.Title == 'Description' %}
+                                        <div class="form-group col-md-6">
+                                            <label for="inputAttribute">توضیحات</label>
+                                            <fieldset disabled>
+                                                <input type="text" name="Value" value="{{field.Value}}" class="form-control" id="input">
+                                            </fieldset>
+                                        </div>
+                                    {% elif field.Title == 'Category' %}
+                                        <div class="form-group col-md-6">
+                                            <label for="input_category">دسته بندی</label>
+                                            <select data-placeholder="دسته بندی ها" multiple class="chosen-select-rtl form-control" id="input_category" tabindex="14">
+                                                {% for item in Categories %}
+                                                    <option selected>{{item.Title}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    {% elif field.Title == 'Bio' %}
+                                        <div class="form-group col-md-6">
+                                            <label for="inputAttribute">معرفی</label>
+                                            <fieldset disabled>
+                                                <input type="text" name="Value" value="{{field.Value}}" class="form-control" id="input">
+                                            </fieldset>
+                                        </div>
+                                    {% elif field.Title == 'Story' %}
+                                        <div class="form-group col-md-6">
+                                            <label for="inputAttribute">داستان</label>
+                                            <fieldset disabled>
+                                                <input type="text" name="Value" value="{{field.Value}}" class="form-control" id="input">
+                                            </fieldset>
+                                        </div>
+                                    {% elif field.Title == 'Price' %}
+                                        <div class="form-group col-md-6">
+                                            <label for="inputAttribute">قیمت فروش</label>
+                                            <fieldset disabled>
+                                                <input type="text" name="Value" value="{{field.Value}}" class="form-control" id="input">
+                                            </fieldset>
+                                        </div>
+                                    {% elif field.Title == 'OldPrice' %}
+                                        <div class="form-group col-md-6">
+                                            <label for="inputAttribute">قیمت واقعی</label>
+                                            <fieldset disabled>
+                                                <input type="text" name="Value" value="{{field.Value}}" class="form-control" id="input">
+                                            </fieldset>
+                                        </div>
+                                    {% elif field.Title == 'ProdRange' %}
+                                        <div class="form-group col-md-6">
+                                            <label for="inputAttribute">محدود ارسال</label>
+                                            {% if field.Value == '1' %}
+                                                <fieldset disabled>
+                                                    <input type="text" name="Value" value="سراسر کشور" class="form-control" id="input">
+                                                </fieldset>
+                                            {% elif field.Value == '2' %}
+                                                <fieldset disabled>
+                                                    <input type="text" name="Value" value="استانی" class="form-control" id="input">
+                                                </fieldset>
+                                            {% elif field.Value == '3' %}
+                                                <fieldset disabled>
+                                                    <input type="text" name="Value" value="شهرستانی" class="form-control" id="input">
+                                                </fieldset>
+                                            {% elif field.Value == '4' %}
+                                                <fieldset disabled>
+                                                    <input type="text" name="Value" value="شهری" class="form-control" id="input">
+                                                </fieldset>
+                                            {% endif %}
+                                        </div>
+                                    {% elif field.Title == 'ProdPostType' %}
+                                        <div class="form-group col-md-6">
+                                            <label for="inputAttribute">وضعیت محصول</label>
+                                            {% if field.Value == '1' %}
+                                                <fieldset disabled>
+                                                    <input type="text" name="Value" value="آماده در انبار" class="form-control" id="input">
+                                                </fieldset>
+                                            {% elif field.Value == '2' %}
+                                                <fieldset disabled>
+                                                    <input type="text" name="Value" value="تولید بعد از سفارش" class="form-control" id="input">
+                                                </fieldset>
+                                            {% elif field.Value == '3' %}
+                                                <fieldset disabled>
+                                                    <input type="text" name="Value" value="سفارشی سازی فروش" class="form-control" id="input">
+                                                </fieldset>
+                                            {% elif field.Value == '4' %}
+                                                <fieldset disabled>
+                                                    <input type="text" name="Value" value="موجود نیست" class="form-control" id="input">
+                                                </fieldset>
+                                            {% endif %}
+                                        </div>
+                                    {% elif field.Title == 'ProdInStore' %}
+                                        <div class="form-group col-md-2">
+                                            <label for="inputAttribute">موجودی محصول</label>
+                                            <fieldset disabled>
+                                                <input type="text" name="Value" value="{{field.Value}}" class="form-control" id="input">
+                                            </fieldset>
+                                        </div>
+                                    {% elif field.Title == 'ProdNetWeight' %}
+                                        <div class="form-group col-md-6">
+                                            <fieldset disabled>
+                                                <label for="inputAttribute">وزن خالص محصول <span class="Riyal">گرم</span></label>
+                                                <input type="text" name="Value" value="{{field.Value}}" class="form-control" id="input">
+                                            </fieldset>
+                                        </div>
+                                    {% elif field.Title == 'ProdPackingWeight' %}
+                                        <div class="form-group col-md-6">
+                                            <label for="inputAttribute">وزن محصول با بسته بندی <span class="Riyal">گرم</span></label>
+                                            <fieldset disabled>
+                                                <input type="text" name="Value" value="{{field.Value}}" class="form-control" id="input">
+                                            </fieldset>
+                                        </div>
+                                    {% elif field.Title == 'ProdLengthWithPackaging' %}
+                                        <div class="form-group col-md-6">
+                                            <label for="inputAttribute">طول بسته بندی محصول <span class="Riyal">سانتی متر</span></label>
+                                            <fieldset disabled>
+                                                <input type="text" name="Value" value="{{field.Value}}" class="form-control" id="input">
+                                            </fieldset>
+                                        </div>
+                                    {% elif field.Title == 'ProdWidthWithPackaging' %}
+                                        <div class="form-group col-md-6">
+                                            <label for="inputAttribute">عرض بسته بندی محصول <span class="Riyal">سانتی متر</span></label>
+                                            <fieldset disabled>
+                                                <input type="text" name="Value" value="{{field.Value}}" class="form-control" id="input">
+                                            </fieldset>
+                                        </div>
+                                    {% elif field.Title == 'ProdHeightWithPackaging' %}
+                                        <div class="form-group col-md-6">
+                                            <label for="inputAttribute">ارتفاع بسته بندی محصول <span class="Riyal">سانتی متر</span></label>
+                                            <fieldset disabled>
+                                                <input type="text" name="Value" value="{{field.Value}}" class="form-control" id="input">
+                                            </fieldset>
+                                        </div>
+                                    {% elif field.Title == 'PostRange' %}
+                                        <div class="form-group col-md-6">
+                                            <label for="input_postrange">محدوده ارسال محصول</label>
+                                            <fieldset disabled>
+                                                <select data-placeholder="محدوده ارسال" multiple class="chosen-select-rtl form-control" id="input_postrange" tabindex="14">
+                                                    {% for item in PostRange %}
+                                                        <option selected>{{item}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </fieldset>
+                                        </div>
+                                    {% elif field.Title == 'ExePostRange' %}
+                                        <div class="form-group col-md-6">
+                                            <label for="input_exepostrange">استثناء محدوده ارسال محصول</label>
+                                            <fieldset disabled>
+                                                <select data-placeholder="استثناء محدوده ارسال" multiple class="chosen-select-rtl form-control" id="input_exepostrange" tabindex="14">
+                                                    {% for item in ExePostRange %}
+                                                        <option selected>{{item}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </fieldset>
+                                        </div>
+                                    {% elif field.Title == 'SubMarket' %}
+                                        <div class="form-group col-md-6">
+                                            <label for="inputAttribute">راسته</label>
+                                            <fieldset disabled>
+                                                <input type="text" name="Value" value="{{This_Submarket}}" class="form-control" id="input">
+                                            </fieldset>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                            <br>
+                            <div class="hr-line-alert"></div>
+                            <form method="POST" action="/profile/alert/record/editeproduct/{{Product.ID}}">
+                                {% csrf_token %}
+                                <div class="col-xl-12 col-12">
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="radio" id="accept-btn" name="accept-btn" value="1" class="custom-control-input" checked>
+                                        <label class="custom-control-label" for="accept-btn">نمایش در سایت</label>
+                                    </div>
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="radio" id="customRadioInline2" name="accept-btn" value="0" class="custom-control-input">
+                                        <label class="custom-control-label" for="customRadioInline2">عدم تایید</label>
+                                    </div>
+                                    <br>
+                                    <div class="form-group mg-12">
+                                        <label for="descriptionalert">توضیحات :</label>
+                                        <textarea class="form-control" id="descriptionalert" name="Des" rows="1" required></textarea>
+                                    </div>
+                                    <button class="btn btn-primary btn-left">ثبت</button>
+                                </div>
+                            </form>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+{% block footer-section %}
+    {% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+    {% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

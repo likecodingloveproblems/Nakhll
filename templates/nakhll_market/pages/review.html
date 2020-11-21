@@ -1,0 +1,107 @@
+{% load i18n static %}
+{% load jformat %}
+
+<form class="new-comment" method="POST" action="{% url "nakhll_market:AddNewProductReview" Product.Slug %}">
+    {% csrf_token %}
+    <div class="row">          
+        <div class="col-xl-12 col-12">                        
+            <div class="comment">
+                <label for="comment-input" class="col-form-label"> عنوان :</label>
+            </div>
+            <div class="form-group">
+                <input name="Review_Title" class="input form-control" id="comment-input" placeholder="عنوان نقد و بررسی" required/>
+            </div>  
+            <div class="comment">
+                    <label for="comment-input" class="col-form-label"> توضیحات شما :</label>
+                </div>
+                <div class="form-group">
+                    <textarea name="Review_Description" class="form-control" id="comment-input" rows="3" placeholder="متن توضیحات" required></textarea>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <div class="control-group" id="fields">
+                        <label class="control-label" for="field">نقاط قوت</label>
+                        <div class="controls control-group" id="profs">     
+                            <div id="field">
+                                <input autocomplete="off" class="input form-control col-md-10 mg10" name="field-up" id="field1" type="text" maxlength="150" placeholder="اضافه کردن نقاط قوت" data-items="8" required/>
+                                <button id="b1" class="btn add-more col-md-2 mg10 btn-primary" type="button">+</button>
+                            </div>
+                        <small>براي اضافه کردن نقاط قوت روي + کليک کنيد </small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="control-group" id="fieldso">
+                        <label class="control-label" for="fieldo">نقاط ضعف</label>
+                        <div class="controls control-group" id="profso">      
+                            <div id="fieldo">
+                                <input autocomplete="off" class="input form-control col-md-10 mg10" name="field-down" id="fieldo1" type="text" maxlength="150" placeholder="اضافه کردن نقاط ضعف" data-items="8" required/>
+                                <button id="b1o" class="btn add-moreo col-md-2 mg10 btn-primary" type="button">+</button>
+                            </div>
+                        <small>براي اضافه کردن نقاط ضعف روي + کليک کنيد </small>
+                        </div>
+                    </div>
+                </div>
+            </div>                       
+        </div>
+        <div class="col-xl-12 col-12">
+            <div class="img-profile-comment">
+                <button class="btn btn-primary" type="submit">ارسال</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+{% for review in Reviews %}
+    <div class="row">
+
+        <div class="col-xl-1 col-3">
+            <div class="img-profile-comment">
+                <img src="{{review.get_review_profile_image}}" alt="profile">
+            </div>
+        </div>
+
+        <div class="col-xl-11 col-8">                                       
+            <div class="single-comment">
+                <h4>{{review.FK_UserAdder.first_name}} {{review.FK_UserAdder.last_name}} - {{review.Title}}<span>{{review.DateCreate|jformat:'%Y/%m/%d'}}</span></h4>
+               
+                <p>{{review.Description}}</p>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="msg-pos msg-review">
+                            <h5>نقاط قوت</h5>
+                            <ul>
+                                {% for item in review.FK_PositiveNote.all %}
+                                    <li>{{item}}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="msg-neg msg-review">
+                            <h5>نقاط ضعف</h5>
+                            <ul>
+                                {% for item in review.FK_NegativeNote.all %}
+                                    <li>{{item}}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if request.user.is_authenticated %}
+                    {% if request.user in review.FK_Like.all %}
+                        <a href="{% url "nakhll_market:ProductLike" review.id 0 %}"><i class="far fa-thumbs-up liked-comment"></i></a>
+                    {% else %}
+                        <a href="{% url "nakhll_market:ProductLike" review.id 0 %}"><i class="far fa-thumbs-up"></i></a>
+                    {% endif %}
+                {% endif %}
+
+                <text>{{review.FK_Like.count}}</text>
+                
+            </div>
+
+        </div>
+    </div>
+{% endfor %}

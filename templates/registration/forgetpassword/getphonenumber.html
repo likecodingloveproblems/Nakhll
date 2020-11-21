@@ -1,0 +1,606 @@
+{% load i18n static %}
+
+{% block header %}
+{% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+    <title>بازار نخل</title>
+</head>
+<body id="login-page">
+
+<div class="container">
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="login-sec forgetpassword-mobilenumber-sec">
+                <div class="blue-thick-line-top"></div>
+            <!-- <h1><a href="/">بازار اجتماعی نخل</a></h1> -->
+            <div class="forgetpassword-mobilenumber-content">
+                <h4>فراموشی رمز عبور</h4>
+                <div id="codeback"></div>
+
+                <div class="login-alerts-section forgetpassword-alerts-section mob-alerts-section">
+                    <p>لطفا خطاهای زیر را برطرف کنید:</p>
+                    <ul>
+                        <li id="alert-li-mobile-empty"></li>
+                        <li id="alert-li-mobile-digits"></li>
+                        <li id="alert-li-mobile-length"></li>
+                        <li id="alert-li-mobile-valid"></li>
+                        <li id="alert-li-mobile-not-match"></li>
+                        <li id="alert-li-system-error"></li>
+                    </ul>
+                </div>
+            </div>
+                <form method="POST" id="forgetpassword">
+                    {% csrf_token %}
+                    <div class="forgetpassword-mobilenumber-content">
+                        <div class="input-login-modal input-mob-forgetpassword">
+                            <div class="before-input-icon">
+                                <i class="fal fa-phone fix-before-input-icon-place"></i>
+                            </div>
+                            <div class="main-input-login">
+                                <input id="mobilenumber" name="mobilenumber" type="number" pattern="[0-9]{11}" maxlength="11" placeholder="شماره همراه خود را وارد کنید" class="input-login login-input-modal">
+                            </div>
+                        </div>
+                        <!-- <br> -->
+                        <div class="clearfix"></div>
+                        <div class="login-button-modal forgetpassword-getcode-btn">
+                            <button id="get-code-button" type="submit">
+                                دریافت کد تایید
+                            </button>
+                        </div>
+                    </div>
+                    <div class="hr-line-full"></div>
+                    <div class="forgetpassword-mobilenumber-content back-to-login-a">
+                        <a href="/login">بازگشت به صفحه ورود</a>
+                    </div>
+                    <!-- <button id="get-code-button" type="submit" >دریافت کد تایید</button> -->
+                </form>
+            <div class="setform"></div>
+            <div id="results">
+            <div id="loaderDiv">
+                لطفا منتظر بمانید
+                <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری">
+            </div>
+            </div>
+            <script>
+            var phonenumber ;
+
+            function ajaxCallFp(){
+            $("#loaderDiv").show();
+                $.ajax({
+                    type:'POST',
+                    url:'{% url "Profile:GetCode" %}',
+                    data:{
+                        mobilenumber: phonenumber,
+                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+                        action: 'post',
+                    },    
+                    success:function(json){ 
+                        if (json.status == true){
+                            $("#forgetpassword" ).remove();
+                            $(".phonesender").remove();
+                            $("#codesetvalid" ).remove();
+                            $(".setform").prepend('<div class="phonesender">کد فعال سازی به شماره<span id="phoneusersend">'+phonenumber+'</span>  ارسال شد یا با تماس تلفنی کد یکبارمصرف در اختیار شما قرار خواهد گرفت ... <div class="get-code-form-part"><form method="POST" id="codesetvalid">'+
+                            '{% csrf_token %}'+
+                            '<div class="input-login-modal input-mob-forgetpassword"> ' +
+                                '<div class="before-input-icon"> ' +
+                                    '<i class="fal fa-key fix-before-input-icon-place"></i>' +
+                                '</div>' +
+                                '<div class="main-input-login">' +
+                                    '<input id="code" name="code" type="number" pattern="[0-9]{11}" maxlength="6" placeholder="لطفا کد فعالسازی را وارد کنید" class="input-login login-input-modal">' +
+                                '</div>' +
+                            '</div>' +
+                            // '<input id="code" name="code" type="text" maxlength="6" placeholder="کد" class="input-login">'+
+                            '<br>'+
+                            '<div class="login-button-modal submit-code-btn"> '+
+                                '<button type="submit">' +
+                                    'بررسی کد فعال سازی' +
+                                '</button>' +
+                            '</div>' +
+                            '<h5 class="btn btn-primary brn-pr" id="callcode" onclick="ajaxCallFp()">ارسال مجدد</h5>'+
+                            '<button type="submit" > ثبت</button><br><br>'+
+                            '<span onclick="location.reload();" class="pointers">ویرایش شماره</span>'+
+                            '</form>'
+                            );
+                            $("#loaderDiv").hide();
+                        }else{
+                            $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات <br> "+json.error+
+                            "<br><a href='/forgetpassword' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                            setTimeout(function() {
+                                location.reload();
+                            }, 8000);
+                            $("#loaderDiv").hide();
+                        }
+                    },
+                    error : function(xhr,errmsg,err) {
+                        $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات <br> "+json.error+
+                        "<br><a href='/forgetpassword' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                        setTimeout(function() {
+                            location.reload();
+                        }, 8000);
+                        $("#loaderDiv").hide();
+                        console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                    }
+                });
+            }
+
+
+
+            $(document).on('submit', '#forgetpassword',function(e){
+            $("#loaderDiv").show();
+            $("#get-code-button").prop('disabled', true);
+            $("#get-code-button").addClass('login-button-disabled');
+            phonenumber = $('#mobilenumber').val();
+            e.preventDefault();
+                $.ajax({
+                    type:'POST',
+                    url:'{% url "Profile:GetCode" %}',
+                    data:{
+                        mobilenumber: phonenumber,
+                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+                        action: 'post',
+                    },    
+                    success:function(json){ 
+                        if (json.status == true){
+                            $("#forgetpassword" ).remove();
+                            $(".setform").prepend('<div class="phonesender"><div class="get-code-form-part"><form method="POST" id="codesetvalid">'+
+                            '{% csrf_token %}'+
+                            '<div class="input-login-modal input-mob-forgetpassword"> ' +
+                                '<div class="before-input-icon"> ' +
+                                    '<i class="fal fa-key fix-before-input-icon-place"></i>' +
+                                '</div>' +
+                                '<div class="main-input-login">' +
+                                    '<input id="code" name="code" type="number" pattern="[0-9]{11}" maxlength="6" placeholder="لطفا کد فعالسازی را وارد کنید" class="input-login login-input-modal">' +
+                                '</div>' +
+                            '</div>' +
+                            // '<input id="code" name="code" type="text" maxlength="6" placeholder="کد" class="input-login">'+
+                            '<br>'+
+                            '<div class="login-button-modal submit-code-btn"> '+
+                                '<button type="submit">' +
+                                    'بررسی کد فعال سازی' +
+                                '</button>' +
+                            '</div>' +
+                            // '<input id="code" name="code" type="text" maxlength="6" placeholder="کد" class="input-login">'+
+                            // '<br>'+
+                            '<div class="time-and-call">' +
+                            '<div class="time-spans">' +
+                            '<span class="time-texts">ارسال مجدد کد: </span><span id="timer">01:59</span> <span class="time-texts"> ثانیه دیگر </span><br>'+
+                            '</div>' +
+                            '<div class="get-code-by-call">' +
+                                '<h5 class="point-mouse" id="callcode" onclick="ajaxCallFp()"> دریافت کد از طریق تماس </h5>' +
+                                '<h5 href="" class="btn btn-primary brn-pr" id="resendcode" onclick="ajaxCallFp()">ارسال مجدد کد یکبار مصرف </h5>'+
+                            '</div>' +
+                            '<div class="clearfix"></div>' +
+                            '</div>' +
+                            '</div>' +
+                            '<div class="hr-line-full"></div>' +
+                            '<div class="get-code-form-part footer-of-submit-code">' +
+                            // '<h5 class="btn btn-primary brn-pr" id="callcode" onclick="ajaxCallFp()">دریافت کد با تماس تلفنی</h5>'+
+                            // '<button type="submit" > ثبت</button><br><br>'+
+                            // '<span onclick="location.reload();" class="pointers">ویرایش شماره</span>'+
+                            '<span> شماره ' + phonenumber + ' اشتباه است؟ ' + '<span onclick="location.reload();" class="pointers change-phone-for-get-code">تغییر شماره همراه</span>'+
+                            '</div>' +
+                            '</form>'
+                            );
+                            $("#resendcode").hide();
+                            document.getElementById('timer').innerHTML =
+                            001 + ":" + 59;
+                            startTimer();
+
+                            function startTimer() {
+                            var presentTime = document.getElementById('timer').innerHTML;
+                            var timeArray = presentTime.split(/[:]+/);
+                            var m = timeArray[0];
+                            var s = checkSecond((timeArray[1] - 1));
+                            if(s==59){m=m-1}
+                            if(m<0){
+                                $("#callcode").remove(); 
+                                $("#resendcode").show();
+                                $("#timer").text("00:00")
+                                return m
+                                }
+                            
+                            document.getElementById('timer').innerHTML =
+                                m + ":" + s;
+                            
+                            setTimeout(startTimer, 1000);
+                            }
+
+                            function checkSecond(sec) {
+                            if (sec < 10 && sec >= 0) {sec = "0" + sec}; // add zero in front of numbers < 10
+                            if (sec < 0) {sec = "59"};
+                            return sec;
+                            }
+
+                            $("#loaderDiv").hide();
+                        }else{
+                            $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات <br> "+json.error+
+                            "<br><a href='/forgetpassword' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                            setTimeout(function() {
+                                location.reload();
+                            }, 8000);
+                            $("#loaderDiv").hide();
+                        }
+                        $("#get-code-button").prop('disabled', false);
+                        $("#get-code-button").removeClass('login-button-disabled');
+                    },
+                    error : function(xhr,errmsg,err) {
+                        $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات <br> "+json.error+
+                        "<br><a href='/forgetpassword' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                        setTimeout(function() {
+                            location.reload();
+                        }, 8000);
+                        $("#loaderDiv").hide();
+                        console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                    }
+                });
+            });
+        
+
+
+            $(document).on('submit', '#codesetvalid',function(e){
+            $("#loaderDiv").show();
+            e.preventDefault();
+                $.ajax({
+                    type:'POST',
+                    url:'{% url "Profile:codesetvalid" %}',
+                    data:{
+                        mobilenumber:phonenumber,
+                        code : $('#code').val(),
+                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+                        action: 'post',
+                    },    
+                    success:function(json){ 
+                        $("#codesetvalid" ).remove();
+                        if (json.status == true){
+                            $('.phonesender').remove();
+                            $("#loaderDiv").hide();
+                            $(".forgetpassword-mobilenumber-content h4").text('تغییر رمز عبور');
+                            $(".setform").prepend('<form method="POST" id="passwordinput" >'+
+                            '{% csrf_token %}'+
+                            '<div class="get-code-form-part">' +
+                            '<div class="login-warning-section">' +
+                                '<p>برای انتخاب رمز عبور به نکات زیر دقت فرمائید:</p>' +
+                                '<ul>' +
+                                    '<li>رمز عبور باید شامل حروف بزرگ و کوچک انگلیسی همراه با عدد باشد.</li>' +
+                                    '<li>رمز عبور شما نمی‌تواند شبیه سایر اطلاعات شخصی شما باشد.</li>' +
+                                    '<li>رمز عبور شما می‌بایست حداقل از 8 حرف تشکیل شده باشد.</li>' +
+                                    '<li>رمز شما نمی تواند از عبارات معروف باشد.</li>' +
+                                '</ul>' +
+                            '</div>' +
+                            '<div class="login-alerts-section forgetpassword-alerts-section pass-alerts-section">' +
+                                '<p>لطفا خطاهای زیر را برطرف کنید:</p>' +
+                                '<ul>' +
+                                    '<li id="alert-li-password"></li>' +
+                                    '<li id="alert-li-password-english"></li>' +
+                                    '<li id="alert-li-newpassword"></li>' +
+                                    '<li id="alert-li-newpassword-no-match"></li>' +
+                                    '<li id="alert-li-newpassword-english"></li>' +
+                                    '<li id="alert-li-password-minlength"></li>' +
+                                '</ul>' +
+                            '</div>' +
+                            '<div class="input-login-modal input-password-change">' +
+                                '<div class="before-input-icon">' +
+                                    '<i class="fal fa-lock-alt fix-before-input-icon-place"></i>' +
+                                '</div>' +
+                                '<div class="main-input-login">' +
+                                    '<input id="password" name="newpassword" type="password" placeholder="رمز عبور جدید" class="input-login login-input-modal" required>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="input-login-modal input-password-change2">' +
+                                '<div class="before-input-icon">' +
+                                    '<i class="fal fa-lock-alt fix-before-input-icon-place"></i>' +
+                                '</div>' +
+                                '<div class="main-input-login">' +
+                                    '<input id="newpassword" name="password" type="password" placeholder="تکرار رمز عبور جدید" class="input-login login-input-modal" required>' +
+                                '</div>' +
+                            '</div>' +
+                            // '<input id="password" name="password" type="password" placeholder="رمز عبور" pattern="[a-zA-Z0-9]{8,}" class="input-login" required><br>'+
+                            // '<div id="alert-div-password"></div>' +
+                            // '<div id="alert-div-password-english"></div>' +
+                            // '<div id="alert-div-password-minlength"></div>' +
+                            // '<input id="newpassword" name="newpassword" type="password" placeholder="تکرار رمز عبور" pattern="[a-zA-Z0-9]{8,}" class="input-login" required><br>'+
+                            // '<div id="alert-div-newpassword"></div>' +
+                            // '<div id="alert-div-newpassword-no-match"></div>' +
+                            // '<div id="alert-div-newpassword-english"></div>' +
+                            // '<div class="textright"><small>رمز عبور باید شامل حروف بزرگ و کوچک انگلیسی همراه با عدد باشد<br>'+
+                            // 'رمز عبور شما نمی‌تواند شبیه سایر اطلاعات شخصی شما باشد.<br>'+
+                            // 'رمز عبور شما می‌بایست حداقل از 8 حرف تشکیل شده باشد. <br>رمز شما نمی تواند از عبارات معروف باشد.'+
+                            '<br><button class="change-password-btn" id="change-password-button" type="submit" > تغییر رمز عبور</button></div></form>');
+                            // '<div class="get-code-part">' +
+                            //     '<span>عضو جدید هستید؟ </span> <span> ثبت نام کنید </span>' +
+                            // ' </div>');
+                            initChangePasswordAlerts();
+                            initPasswordAlert();
+                            initNewPasswordAlert();
+                            changePasswordButton();
+                            forChangePassword();
+                            
+                        }else{
+                            $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات <br> کد وارد شده صحبح نمی باشد ."+
+                            "<br><a href='/forgetpassword' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                            setTimeout(function() {
+                                location.reload();
+                            }, 8000);
+                        }           
+                    },
+                    error : function(xhr,errmsg,err) {
+                        $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات <br> کد وارد شده صحبح نمی باشد ."+
+                        "<br><a href='/forgetpassword' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                        setTimeout(function() {
+                            location.reload();
+                        }, 8000);
+                        }
+                    });
+                });
+
+            $(document).on('submit', '#passwordinput',function(e){
+            $("#loaderDiv").show();
+            e.preventDefault();
+            $.ajax({
+                    type:'POST',
+                    url:'{% url "Profile:ChangePasswordOffline" %}',
+                    data:{
+                        mobilenumber :phonenumber,
+                        password :$('#password').val(),
+                        newpassword :$('#newpassword').val(),
+                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+                        action: 'post'
+                    },
+                    success:function(json){
+                        if (json.status == true){
+                            $("#passwordinput" ).remove();
+                            $('#results').html("<div class='alert-box alert radius' data-alert> رمز شما با موفقیت تغییر کرد"+
+                            "<br><a href='/account/login/' class='btn btn-outline-primary'>ورود به سایت </a></div>");
+                            setTimeout(function() {
+                                window.location.replace("/account/login/");
+                            }, 8000);
+                        }else{
+                            $("#loaderDiv").remove(); 
+                            $("#passwordinput" ).remove();
+                            $("passwordinput").remove();
+                            $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات <br> "+json.error+
+                            "<br><a href='/forgetpassword' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                            $(".forgetpassword-mobilenumber-content h4").text('تغییر رمز عبور');
+                            $(".setform").prepend('<div class="get-code-form-part"><form method="POST" id="passwordinput" >'+
+                            '{% csrf_token %}'+
+                            '<div class="login-warning-section">' +
+                                '<p>برای انتخاب رمز عبور به نکات زیر دقت فرمائید:</p>' +
+                                '<ul>' +
+                                    '<li>رمز عبور باید شامل حروف بزرگ و کوچک انگلیسی همراه با عدد باشد.</li>' +
+                                    '<li>رمز عبور شما نمی‌تواند شبیه سایر اطلاعات شخصی شما باشد.</li>' +
+                                    '<li>رمز عبور شما می‌بایست حداقل از 8 حرف تشکیل شده باشد.</li>' +
+                                    '<li>رمز شما نمی تواند از عبارات معروف باشد.</li>' +
+                                '</ul>' +
+                            '</div>' +
+                            '<div class="login-alerts-section forgetpassword-alerts-section pass-alerts-section">' +
+                                '<p>لطفا خطاهای زیر را برطرف کنید:</p>' +
+                                '<ul>' +
+                                    '<li id="alert-li-password"></li>' +
+                                    '<li id="alert-li-password-english"></li>' +
+                                    '<li id="alert-li-newpassword"></li>' +
+                                    '<li id="alert-li-newpassword-no-match"></li>' +
+                                    '<li id="alert-li-newpassword-english"></li>' +
+                                    '<li id="alert-li-password-minlength"></li>' +
+                                '</ul>' +
+                            '</div>' +
+                            '<div class="input-login-modal input-password-change">' +
+                                '<div class="before-input-icon">' +
+                                    '<i class="fal fa-lock-alt fix-before-input-icon-place"></i>' +
+                                '</div>' +
+                                '<div class="main-input-login">' +
+                                    '<input id="password" name="password" type="password" placeholder="رمز عبور جدید" class="input-login login-input-modal" required>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="input-login-modal input-password-change2">' +
+                                '<div class="before-input-icon">' +
+                                    '<i class="fal fa-lock-alt fix-before-input-icon-place"></i>' +
+                                '</div>' +
+                                '<div class="main-input-login">' +
+                                    '<input id="newpassword" name="newpassword" type="password" placeholder="تکرار رمز عبور جدید" class="input-login login-input-modal" required>' +
+                                '</div>' +
+                            '</div>' +
+                            // '<input id="password" name="password" type="password" placeholder="رمز عبور" pattern="[a-zA-Z0-9]{8,}" class="input-login" required><br>'+
+                            // '<div id="alert-div-password"></div>' +
+                            // '<div id="alert-div-password-english"></div>' +
+                            // '<input id="newpassword" name="newpassword" type="password" placeholder="تکرار رمز عبور" pattern="[a-zA-Z0-9]{8,}" class="input-login" required><br>'+
+                            // '<div id="alert-div-newpassword"></div>' +
+                            // '<div id="alert-div-newpassword-no-match"></div>' +
+                            // '<div id="alert-div-newpassword-english"></div>' +
+                            // '<div class="textright"><small>رمز عبور باید شامل حروف بزرگ و کوچک انگلیسی همراه با عدد باشد<br>'+
+                            // 'رمز عبور شما نمی‌تواند شبیه سایر اطلاعات شخصی شما باشد.<br>'+
+                            // 'رمز عبور شما می‌بایست حداقل از 8 حرف تشکیل شده باشد. <br>رمز شما نمی تواند از عبارات معروف باشد.'+
+                            '<br><button class="change-password-btn" id="change-password-button" type="submit" > تغییر رمز عبور</button></form></div>');
+                            initChangePasswordAlerts();
+                            initPasswordAlert();
+                            initNewPasswordAlert();
+                            changePasswordButton();
+                            forChangePassword();
+                        }
+                    },
+                    error : function(xhr,errmsg,err) {
+                        $('#results').html("<div class='alert-box alert radius' data-alert>خطا "+
+                            "<a href='#' class='close'>&times;</a></div>"); // add the error to the dom
+                        $("#loaderDiv").remove();    
+                        $("#passwordinput" ).remove();
+                        $("passwordinput").remove();
+                        console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                        $(".forgetpassword-mobilenumber-content h4").text('تغییر رمز عبور');
+                            $(".setform").prepend('<div class="get-code-form-part"><form method="POST" id="passwordinput" >'+
+                            '{% csrf_token %}'+
+                            '<div class="login-warning-section">' +
+                                '<p>برای انتخاب رمز عبور به نکات زیر دقت فرمائید:</p>' +
+                                '<ul>' +
+                                    '<li>رمز عبور باید شامل حروف بزرگ و کوچک انگلیسی همراه با عدد باشد.</li>' +
+                                    '<li>رمز عبور شما نمی‌تواند شبیه سایر اطلاعات شخصی شما باشد.</li>' +
+                                    '<li>رمز عبور شما می‌بایست حداقل از 8 حرف تشکیل شده باشد.</li>' +
+                                    '<li>رمز شما نمی تواند از عبارات معروف باشد.</li>' +
+                                '</ul>' +
+                            '</div>' +
+                            '<div class="login-alerts-section forgetpassword-alerts-section pass-alerts-section">' +
+                                '<p>لطفا خطاهای زیر را برطرف کنید:</p>' +
+                                '<ul>' +
+                                    '<li id="alert-li-password"></li>' +
+                                    '<li id="alert-li-password-english"></li>' +
+                                    '<li id="alert-li-newpassword"></li>' +
+                                    '<li id="alert-li-newpassword-no-match"></li>' +
+                                    '<li id="alert-li-newpassword-english"></li>' +
+                                    '<li id="alert-li-password-minlength"></li>' +
+                                '</ul>' +
+                            '</div>' +
+                            '<div class="input-login-modal input-password-change">' +
+                                '<div class="before-input-icon">' +
+                                    '<i class="fal fa-lock-alt fix-before-input-icon-place"></i>' +
+                                '</div>' +
+                                '<div class="main-input-login">' +
+                                    '<input id="password" name="password" type="password" placeholder="رمز عبور جدید" class="input-login login-input-modal" required>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="input-login-modal input-password-change2">' +
+                                '<div class="before-input-icon">' +
+                                    '<i class="fal fa-lock-alt fix-before-input-icon-place"></i>' +
+                                '</div>' +
+                                '<div class="main-input-login">' +
+                                    '<input id="newpassword" name="newpassword" type="password" placeholder="تکرار رمز عبور جدید" class="input-login login-input-modal" required>' +
+                                '</div>' +
+                            '</div>' +
+                            // '<input id="password" name="password" type="password" placeholder="رمز عبور" pattern="[a-zA-Z0-9]{8,}" class="input-login" required><br>'+
+                            // '<div id="alert-div-password"></div>' +
+                            // '<div id="alert-div-password-english"></div>' +
+                            // '<input id="newpassword" name="newpassword" type="password" placeholder="تکرار رمز عبور" pattern="[a-zA-Z0-9]{8,}" class="input-login" required><br>'+
+                            // '<div id="alert-div-newpassword"></div>' +
+                            // '<div id="alert-div-newpassword-no-match"></div>' +
+                            // '<div id="alert-div-newpassword-english"></div>' +
+                            // '<div class="textright"><small>رمز عبور باید شامل حروف بزرگ و کوچک انگلیسی همراه با عدد باشد<br>'+
+                            // 'رمز عبور شما نمی‌تواند شبیه سایر اطلاعات شخصی شما باشد.<br>'+
+                            // 'رمز عبور شما می‌بایست حداقل از 8 حرف تشکیل شده باشد. <br>رمز شما نمی تواند از عبارات معروف باشد.'+
+                            '<br><button class="change-password-btn" id="change-password-button" type="submit" > تغییر رمز عبور</button></form></div>');
+                            initChangePasswordAlerts();
+                            initPasswordAlert();
+                            initNewPasswordAlert();
+                            changePasswordButton();
+                            forChangePassword();
+                    },
+                });
+            });
+
+            </script>
+        
+        </div>
+            
+        </div>
+    </div>
+</div>
+
+<script src="{% static "js/register_login/register.js" %}" type="text/javascript"></script>
+<script>
+    var first, second, third, fourth, fifth, sixth, seventh, eighth, nineth, tenth, eleventh, twelveth, thirteenth, fourteenth, fifteenth, sixteenth;
+    var booleansReg = [first, second, third, fourth, fifth, sixth, seventh, eighth, nineth, tenth, eleventh, twelveth, thirteenth, fourteenth, fifteenth, sixteenth];
+    var Mobempty, Mobdigits, Moblength, Mobvalid, Mobmatch, Syserror;
+    var booleans = [Mobempty, Mobdigits, Moblength, Mobvalid, Mobmatch, Syserror];
+    for (var i=0; i<booleans.length; i++)
+    {
+        booleans[i] = false;
+    }
+    $(".login-alerts-section").hide();
+    checkIsThereAlert = function () {
+        for (var i=0; i<booleans.length; i++)
+        {
+            if(booleans[i])
+            {
+                $(".mob-alerts-section").show();
+                return;
+            }
+            else
+            {
+                $(".mob-alerts-section").hide();
+            }
+        }
+    }
+    checkIsThereAlertp = function () {
+        for (var i=0; i<booleans.length; i++)
+        {
+            if(booleans[i])
+            {
+                $(".pass-alerts-section").show();
+                return;
+            }
+            else
+            {
+                $(".pass-alerts-section").hide();
+            }
+        }
+    }
+    //#region Check Registered MobileNumber - Ajax
+            $("#mobilenumber").on("input", function () {
+                //Variables
+                var MobileLength = $(this).val().length;
+                var MobileNumber;
+
+                //Initializes
+                $("#get-code-button").prop("disabled", true);
+                $("#get-code-button").addClass('login-button-disabled');
+                
+                
+                if (MobileLength === 11 && ValidMobileNumber === true) {
+                    MobileNumber = $(this).val();
+                    $.ajax(
+                        {
+                            type: 'POST',
+                            url: '{% url "nakhll_market:Check_New_PhoneNumber" %}',
+                            data: {
+                                phonenumber: MobileNumber,
+                                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                                action: 'post'
+                            },
+                            success: function (json) {
+                                if (json.status) {
+                                    if (json.msg === 'is_exists') {
+                                        $("#alert-li-mobile-not-match").hide();
+                                        $("#mobilenumber").removeClass("fieldEmpty");
+                                        $(".input-mob-forgetpassword").removeClass("fieldEmpty");
+                                        booleans[4] = false;
+                                        $("#get-code-button").prop("disabled", false);
+                                        $("#get-code-button").removeClass('login-button-disabled');
+                                    }
+                                    else if (json.msg === 'is_not_exists') {
+                                        $("#mobilenumber").addClass("fieldEmpty");
+                                        $(".input-mob-forgetpassword").addClass("fieldEmpty");
+                                        $("#alert-li-mobile-not-match").show();
+                                        booleans[4] = true;
+                                        $("#get-code-button").prop("disabled", true);
+                                        $("#get-code-button").addClass('login-button-disabled');
+                                    }
+                                }
+                                else {
+                                    $("#alert-li-system-error").show();
+                                    booleans[5] = true;
+                                    $("#get-code-button").prop("disabled", true);
+                                    $("#get-code-button").addClass('login-button-disabled');
+                                }
+                                checkIsThereAlert();
+                            },
+                            error: function (xhr) {
+                                $("#alert-li-system-error").show();
+                                booleans[5] = true;
+                                checkIsThereAlert();
+                                console.log(xhr.status + ": " + xhr.responseText);
+                                UnRegisteredMobileNumber = false;
+                            }
+                        }
+                    );
+                }
+            })
+
+        //#endregion
+    var passEmpty, newPassEmpty, passEnglish, newPassEnglish, passesMatch, passMinLen;
+    forChangePassword = function () {
+        booleans = [passEmpty, newPassEmpty, passEnglish,newPassEnglish, passesMatch, passMinLen];
+        for (var i=0; i<booleans.length; i++)
+        {
+            booleans[i] = false;
+        }
+        $(".login-alerts-section").hide();
+    }
+</script>
+
+</body>

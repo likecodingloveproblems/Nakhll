@@ -1,0 +1,146 @@
+{% load i18n static %}
+{% load compress %}
+
+{% compress js file base %}
+    <script type="text/javascript" charset="utf-8" src="{% static "js/jquery-3.2.1.slim.min.js" %}"></script>
+    <script type="text/javascript" charset="utf-8" src="{% static "js/popper.min.js" %}"></script>
+    <script type="text/javascript" charset="utf-8" src="{% static "js/jquery-2.2.0.min.js" %}" ></script>
+    <script type="text/javascript" charset="utf-8" src="{% static "js/slick.min.js" %}" charset="utf-8"></script>
+    <script type="text/javascript" charset="utf-8" src="{% static "js/chosen.jquery.js" %}"></script>
+    <script type="text/javascript" charset="utf-8" src="{% static "js/init.js" %}" ></script>
+    <script type="text/javascript" charset="utf-8" src="{% static "js/main.js" %}" ></script>
+    <script type="text/javascript" charset="utf-8" src="{% static "js/bootstrap.min.js" %}"></script>
+    <script type="text/javascript" charset="utf-8" src="{% static "js/num2persian-min.js" %}"></script>
+{% endcompress %}
+    
+  
+{% compress js inline %}  
+    <script type="text/javascript" charset="utf-8">
+        $(document).on('ready', function() {
+            $(".sliderbox").slick({
+                infinite: true,
+                slidesToShow: 8,
+                slidesToScroll: 1,
+                autoplay: true,
+                autoplaySpeed: 3000,
+                // prevArrow: '<img src="http://uupload.ir/files/5wwj_left-btn.png" />',
+                // nextArrow: '<img src="http://uupload.ir/files/g3zl_right-btn_thumb.png" />',
+                responsive: [{
+                    breakpoint: 1025,
+                    settings: {
+                        slidesToShow: 6,
+                    }
+                }, {
+                    breakpoint: 769,
+                    settings: {
+                        slidesToShow: 4,
+                    }
+                }, {
+                    breakpoint: 480,
+                    settings: {
+                        slidesToShow: 1,
+                    }
+                }]
+            });
+            $(".sliderfull").slick({
+                infinite: true,
+                slidesToShow: 6,
+                slidesToScroll: 1,
+                autoplay: true,
+                autoplaySpeed: 3000,
+                // prevArrow: '<img src="http://uupload.ir/files/5wwj_left-btn.png" />',
+                // nextArrow: '<img src="http://uupload.ir/files/g3zl_right-btn_thumb.png" />',
+                responsive: [{
+                    breakpoint: 1025,
+                    settings: {
+                        slidesToShow: 5,
+                    }
+                }, {
+                    breakpoint: 769,
+                    settings: {
+                        slidesToShow: 4,
+                    }
+                }, {
+                    breakpoint: 480,
+                    settings: {
+                        slidesToShow: 1,
+                    }
+                }]
+            });
+            $(".sliderfullseller").slick({
+                infinite: true,
+                slidesToShow: 7,
+                slidesToScroll: 1,
+                autoplay: true,
+                autoplaySpeed: 3000,
+                // prevArrow: '<img src="http://uupload.ir/files/5wwj_left-btn.png" />',
+                // nextArrow: '<img src="http://uupload.ir/files/g3zl_right-btn_thumb.png" />',
+                responsive: [{
+                    breakpoint: 1025,
+                    settings: {
+                        slidesToShow: 5,
+                    }
+                }, {
+                    breakpoint: 769,
+                    settings: {
+                        slidesToShow: 4,
+                    }
+                }, {
+                    breakpoint: 480,
+                    settings: {
+                        slidesToShow: 1,
+                    }
+                }]
+            });
+            
+
+
+            $(".sliderhalf").slick({
+                infinite: true,
+                slidesToShow: 4,
+                slidesToScroll: 1,
+                autoplay: true,
+                autoplaySpeed: 3000,
+                // prevArrow: '<img src="http://uupload.ir/files/5wwj_left-btn.png" />',
+                // nextArrow: '<img src="http://uupload.ir/files/g3zl_right-btn_thumb.png" />',
+                responsive: [{
+                    breakpoint: 769,
+                    settings: {
+                        slidesToShow: 3,
+                    }
+                }, {
+                    breakpoint: 480,
+                    settings: {
+                        slidesToShow: 1,
+                    }
+                }]
+            });
+        });
+        $(document).on('ready', function() {
+        $('.slider-for').slick({
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        arrows: false,
+        fade: true,
+        asNavFor: '.slider-nav'
+        });
+        $('.slider-nav').slick({
+        slidesToShow: 3,
+        slidesToScroll: 1,
+        asNavFor: '.slider-for',
+        dots: true,
+        focusOnSelect: true
+        });
+
+        $('a[data-slide]').click(function(e) {
+        e.preventDefault();
+        var slideno = $(this).data('slide');
+        $('.slider-nav').slick('slickGoTo', slideno - 1);
+        });
+    });
+    </script>
+{% endcompress %}
+
+</body>
+
+</html>

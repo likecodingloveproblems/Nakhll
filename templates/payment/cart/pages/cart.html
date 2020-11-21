@@ -1,0 +1,277 @@
+{% load jformat %}
+{% load i18n static %}
+
+{% block header %}
+{% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+
+    <title>بازار نخل | سبد خرید</title>
+</head>
+
+
+{% block headertag %}
+{% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+<div class="loading-index" id="checkajax">
+    <div class="loadingpage">
+        <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        <p>
+        لطفا منتظر بمانید ...
+        </p>
+        <a href="/cart/detail/">بارگذاری مجدد صفحه </a>
+    </div>
+</div>
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+
+
+<div class="modal fade" id="myModalerror" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">خطا ...</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="text_err">
+        
+      </div>
+      <div class="modal-footer" id="modal-footer-err">
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section id="brdcmb">
+    <div class="container">
+            <div class="row">
+                <div class="col-xl-12">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/">خانه</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">سبد خرید</li>
+                            <li class="breadcrumb-item " aria-current="page">اطلاعات ارسال</li>
+                            <li class="breadcrumb-item " aria-current="page">هزینه ارسال و شیوه پرداخت</li>
+                            <li class="breadcrumb-item " aria-current="page">فاکتور نهایی</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+    </div>
+</section>
+
+<section id="time">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-12">
+                <div class="product-cart">
+
+                    {% for item in Factor.FK_FactorPost.all %}
+                        <div class="prd-cart-list">
+                            <div class="row">
+                                <div class="col-xl-2">
+                                    <div class="img-prod-cart">
+                                        <img src="{{item.FK_Product.Image_thumbnail_url}}" alt="{{item.FK_Product.Title}}">
+                                    </div>
+                                </div>
+                                <div class="col-xl-7">
+                                    <div class="des-prod-cart">
+                                        <h4>{{item.FK_Product.Title}} (<span class="numbersprice">{{item.FK_Product.Price}}</span> ریال )</h4>
+
+                                        <h5>حجره : <a href="/{{item.FK_Product.FK_Shop.Slug}}"><span>{{item.FK_Product.FK_Shop.Title}}</span></a></h5>
+
+                                        {% if item.FK_AttrPrice.all %}
+                                            <h5>ویژگی های انتخابی  :
+
+                                                {% for attribute in item.FK_AttrPrice.all %}
+                                                    <span>{{attribute.Value}} : <span class="numbersprice">{{attribute.ExtraPrice}}</span> ریال , </span>
+                                                {% endfor %}
+                                            </h5>
+                                        {% endif %}
+                                        {% if item.FK_Product.Status == "1" %}
+                                            <p class="inventory-text">تعداد موجودی : {{item.FK_Product.Inventory}}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div class="price-prod-cart">
+
+                                        {% if item.FK_Product.OldPrice != '0' %}
+                                            <h6 class="pricenumberdel"><span class="numbersprice del-price"> {{item.get_total_old_item_price}} </span>ریال</h6>
+                                        {% endif%}
+                                        
+                                        <h6><span class="numbersprice itemprice{{item.ID}}" > {{item.get_total_item_price}} </span>ریال</h6>
+                                        
+                                        <label for="numberprod">تعداد:</label>
+                                        <button class="add{{item.ID}}" value="{{item.ID}}"><i class="fal fa-plus"></i></button>
+                                        <span id="id{{item.ID}}">{{item.ProductCount}}</span>
+                                        <button class="remove{{item.ID}}"><i class="fal fa-minus"></i></button>
+                                        <script>
+                                        $(".add{{item.ID}}").click(function() {
+                                            $("#checkajax").show();
+                                                $.ajax({
+                                                    type:'POST',
+                                                    url:'{% url "Profile:Add_Single_Item_From_Cart" %}',
+                                                    data:{
+                                                        item_id:'{{item.ID}}',
+                                                        csrfmiddlewaretoken: '{{ csrf_token }}' ,
+                                                    },    
+                                                    dataType: 'json',
+                                                    success:function(json){ 
+                                                        
+                                                        if (json.status == true){
+                                                            $('#id{{item.ID}}').html(json.p_count);
+                                                            $('.itemprice{{item.ID}}').html(json.i_price);
+                                                            $('#facctorprice').html(json.f_price);
+                                                            $.fn.digits = function(){ 
+                                                                return this.each(function(){ 
+                                                                    $(this).text( $(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") ); 
+                                                                })
+                                                            }
+                                                            $(".numbersprice").digits();
+                                                            $("#checkajax").hide();
+                                                        }else{  
+                                                            $('#text_err').html('<p>موجودی محصول کمتر از درخواست شماست.</p>');
+                                                            $("#checkajax").hide();
+                                                            $('#myModalerror').modal('show');
+                                                        }
+                                                    },
+                                                    error : function(xhr,errmsg,err) {
+                                                        $("#checkajax").hide();
+                                                        $('#text_err').html('<p> مشکلی در اتصال شما بوجود آمده است صفحه شما مجدد بارگذاری می شود </p>');
+                                                        $('#modal-footer-err').hide(); 
+                                                        $('#myModalerror').modal('show');
+                                                        setTimeout(function() {
+                                                            location.reload();
+                                                        }, 5000);
+                                                        console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                                                    }
+                                                });
+
+                                        });
+                                        
+
+                                        $(".remove{{item.ID}}").click(function() {
+                                            $("#checkajax").show();
+                                            $.ajax({
+                                                type:'POST',
+                                                url:'{% url "Profile:Remove_Single_Item_From_Cart" %}',
+                                                data:{
+                                                    item_id:'{{item.ID}}',
+                                                    csrfmiddlewaretoken: '{{ csrf_token }}' ,
+                                                },    
+                                                dataType: 'json',
+                                                success:function(json){ 
+                                                    if (json.status == true){
+                                                        if (json.dlt == false){
+                                                        $('#id{{item.ID}}').html(json.p_count);
+                                                        $('.itemprice{{item.ID}}').html(json.i_price);
+                                                        $('#facctorprice').html(json.f_price);
+                                                        $.fn.digits = function(){ 
+                                                            return this.each(function(){ 
+                                                                $(this).text( $(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") ); 
+                                                            })
+                                                        }
+                                                        $(".numbersprice").digits();
+                                                        $("#checkajax").hide();
+                                                        }
+                                                        else{
+                                                            location.reload();
+                                                        }
+                                                    }else{  
+                                                        $("#checkajax").hide();
+                                                        $('#text_err').html('<p>خطایی رخ داده است لطفا مجدد تلاش کنید (صفحه را رفرش کنید )</p>');
+                                                        $('#myModalerror').modal('show');
+                                                    }
+                                                },
+                                                error : function(xhr,errmsg,err) {
+                                                    $("#checkajax").hide();
+                                                    $('#text_err').html('<p> مشکلی در اتصال شما بوجود آمده است صفحه شما مجدد بارگذاری می شود </p>');
+                                                    $('#modal-footer-err').hide(); 
+                                                    $('#myModalerror').modal('show');
+                                                    setTimeout(function() {
+                                                        location.reload();
+                                                    }, 5000);
+                                                    console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                                                }
+                                            });
+
+                                        });
+                                        </script>
+
+
+
+
+
+
+
+                                        <a href="{% url 'Payment:remove-from-cart' item.ID %}" class="delbtn">حذف</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div>
+                            هیچ محصولی در سبد خرید شما موجود نیست ...
+                        </div>
+                    {% endfor %}
+
+                </div>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
+                <div class="sidebar-cart">
+                    <div class="summary-cart">
+                    <h5>محصولات سفارش :</h5>
+                    {% for item in Factor.FK_FactorPost.all %}
+                        <div class="row summary-prod">
+                            <div class="col-sm-3">
+                                <img src="{{item.FK_Product.Image_thumbnail_url}}" alt="{{item.FK_Product.Title}}">
+                            </div>
+                            <div class="col-sm-9">
+                                <h6>{{item.FK_Product.Title}} (<span class="numbersprice">{{item.FK_Product.Price}}</span> ریال )</h6>
+                                <h6>تعداد : {{item.ProductCount}} </h6>
+                                <h6>قیمت کل : <span class="numbersprice itemprice{{item.ID}}">{{item.get_total_item_price}}</span></h6>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div>
+                            هیچ محصولی در سبد خرید موجود نیست.
+                        </div>
+                    {% endfor %}
+                    <div class="summary-cart">                     
+                        {% if Factor.FK_FactorPost.all.count != 0 %}
+                            <h5>خلاصه سفارش :</h5>
+                            <div class="factor-cart-summary">
+                                <mark>جمع مبلغ کالا ها <span class="numbersprice" id="facctorprice">{{ Factor.get_total }} ریال</span></mark>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="continue-cart">                        
+                        {% if Factor.FK_FactorPost.all.count != 0 %}
+                            <a href="{% url "Payment:sendinfo" %}"><button class="btn btn-success"><i class="fal fa-shopping-bag"></i> نهایی کردن سبد </button></a>
+                        {% endif %}         
+                        <br>
+                        <a href="/" class="aback">بازگشت به صفحه اول</a>
+                    </div>   
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+{% block footer-section %}
+{% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+{% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

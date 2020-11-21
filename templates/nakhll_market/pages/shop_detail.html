@@ -1,0 +1,91 @@
+{% load i18n static %}
+{% load jformat %}
+
+{% block header %}
+    {% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+    <title>بازار نخل | حجره {{Shop.Title}}</title>
+</head>
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+
+
+{% if Shop.Publish %}
+    {% if Shop.Available %}
+        {% block shoppage %}
+            {% include "nakhll_market/pages/shoppage.html" %}
+        {% endblock %}
+    {% else %}
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-12 col-12 text-center">
+                    <div class="dashboard mg-10">
+                        <div class="row">
+                            <div class="col-xl-12 col-12 image-alert-notfind">
+                                <img src="{% static "images/unavailable.svg" %}" class="alert-notfind" alt="unavailable">
+                            </div>
+                        </div>
+                        <h5 class="alert-notfind-message">حجره {{Shop.Title}} در حال حاضر <span>غیرفعال</span> است.</h5>
+                        <div class="row">
+                            <div class="unavailable">
+                                <p> این حجره توسط حجره دار یا تیم پشتیبانی بازار نخل غیرفعال شده است. ممکن است فروش این
+                                    حجره متوقف شده یا حجره درحال بروزرسانی است. درصورت وجود هرگونه ابهام و مشکل با حجره
+                                {{Shop.Title}} میتوانید با تیم پشتیبانی تماس حاصل فرمایید.</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="unavailable-gobackhome-btn">
+                                <a href="/">بازگشت به خانه</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% else %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-12 col-12 text-center">
+                <div class="dashboard mg-10">
+                    <div class="row">
+                        <div class="col-xl-12 col-12 image-alert-notfind">
+                            <img src="{% static "images/unpublish.svg" %}" class="alert-notfind" alt="unavailable">
+                        </div>
+                    </div>
+                    <h5 class="alert-notfind-message">حجره {{Shop.Title}} در <span>انتظار تایید</span> است.</h5>
+                    <div class="row">
+                        <div class="unavailable">
+                            <p>  این حجره درحال حاضر در انتظار تایید تیم پشتیبانی نخل است. این روند ممکن است بین 24 الی
+                                48 ساعت در ساعات اداری طول بیانجامد. لطفا تا زمان تایید حجره منتظر باشید.</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="unavailable-gobackhome-btn">
+                            <a href="/">بازگشت به خانه</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+              
+
+{% block footer-section %}
+    {% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+    {% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

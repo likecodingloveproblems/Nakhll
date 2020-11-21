@@ -1,0 +1,149 @@
+{% load i18n static %}
+{% load jformat %}
+
+{% block header %}
+    {% include "nakhll_market/parents/headersite.html" %}
+{% endblock %}
+
+
+    <meta name="product_id" content="{{Product.ID}}">
+    <title>بازار نخل | {{Product.Title}}</title>
+</head>
+
+<script type="application/ld+json">
+    {
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      "name": "{{Product.Title | safe}}",
+      "image": "{{BASE_URL | safe}}/{{Product.Image | safe}}",
+      "description": "{{Product.Description | safe}}",
+      "brand": "{{Shop.Slug | safe}}",
+      "review": {
+        "@type": "Review",
+        "reviewRating": {
+          "@type": "Rating",
+          "ratingValue": "4.5",
+          "bestRating": "5"
+        },
+        
+        "author": {
+          "@type": "Person",
+          "name": "{{Shop.Title | safe}}"
+        }
+      },
+      "offers": {
+        "@type": "Offer",
+        "url": "/{{Shop.Slug | safe}}/{{Product.Slug | safe}}",
+        "priceCurrency": "IRR",
+        "priceValidUntil":"",
+        "price": "{{Product.Price | safe}}",
+        "itemCondition": "https://schema.org/UsedCondition",
+        "availability": "https://schema.org/InStock"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue":"5",
+        "reviewCount":"5",
+        "worstRating": "0",  
+        "ratingCount": "5"
+      }
+    }
+    </script>
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+
+
+{% if Product.Publish %}
+    {% if Product.Available %}
+        {% block shoppage %}
+            {% include "nakhll_market/pages/product_detail.html" %}
+        {% endblock %}
+    {% else %}
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-12 col-12 text-center">
+                    <div class="dashboard mg-10">
+                        <div class="row">
+                            <div class="col-xl-12 col-12 image-alert-notfind">
+                                <img src="{% static "images/unavailable.svg" %}" class="alert-notfind" alt="unavailable">
+                            </div>
+                        </div>
+                        <h5 class="alert-notfind-message">محصول {{Product.Title}} در حال حاضر <span>غیرفعال</span> است.</h5>
+                        <div class="row">
+                            <div class="unavailable">
+                                <p>  این محصول توسط حجره دار یا تیم پشتیبانی بازار نخل غیرفعال شده است. ممکن است فروش این
+                                    محصول متوقف شده یا محصول درحال بروزرسانی است. درصورت وجود هرگونه ابهام و مشکل
+                                   میتوانید با تیم پشتیبانی تماس حاصل فرمایید.</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="unavailable-gobackhome-btn">
+                                <a href="/">بازگشت به خانه</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% else %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-12 col-12 text-center">
+                <div class="dashboard mg-10">
+                    <div class="row">
+                        <div class="col-xl-12 col-12 image-alert-notfind">
+                            <img src="{% static "images/unpublish.svg" %}" class="alert-notfind" alt="unavailable">
+                        </div>
+                    </div>
+                    <h5 class="alert-notfind-message">محصول {{Product.Title}} در <span>انتظار تایید</span> است.</h5>
+                    <div class="row">
+                        <div class="unavailable">
+                            <p>   این محصول درحال حاضر در انتظار تایید تیم پشتیبانی نخل است. این روند ممکن است بین 24
+                                الی 48 ساعت در ساعات اداری طول بیانجامد. لطفا تا زمان تایید محصول منتظر باشید.</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="unavailable-gobackhome-btn">
+                            <a href="/">بازگشت به خانه</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}  
+
+{% block footer-section %}
+    {% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+<script>
+$(document).on('click', '.number-spinner button', function () {    
+	var btn = $(this),
+		oldValue = btn.closest('.number-spinner').find('input').val().trim(),
+		newVal = 0;
+	
+	if (btn.attr('data-dir') == 'up') {
+		newVal = parseInt(oldValue) + 1;
+	} else {
+		if (oldValue > 1) {
+			newVal = parseInt(oldValue) - 1;
+		} else {
+			newVal = 1;
+		}
+	}
+	btn.closest('.number-spinner').find('input').val(newVal);
+});
+</script>
+
+{% block footer %}
+    {% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

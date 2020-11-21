@@ -1,0 +1,291 @@
+{% load jformat %}
+{% load i18n static %}
+
+{% block header %}
+    {% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+    <title>بازار نخل | افزودن بنر به گالری حجره "{{UserShop.Title}}"</title>
+    <link rel="stylesheet" href="{% static "css/cropper.css" %}">
+</head>
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-3">
+                <div class="profile-sidebar-site">    
+                    {% block topsidebar %}
+                        {% include "nakhll_market/profile/parents/new-topsidebar.html" %}
+                    {% endblock %}
+                    <div class="profile-sidebar-main">
+                        <a href="/profile/dashboard/">
+                            <button>
+                                <i class="fas fa-id-badge"></i>
+                                <h5>داشبورد</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/transaction/">
+                            <button>
+                                <i class="fad fa-clipboard-list"></i>
+                            <h5>تراکنش ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/factor/">
+                            <button>
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <h5>فاکتور ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/ticketing/">
+                            <button>
+                                <i class="fad fa-user-headset"></i>
+                                <h5>پشتیبانی</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/shops/">
+                            <button class="activebtn">
+                                <i class="fas fa-store"></i>
+                                <h5>مدیریت حجره</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/review/">
+                            <button>
+                                <i class="fad fa-comments-alt"></i>
+                                <h5>نقد ها و نظرات</h5>
+                            </button>
+                        </a>
+                        {% if request.user.is_staff %}
+                            {% block review %}
+                                {% include "nakhll_market/profile/parents/menu_for_shop_manage.html" %}
+                            {% endblock %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                    {% include "nakhll_market/profile/parents/new-header-profile.html" %}
+                {% endblock %}
+                <div class="alarm-section">
+                    <div class="row">
+                        {% if ShowAlart %}
+                            <div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                                    <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                                    <p>
+                                        {{AlartMessage}}
+                                    </p>
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                        <div class="dashboard"> 
+                            <h4>افزودن بنر حجره</h4> 
+                            <form id="new-shopBanner-form" method="POST" enctype="multipart/form-data" action="{% url "nakhll_market:Shop_Manager_AddShopBanner" UserShop.Slug %}">
+                                {% csrf_token %}
+                                <!-- <div class="form-row">
+                                    <div class="form-group col-md-12">
+                                        <div id="msg"></div>
+                                        <label for="file">تصویر بنر <code>*</code></label>
+                                        <input type="file" name="Banner_Image" class="file" accept="image/*">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control input" disabled placeholder="آپلود عکس" id="file">
+                                            <div class="input-group-append">
+                                                <button type="button" class="browse btn btn-primary">بارگذاری</button>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <img src="https://placehold.it/80x80" id="preview" class="img-thumbnail">     
+                                    </div>
+                                </div> -->
+                                <div class="form-row">                            
+                                    <label class="label cropper-label w-100">  
+                                        <div class="form-group col-md-6"> 
+                                            <div id="msg"></div>
+                                            <label for="file">تصویر بنر <code>*</code></label>
+                                            <br>  
+                                            <a class="btn btn-primary choose-pic-btn" >انتخاب عکس</a>
+                                            <input type="file" class="sr-only input-pic-file" id="input" name="Banner_Image" accept="image/*">
+                                            <input type="text" class="form-control choose-pic-input-name" disabled placeholder="آپلود عکس">
+                                        </div>
+                                        <br>
+                                        <img class="rounded cropper-rounded " id="avatar" src="http://uupload.ir/files/3t7w_upload.jpg" alt="avatar"  data-toggle="tooltip" title="انتخاب عکس ">
+                                    </label>
+                                </div>
+                                <div class="alert cropper-alert" role="alert"></div>
+                                <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+                                    <div class="modal-dialog modal-md" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                        <h5 class="modal-title" id="modalLabel">برش تصویر ...</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                        </div>
+                                        <div class="modal-body">
+                                        <div class="img-container cropper-img-container">
+                                            <img id="image" src="https://avatars0.githubusercontent.com/u/3456749">
+                                        </div>
+                                        </div>
+                                        <div class="modal-footer" id="modal-footer-err">
+                                            <button type="button" class="btn btn-primary right-btn-send-modal" id="crop">انتخاب تصویر</button>
+                                            <button type="button" class="btn btn-secondary " data-dismiss="modal">بستن</button>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="input_title_shop_banner">عنوان بنر <code>*</code></label>
+                                        <input type="text" name="Banner_Title" maxlength="100" class="form-control" id="input_title_shop_banner" required>
+                                    </div>
+                                    
+                                    <div class="form-group col-md-6">
+                                        <label for="input_url_shop_banner">لینک بنر</label>
+                                        <input type="url" name="Banner_URL" class="form-control" id="input_url_shop_banner">
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-12">
+                                        <label for="input_description_shop_banner">توضیحات بنر</label>
+                                        <textarea class="form-control" name="Banner_Description" id="input_description_shop_banner" rows="2"></textarea>
+                                    </div>  
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                    <label for="input_builder_shop_banner">نام طراح بنر</label>
+                                        <input type="text" name="Banner_Builder" maxlength="120" class="form-control" id="input_builder_shop_banner">
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                    <label for="input_builder_url_shop_banner">لینک طراح بنر</label>
+                                        <input type="url" name="Banner_URL_Builder" class="form-control" id="input_builder_url_shop_banner">
+                                    </div>
+                                </div>
+ 
+                                <button type="submit" class="btn btn-primary mr-auto" id="send-left">افزودن بنر</button>
+                                <div class="clearfix"></div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+<script src="{% static "js/cropper.js" %}"></script>
+<script>
+    var $progress;
+    var $progressBar;
+    var $alert;
+    var initialAvatarURL;
+    var form_Data = new FormData();
+    window.addEventListener('DOMContentLoaded', function () {
+      var avatar = document.getElementById('avatar');
+      var image = document.getElementById('image');
+      var input = document.getElementById('input');
+      $progress = $('.progress');
+      $progressBar = $('.progress-bar');
+      $alert = $('.cropper-alert');
+      var $modal = $('#modal');
+      var cropper;
+
+      $('[data-toggle="tooltip"]').tooltip();
+
+      input.addEventListener('change', function (e) {
+        var files = e.target.files;
+        var done = function (url) {
+          input.value = '';
+          image.src = url;
+          $alert.hide();
+          $modal.modal('show');
+        };
+        var reader;
+        var file;
+        var url;
+
+        if (files && files.length > 0) {
+          file = files[0];
+
+          if (URL) {
+            done(URL.createObjectURL(file));
+          } else if (FileReader) {
+            reader = new FileReader();
+            reader.onload = function (e) {
+              done(reader.result);
+            };
+            reader.readAsDataURL(file);
+          }
+        }
+      });
+
+      $modal.on('shown.bs.modal', function () {
+        cropper = new Cropper(image, {
+          aspectRatio: 1,
+          viewMode: 3,
+        });
+      }).on('hidden.bs.modal', function () {
+        cropper.destroy();
+        cropper = null;
+      });
+      document.getElementById('crop').addEventListener('click', function () {
+        // var initialAvatarURL;
+        var canvas;
+
+        $modal.modal('hide');
+        if (cropper) {
+          canvas = cropper.getCroppedCanvas({
+            width: 900,
+            height: 900,
+          });
+          initialAvatarURL = avatar.src;
+          avatar.src = canvas.toDataURL();
+          $progress.show();
+          $alert.removeClass('alert-success alert-warning');
+          canvas.toBlob(function (blob) {
+          form_Data.append('shop_banner', blob, 'avatar.jpg');
+        });
+        }
+      });
+    });
+</script>
+
+{% block footer-section %}
+    {% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+    {% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

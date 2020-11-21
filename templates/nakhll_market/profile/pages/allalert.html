@@ -1,0 +1,264 @@
+{% load jformat %}
+
+{% block header %}
+{% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+
+    <title>بازار نخل | همه هشدار ها</title>
+</head>
+
+
+{% block headertag %}
+{% include "nakhll_market/parents/headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+
+
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-xl-3">
+
+                <div class="profile-sidebar-site">    
+                    {% block topsidebar %}
+                        {% include "nakhll_market/profile/parents/topsidebar.html" %}
+                    {% endblock %}
+                    <div class="profile-sidebar-main">
+
+                            <a href="/profile/dashboard/">
+                                <button>
+                                    <i class="fas fa-id-badge"></i>
+                                    <h5>داشبورد</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/transaction/">
+                                <button>
+                                    <i class="fad fa-clipboard-list"></i>
+                                <h5>تراکنش ها</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/factor/">
+                                <button>
+                                    <i class="fas fa-file-invoice-dollar"></i>
+                                    <h5>فاکتور ها</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/ticketing/">
+                                <button>
+                                    <i class="fad fa-user-headset"></i>
+                                    <h5>پشتیبانی</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/shops/">
+                                <button>
+                                    <i class="fas fa-store"></i>
+                                    <h5>مدیریت حجره</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/review/">
+                                <button>
+                                    <i class="fad fa-comments-alt"></i>
+                                    <h5>نقد ها و نظرات</h5>
+                                </button>
+                            </a>
+
+                        {% if request.user.is_staff %}
+                            <a href="/profile/alert/">
+                                <button class="activebtn">
+                                    <i class="fas fa-bell"></i>
+                                    <h5>هشدار ها</h5>
+                                </button>
+                            </a>
+                        <!--     
+                            <a href="/profile/ticket_staff/">
+                                <button>
+                                    <i class="fad fa-user-headset"></i>
+                                    <h5>بررسی تیکت ها</h5>
+                                </button>
+                            </a> -->
+                        {% endif %}
+    
+                    </div>
+                </div>
+
+            </div>
+
+
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                    {% include "nakhll_market/profile/parents/header-profile.html" %}
+                {% endblock %}
+
+                <div class="row">
+                    {% if ShowAlart %}
+                        <div class="col-xl-6 xol-lg-6 col-md-6 col-sm-12 col-12">
+                            <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                                <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                                <p>
+                                    {{AlartMessage}}
+                                </p>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                    {% endif %}
+                 </div>
+
+                    <div class="row">
+                        
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                        <div class="order-profile">
+                            <h4>همه هشدار ها</h4>
+                            <table class="table">
+                                <thead class="thead-light">
+                                    <tr>
+                                    <th>عنوان</th>
+                                    <th>کاربر</th>
+                                    <th>پاسخ دهنده</th>
+                                    <th>تاریخ</th>
+                                    <th>وضعیت</th>
+                                    <th>بررسی</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for alert in Alert %}
+                                        <tr>
+                                            <td>
+                                                {% if alert.Part == '0' %}
+                                                    ایجاد پروفایل
+                                                {% elif alert.Part == '1' %}
+                                                    ویرایش پروفایل
+                                                {% elif alert.Part == '2' %}
+                                                    ایجاد حجره
+                                                {% elif alert.Part == '3' %}
+                                                    ویراش حجره
+                                                {% elif alert.Part == '4' %}
+                                                    ایجاد بنر حجره
+                                                {% elif alert.Part == '5' %}
+                                                    ویرایش بنر حجره
+                                                {% elif alert.Part == '6' %}
+                                                    ایجاد محصول
+                                                {% elif alert.Part == '7' %}
+                                                    ویراش محصول
+                                                {% elif alert.Part == '8' %}
+                                                    ایجاد بنر محصول
+                                                {% elif alert.Part == '9' %}
+                                                    ویراش بنر محصول
+                                                {% elif alert.Part == '10' %}
+                                                    ایجاد ویژگی جدید
+                                                {% elif alert.Part == '11' %}
+                                                    ثبت ویژگی جدید برای محصول
+                                                {% elif alert.Part == '12' %}
+                                                    ثبت سفارش
+                                                {% elif alert.Part == '13' %}
+                                                    لغو سفارش
+                                                {% elif alert.Part == '14' %}
+                                                    ثبت کامنت جدید
+                                                {% elif alert.Part == '15' %}
+                                                    ثبت نقد و بررسی جدید
+                                                {% elif alert.Part == '16' %}
+                                                    ثبت تیکت جدید
+                                                {% elif alert.Part == '17' %}
+                                                    ایجاد ارزش ویژگی جدید
+                                                {% elif alert.Part == '18' %}
+                                                    ثبت انتقاد و پیشنهاد یا شکایت
+                                                {% endif %}
+                                            </td>
+                                            <td>{{alert.FK_User}}</td>
+                                            <td>{{alert.FK_Staff}}</td>
+                                            <td>{{alert.DateCreate|jformat:'%Y/%m/%d'}}</td>
+                                            <td>
+                                                {% if alert.Status == '1' %}
+                                                    ثبت تغییرات
+                                                {% else %}
+                                                    عدم ثبت تغییرات
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if alert.Part == '0' %}
+                                                    ایجاد پروفایل
+                                                {% elif alert.Part == '1' %}
+                                                    ویرایش پروفایل
+                                                {% elif alert.Part == '2' %}
+                                                    <a type="button" href="/profile/alert/shop/{{alert.Slug}}"><i class="fal fa-edit"></i></a>
+                                                {% elif alert.Part == '3' %}
+                                                    <a type="button" href="/profile/alert/editeshop/{{alert.Slug}}"><i class="fal fa-edit"></i></a>
+                                                {% elif alert.Part == '4' %}
+                                                    <a type="button" href="/profile/alert/shopbanner/{{alert.Slug}}"><i class="fal fa-edit"></i></a>
+                                                {% elif alert.Part == '5' %}
+                                                    <a type="button" href="/profile/alert/editeshopbanner/{{alert.Slug}}"><i class="fal fa-edit"></i></a>
+                                                {% elif alert.Part == '6' %}
+                                                    <a type="button" href="/profile/alert/product/{{alert.Slug}}"><i class="fal fa-edit"></i></a>
+                                                {% elif alert.Part == '7' %}
+                                                    <a type="button" href="/profile/alert/editeproduct/{{alert.Slug}}"><i class="fal fa-edit"></i></a>
+                                                {% elif alert.Part == '8' %}
+                                                    <a type="button" href="/profile/alert/productbanner/{{alert.Slug}}"><i class="fal fa-edit"></i></a>
+                                                {% elif alert.Part == '9' %}
+                                                    <a type="button" href="/profile/alert/editeproductbanner/{{alert.Slug}}"><i class="fal fa-edit"></i></a>
+                                                {% elif alert.Part == '10' %}
+                                                    <a type="button" href="/profile/alert/attribute/{{alert.Slug}}"><i class="fal fa-edit"></i></a>
+                                                {% elif alert.Part == '11' %}
+                                                    <a type="button" href="/profile/alert/attributeproduct/{{alert.Slug}}"><i class="fal fa-edit"></i></a>
+                                                {% elif alert.Part == '12' %}
+                                                    <a type="button" href="/profile/alert/factor/{{alert.Slug}}"><i class="fal fa-edit"></i></a>
+                                                {% elif alert.Part == '13' %}
+                                                    لغو سفارش
+                                                {% elif alert.Part == '14' %}
+                                                    <a type="button" href="/profile/alert/comment/{{alert.Slug}}"><i class="fal fa-edit"></i></a>
+                                                {% elif alert.Part == '15' %}
+                                                    <a type="button" href="/profile/alert/review/{{alert.Slug}}"><i class="fal fa-edit"></i></a>
+                                                {% elif alert.Part == '16' %}
+                                                    <a type="button" href="/profile/alert/ticket/{{alert.Slug}}"><i class="fal fa-edit"></i></a>
+                                                {% elif alert.Part == '17' %}
+                                                    <a type="button" href="/profile/alert/attrprice/{{alert.Slug}}"><i class="fal fa-edit"></i></a>
+                                                {% elif alert.Part == '18' %}
+                                                    <a type="button" href="/profile/alert/connectus/{{alert.Slug}}"><i class="fal fa-edit"></i></a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+              
+                        
+                    </div>
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+{% block footer-section %}
+{% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+
+
+{% block footer %}
+{% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

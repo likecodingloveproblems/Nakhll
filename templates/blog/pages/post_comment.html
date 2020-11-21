@@ -1,0 +1,129 @@
+{% load i18n static %}
+{% load jformat %}
+
+<form method="POST" action="{% url "blog:AddNewPostComment" Post.Slug %}">
+    {% csrf_token %}
+    <div class="blog-post-user-comment">
+        <div class="blog-post-pic-comment">
+            <div class="row">
+                <div class="col-xl-1 col-lg-2 col-md-2 col-sm-2 col-2">
+                    <div class="blog-post-user-pic">
+                        {% if request.user.is_authenticated %}
+                            <img src="{{This_User_Profile.Image_thumbnail_url}}" alt="profile" width="45" height="45">
+                        {% else %}
+                            <img src="{% static "images/nakhll_arm.jpg" %}">
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-xl-11 col-lg-10 col-md-10 col-sm-10 col-10">
+                    <div class="blog-post-comment-input">
+                        <div class="form-group">
+                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="2"
+                                placeholder="نظر خود را اینجا وارد کنید..." name="comment_des" required></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="blog-post-comment-send-button">
+        <button type="submit">
+                <div class="blog-post-comment-send-button-text">
+            ارسال
+                </div>
+        </button>
+    </div>
+</form>
+<div class="clearfix">
+
+</div>
+
+
+<div class="row">
+    {% for item in Comments %}
+        {% if item.FK_Pater == None %}
+
+            <div class="col-xl-1 col-3">
+                <div class="img-profile-comment">
+                    <img src="{{item.get_comment_profile_image}}" alt="profile" width="45" height="45">
+                </div>
+            </div>
+
+            <div class="col-xl-11 col-8">
+                <div class="single-comment">
+                    <h4>{{item.FK_UserAdder.first_name}} {{item.FK_UserAdder.last_name}}<span>{{item.DateCreate|jformat:'%Y/%m/%d'}}</span></h4>
+
+                    <p>
+                        {{item.Description}}
+                    </p>
+
+                    <span class="reply" id="reply{{item.id}}">پاسخ</span>
+                    <span> | </span>
+
+                    {% if request.user.is_authenticated %}
+                        {% if request.user in item.FK_Like.all %}
+                            <a href="{% url "blog:Post_Story_Like" item.id 1 %}"><i class="far fa-thumbs-up liked-comment"></i></a>
+                        {% else %}
+                            <a href="{% url "blog:Post_Story_Like" item.id 1 %}"><i class="far fa-thumbs-up"></i></a>
+                        {% endif %}
+                    {% endif %}
+
+                    <text class="like-{{item.id}}">{{item.FK_Like.count}}</text>
+
+                </div>
+                <div class="likeset{{item.id}}"></div>
+                <script>
+                        $(document).ready(function() {
+                            var replyClicked = false;
+                            $("#reply{{item.id}}").click(function(e) {
+                                e.preventDefault();
+                                if(!replyClicked) {
+                                $(".reply-show").fadeOut('slow');
+                                var txt1 = '<div id="reply-comment-{{item.id}}" class="reply-show"> <form method="POST" action="{% url "blog:AddReplayPostComment" Post.Slug item.id %}"> {% csrf_token %} <div class="blog-post-user-comment"> <div class="blog-post-pic-comment"> <div class="row"> <div class="col-xl-1 col-lg-2 col-md-2 col-sm-2 col-2"> <div class="blog-post-user-pic"> {% if request.user.is_authenticated %} <img src="{{This_User_Profile.Image_thumbnail_url}}" alt="profile" width="45" height="45"> {% else %} <img src="{% static "images/nakhll_arm.jpg" %}"> {% endif %} </div> </div> <div class="col-xl-11 col-lg-10 col-md-10 col-sm-10 col-10"> <div class="blog-post-comment-input"> <div class="form-group"> <textarea class="form-control" id="exampleFormControlTextarea1" rows="2" placeholder="پاسخ خود را اینجا وارد کنید..." name="comment_des" required></textarea> </div> </div> </div> </div> </div> </div> <div class="blog-post-comment-send-button"> <button type="submit"> <div class="blog-post-comment-send-button-text"> ارسال </div> </button> </div> </div> </form> </div>'
+                                $(".likeset{{item.id}}").append($(txt1).fadeIn('slow'));
+                                replyClicked = true;
+                                }
+                                else if (replyClicked) {
+                                $(".reply-show").fadeOut('slow');
+                                replyClicked = false;
+                                }
+                            })
+                        });
+                </script>
+                <div class="row">
+                    {% for replay in Comments %}
+                        {% if replay.FK_Pater == item %}
+                    
+                            <div class="col-xl-1 col-3">
+                                <div class="img-profile-comment">
+                                    <img src="{{replay.get_comment_profile_image}}" alt="profile" width="45" height="45">
+                                </div>
+                            </div>
+                        
+                            <div class="col-xl-11 col-8">
+                                <div class="single-comment">
+                                    <h4>{{replay.FK_UserAdder.first_name}} {{replay.FK_UserAdder.last_name}}<span>{{replay.DateCreate|jformat:'%Y/%m/%d'}}</span></h4>
+                        
+                                    <p>
+                                        {{replay.Description}}
+                                    </p>
+                        
+                                    {% if request.user.is_authenticated %}
+                                        {% if request.user in replay.FK_Like.all %}
+                                            <a href="{% url "blog:Post_Story_Like" replay.id 1 %}"><i class="far fa-thumbs-up liked-comment"></i></a>
+                                        {% else %}
+                                            <a href="{% url "blog:Post_Story_Like" replay.id 1 %}"><i class="far fa-thumbs-up"></i></a>
+                                        {% endif %}
+                                    {% endif %}
+
+                                    <text>{{replay.FK_Like.count}}</text>
+                        
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>

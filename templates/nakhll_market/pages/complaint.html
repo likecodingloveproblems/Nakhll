@@ -1,0 +1,128 @@
+{% load i18n static %}
+{% load jformat %}
+
+{% block header %}
+{% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+
+    <title>بازار نخل | گزارشات و شکایات {{Tag.Title}}</title>
+</head>
+
+
+{% block headertag %}
+{% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+
+<div class="container">
+    <div class="row">
+        <div class="title-pages">
+            <h4>"گزارشات و شکایات"</h4>
+        </div>
+    </div>
+
+    <div class="row">
+            <div class="col-xl-12">
+                {% if ShowAlart %}
+                    <div class="col-xl-6 xol-lg-6 col-md-6 col-sm-12 col-12">
+                        <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                            <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                            <p>
+                                {{AlartMessage}}
+                            </p>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="page-content">
+                <p>
+                </p>
+                 <h5>شماره های تماس</h5>
+
+                    <div class="row">
+                        {% for connect in ConnectRoad %}
+                            <div class="col-xl-3">
+                                <div class="box-about-us">
+                                    <i class="{{connect.Icon}}"></i>
+                                    <h3>{{connect.Title}}</h3>
+                                    <ul>
+                                        {% for phone in connect.PhoneNumber %}
+                                            <li>{{phone}}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    </br>
+                    </br>
+
+                <h5>فرم گزارشات و شکایات</h5>   
+
+                    <form method="POST" action="add" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                            <label for="inputTitle">عنوان <code> * </code></label>
+                                <input type="text" name="Input_Title" class="form-control" id="inputTitle" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                            <label for="inputphone">شماره تماس</label>
+                                <input type="text" name="Input_Phone" class="form-control" maxlength="11" id="inputphone">
+                                <small class="smallhelp">برای پاسخگویی به پیام ها لطفا حداقل یکی از فیلد های شماره تماس و ایمیل را تکمیل کنید.</small>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                            <label for="inputemail">ایمیل</label>
+                                <input type="text" name="Input_Email" class="form-control" id="inputemail">
+                                <small class="smallhelp">برای پاسخگویی به پیام ها لطفا حداقل یکی از فیلد های شماره تماس و ایمیل را تکمیل کنید.</small>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-7">
+                                <label for="inputText">متن پیام  <code> * </code></label>
+                                <textarea class="form-control" name="Input_Text" id="inputText" rows="5" required></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <label for="Input_Image" class="col-sm-12 col-form-label">بارگذاری عکس</label>
+                            <div class="col-sm-12">
+                                <input type="file" accept="image/*" name="Input_Image" id="Input_Image">
+                            </div>
+                        </div>
+                        <br>
+                        <button class="btn btn-primary mr-auto">ثبت</button>
+
+                    </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% block footer-section %}
+{% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+{% include "nakhll_market/parents/footermain.html" %}
+{% endblock %}

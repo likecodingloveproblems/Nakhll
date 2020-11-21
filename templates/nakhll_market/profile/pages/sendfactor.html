@@ -1,0 +1,232 @@
+{% load jformat %}
+{% load i18n static %}
+
+{% block header %}
+    {% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+    <title>بازار نخل | گزارش کالا های ارسالی</title>
+</head>
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-xl-3">
+
+                <div class="profile-sidebar-site">    
+                    {% block topsidebar %}
+                        {% include "nakhll_market/profile/parents/new-topsidebar.html" %}
+                    {% endblock %}
+                    <div class="profile-sidebar-main">
+
+                            <a href="/profile/dashboard/">
+                                <button>
+                                    <i class="fas fa-id-badge"></i>
+                                    <h5>داشبورد</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/transaction/">
+                                <button>
+                                    <i class="fad fa-clipboard-list"></i>
+                                <h5>تراکنش ها</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/factor/">
+                                <button class="activebtn">
+                                    <i class="fas fa-file-invoice-dollar"></i>
+                                    <h5>فاکتور ها</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/ticketing/">
+                                <button>
+                                    <i class="fad fa-user-headset"></i>
+                                    <h5>پشتیبانی</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/shops/">
+                                <button>
+                                    <i class="fas fa-store"></i>
+                                    <h5>مدیریت حجره</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/review/">
+                                <button>
+                                    <i class="fad fa-comments-alt"></i>
+                                    <h5>نقد ها و نظرات</h5>
+                                </button>
+                            </a>
+
+                        {% if request.user.is_staff %}
+                            {% block staff_menu %}
+                                {% include "nakhll_market/profile/parents/menu_for_shop_manage.html" %}
+                            {% endblock %}
+                        {% endif %}
+    
+                    </div>
+                </div>
+
+            </div>
+
+
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                    {% include "nakhll_market/profile/parents/new-header-profile.html" %}
+                {% endblock %}
+
+                <div class="alarm-section">
+                    <div class="row">
+                        {% if ShowAlart %}
+                        <div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                                <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                                <p>
+                                    {{AlartMessage}}
+                                </p>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <!-- UserSender Alert -->
+                    <div id="alert-div-inputPost_UserSend-empty"></div>
+                    <!-- UserSender Input Persian -->
+                    <div id="alert-div-inputPost_UserSend-just_persian"></div>
+
+
+                    <!--Product To Send-->
+                    <div id="alert-div-inputpost-product-to-send-empty"></div>
+                    <div id="alert-div-inputpost-product-to-send-limit"></div>
+
+                    <!--Barcode-->
+                    <div id="alert-div-inputpost-barcode-empty"></div>
+                    <div id="alert-div-inputpost-barcode-24char"></div>
+
+                    <!--SendPrice-->
+                    <div id="alert-div-inputpost-sendprice-empty"></div>
+                    <div id="alert-div-inputpost-sendprice-minlength"></div>
+
+                    <!--SendDate-->
+                    <div id="alert-div-inputpost-senddate-empty"></div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                        <div class="dashboard"> 
+                            <h4>گزارش کالا های ارسالی</h4> 
+
+                            <form id="new-shopBanner-form" method="POST" enctype="multipart/form-data" action="/cart/send_factor/{{Factor.ID}}">
+                                {% csrf_token %}
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-6 product-to-send-list">
+                                        <label for="inputPost_UserShop">محصولات ارسال شده <code>*</code></label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="محصولاتی که می خواهید ارسال کنید را انتخاب نمایید."></i>
+                                        <select data-placeholder="انتخاب محصول" multiple class="chosen-select-rtl form-control product-to-send" name="Products" id="inputPost_UserProduct" tabindex="14" required>
+                                            {% for item in Factor_Product %}
+                                                <option value="{{item.ID}}">{{item.Title}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group col-md-6">
+                                        <label for="inputPost_UserSend">نام ارسال کننده <code>*</code></label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="نام فرد ارسال کننده مرسوله را وارد نمایید."></i>
+                                        <input type="text" name="Post_UserSend" value="{{request.user.first_name}} {{request.user.last_name}}" class="form-control" id="inputPost_UserSend" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                    <label for="inputPost_Barcode">بارکد پستی مرسوله <code>*</code></label>
+                                    <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="بارکد پستی فقط باید شامل اعداد و  24 رقم باشد."></i>
+                                        <input type="number" name="Post_Barcode" class="form-control" maxlength="24" minlength="24" id="inputPost_Barcode" required>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <label for="inputPost_Price">هزینه ارسال مرسوله <code>*</code></label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="هزینه ارسال مرسوله را به ریال وارد نمایید."></i>
+                                        <input type="number" name="Post_Price" class="form-control" id="inputprod_sellprice" required>
+                                        <p class="digit-to-persian" id="sellprice-toman"></p>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                    <label for="inputPost_SendType">نوع ارسال <code>*</code></label>
+                                    <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="نوع ارسال مرسوله را انتخاب نمایید."></i>
+                                        <select id="inputPost_SendType" name="Post_SendType" class="form-control">
+                                            <option selected value="1">پست معمولی</option>
+                                            <option value="0">پست درون شهری</option>
+                                            <option value="2">پس کرایه</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <label for="inputPost_SendDate">تاریخ ارسال مرسوله <code>*</code></label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="تاریخ ارسال مرسوله را وارد نمایید."></i>
+                                        <input type="text" name="Post_SendDate" class="form-control" id="inputPost_SendDate">
+                                        <script>
+                                            $("#inputPost_SendDate").persianDatepicker({
+                                                startDate: "{{Start_Day}}",
+                                                endDate:"today"
+                                            });
+                                        </script>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="inputPost_Image">بارگذاری عکس</label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="سند ارسال مرسوله را بارگذاری نمایید."></i>
+                                        <br>
+                                            <input type="file" accept="image/*" name="Post_Image" id="inputPost_Image">
+                                            <br>
+                                    </div>
+                                </div>
+ 
+                                <button type="submit" class="btn btn-primary mr-auto" id="send-left">ثبت</button>
+                                    <div class="clearfix"></div>
+                                </div>
+
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="{% static "js/num2persian-min.js" %}"></script>
+<script type="text/javascript" charset="utf-8" src="{% static "js/factor/sendfactor.js" %}"></script>
+
+{% block footer-section %}
+    {% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+    {% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

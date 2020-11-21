@@ -1,0 +1,272 @@
+{% load jformat %}
+
+{% block header %}
+{% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+
+
+<title>بازار نخل | مدیریت محتوا </title>
+</head>
+
+
+{% block headertag %}
+{% include "nakhll_market/parents/headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+{% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+
+
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-xl-3">
+
+                <div class="profile-sidebar-site">
+                    {% block topsidebar %}
+                    {% include "nakhll_market/profile/parents/topsidebar.html" %}
+                    {% endblock %}
+                    <div class="profile-sidebar-main">
+
+                        <a href="/profile/dashboard/">
+                            <button>
+                                <i class="fas fa-id-badge"></i>
+                                <h5>داشبورد</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/transaction/">
+                            <button>
+                                <i class="fad fa-clipboard-list"></i>
+                                <h5>تراکنش ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/factor/">
+                            <button>
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <h5>فاکتور ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/ticketing/">
+                            <button>
+                                <i class="fad fa-user-headset"></i>
+                                <h5>پشتیبانی</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/shops/">
+                            <button>
+                                <i class="fas fa-store"></i>
+                                <h5>مدیریت حجره</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/review/">
+                            <button>
+                                <i class="fad fa-comments-alt"></i>
+                                <h5>نقد ها و نظرات</h5>
+                            </button>
+                        </a>
+
+                        {% if request.user.is_staff %}
+                            {% block review %}
+                                {% include "nakhll_market/profile/parents/menu_for_manage_data.html" %}
+                            {% endblock %}
+                        {% endif %}
+
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                {% include "nakhll_market/profile/parents/header-profile.html" %}
+                {% endblock %}
+
+                <div class="alarm-section">
+                    <div class="row">
+
+                        {% if ShowAlart %}
+                        <div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                                <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                                <p>
+                                    {{AlartMessage}}
+                                </p>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                        <div class="dashboard">
+                            <a class="btn btn-primary btn-all btn-left" href="{% url "nakhll_market:Add_New_Full_Shop" None %}">ایجاد حجره جدید</a>
+                            <h4>لیست حجره های بازار نخل</h4>
+                            <br>
+                            <div class="hr-line-under-dashboard">
+
+                            </div>
+                            <div class="dashboard-filters">
+                                <h4>فیلتر</h4>
+                            </div>
+                            <form method="POST" action="{% url "nakhll_market:Show_All_Content" %}">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-xl-6 col-lg-6 col-md-6">
+                                        <div class="input-group mb-3">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" id="basic-addon1">عنوان حجره</span>
+                                            </div>
+                                            <input type="text" class="form-control" aria-label="Username"
+                                                aria-describedby="basic-addon1" name="shop_title">
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-xl-6 col-lg-6 col-md-6 search-button2">
+                                        <button>جستجو</button>
+                                    </div>
+
+                                </div>
+                            </form>
+                            <br>
+                            <div class="hr-line-under-dashboard">
+
+                            </div>
+                            <table class="table">
+
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>تعداد محصولات</th>
+                                        <th>تعداد محصولات ناموجود</th>
+                                        <th>تعداد محصولات غیرفعال</th>
+                                        <th>تعداد محصولات منتشر نشده</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr style="background-color: #007bff70">
+                                        <td>{{ProductCount}}</td>
+                                        <td>{{NotProductCount}}</td>
+                                        <td>{{OffProductCount}}</td>
+                                        <td>{{FalseProductCount}}</td>
+                                    </tr>
+                                </tbody>
+
+                            </table>
+                            <div class="hr-line-under-dashboard">
+
+                            </div>
+
+                            <table class="table">
+
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>عنوان حجره</th>
+                                        <th>نام حجره دار</th>
+                                        <th>تاریخ ثبت حجره</th>
+                                        <th>وضعیت نمایش</th>
+                                        <th>وضعیت انتشار</th>
+                                        <th>نمایش</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {% for item in AllShops %}
+                                        <tr>
+                                            <td>{{item.Shop.Title}}</td>
+                                            <td>{{item.Shoper}}</td>
+                                            <td>{{item.Shop.DateCreate|jformat:'%Y/%m/%d'}}</td>
+                                            {% if item.Shop.Available %}
+                                            <td title="برای عدم نمایش این حجره کلیک کنید."><a
+                                                    href="{% url "nakhll_market:Change_Shop_Seen_Status" item.Shop.Slug %}">
+                                                    <p style="color: green">در حال نمایش</p>
+                                                </a></td>
+                                            {% else %}
+                                            <td title="برای نمایش این حجره کلیک کنید."><a
+                                                    href="{% url "nakhll_market:Change_Shop_Seen_Status" item.Shop.Slug %}">
+                                                    <p style="color: red">عدم نمایش</p>
+                                                </a></td>
+                                            {% endif %}
+                                            {% if item.Shop.Publish %}
+                                            <td title="برای عدم انتشار این حجره کلیک کنید."><a
+                                                    href="{% url "nakhll_market:Change_Shop_Publish_Status" item.Shop.Slug %}">
+                                                    <p style="color: green">منتشر شده</p>
+                                                </a></td>
+                                            {% else %}
+                                            <td title="برای انتشار این حجره کلیک کنید."><a
+                                                    href="{% url "nakhll_market:Change_Shop_Publish_Status" item.Shop.Slug %}">
+                                                    <p style="color: red">منتشر نشده</p>
+                                                </a></td>
+                                            {% endif %}
+                                            <td title="برای مشاهده اطلاعات حجره کلیک کنید." class="pointer"><a
+                                                    href="{% url "nakhll_market:Show_Shop_Info" item.Shop.Slug %}"><i
+                                                        class="fad fa-eye"></i></a></td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+
+                            </table>
+                
+                            <div class="col-12">
+                                <div class="row pagerow">
+                                    <nav aria-label="Page navigation example">
+                                        <ul class="pagination">
+                                            {% if AllShops.has_previous %}
+                                                <li class="page-item"><a class="page-link" href="?page=1">اولی</a></li>
+                                                <li class="page-item"><a class="page-link" href="?page={{AllShops.previous_page_number}}">قبلی</a></li>
+                                            {% endif %}
+                                            {% for num in AllShops.paginator.page_range %}
+                                                {% if num == AllShops.number %}
+                                                    <li class="page-item"><a class="page-link" href="?page={{num}}"><strong>{{num}}</strong></a></li>
+                                                {% elif num > AllShops.number|add:'-3' and num < AllShops.number|add:'3' %}
+                                                    <li class="page-item"><a class="page-link" href="?page={{num}}">{{num}}</a></li>
+                                                {% endif %}
+                                            {% endfor %}
+                                            {% if AllShops.has_next %}
+                                                <li class="page-item"><a class="page-link" href="?page={{AllShops.next_page_number}}">بعدی</a></li>
+                                                <li class="page-item"><a class="page-link" href="?page={{AllShops.paginator.num_pages}}">آخری</a></li>
+                                            {% endif %}
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+{% block footer-section %}
+{% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+
+
+{% block footer %}
+{% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

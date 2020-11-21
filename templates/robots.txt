@@ -1,0 +1,8 @@
+Sitemap: https://nakhll.com/sitemap.xml
+Sitemap: https://nakhll.com/blog/sitemap.xml
+
+User-agent: *
+Disallow: /logintowebsite/
+Disallow: /accounts/
+Disallow: /oauth/
+Disallow: /management/

@@ -1,0 +1,41 @@
+{% load i18n static %}
+{% load jformat %}
+
+{% block header %}
+{% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+
+    <title>بازار نخل | 404 </title>
+    
+</head>
+
+
+{% block headertag %}
+{% include "nakhll_market/parents/headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+
+
+<div class="container">
+    <div class="row">
+        <div class="erroe-page">
+            <img src="https://webhostingmedia.net/wp-content/uploads/2018/01/http-error-404-not-found.png" alt="error-404-not-found">
+            <p >صفحه مورد نظر یافت نشد ...</p>
+        </div>
+    </div>
+</div>
+
+
+{% block footer-section %}
+{% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+{% include "nakhll_market/parents/footermain.html" %}
+{% endblock %}

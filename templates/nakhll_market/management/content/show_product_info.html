@@ -1,0 +1,514 @@
+{% load jformat %}
+
+{% block header %}
+{% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+
+
+    <title>بازار نخل | مدیریت محتوا </title>
+</head>
+
+
+{% block headertag %}
+{% include "nakhll_market/parents/headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+
+
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-xl-3">
+
+                <div class="profile-sidebar-site">    
+                    {% block topsidebar %}
+                        {% include "nakhll_market/profile/parents/topsidebar.html" %}
+                    {% endblock %}
+                    <div class="profile-sidebar-main">
+
+                            <a href="/profile/dashboard/">
+                                <button>
+                                    <i class="fas fa-id-badge"></i>
+                                    <h5>داشبورد</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/transaction/">
+                                <button>
+                                    <i class="fad fa-clipboard-list"></i>
+                                <h5>تراکنش ها</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/factor/">
+                                <button>
+                                    <i class="fas fa-file-invoice-dollar"></i>
+                                    <h5>فاکتور ها</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/ticketing/">
+                                <button>
+                                    <i class="fad fa-user-headset"></i>
+                                    <h5>پشتیبانی</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/shops/">
+                                <button>
+                                    <i class="fas fa-store"></i>
+                                    <h5>مدیریت حجره</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/review/">
+                                <button>
+                                    <i class="fad fa-comments-alt"></i>
+                                    <h5>نقد ها و نظرات</h5>
+                                </button>
+                            </a>
+
+                            {% if request.user.is_staff %}
+                                {% block review %}
+                                    {% include "nakhll_market/profile/parents/menu_for_manage_data.html" %}
+                                {% endblock %}
+                            {% endif %}
+    
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                    {% include "nakhll_market/profile/parents/header-profile.html" %}
+                {% endblock %}
+
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                        <div class="dashboard">
+                            <a class="btn btn-primary btn-all btn-left" href="{% url "nakhll_market:Edit_Full_Product" Product.ID None %}">ویرایش</a>
+                            <a class="btn btn-primary btn-all btn-left" href="{% url "nakhll_market:Add_New_Product_Banner" Product.ID None %}" style="margin: 0 10px 0 10px;">ایجاد بنر محصول</a>
+                            <a class="btn btn-primary btn-all btn-left" href="{% url "nakhll_market:Add_New_Product_Attribute" Product.ID None %}" style="margin: 0 10px 0 0;">ایجاد ویژگی محصول</a>
+                            <a class="btn btn-primary btn-all btn-left" href="{% url "nakhll_market:Add_New_Product_AttrPrice" Product.ID None %}" style="margin: 0 10px 0 0;">ایجاد ارزش ویژگی محصول</a>
+
+                            <h4>آمار کلی محصول {{Product.Title}}</h4> 
+                            <br>
+                            <table class="table">
+
+                                <thead class="thead-light">
+                                    <tr>
+                                    <th>وضعیت محصول</th>
+                                    <th>تعداد بنر ها</th>
+                                    <th>تعداد کل خرید</th>
+                                    <th>تعداد کل ارسال شده</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr style="background-color: rgb(178, 241, 178)">
+                                        {% if Product.Status == '1' %}
+                                            <td>آماده در انبار</td>
+                                        {% elif Product.Status == '2' %}
+                                            <td>تولید بعد از سفارش</td>
+                                        {% elif Product.Status == '3' %}
+                                            <td>سفارشی سازی فروش</td>
+                                        {% elif Product.Status == '4' %}
+                                            <td>موجود نیست</td>
+                                        {% endif %}
+                                        <td>{{ThisProduct_Banners_Count}}</td>
+                                        <td>{{ThisProduct_Sales_Count}}</td>
+                                        <td>{{ThisProduct_Sales_ISSend_Count}}</td>
+                                    </tr>
+                                </tbody>
+
+                            </table>
+
+                            <br>
+                            <h4>مشخصات محصول</h4> 
+                            <br>
+
+                            <div class="form-row">
+
+                                <div class="form-group col-md-6">
+                                    
+                                    <div id="msg"></div>
+                                    <label for="file">عکس محصول</label>
+                                        
+                                    <br>
+                                    
+                                    <img src="{{Product.Image_thumbnail_url}}" id="preview" class="img-thumbnail">
+                                        
+                                </div>
+                        
+                            </div>
+                        
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                <label for="inputprod_title">عنوان محصول</label>
+                                <fieldset disabled>
+                                    <input type="text" name="prod_title" value="{{Product.Title}}" class="form-control" id="inputprod_title">
+                                </fieldset>
+                                </div>
+                            </div>
+                        
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="inputslugProd">شناسه محصول</label>
+                                    <fieldset disabled>
+                                        <input type="text" name="slugProd" class="form-control" value="{{Product.Slug}}" id="inputslugProd">
+                                    </fieldset>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="inpuShop"> حجره </label>
+                                    <fieldset disabled>
+                                        <input type="text" name="ProdShop" class="form-control" value="{{Product.FK_Shop.Title}}" id="inputslugProd">
+                                    </fieldset>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                <label for="inputProdDes">درباره محصول</label>
+                                <fieldset disabled>
+                                    <textarea name="ProdDes" class="form-control" id="inputProdDes" rows="2">{{Product.Description}}</textarea>
+                                </fieldset>
+                                </div>  
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="inputCat">دسته بندی محصول</label>
+                                    <fieldset disabled>
+                                        <select multiple class="chosen-select-rtl form-control" name="ProdCat" id="inputCat" tabindex="14">
+                                            {% for item in Product.FK_Category.all %}
+                                                <option selected>{{item.Title}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </fieldset>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="inputSubMarket">راسته محصول</label>
+                                    <fieldset disabled>
+                                        <input type="text" name="ProdSub" class="form-control" value="{{Product.FK_SubMarket.Title}}" id="inputslugProd">
+                                    </fieldset>
+                                </div>
+                            </div>
+                        
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                <label for="inputProdBio">معرفی محصول</label>
+                                <fieldset disabled>
+                                    <textarea name="ProdBio" class="form-control" id="inputProdBio" rows="2">{{Product.Bio}}</textarea>
+                                </fieldset>
+                                </div>  
+                            </div>
+                        
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                <label for="inputProdStory">داستان محصول</label>
+                                <fieldset disabled>
+                                    <textarea name="ProdStory" class="form-control" id="inputProdStory" rows="2">{{Product.Story}}</textarea>
+                                </fieldset>
+                                </div>  
+                            </div>
+                        
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                <label for="inputprod_title">قیمت فروش محصول</label>
+                                <fieldset disabled>
+                                    <input type="text" name="prod_Price" value="{{Product.Price}}" class="form-control" id="inputprod_title">
+                                </fieldset>
+                                </div>
+                        
+                                <div class="form-group col-md-6">
+                                <label for="inputslugProd">قیمت واقعی</label>
+                                <fieldset disabled>
+                                    <input type="text" name="Prodoldprice" value="{{Product.OldPrice}}" class="form-control" id="inputslugProd">
+                                </fieldset>
+                                </div>
+                            </div>
+                        
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="PostRangeType">محدوده ارسال</label>
+                                    {% if Product.PostRangeType == '1' %}
+                                        <fieldset disabled>
+                                            <input type="text" name="ProdRange" class="form-control" value="سراسر کشور" id="inputslugProd">
+                                        </fieldset>
+                                    {% elif Product.PostRangeType == '2' %}
+                                        <fieldset disabled>
+                                            <input type="text" name="ProdRange" class="form-control" value="استانی" id="inputslugProd">
+                                        </fieldset>
+                                    {% elif Product.PostRangeType == '3' %}
+                                        <fieldset disabled>
+                                            <input type="text" name="ProdRange" class="form-control" value="شهرستانی" id="inputslugProd">
+                                        </fieldset>
+                                    {% elif Product.PostRangeType == '4' %}
+                                        <fieldset disabled>
+                                            <input type="text" name="ProdRange" class="form-control" value="شهری" id="inputslugProd">
+                                        </fieldset>
+                                    {% endif %}
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="PostRangeType">وضعیت محصول</label>
+                                        {% if Product.Status == '1' %}
+                                            <fieldset disabled>
+                                                <input type="text" name="ProdPostType" class="form-control" value="آماده در انبار" id="inputslugProd">
+                                            </fieldset>
+                                        {% elif Product.Status == '2' %}
+                                            <fieldset disabled>
+                                                <input type="text" name="ProdPostType" class="form-control" value="تولید بعد از سفارش" id="inputslugProd">
+                                            </fieldset>
+                                        {% elif Product.Status == '3' %}
+                                            <fieldset disabled>
+                                                <input type="text" name="ProdPostType" class="form-control" value="سفارشی سازی فروش" id="inputslugProd">
+                                            </fieldset>
+                                        {% elif Product.Status == '4' %}
+                                            <fieldset disabled>
+                                                <input type="text" name="ProdPostType" class="form-control" value="موجود نیست" id="inputslugProd">
+                                            </fieldset>
+                                        {% endif %}
+                                </div>
+                            </div>
+                        
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="inputCat">محدوده ارسال حجره</label>
+                                    <fieldset disabled>
+                                        <select multiple class="chosen-select-rtl form-control" id="inputslugProd" tabindex="14">
+                                            {% for item in Product.FK_PostRange.all %}
+                                                <option selected>{{item}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </fieldset>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="inputSubMarket">استثناء محدوده ارسال حجره</label>
+                                    <fieldset disabled>
+                                        <select multiple class="chosen-select-rtl form-control" id="inputslugProd" tabindex="14">
+                                            {% for item in Product.FK_ExceptionPostRange.all %}
+                                                <option selected>{{item}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </fieldset>
+                                </div>
+                            </div>
+                            <br>
+                            <h6>وزن محصول</h6>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                <label for="input_netweight">وزن خالص محصول <span class="Riyal">گرم</span></label>
+                                <fieldset disabled>
+                                    <input type="text" value="{{Product.Net_Weight}}" name="product_netweight" class="form-control" pattern="[0-9]{1,6}" id="input_netweight" required>
+                                </fieldset>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                <label for="input_packingweight">وزن محصول با بسته بندی <span class="Riyal">گرم</span></label>
+                                <fieldset disabled>
+                                    <input type="text" value="{{Product.Weight_With_Packing}}" name="product_packingweight" class="form-control" pattern="[0-9]{1,5}" id="input_packingweight" required>
+                                </fieldset>
+                                </div>
+                            </div>
+
+                            <h6>ابعاد محصول</h6>
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                <label for="input_lengthwithpackaging">طول بسته بندی محصول <span class="Riyal">سانتی متر</span></label>
+                                <fieldset disabled>
+                                    <input type="text" value="{{Product.Length_With_Packaging}}" name="product_lengthwithpackaging" class="form-control" pattern="[0-9]{1,4}" id="input_lengthwithpackaging" required>
+                                </fieldset>
+                                </div>
+
+                                <div class="form-group col-md-4">
+                                <label for="input_widthwithpackaging">عرض بسته بندی محصول <span class="Riyal">سانتی متر</span></label>
+                                <fieldset disabled>
+                                    <input type="text" value="{{Product.Width_With_Packaging}}" name="product_widthwithpackaging" class="form-control" pattern="[0-9]{1,4}" id="input_widthwithpackaging" required>
+                                </fieldset>
+                                </div>
+
+                                <div class="form-group col-md-4">
+                                <label for="input_heightwithpackaging">ارتفاع بسته بندی محصول <span class="Riyal">سانتی متر</span></label>
+                                <fieldset disabled>
+                                    <input type="text" value="{{Product.Height_With_Packaging}}" name="product_heightwithpackaging" class="form-control" pattern="[0-9]{1,4}" id="input_heightwithpackaging" required>
+                                </fieldset>
+                                </div>
+                            </div>
+
+                            {% if ProductAttribute.count != 0 %}
+                                <br>
+                                <h4>ویژگی های محصول</h4> 
+                                <br>
+
+                                <table class="table">
+
+                                    <thead class="thead-light">
+                                        <tr>
+                                        <th>عنوان</th>
+                                        <th>مقدار</th>
+                                        <th>واحد</th>
+                                        <th>تاریخ ثبت</th>
+                                        <th>وضعیت نمایش</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        
+                                    {% for item in ProductAttribute %}
+                                        <tr style="background-color: rgb(252, 167, 245)">
+                                            <td>{{item.FK_Attribute.Title}}</td>
+                                            <td>{{item.Value}}</td>
+                                            <td>{{item.FK_Attribute.Unit}}</td>
+                                            <td>{{item.DateCreate|jformat:'%Y/%m/%d'}}</td>
+                                            {% if item.Available %}
+                                                <td title="این ویژگی برای کاربران نمایش داده می شود."><a href="{% url "nakhll_market:Change_Product_Attribute_Status" item.id %}"><p style="color: green">در حال نمایش</p></a></td>
+                                            {% else %}
+                                                <td title="این ویژگی برای کاربران نمایش داده نمی شود."><a href="{% url "nakhll_market:Change_Product_Attribute_Status" item.id %}"><p style="color: red">عدم نمایش</p></a></td>
+                                            {% endif %}
+                                        </tr>
+                                    {% endfor %}
+                                        
+                                    </tbody>
+
+                                </table>
+                            {% endif %}
+
+                            
+                            {% if ProductAttributePrice.count != 0 %}
+                                <br>
+                                <h4>ارزش ویژگی های محصول</h4> 
+                                <br>
+
+                                <table class="table">
+
+                                    <thead class="thead-light">
+                                        <tr>
+                                        <th>مقدار</th>
+                                        <th>توضیحات</th>
+                                        <th>قیمت اضافه</th>
+                                        <th>واحد</th>
+                                        <th>وضعیت انتشار</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                    
+                                        {% for item in ProductAttributePrice %}
+                                            <tr style="background-color: rgb(252, 167, 245)">
+                                                <td>{{item.Value}}</td>
+                                                <td>{{item.Description}}</td>
+                                                <td><span class="numbersprice">{{item.ExtraPrice}}</span> ریال</td>
+                                                <td>{{item.Unit}}</td>
+                                                {% if item.Publish %}
+                                                    <td title="این ویژگی برای کاربران نمایش داده می شود."><a href="{% url "nakhll_market:Change_Product_AttrPrice_Status" item.id %}"><p style="color: green">منتشر شده</p></a></td>
+                                                {% else %}
+                                                    <td title="این ویژگی برای کاربران نمایش داده نمی شود."><a href="{% url "nakhll_market:Change_Product_AttrPrice_Status" item.id %}"><p style="color: red">منتشر نشده</p></a></td>
+                                                {% endif %}
+                                            </tr>
+                                        {% endfor %}
+                                        
+                                    </tbody>
+
+                                </table>
+                            {% endif %}
+
+
+                            {% if ProductBanner.count != 0 %}
+                                <br>
+                                <h4>بنر های محصول</h4> 
+                                <br>
+
+                                <table class="table">
+
+                                    <thead class="thead-light">
+                                        <tr>
+                                        <th>عنوان</th>
+                                        <th>توضیحات</th>
+                                        <th>سازنده</th>
+                                        <th>لینک سازنده</th>
+                                        <th>تاریخ ثبت</th>
+                                        <th>وضعیت نمایش</th>
+                                        <th>وضعیت انتشار</th>
+                                        <th>نمایش</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        
+                                        {% for item in ProductBanner %}
+                                            <tr style="background-color: rgb(247, 188, 140)">
+                                                <td>{{item.Title}}</td>
+                                                <td>{{item.Description}}</td>
+                                                <td>{{item.BannerBuilder}}</td>
+                                                <td class="pointer"><a href={{item.BannerURL}}><i class="fad fa-link"></i></a></td>
+                                                <td>{{item.DateCreate|jformat:'%Y/%m/%d'}}</td>
+                                                {% if item.Available %}
+                                                    <td title="برای عدم نمایش بنر کلیک نمایید."><a href="{% url "nakhll_market:Change_Product_Banner_Seen_Status" item.id %}"><p style="color: green">در حال نمایش</p></a></td>
+                                                {% else %}
+                                                    <td title="برای نمایش بنر کلیک نمایید."><a href="{% url "nakhll_market:Change_Product_Banner_Seen_Status" item.id %}"><p style="color: red">عدم نمایش</p></a></td>
+                                                {% endif %}
+                                                {% if item.Publish %}
+                                                    <td title="برای عدم انتشار بنر کلیک نمایید."><a href="{% url "nakhll_market:Change_Product_Banner_Publish_Status" item.id %}"><p style="color: green">منتشر شده</p></a></td>
+                                                {% else %}
+                                                    <td title="برای انتشار بنر کلیک نمایید."><a href="{% url "nakhll_market:Change_Product_Banner_Publish_Status" item.id %}"><p style="color: red">منتشر نشده</p></a></td>
+                                                {% endif %}
+                                                <td class="pointer"><a data-toggle="modal" data-target=".{{item.id}}"><i class="fad fa-eye"></i></td>
+                                            </tr>
+                                        {% endfor %}
+                                        
+                                    </tbody>
+
+                                </table>
+                            {% endif %}
+
+                            {% for item in ProductBanner %}
+                                <div class="modal fade {{item.id}}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-body" id="{{item.id}}">
+                                                <div class="row">
+                                                    <div class="col-xl-12 col-12 modal-img">
+                                                        <img src="{{item.Image.url}}" alt="بنر محصول">                           
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+
+                        </div>    
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+{% block footer-section %}
+{% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+
+
+{% block footer %}
+{% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

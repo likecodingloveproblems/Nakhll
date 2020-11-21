@@ -1,0 +1,570 @@
+{% load jformat %}
+
+{% block header %}
+    {% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+    <title>بازار نخل | پروفایل</title>
+</head>
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-3">
+                <div class="profile-sidebar-site">    
+                    {% block topsidebar %}
+                        {% include "nakhll_market/profile/parents/new-topsidebar.html" %}
+                    {% endblock %}
+                    <div class="profile-sidebar-main">
+
+                        <a href="/profile/dashboard/">
+                            <button class="activebtn">
+                                <i class="fas fa-id-badge"></i>
+                                <h5>داشبورد</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/transaction/">
+                            <button>
+                                <i class="fad fa-clipboard-list"></i>
+                            <h5>تراکنش ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/factor/">
+                            <button>
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <h5>فاکتور ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/ticketing/">
+                            <button>
+                                <i class="fad fa-user-headset"></i>
+                                <h5>پشتیبانی</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/shops/">
+                            <button>
+                                <i class="fas fa-store"></i>
+                                <h5>مدیریت حجره</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/review/">
+                            <button>
+                                <i class="fad fa-comments-alt"></i>
+                                <h5>نقد ها و نظرات</h5>
+                            </button>
+                        </a>
+
+                        {% if request.user.is_staff %}
+                            {% block menu %}
+                                {% include "nakhll_market/profile/parents/menu_for_shop_manage.html" %}
+                            {% endblock %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                    {% include "nakhll_market/profile/parents/new-header-profile.html" %}
+                {% endblock %}
+
+                <div class="alarm-section">
+                    <div class="row">
+                        {% if ShowAlart %}
+                            <div class="col-xl-6 xol-lg-6 col-md-6 col-sm-12 col-12">
+                                <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                                    <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                                    <p>
+                                        {{AlartMessage}}
+                                    </p>
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                        <div class="dashboard"> 
+                            <h4>داشبورد</h4>    
+                            <p class="centertext">برای انجام هر گونه تغییرات کلید ویرایش در انتهای همین صفحه را انتخاب کنید</p>
+                            <form method="POST" enctype="multipart/form-data" action="/profile/dashboard/update">
+                                {% csrf_token %}
+                                <div class="form-row" style="display: none;" id="pic-profile-add">
+                                    <div class="form-group col-md-6">
+                                        <div id="msg"></div>
+                                            <label for="file">عکس پروفایل</label>
+                                            <input type="file" name="Profile_Image" class="file file-image-dash" accept="image/*">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control input" disabled placeholder="آپلود عکس" id="file">
+                                                <div class="input-group-append">
+                                                    <button type="button" class="browse btn btn-primary">بارگذاری</button>
+                                                </div>
+                                            </div>
+                                            <br>
+                                        <img src="https://placehold.it/80x80" id="preview" class="img-thumbnail">
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="inputFirstName">نام <code>*</code></label>
+                                        <input readonly value="{{request.user.first_name}}" type="text" name="User_FirstName" class="form-control" id="inputFirstName" required>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <label for="inputLastName">نام خانوادگی <code>*</code></label>
+                                         <input readonly value="{{request.user.last_name}}" type="text" name="User_LastName" class="form-control" id="inputLastName" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">     
+                                    <div class="form-group col-md-4">
+                                        <label for="inputSex">جنسیت</label>
+                                        {% if This_User_Profile.Sex == '0' %}
+                                            <select id="inputSexState" name="Profile_SexState" class="form-control selcetoption" disabled>
+                                                <option selected disabled>انتخاب جنسیت</option>
+                                                <option>زن</option>
+                                                <option>مرد</option>
+                                            </select>
+                                        {% elif This_User_Profile.Sex == '1' %}
+                                            <select id="inputSexState" name="Profile_SexState" class="form-control selcetoption" disabled>
+                                                <option disabled>انتخاب جنسیت</option>
+                                                <option selected>زن</option>
+                                                <option>مرد</option>
+                                            </select>
+                                        {% elif This_User_Profile.Sex == '2' %}
+                                            <select id="inputSexState" name="Profile_SexState" class="form-control selcetoption" disabled>
+                                                <option disabled>انتخاب جنسیت</option>
+                                                <option>زن</option>
+                                                <option selected>مرد</option>
+                                            </select>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="form-group col-md-8">
+                                        <label for="inputBio">درباره من</label>
+                                        <input readonly value="{{This_User_Profile.Bio}}" type="text"  name="Profile_Bio" class="form-control" id="inputBio">
+                                    </div>
+                                </div>
+                   
+                                <div class="form-row">     
+                                    <div class="form-group col-md-6">
+                                    <label for="inputUserName">نام کاربری <code>*</code></label>
+                                        <fieldset disabled>
+                                            <input readonly value="{{request.user.username}}" type="text" name="User_UserName" class="form-control" id="inputUserName" required>
+                                        </fieldset>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                    <label for="inputEmail">ایمیل </label>
+                                        <input readonly value="{{request.user.email}}" type="email" name="User_Email" class="form-control" id="inputEmail" >
+                                    </div>
+                                </div>
+
+                                <div class="form-row">     
+                                    <div class="form-group col-md-6">
+                                    <label for="inputNationalCode">کد ملی <code>*</code></label>
+                                        <fieldset disabled>
+                                            <input type="text" id="inputNationalCode" name="Profile_NationalCode" class="form-control" placeholder="{{This_User_Profile.NationalCode}}" required>
+                                            <small class="form-text text-muted" id="helpinputNationalCode">توجه : برای ویرایش کدملی درخواست را به <a href="{% url "nakhll_market:Ticketing" %}">بخش پشتیبانی</a> ارسال کنید.</small>
+                                        </fieldset>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <label for="inputBrithDay">تاریخ تولد</label>  
+                                        <input readonly value="{{This_User_Profile.BrithDay}}" type="text" name="Profile_BrithDay" class="form-control" id="inputBrithDay" >
+                                        <script>
+                                            $("#inputBrithDay").persianDatepicker({
+                                                startDate: "1300/01/01",
+                                                endDate:"today"
+                                            });
+                                        </script>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                    <label for="inputState">استان</label>
+                                        <select disabled name="Profile_State" class="chosen-select-rtl form-control choose-state-chosen" id="inputprofState">
+                                            <option value="0">استان خود را انتخاب نمائید...</option>
+                                            <option value="2">مرکزی</option>
+                                            <option value="3">خراسان شمالی</option>
+                                            <option value="4">گلستان</option>
+                                            <option value="5">قزوین</option>
+                                            <option value="6">قم</option>
+                                            <option value="7">اردبیل</option>
+                                            <option value="8">تهران</option>
+                                            <option value="9">هرمزگان</option>
+                                            <option value="10">یزد</option>
+                                            <option value="11">سمنان</option>
+                                            <option value="12">زنجان</option>
+                                            <option value="13">بوشهر</option>
+                                            <option value="14">کهگیلویه وبویراحمد</option>
+                                            <option value="15">ایلام</option>
+                                            <option value="16">خراسان جنوبی</option>
+                                            <option value="17">لرستان</option>
+                                            <option value="18">همدان</option>
+                                            <option value="19">کردستان</option>
+                                            <option value="20">سیستان وبلوچستان</option>
+                                            <option value="21">اصفهان</option>
+                                            <option value="22">خراسان رضوی</option>
+                                            <option value="23">کرمان</option>
+                                            <option value="24">فارس</option>
+                                            <option value="25">خوزستان</option>
+                                            <option value="26">کرمانشاه</option>
+                                            <option value="27">آذربایجان غربی</option>
+                                            <option value="28">آذربایجان شرقی</option>
+                                            <option value="29">مازندران</option>
+                                            <option value="30">گیلان</option>
+                                            <option value="31">چهارمحال وبختیاری</option>
+                                            <option value="32">البرز</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                    <label for="inputBigCity">شهرستان</label>
+                                        <select disabled name="Profile_BigCity" class="chosen-select-rtl form-control choose-bigcity-chosen" id="inputprofBigCity">
+                                            <option value="0">شهرستان خود را انتخاب نمائید...</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                    <label for="inputCity">شهر</label>
+                                        <select disabled name="Profile_City" class="chosen-select-rtl form-control choose-city-chosen" id="inputprofCity">
+                                            <option value="0">شهر خود را انتخاب نمائید...</option>
+                                        </select>
+                                    </div>
+                                    <script>
+                                        var selectedState;
+                                        createBigCity = function () { $.ajax (
+                                            {
+                                                type:'POST',
+                                                url: '{% url "restapi:get_state_bigcity" %}',
+                                                data: {
+                                                    id: selectedState,
+                                                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                                                },
+                                                success: function (json) {
+                                                    $('.choose-bigcity-chosen').empty(); //remove all child nodes
+                                                    $('.choose-bigcity-chosen').append('<option value="0">شهرستان خود را انتخاب نمائید...</option>');
+                                                    for( i=0; i < json.length; i++) {
+                                                        $(".choose-bigcity-chosen").append('<option value="'+ json[i].id + '">' + json[i].name + '</option>');
+                                                    }
+                                                    $(".choose-bigcity-chosen").trigger("chosen:updated");
+                                                    if (findState)
+                                                    {
+                                                        profBigCityOptions = $('#inputprofBigCity option').map(function() { return ({'name': $(this).text(), 'id': $(this).val()})});
+                                                        for(var i=0;i < profBigCityOptions.length; i++)
+                                                        {
+                                                            if (userprofBigCity == profBigCityOptions[i].name)
+                                                            {
+                                                                $("#inputprofBigCity").val(profBigCityOptions[i].id);
+                                                                $("#inputprofBigCity").trigger('chosen:updated');
+                                                                selectedBigCity = profBigCityOptions[i].id;
+                                                                findBigCity = true;
+                                                                createCity();
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                            },
+                                            error: function () {
+                                                
+                                            }
+                                        }
+                                        )
+                                    }
+                                    var selectedBigCity;
+                                            createCity = function () { $.ajax (
+                                                {
+                                                    type:'POST',
+                                                    url: '{% url "restapi:get_bigcity_city" %}',
+                                                    data: {
+                                                        id: selectedBigCity,
+                                                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                                                    },
+                                                    success: function (json) {
+                                                        $('.choose-city-chosen').empty(); //remove all child nodes
+                                                        $('.choose-city-chosen').append('<option value="0">شهر خود را انتخاب نمائید...</option>');
+                                                        for( i=0; i < json.length; i++) {
+                                                            $(".choose-city-chosen").append('<option value="'+ json[i].id + '">' + json[i].name + '</option>');
+                                                        }
+                                                        $(".choose-city-chosen").trigger("chosen:updated");
+                                                        if (findBigCity)
+                                                        {
+                                                            profCityOptions = $('#inputprofCity option').map(function() { return ({'name': $(this).text(), 'id': $(this).val()})});
+                                                            for(var i=0;i < profCityOptions.length; i++)
+                                                            {
+                                                                if (userprofCity == profCityOptions[i].name)
+                                                                {
+                                                                    $("#inputprofCity").val(profCityOptions[i].id);
+                                                                    $("#inputprofCity").trigger('chosen:updated');
+                                                                    break;
+                                                                }
+                                                            }
+                                                        }
+                                                },
+                                                error: function () {
+                                                    
+                                                }
+                                            }
+                                            )
+                                        }
+                                        $(document).ready( function () {
+                                            $('.choose-state-chosen').chosen().change(function() {
+                                                selectedState = $(this).val();
+                                                $('.choose-city-chosen').empty(); //remove all child nodes
+                                                $('.choose-city-chosen').append('<option value="0">شهر خود را انتخاب نمائید...</option>');
+                                                $(".choose-city-chosen").trigger("chosen:updated");
+                                                if (selectedState != 0) {
+                                                    createBigCity();
+                                                }
+                                                else {
+                                                    $('.choose-bigcity-chosen').empty(); //remove all child nodes
+                                                    $('.choose-bigcity-chosen').append('<option value="0">شهرستان خود را انتخاب نمائید...</option>');
+                                            $(".choose-bigcity-chosen").trigger("chosen:updated");
+                                        }
+                                        $(".choose-bigcity-chosen").chosen().change(function () {
+                                            selectedBigCity = $(this).val();
+                                            if (selectedBigCity != 0) {
+                                                createCity();
+                                            }
+                                            else {
+                                                $('.choose-city-chosen').empty(); //remove all child nodes
+                                                $('.choose-city-chosen').append('<option value="0">شهر خود را انتخاب نمائید...</option>');
+                                                $(".choose-city-chosen").trigger("chosen:updated");
+                                            }
+                                        });
+                                    })
+                                })
+                                </script>
+                                    <div class="form-group col-md-6">
+                                        <label for="inputZipCode">کد پستی</label>
+                                        <input readonly value="{{This_User_Profile.ZipCode}}" type="text" name="Profile_ZipCode" minlength="10" maxlength="10" class="form-control" id="inputZipCode">
+                                    </div>
+                                </div>
+
+                                <div class="form-row">     
+                                    <div class="form-group col-md-6">
+                                        <label for="inputAddress">آدرس</label>
+                                        <input readonly value="{{This_User_Profile.Address}}" type="text" name="Profile_Address" class="form-control" id="inputAddress">
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <label for="inputTutorialWebsite">نحوه آشنایی با سایت</label>
+                                        {% if This_User_Profile.TutorialWebsite == '0' %}
+                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption" disabled>
+                                                <option selected>موتور های جستجو</option>
+                                                <option>حجره داران</option>
+                                                <option>شبکه های اجتماعی</option>
+                                                <option>کاربران</option>
+                                                <option >رسانه ها</option>
+                                                <option>تبلیغات</option>
+                                                <option>نود ها</option>
+                                                <option>سایر</option>
+                                                <option>هیچ کدام</option>
+                                            </select>
+                                        {% elif This_User_Profile.TutorialWebsite == '1' %}
+                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption" disabled>
+                                                <option>موتور های جستجو</option>
+                                                <option selected>حجره داران</option>
+                                                <option>شبکه های اجتماعی</option>
+                                                <option>کاربران</option>
+                                                <option >رسانه ها</option>
+                                                <option>تبلیغات</option>
+                                                <option>نود ها</option>
+                                                <option>سایر</option>
+                                                <option>هیچ کدام</option>
+                                            </select>
+                                        {% elif This_User_Profile.TutorialWebsite == '2' %}
+                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption" disabled>
+                                                <option>موتور های جستجو</option>
+                                                <option>حجره داران</option>
+                                                <option selected>شبکه های اجتماعی</option>
+                                                <option>کاربران</option>
+                                                <option >رسانه ها</option>
+                                                <option>تبلیغات</option>
+                                                <option>نود ها</option>
+                                                <option>سایر</option>
+                                                <option>هیچ کدام</option>
+                                            </select>
+                                        {% elif This_User_Profile.TutorialWebsite == '3' %}
+                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption" disabled>
+                                                <option>موتور های جستجو</option>
+                                                <option>حجره داران</option>
+                                                <option>شبکه های اجتماعی</option>
+                                                <option selected>کاربران</option>
+                                                <option >رسانه ها</option>
+                                                <option>تبلیغات</option>
+                                                <option>نود ها</option>
+                                                <option>سایر</option>
+                                                <option>هیچ کدام</option>
+                                            </select>
+                                        {% elif This_User_Profile.TutorialWebsite == '4' %}
+                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption" disabled>
+                                                <option>موتور های جستجو</option>
+                                                <option>حجره داران</option>
+                                                <option>شبکه های اجتماعی</option>
+                                                <option>کاربران</option>
+                                                <option selected>رسانه ها</option>
+                                                <option>تبلیغات</option>
+                                                <option>نود ها</option>
+                                                <option>سایر</option>
+                                                <option>هیچ کدام</option>
+                                            </select>
+                                        {% elif This_User_Profile.TutorialWebsite == '5' %}
+                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption" disabled>
+                                                <option>موتور های جستجو</option>
+                                                <option>حجره داران</option>
+                                                <option>شبکه های اجتماعی</option>
+                                                <option>کاربران</option>
+                                                <option>رسانه ها</option>
+                                                <option selected>تبلیغات</option>
+                                                <option>نود ها</option>
+                                                <option>سایر</option>
+                                                <option>هیچ کدام</option>
+                                            </select>
+                                        {% elif This_User_Profile.TutorialWebsite == '6' %}
+                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption" disabled>
+                                                <option>موتور های جستجو</option>
+                                                <option>حجره داران</option>
+                                                <option>شبکه های اجتماعی</option>
+                                                <option>کاربران</option>
+                                                <option>رسانه ها</option>
+                                                <option>تبلیغات</option>
+                                                <option selected>نود ها</option>
+                                                <option>سایر</option>
+                                                <option>هیچ کدام</option>
+                                            </select>
+                                        {% elif This_User_Profile.TutorialWebsite == '7' %}
+                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption" disabled>
+                                                <option>موتور های جستجو</option>
+                                                <option>حجره داران</option>
+                                                <option>شبکه های اجتماعی</option>
+                                                <option>کاربران</option>
+                                                <option>رسانه ها</option>
+                                                <option>تبلیغات</option>
+                                                <option>نود ها</option>
+                                                <option selected>سایر</option>
+                                                <option>هیچ کدام</option>
+                                            </select>
+                                        {% elif This_User_Profile.TutorialWebsite == '8' %}
+                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption" disabled>
+                                                <option>موتور های جستجو</option>
+                                                <option>حجره داران</option>
+                                                <option>شبکه های اجتماعی</option>
+                                                <option>کاربران</option>
+                                                <option>رسانه ها</option>
+                                                <option>تبلیغات</option>
+                                                <option>نود ها</option>
+                                                <option>سایر</option>
+                                                <option selected>هیچ کدام</option>
+                                            </select>
+                                        {% else %}
+                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption" disabled>
+                                                <option>موتور های جستجو</option>
+                                                <option>حجره داران</option>
+                                                <option>شبکه های اجتماعی</option>
+                                                <option>کاربران</option>
+                                                <option>رسانه ها</option>
+                                                <option>تبلیغات</option>
+                                                <option>نود ها</option>
+                                                <option>سایر</option>
+                                                <option selected>هیچ کدام</option>
+                                            </select>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-5">
+                                        <label for="inputPhoneNumber">تلفن ثابت</label>
+                                        <input readonly value="{{This_User_Profile.PhoneNumber}}" type="text" name="Profile_PhoneNumber" pattern="[0-9]{8}" class="form-control" id="inputPhoneNumber">
+                                    </div>
+
+                                    <div class="form-group col-md-1">
+                                        <label for="inputCityPerCode">پیش شماره</label>
+                                        <input readonly value="{{This_User_Profile.CityPerCode}}" type="text" name="Profile_CityPerCode" maxlength="3" class="form-control" id="inputCityPerCode">
+                                    </div>
+
+                                    <div class="form-group col-md-5">
+                                        <label for="inputMobileNumber">شماره موبایل</label>
+                                        <fieldset disabled>
+                                            <input readonly value="{{This_User_Profile.MobileNumber}}" type="text" name="Profile_MobileNumber" pattern="[0-9]{11}" maxlength="11" class="form-control" id="inputMobileNumber">
+                                            <small class="form-text text-muted" id="helpinputMobileNumber">توجه : برای ویرایش شماره موبایل درخواست را به <a href="{% url "nakhll_market:Ticketing" %}">بخش پشتیبانی</a> ارسال کنید.</small>
+                                        </fieldset>
+                                    </div>
+
+                                    <div class="form-group col-md-1">
+                                        <label for="inputCountrPreCode">کد کشور</label>
+                                        <fieldset disabled>
+                                            <input readonly value="{{This_User_Profile.CountrPreCode}}" type="text" name="Profile_CountrPreCode" class="form-control" pattern="[0-9]" id="inputCountrPreCode">
+                                        </fieldset>
+                                    </div>
+                                </div>
+                
+                                <span class="btn btn-primary" id="readonlyswitchbtn" >ویرایش</span>
+                                <button type="submit" class="btn btn-primary mr-auto" id="edit-profile">ویرایش اطلاعات</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    var userprofState = '{{This_User_Profile.State}}';
+    var userprofBigCity = '{{This_User_Profile.BigCity}}';
+    var userprofCity = '{{This_User_Profile.City}}';
+    var findState = false;
+    var findBigCity = false;
+    var findCity = false;
+
+    var profStateOptions = $('#inputprofState option').map(function() { return ({'name': $(this).text(), 'id': $(this).val()})});
+    var profBigCityOptions = [];
+    var profCityOptions = [];
+    $(document).ready(function() {
+        for (var i=0; i < profStateOptions.length; i++)
+        {
+            if (userprofState == profStateOptions[i].name)
+            {
+                $("#inputprofState").val(profStateOptions[i].id);
+                $("#inputprofState").trigger('chosen:updated');
+                selectedState = profStateOptions[i].id;
+                findState = true;
+                createBigCity();
+                break;
+            }
+        }
+        
+    })
+</script>
+{% block footer-section %}
+    {% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+    {% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

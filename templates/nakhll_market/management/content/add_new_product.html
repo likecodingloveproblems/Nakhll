@@ -1,0 +1,216 @@
+{% load jformat %}
+
+{% block header %}
+{% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+
+    <title>بازار نخل | ثبت محصول کاربر</title>
+</head>
+
+
+{% block headertag %}
+{% include "nakhll_market/parents/headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+
+
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-xl-3">
+
+                <div class="profile-sidebar-site">    
+                    {% block topsidebar %}
+                        {% include "nakhll_market/profile/parents/topsidebar.html" %}
+                    {% endblock %}
+                    <div class="profile-sidebar-main">
+
+                            <a href="/profile/dashboard/">
+                                <button>
+                                    <i class="fas fa-id-badge"></i>
+                                    <h5>داشبورد</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/transaction/">
+                                <button>
+                                    <i class="fad fa-clipboard-list"></i>
+                                <h5>تراکنش ها</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/factor/">
+                                <button>
+                                    <i class="fas fa-file-invoice-dollar"></i>
+                                    <h5>فاکتور ها</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/ticketing/">
+                                <button>
+                                    <i class="fad fa-user-headset"></i>
+                                    <h5>پشتیبانی</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/shops/">
+                                <button>
+                                    <i class="fas fa-store"></i>
+                                    <h5>مدیریت حجره</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/review/">
+                                <button>
+                                    <i class="fad fa-comments-alt"></i>
+                                    <h5>نقد ها و نظرات</h5>
+                                </button>
+                            </a>
+
+                        {% if request.user.is_staff %}
+                            {% block review %}
+                                {% include "nakhll_market/profile/parents/menu_for_user_manage.html" %}
+                            {% endblock %}
+                        {% endif %}
+    
+                    </div>
+                </div>
+
+            </div>
+
+
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                    {% include "nakhll_market/profile/parents/header-profile.html" %}
+                {% endblock %}
+
+                <div class="row">
+
+                    {% if ShowAlart %}
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                            <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                            <p>
+                                {{AlartMessage}}
+                            </p>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                        <div class="dashboard"> 
+                            <h4>اضافه کردن محصول</h4>  
+
+                            <form id="new-prod-form" method="POST" enctype="multipart/form-data" action="{% url "nakhll_market:Add_New_Product" ThisShop.ID %}">
+                                {% csrf_token %}
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <div id="msg"></div>
+                                        <label for="file">عکس محصول <code>*</code></label>
+                                        <input type="file" name="Product_Image" class="file" accept="image/*">
+                                        <div class="input-group">
+                                        <input type="text" class="form-control input" disabled placeholder="آپلود عکس" id="file">
+                                        <div class="input-group-append">
+                                            <button type="button" class="browse btn btn-primary">بارگذاری</button>
+                                        </div>
+                                        
+                                        </div>
+                                        <br>
+                                        <img src="https://placehold.it/80x80" id="preview" class="img-thumbnail">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <small>
+                                            <br>
+                                                برای بالا رفتن کیفیت کار ما و عکس ها در سایت لطفا عکس های به صورت مربع بارگذاری شود. با تشکر
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                    <label for="inputprod_title">عنوان محصول <code>*</code></label>
+                                        <input type="text" name="prod_title" class="form-control" id="inputprod_title" minlength="2" maxlength="200" required>
+                                        <small>عنوان باید فارسی و <span class="Riyal">حداکثر 200 کاراکتر</span> باشد.</small>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="inputslugProd">شناسه محصول <code>*</code></label>
+                                        <input type="text" name="slugProd" class="form-control" id="inputslugProd" pattern="[a-z0-9\-_]{2,}" required>
+                                        <small>شناسه محصول باید شامل <span class="Riyal">حروف انگلیسی کوچک</span>، <span class="Riyal">خط تیره ("_" یا "-")</span> و <span class="Riyal">بدون فاصله</span> باشد.</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="inputCat">دسته بندی محصول <code>*</code></label>
+                                        <select data-placeholder="انتخاب دسته بندی" multiple class="chosen-select-rtl form-control" name="ProdCat" tabindex="14">
+                                            {% for shop in Categort %}
+                                                <option>{{shop.Title}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <small>محصول شما شامل کدام دسته بندی ها می باشد؟</small>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="inputSubMarket">راسته محصول <code>*</code></label>
+                                        <select id="inputSubMarket" name="ProdSub" class="form-control">
+                                            {% for shop in SubMarket %}
+                                                <option>{{shop.Title}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <small>محصول شما در کدام راسته قرار می گیرد؟</small>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                    <label for="inputprod_title">قیمت فروش محصول <code>*</code></label>
+                                        <input type="text" name="prod_Price" class="form-control" pattern="[0-9]{5,}" id="inputprod_title" required>
+                                        <small>قیمت را به <span class="Riyal">ریال</span> وارد نمایید.</small>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="inputprod_weght">وزن <code>*</code></label>
+                                            <input type="text" name="prod_weght" class="form-control" pattern="[0-9]{1,}" id="inputprod_weght" required>
+                                            <small>وزن محصول را با <span class="Riyal">بسته بندی</span> و به صورت <span class="Riyal">گرم</span> وارد نمایید.</small>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary mr-auto" id="send-left">ثبت محصول</button>
+                                <a class="btn btn-primary btn-all btn-left right-buttom" href="{% url "nakhll_market:Add_Bank_Account" ThisShop.FK_ShopManager.id %}">ادامه</a>
+                                <div class="clearfix"></div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+{% block footer-section %}
+{% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+
+
+{% block footer %}
+{% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

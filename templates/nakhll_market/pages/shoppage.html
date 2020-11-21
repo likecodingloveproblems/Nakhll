@@ -1,0 +1,561 @@
+{% load i18n static %}
+<section id="brdcmb">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">خانه</a></li>
+                        {% if This_Shop_First_SubMarket_Market != None %}<li class="breadcrumb-item"><a href="{% url "nakhll_market:Markets" %}">{{This_Shop_First_SubMarket_Market.Title}}</a></li>{% endif %}
+                        {% if This_Shop_First_SubMarket != None %}<li class="breadcrumb-item"><a href="{% url "nakhll_market:SubMarkets" This_Shop_First_SubMarket.Slug %}">{{This_Shop_First_SubMarket.Title}}</a></li>{% endif %}
+                        <li class="breadcrumb-item active" aria-current="page">حجره {{Shop.Title}}</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="slider-shop-section">
+    <div class="container">
+        <div class="alarm-section">
+            <div class="row">
+                {% if ShowAlart %}
+                    <div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                            <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                            <p>
+                                {{AlartMessage}}
+                            </p>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-xl-9 col-lg-8 col-md-8 col-sm-12 col-12">
+                <div class="bd-example" id="slider-shop-body">
+                    <div id="carouselshopCaptions" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner">
+                            {% if ShopBanner %}
+                                {% for item in ShopBanner %}
+                                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                        <a href="{{item.URL}}"><img src="/{{item.Image}}" class="d-block w-100" alt="{{item.Title}}">
+                                            {% if item.ShowInfo %}
+                                                <div class="carousel-caption">
+                                                    <h3>{{item.Title}}</h3>
+                                                    <p>{{item.Description}}</p>
+                                                </div>
+                                            {% endif %}
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="carousel-item active">
+                                    <a href="#"><img src="{% static "images/banner_default.jpg" %}" class="d-block w-100" alt="بنر ثابت">
+                                        <div class="carousel-caption">
+                                            <h3>{{Shop.Title}}</h3>
+                                        </div>
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>   
+                        <a class="carousel-control-prev" href="#carouselshopCaptions" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">قبلی</span>
+                        </a>
+                        <a class="carousel-control-next" href="#carouselshopCaptions" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">بعدی</span>
+                        </a>
+    
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-lg-4 col-md-4 col-sm-12 col-12">
+                <div class="about-shop">
+                    <div class="ab-sh">
+                        <div class="logo-shop" style="background: url({{Shop.Image_thumbnail_url}}) #9436ff ;background-size: cover;"></div>
+                        <h1><span>حجره {{Shop.Title}}</span></h1>
+                        <h1 class="hide">{{Shop.Title}}</h1>
+                        <!-- Tag        -->
+                    </div>
+                    <br>
+                    <div class="des-shop">
+                        <p>
+                            {{Shop.Description}}
+                        </p>
+                    </div>
+                    <div class="loc-shop">
+                        <p class="loc-p"><img src="{% static "images/maps-and-flags.svg" %}" alt="s" > 
+                            استان {{Shop.State}}, شهرستان {{Shop.BigCity}}, شهر {{Shop.City}}
+                        </p>
+                        <span class="star-shop">
+                            <!-- <span>{{Shop.Point}}</span> 
+                            <img src="{% static "images/star.svg" %}" alt=""> -->
+                        </span>
+                    </div>
+                </div> 
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="tab-prod">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                <ul class="nav nav-pills mb-3 nav-top-shop" id="pills-tab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="pills-prod-tab" data-toggle="pill" href="#pills-prod" role="tab" aria-controls="pills-prod" aria-selected="true"><img src="{% static "images/package.svg" %}" class="svgicon" alt="not found"> محصولات </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false"><img src="{% static "images/memo.svg" %}" class="svgicon" alt="not found"> محتوا </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="pills-comment-tab" data-toggle="pill" href="#pills-comment" role="tab" aria-controls="pills-comment" aria-selected="false"><i class="far fa-comment"></i> نظرات </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-3 col-lg-3 col-md-4 col-sm-12 col-12">
+                <div class="sidebar-shop">
+                    <div class="user-shop-info">
+                        <div style="background: url({{ Shop.get_managment_image }}) #fff; background-size: cover;"></div>
+                        <h2>{{Shop.FK_ShopManager.first_name}} {{Shop.FK_ShopManager.last_name}}</h2>
+                        {% if DateNow < 365 %}
+                            <P>مدت عضویت : <span>کمتر از یک سال</span></P>
+                        {% else %}
+                            {% if DateNow < 730 %}
+                                <P>مدت عضویت : <span>بیشتر از یک سال</span></P>
+                            {% else %}
+                                {% if DateNow < 1095 %}
+                                    <P>مدت عضویت : <span>بیشتر از دو سال</span></P>
+                                {% endif %}
+                            {% endif %}    
+                        {% endif %}
+                    </div>
+                    <div class="user-des">
+                        {% autoescape off %}
+                            <p>
+                                {{Shop.Bio}}
+                            </p>
+                        {% endautoescape %}
+                    </div>
+                </div>
+
+                {% if This_Shop_Story %}
+                    <div class="sidebar-shop">
+                        <a href="{% url "blog:vendorstory" This_Shop_Story.Slug %}" target="_blank">
+                            <div class="user-shop-info user-shop-story">
+                                <h2>{{This_Shop_Story.Title}}</h2>
+                            </div>
+                            <div class="user-des shop-story-des">
+                                {% autoescape off %}
+                                    <p>
+                                        {{This_Shop_Story.Summary}}
+                                    </p>
+                                {% endautoescape %}
+                            </div>
+                        </a>
+                    </div>
+                {% endif %}
+                <!-- new-->
+                <div class="sidebar-shop sidebar-shop-space">
+                    <div class="filter-items available-products-switch-div">
+                        <br>
+                        <h5>جستجو پیشرفته در محصولات</h5>
+                        <div class="input-group mb-3 search-category-input-box">
+                            <div class="input-group-prepend search-category-input-icon">
+                                <i class="fal fa-search"></i>
+                            </div>
+                            <input type="text" class="form-control" id="search_shop" placeholder="جستجو در محصولات ..."
+                                        aria-label="Example text with button addon" aria-describedby="button-addon1">
+                        </div>
+                        
+                    </div>
+                    
+                    
+                    <div class="filter-items available-products-switch-div">
+                        <h6>فیلتر ها</h6>
+                        <div class="custom-control custom-switch display-inline-block search-filters-button">
+                            <input type="checkbox" class="custom-control-input search-filters-input"
+                                id="productsAvailibility">
+                            <label class="custom-control-label search-filters-label" for="productsAvailibility"></label>
+                        </div>
+                        <span>نمایش کالاهای موجود</span>
+                    </div>
+                    {% if Shop.get_products_category %}
+                        <div class="search-side-bar-title">
+                            <h6>دسته بندی ها</h6>
+                        </div>
+                        <div class="hr-line-search-side-bar"></div>
+                        <div class="search-side-bar-content">
+                            <div class="search-category-input">
+                                <div class="input-group mb-3 search-category-input-box">
+                                    <div class="input-group-prepend search-category-input-icon">
+                                        <i class="fal fa-search"></i>
+                                    </div>
+                                    <input type="text" class="form-control target" id="searchCatInp" placeholder="جستجو در دسته بندی ها ..."
+                                        aria-label="Example text with button addon" aria-describedby="button-addon1">
+                                </div>
+                            </div>
+                            <div class="search-category-checklist">
+                                <div class="search-category-checklist-content" id="list-item-for-cat">
+                                    <ul class="search-category-main-list">
+                                        {% for item in Shop.get_products_category %}
+                                            <li>
+                                                <div class="search-category-main-item">
+                                                    <div class="custom-control custom-checkbox search-checks">
+                                                        <input val="{{item.id}}" type="checkbox" class="custom-control-input checkbox_val_category" id="{{item.Slug}}">
+                                                        <label class="custom-control-label" for="{{item.Slug}}"></label>
+                                                    </div>
+                                                    <span class="search-category-main-span">{{item.Title}}</span>
+                                                </div>
+                                                {% if item.get_sub_category %}
+                                                    <ul class="search-category-sub-list">
+                                                        {% for sub_item in item.SubCategory.all %}
+                                                            <li>
+                                                                <div class="search-category-sub-item">
+                                                                    <div class="custom-control custom-checkbox search-checks">
+                                                                        <input val="{{sub_item.id}}" type="checkbox" class="custom-control-input checkbox_val_category " id="{{sub_item.Slug}}" name="level-2">
+                                                                        <label class="custom-control-label" for="{{sub_item.Slug}}"></label>
+                                                                    </div>
+                                                                    <span class="search-category-sub-span">{{sub_item.Title}}</span>
+                                                                </div>
+                                                            </li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                {% endif %}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="apply-filters-div">
+                        <button id="apply-filters" class="btn btn-primary apply-filters-btn">
+                            جستجو
+                        </button>
+                    </div>
+                </div>
+                <!-- new-->
+            </div>
+            <div class="col-xl-9 col-lg-9 col-md-8 col-sm-12 col-12">
+                <div class="tab-content tab-in-sec tab-top-shop" id="pills-tabContent">
+                    <div id="alert-web">
+                        محصولی یافت نشد
+                    </div>
+                    <div class="tab-pane fade show active tab-cont-in" id="pills-prod" role="tabpanel" aria-labelledby="pills-prod-tab">
+                        <div class="system-error-ajax">
+                            <div class="system-error-text">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                خطا! صفحه را رفرش کرده و مجددا سعی نمائید.
+                            </div>
+                        </div>
+                        <div class="loading-products-search">
+                            <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری">
+                            در حال بارگزاری
+                        </div>
+                        <div class="row whole-products-of-shop">
+                            {% for item in Products %}
+                                <div class="col-xl-3 col-md-3">
+                                    <div class="prod-sec">
+                                        <a href="{% url "nakhll_market:ProductsDetail" Shop.Slug item.Slug %}"><img class="prodimg" src="{{item.Image_thumbnail_url}}" alt="prodname"></a>
+                                        <a href="{% url "nakhll_market:ProductsDetail" Shop.Slug item.Slug %}"><h3>{{item.Title |truncatechars:47}}</h3></a>
+                                        
+                                        {% if item.Status != '4' %}
+                                         <span>{% if item.OldPrice != '0' %}<span class="numbersprice off-price">{{item.OldPrice}}</span>{% endif %}<span class="numbersprice">{{item.Price}}</span> ریال </span>
+                                        {% else %}
+                                            <span class="empty">ناموجود</span>
+                                        {% endif %}
+
+                                        <span class="add-to-cart-link"><span class="add-cart"><i class="far fa-plus"><span class="hide">{{item.ID}}</span></i></span></span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            <div class="col-12">
+                                <div class="row pagerow">
+                                    <nav aria-label="Page navigation example">
+                                        <ul class="pagination">
+                                            {% if Products.has_previous %}
+                                                <li class="page-item"><a class="page-link" href="?page=1">اولی</a></li>
+                                                <li class="page-item"><a class="page-link" href="?page={{Products.previous_page_number}}">قبلی</a></li>
+                                            {% endif %}
+                                            {% for num in Products.paginator.page_range %}
+                                                {% if num == Products.number %}
+                                                    <li class="page-item"><a class="page-link" href="?page={{num}}"><strong>{{num}}</strong></a></li>
+                                                {% elif num > Products.number|add:'-3' and num < Products.number|add:'3' %}
+                                                    <li class="page-item"><a class="page-link" href="?page={{num}}">{{num}}</a></li>
+                                                {% endif %}
+                                            {% endfor %}
+                                            {% if Products.has_next %}
+                                                <li class="page-item"><a class="page-link" href="?page={{Products.next_page_number}}">بعدی</a></li>
+                                                <li class="page-item"><a class="page-link" href="?page={{Products.paginator.num_pages}}">آخری</a></li>
+                                            {% endif %}
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab"><div class="row">محتوایی برای این حجره ثبت نگردیده است </div></div>
+                    <div class="tab-pane fade" id="pills-comment" role="tabpanel" aria-labelledby="pills-comment-tab">
+                        {% block comment %}
+                            {% include "nakhll_market/pages/shop_comment.html" %}
+                        {% endblock %} 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>    
+
+
+
+<!-- Modal and script a-t-c -->
+<div class="modal fade" id="add-to-cart-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="title-modal-add-to-cart">عنوان</h5>
+          <button type="button" class="close right-close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p id="text-modal-add-to-cart">توضیحات</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-right" data-dismiss="modal">بستن</button>
+            <a href="/cart/detail/" class="btn btn-primary" id="go-to-card">سبدخرید</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+    function handler( event ) {
+        var product_ID = $(event.target).text();
+        var attrprice_list = [];
+        $.ajax(
+            {
+                type: 'POST',
+                url: '{% url "nakhll_market:add_to_cart_with_price_attribute" %}',
+                data: {
+                    product_id : product_ID ,
+                    attrpriceitem : attrprice_list ,
+                    csrfmiddlewaretoken : $('input[name=csrfmiddlewaretoken]').val(),
+                },
+                success: function (json) {
+                    if (json.status) {
+                        if (json.code === '200') {
+                            $('#title-modal-add-to-cart').html(" انجام شد ...");
+                            $('#text-modal-add-to-cart').html("<i class='fas fa-check ok-add-cart'></i><br> محصول در سبدخرید شما موجود است، به تعداد آن افزوده شد.");
+                            $("#go-to-card").show();
+                            $('#add-to-cart-modal').modal('show');
+                        }
+                        else if (json.code === '201') {
+                            $('#title-modal-add-to-cart').html("انجام شد ...");
+                            $('#text-modal-add-to-cart').html("<i class='fas fa-check ok-add-cart'></i><br> محصول موردنظر با موفقیت به سبدخرید شما اضافه شد.");
+                            $("#go-to-card").show();
+                            $('#add-to-cart-modal').modal('show');
+                        }
+                    }
+                    else {
+                        if (json.code === '404') {
+                            $('#title-modal-add-to-cart').html("خطا");
+                            $('#text-modal-add-to-cart').html("<i class='far fa-times cancel-add-cart'></i><br>موجودی محصول کافی نمی باشد ...");
+                            $("#go-to-card").show();
+                            $('#add-to-cart-modal').modal('show');
+                        }
+                        else if (json.code === '500') {
+                            $('#title-modal-add-to-cart').html("خطا");
+                            $('#text-modal-add-to-cart').html("<i class='far fa-times cancel-add-cart'></i><br> خطایی رخ داده است <br>" + json.msg );
+                            $("#go-to-card").show();
+                            $('#add-to-cart-modal').modal('show');
+                        }
+                        else if (json.code === '400') {
+                            $('#title-modal-add-to-cart').html("خطا");
+                            $('#text-modal-add-to-cart').html("<i class='far fa-times cancel-add-cart'></i><br> محصول مورد نظر یافت نشد.");
+                            $("#go-to-card").show();
+                            $('#add-to-cart-modal').modal('show');
+                        }
+                        else if (json.code === '401') {
+                            $('#title-modal-add-to-cart').html("خطا");
+                            $('#text-modal-add-to-cart').html("<i class='far fa-times cancel-add-cart'></i><br> ابتدا به حساب کاربری خود وارد شوید و یا ثبت نام کنید ...");
+                            $("#go-to-card").hide();
+                            $('#add-to-cart-modal').modal('show');
+                        }
+                    }
+                    shopping_cart();
+                },
+                error: function () {
+                    $('#title-modal-add-to-cart').html("خطا");
+                    $('#text-modal-add-to-cart').html("ابتدا به حساب کاربری خود وارد شوید و یا ثبت نام کنید ...");
+                    $("#go-to-card").hide();
+                    $('#add-to-cart-modal').modal('show');
+                    console.log(xhr.status + ": " + xhr.responseText);
+                    RegisteredMobileNumber = false;
+                    shopping_cart();
+                }
+            }
+        );
+    }
+    $( ".add-to-cart-link" ).click( handler );
+
+    var availableCats = $(".search-category-main-list > li");
+    var availableCatsCount = $(".search-category-main-list > li").length;
+    $(".target").on('input',function(e){ 
+        var filter = $("#searchCatInp").val();
+        for (var i = 0 ;i < availableCatsCount; i++)
+        {
+            if ($(".search-category-main-list > li")[i].innerText.indexOf(filter) > -1 )
+            {
+                $(".search-category-main-list > li").eq(i).show();
+                if (typeof $(".search-category-main-list > li") !== 'undefined')
+                {
+                    if ($(".search-category-main-list > li")[i].innerText.indexOf(filter) > -1)
+                    {
+                        $(".search-category-main-list > li").eq(i).show();
+                    }
+                }
+            }
+            else {
+                $(".search-category-main-list > li").eq(i).hide();
+            }
+        }
+    });
+
+
+    $("#apply-filters").on('click', function() {
+        searchProducts();
+    })
+
+    $("#productsAvailibility").change( function() {
+        searchProducts();
+    })
+
+    $("#search_shop").keypress(function (e) {
+        if (e.which == 13)
+        {
+            searchProducts();
+        }
+    })
+
+    searchProducts = function () {
+        $(".whole-products-of-shop").hide();
+        $(".loading-products-search").show();
+        var selectedCategories = '';
+        var shopid = '{{Shop.ID | safe}}';
+        var shopslug = '{{Shop.Slug | safe}}';
+        var searchfield = $('#search_shop').val();
+        // console.log(shopslug);
+        var statusid = $("#productsAvailibility").is(":checked") ? '1' : '0';
+        // console.log(statusid);
+        // console.log(shopid);
+        for (var i=0; i<availableCats.length; i++)
+        {
+            // console.log($($(".search-category-main-list .checkbox_val_category")[i]).attr('val'));
+            if ($($(".search-category-main-list .checkbox_val_category")[i]).is(":checked"))
+            {
+                selectedCategories += $($(".search-category-main-list .checkbox_val_category")[i]).attr('val') + '~';
+            }
+        }
+        if(selectedCategories.length == 0 || selectedCategories == '')
+        {
+            selectedCategories = 'null';
+        }
+        if(searchfield.length == 0 || searchfield == '')
+        {
+            searchfield = 'null';
+        }
+        
+        //  console.log(searchfield);
+        $.ajax(
+            {
+                type: 'POST',
+                url: '{% url "restapi:filter_shop_products" %}',
+                data: {
+                    id: shopid,
+                    status: statusid,
+                    search_text: searchfield,
+                    categories: selectedCategories,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                    action: 'post'
+                },
+                success: function (json) {
+                    // console.log('json', json);
+                    var selectedproducts = json;
+                    var selectedproduct;
+                    var pricehandle;
+                    for (var i=0; i<selectedproducts.length; i++)
+                    {
+                        selectedproduct = selectedproducts[i];
+                        // for (var item in selectedproduct)
+                        // {
+                        //     console.log(`${item}: ${selectedproduct[item]}`);
+                        // }
+                    }
+                    
+                    $(".whole-products-of-shop").html('');
+                    
+                    if(selectedproducts.length == 0){
+                        $('#alert-web').show();
+                    }
+                    else {
+                        $('#alert-web').hide();
+                    }
+                    for (var i=0; i<selectedproducts.length; i++)
+                    {
+                        selectedproduct = selectedproducts[i];
+                        // console.log(selectedproduct.Slug);
+                        // console.log(selectedproduct.ID);
+                        // console.log(selectedproduct.Status);
+                        // console.log(selectedproduct.Image_medium_url);
+                        // console.log(selectedproduct.Price);
+                        // console.log(selectedproduct.Title);
+                        // console.log(shopslug);
+                        var selectedproductURL = '/product/' + shopslug + '/' + selectedproduct.Slug + '/';
+                        // console.log('url: ' + selectedproductURL);
+                        if (selectedproduct.Status != "4") {
+                            pricehandle = '<span><span class="numbersprice">'+ selectedproduct.Price +'</span> ریال </span>';
+                        }
+                        else {
+                            pricehandle = '<span class="empty">ناموجود</span>';
+                        }
+                        
+                        $(".whole-products-of-shop").append('<div class="col-xl-3 col-md-3">' +
+                            '<div class="prod-sec">' +
+                                '<a href="' + selectedproductURL + '"><img class="prodimg" src="'+ selectedproduct.Image_medium_url +'" alt="prodname"></a>' +
+                                '<a href="' + selectedproductURL + '"><h3>' + selectedproduct.Title + '</h3></a>' +
+                                pricehandle +
+                                '<span class="add-to-cart-link"><span class="add-cart"><i class="far fa-plus"><span class="hide">'+ selectedproduct.ID +'/span></i></span></span>' +
+                            '</div>' +
+                        '</div>');
+                        $(".numbersprice").digits();
+                        
+                    }
+                    $(".whole-products-of-shop").show();
+                    $(".loading-products-search").hide();
+                },
+                error: function (xhr) {
+                    $(".loading-products-search").hide();
+                    $(".system-error-ajax").show();
+                    console.log('xhr', xhr);
+                }
+        })
+    }
+
+
+
+</script>
+ <!-- end atc -->

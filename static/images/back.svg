@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="70.2" height="104.4" viewBox="0 0 70.2 104.4">
+  <defs>
+    <filter id="Path_7" x="0" y="0" width="70.2" height="104.4" filterUnits="userSpaceOnUse">
+      <feOffset dx="5" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feFlood flood-opacity="0.129"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="Group_36" data-name="Group 36" transform="translate(13 18)">
+    <g transform="matrix(1, 0, 0, 1, -13, -18)" filter="url(#Path_7)">
+      <path id="Path_7-2" data-name="Path 7" d="M0,0V68.4A34.2,34.2,0,0,0,34.2,34.2,34.2,34.2,0,0,0,0,0Z" transform="translate(13 18)" fill="#fff"/>
+    </g>
+    <g id="next" transform="translate(9.066 24.19)">
+      <path id="Chevron_Right_1_" d="M54.416,9.614,63.727.306a1.045,1.045,0,0,1,1.48,1.477l-8.573,8.569,8.571,8.569a1.046,1.046,0,1,1-1.48,1.478l-9.311-9.308A1.055,1.055,0,0,1,54.416,9.614Z" transform="translate(-54.113 0)" fill="#303030"/>
+    </g>
+  </g>
+</svg>

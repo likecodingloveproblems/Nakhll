@@ -1,0 +1,172 @@
+{% load jformat %}
+
+{% block header %}
+{% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+
+    <title>بازار نخل | ثبت محصول کاربر</title>
+</head>
+
+
+{% block headertag %}
+{% include "nakhll_market/parents/headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+
+
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-xl-3">
+
+                <div class="profile-sidebar-site">    
+                    {% block topsidebar %}
+                        {% include "nakhll_market/profile/parents/topsidebar.html" %}
+                    {% endblock %}
+                    <div class="profile-sidebar-main">
+
+                            <a href="/profile/dashboard/">
+                                <button>
+                                    <i class="fas fa-id-badge"></i>
+                                    <h5>داشبورد</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/transaction/">
+                                <button>
+                                    <i class="fad fa-clipboard-list"></i>
+                                <h5>تراکنش ها</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/factor/">
+                                <button>
+                                    <i class="fas fa-file-invoice-dollar"></i>
+                                    <h5>فاکتور ها</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/ticketing/">
+                                <button>
+                                    <i class="fad fa-user-headset"></i>
+                                    <h5>پشتیبانی</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/shops/">
+                                <button>
+                                    <i class="fas fa-store"></i>
+                                    <h5>مدیریت حجره</h5>
+                                </button>
+                            </a>
+    
+                            <a href="/profile/review/">
+                                <button>
+                                    <i class="fad fa-comments-alt"></i>
+                                    <h5>نقد ها و نظرات</h5>
+                                </button>
+                            </a>
+
+                        {% if request.user.is_staff %}
+                            {% block review %}
+                                {% include "nakhll_market/profile/parents/menu_for_user_manage.html" %}
+                            {% endblock %}
+                        {% endif %}
+    
+                    </div>
+                </div>
+
+            </div>
+
+
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                    {% include "nakhll_market/profile/parents/header-profile.html" %}
+                {% endblock %}
+
+                <div class="row">
+
+                    {% if ShowAlart %}
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                            <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                            <p>
+                                {{AlartMessage}}
+                            </p>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                        <div class="dashboard"> 
+                            <h4>اطلاعات حساب</h4>  
+
+                            <form id="new-prod-form" method="POST" enctype="multipart/form-data" action="{% url "nakhll_market:Add_Bank_Account" ThisUser.id %}">
+                                {% csrf_token %}
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                    <label for="AccountOwnerBuilder">نام و نام خانوادگی صاحب حساب <code>*</code></label>
+                                        <input type="text" name="Shop_AccountOwner" class="form-control" id="AccountOwner" {% if Account != None %}value="{{Account.AccountOwner}}"{% endif %}>
+                                    </div>   
+                                </div>          
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="CreditCardNumberBuilder">شماره کارت <code>*</code></label>
+                                        <input type="text" name="Shop_CreditCardNumber" class="form-control" id="CreditCardNumber" pattern="[0-9]{16,16}" {% if Account != None %}value="{{Account.CreditCardNumber}}"{% endif %}>
+                                        <small class="smallhelp">شماره کارت خود را به صورت اعداد و بدون فاصله، "-" یا "_" وارد کنید.</small>
+                                        <br>
+                                        <small class="smallhelp">طول شماره کارت وارد شده باید 16 رقم باشد.</small>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <label for="ShabaBankNumberBuilder">شماره شبا <code>*</code></label>
+                                        <div class="input-group mb-2 formshaba">
+                                            <div class="input-group-prepend">
+                                                <input type="text" name="Shop_ShabaBankNumber" class="form-control" id="ShabaBankNumber" pattern="[0-9]{24,24}" {% if Account != None %}value="{{Account.ShabaBankNumber}}"{% endif %}>
+                                                <div class="input-group-text">IR</div> 
+                                            </div>
+                                            <small class="smallhelp">شماره شبا خود را به صورت اعداد و بدون فاصله وارد کنید.</small>
+                                            <br>
+                                            <small class="smallhelp">طول شماره شبا وارد شده باید 24 رقم باشد.</small>
+                                        </div>       
+                                    </div>
+                                <button type="submit" class="btn btn-primary mr-auto" id="send-left">ثبت</button>
+                                <div class="clearfix"></div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+{% block footer-section %}
+{% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+
+
+{% block footer %}
+{% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

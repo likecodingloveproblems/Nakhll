@@ -1,0 +1,35 @@
+{% load i18n static %}
+{% load compress %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+{% compress css %}
+    <link rel="stylesheet" href="{% static "css/bootstrap-rtl.min.css" %}" />
+    <link rel="stylesheet" href="{% static "css/style.css" %}" />
+{% endcompress %}
+
+<!-- faveicon -->
+<link rel="apple-touch-icon" sizes="180x180" href="{% static "images/favicon/apple-touch-icon.pn" %}">
+<link rel="icon" type="image/png" sizes="32x32" href="{% static "images/favicon/favicon-32x32.png" %}">
+<link rel="icon" type="image/png" sizes="16x16" href="{% static "images/favicon/favicon-16x16.png" %}">
+<link rel="manifest" href="{% static "images/favicon/site.webmanifest" %}">
+
+    <title>بازار نخل | 500 </title>
+</head>
+
+<body class="error-500-container">
+    <div class="container">
+        <div class="row error-500-page">
+            <div class="erroe-page error-500-page-div">
+                <img src="{% static "images/Logo SVG.svg" %}" alt="error-500-not-found" width="300" height="300">
+                <p class="error-500-text">خطایی رخ داده است!</p>
+                <br>
+                <p class="error-500-text">{{error}}</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

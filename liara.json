@@ -1,0 +1,14 @@
+{
+  "platform": "django",
+  "app": "nakhll",
+  "disks": [
+    {
+      "name": "my-nakhll",
+      "mountTo": "media"
+    },
+    {
+      "name": "my-static",
+      "mountTo": "staticfiles"
+    }
+  ]
+}

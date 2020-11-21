@@ -1,0 +1,212 @@
+{% load jformat %}
+
+{% block header %}
+    {% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+    <title>بازار نخل | هشدار ها</title>
+</head>
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-3">
+                <div class="profile-sidebar-site">    
+                    {% block topsidebar %}
+                        {% include "nakhll_market/profile/parents/new-topsidebar.html" %}
+                    {% endblock %}
+                    <div class="profile-sidebar-main">
+                        <a href="/profile/dashboard/">
+                            <button>
+                                <i class="fas fa-id-badge"></i>
+                                <h5>داشبورد</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/transaction/">
+                            <button>
+                                <i class="fad fa-clipboard-list"></i>
+                            <h5>تراکنش ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/factor/">
+                            <button>
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <h5>فاکتور ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/ticketing/">
+                            <button>
+                                <i class="fad fa-user-headset"></i>
+                                <h5>پشتیبانی</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/shops/">
+                            <button>
+                                <i class="fas fa-store"></i>
+                                <h5>مدیریت حجره</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/review/">
+                            <button>
+                                <i class="fad fa-comments-alt"></i>
+                                <h5>نقد ها و نظرات</h5>
+                            </button>
+                        </a>
+
+                        {% if request.user.is_staff %}
+                            {% block review %}
+                                {% include "nakhll_market/profile/parents/menu_for_shop_manage.html" %}
+                            {% endblock %}
+                        {% endif %}
+    
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                    {% include "nakhll_market/profile/parents/new-header-profile.html" %}
+                {% endblock %}
+
+                <div class="alarm-section">
+                    <div class="row">
+                        {% if ShowAlart %}
+                        <div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                                <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                                <p>
+                                    {{AlartMessage}}
+                                </p>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                        <div class="dashboard"> 
+                            <h4>بررسی ویرایش بنر محصول</h4>
+                            <div class="hr-line-alert"></div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="inputshoptitle">نام حجره دار</label>
+                                        <p class="show-title-in-alert">{{Banner.FK_Product.FK_Shop.FK_ShopManager.first_name}} {{Banner.FK_Product.FK_Shop.FK_ShopManager.last_name}}</p>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="inputshoplink">لینک محصول</label>
+                                        <a href="/product/{{Banner.FK_Product.FK_Shop.Slug}}/{{Banner.FK_Product.Slug}}" target="_blank"><p class="Riyal button-link">محصول {{Banner.FK_Product.Title}}</p></a>
+                                    </div>
+                                </div>
+                            <div class="hr-line-alert"></div>
+
+                                {% for field in Alert.FK_Field.all %}
+                                    <div class="form-row">
+                                        
+                                        {% if field.Title == 'Title' %}
+                                            <div class="form-group col-md-6">
+                                                <label for="inputAttribute">عنوان بنر</label>
+                                                <fieldset disabled>
+                                                    <input type="text" name="Value" value="{{field.Value}}" class="form-control" id="input">
+                                                </fieldset>
+                                            </div>
+                                        {% elif field.Title == 'Image' %}
+                                            <div class="form-group col-md-6">
+                                                <label for="inputAttribute">عکس بنر</label>
+
+                                                <img src="{{Banner.NewImage.url}}" id="preview" height="150" width="150" class="img-thumbnail">
+                                            </div>
+                                        {% elif field.Title == 'Description' %}
+                                            <div class="form-group col-md-6">
+                                                <label for="inputAttribute">توضیحات بنر</label>
+                                                <fieldset disabled>
+                                                    <input type="text" name="Value" value="{{field.Value}}" class="form-control" id="input">
+                                                </fieldset>
+                                            </div>
+                                        {% elif field.Title == 'URL' %}
+                                            <div class="form-group col-md-6">
+                                                <label for="inputAttribute">لینک بنر</label>
+                                                <fieldset disabled>
+                                                    <input type="text" name="Value" value="{{field.Value}}" class="form-control" id="input">
+                                                </fieldset>
+                                            </div>
+                                        {% elif field.Title == 'BannerBuilder' %}
+                                            <div class="form-group col-md-6">
+                                                <label for="inputAttribute">تولید کننده بنر</label>
+                                                <fieldset disabled>
+                                                    <input type="text" name="Value" value="{{field.Value}}" class="form-control" id="input">
+                                                </fieldset>
+                                            </div>
+                                        {% elif field.Title == 'BannerURL' %}
+                                            <div class="form-group col-md-6">
+                                                <label for="inputAttribute">لینک تولید کننده بنر</label>
+                                                <fieldset disabled>
+                                                    <input type="text" name="Value" value="{{field.Value}}" class="form-control" id="input">
+                                                </fieldset>
+                                            </div>
+                                        {% endif %}
+
+                                    </div>
+                                {% endfor %}
+
+                                <form method="POST" action="/profile/alert/record/editeproductbanner/{{Banner.id}}">
+                                    {% csrf_token %}
+                                    <div class="col-xl-12 col-12">
+                                        <div class="custom-control custom-radio custom-control-inline">
+                                            <input type="radio" id="accept-btn" name="accept-btn" value="1" class="custom-control-input" checked>
+                                            <label class="custom-control-label" for="accept-btn">نمایش در سایت</label>
+                                          </div>
+                                          <div class="custom-control custom-radio custom-control-inline">
+                                            <input type="radio" id="customRadioInline2" name="accept-btn" value="0" class="custom-control-input">
+                                            <label class="custom-control-label" for="customRadioInline2">عدم تایید</label>
+                                        </div>
+                                        <br>
+                                        <div class="form-group mg-10">
+                                            <label for="descriptionalert">توضیحات :</label>
+                                            <textarea class="form-control" id="descriptionalert" name="Des" rows="1" required></textarea>
+                                        </div>
+                                        <button class="btn btn-primary btn-left">ثبت</button>
+                                    </div>
+                                </form>
+                                    <div class="clearfix"></div>
+                                </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+{% block footer-section %}
+{% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+
+
+{% block footer %}
+{% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

@@ -1,0 +1,543 @@
+{% load i18n static %}
+{% load jformat %}
+
+{% block header %}
+{% include "nakhll_market/parents/headersite.html" %}
+{% endblock %}
+
+
+    <title>بازار نخل | جستجوی پیشرفته</title>
+</head>
+
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 advanced-search-tab-bar-col">
+            <ul class="nav nav-pills mb-3 nav-top-shop round-corner advanced-search-tab-bar" id="pills-tab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active advanced-search-tab-bar" id="pills-prod-tab" data-toggle="pill" href="#pills-prod" role="tab" aria-controls="pills-prod" aria-selected="true"><i class="fal fa-box-open"></i> محصولات </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="pills-shop-tab" data-toggle="pill" href="#pills-shop" role="tab" aria-controls="pills-shop" aria-selected="false"><i class="fal fa-user-circle"></i> حجره ها </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="tab-content tab-in-sec" id="pills-tabContent">
+        <div class="tab-pane fade show active" id="pills-prod" role="tabpanel" aria-labelledby="pills-prod-tab">
+            <div class="row">
+                <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12 search-side">
+                    <div class="search-side-bar">
+                        <div class="search-filters">
+                            <div class="search-side-bar-title">
+                                <h6>فیلترها</h6>
+                            </div>
+                            <div class="hr-line-search-side-bar"></div>
+                            <div class="search-side-bar-content">
+                                <div class="filter-items">
+                                    <div class="custom-control custom-switch display-inline-block search-filters-button">
+                                        <input type="checkbox" class="custom-control-input search-filters-input"
+                                            id="customSwitch1">
+                                        <label class="custom-control-label search-filters-label" for="customSwitch1"></label>
+                                    </div>
+                                    <span>نمایش کالاهای موجود</span>
+                                </div>
+                                <div class="filter-items">
+                                    <div class="custom-control custom-switch display-inline-block search-filters-button">
+                                        <input type="checkbox" class="custom-control-input search-filters-input"
+                                            id="customSwitch2">
+                                        <label class="custom-control-label search-filters-label" for="customSwitch2"></label>
+                                    </div>
+                                    <span>فقط کالاهای تخفیف دار</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="search-side-bar">
+                        <div class="search-side-bar-title">
+                            <h6>دسته بندی ها</h6>
+                        </div>
+                        <div class="hr-line-search-side-bar"></div>
+                        <div class="search-side-bar-content">
+                            <div class="search-category-input">
+                                <div class="input-group mb-3 search-category-input-box">
+                                    <div class="input-group-prepend search-category-input-icon">
+                                        <i class="fal fa-search"></i>
+                                    </div>
+                                    <input type="text" class="form-control target" id="searchCatInp" placeholder="جستجو در دسته بندی ها ..."
+                                        aria-label="Example text with button addon" aria-describedby="button-addon1">
+                                </div>
+                            </div>
+                            <div class="search-category-checklist">
+                                <div class="search-category-checklist-content" id="list-item-for-cat">
+                                    <ul class="search-category-main-list">
+                                        <li>
+                                            <div class="search-category-main-item">
+                                                <div class="custom-control custom-checkbox search-checks">
+                                                    <input type="checkbox" class="custom-control-input" id="customCheck1" >
+                                                    <label class="custom-control-label" for="customCheck1"></label>
+                                                </div>
+                                                <span class="search-category-main-span">نوشیدنی های گرم</span>
+                                            </div>
+                                            <ul class="search-category-sub-list">
+                                                <li>
+                                                    <div class="search-category-sub-item">
+                                                        <div class="custom-control custom-checkbox search-checks">
+                                                            <input type="checkbox" class="custom-control-input " id="customCheck2" name="level-2">
+                                                            <label class="custom-control-label" for="customCheck2"></label>
+                                                        </div>
+                                                        <span class="search-category-sub-span">قهوه</span>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="search-category-sub-item">
+                                                        <div class="custom-control custom-checkbox search-checks">
+                                                            <input type="checkbox" class="custom-control-input " id="customCheck3" name="level-2">
+                                                            <label class="custom-control-label" for="customCheck3"></label>
+                                                        </div>
+                                                        <span class="search-category-sub-span">چای</span>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li>
+                                            <div class="search-category-main-item">
+                                                <div class="custom-control custom-checkbox search-checks">
+                                                    <input type="checkbox" class="custom-control-input" id="customCheck4">
+                                                    <label class="custom-control-label" for="customCheck4"></label>
+                                                </div>
+                                                <span class="search-category-main-span">لباس</span>
+                                            </div>
+                                            <ul class="search-category-sub-list">
+                                                <li>
+                                                    <div class="search-category-sub-item">
+                                                        <div class="custom-control custom-checkbox search-checks">
+                                                            <input type="checkbox" class="custom-control-input" id="customCheck5">
+                                                            <label class="custom-control-label" for="customCheck5"></label>
+                                                        </div>
+                                                        <span class="search-category-sub-span">کودک</span>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li>
+                                            <div class="search-category-sub-item">
+                                                <div class="custom-control custom-checkbox search-checks">
+                                                    <input type="checkbox" class="custom-control-input" id="customCheck6">
+                                                    <label class="custom-control-label" for="customCheck6"></label>
+                                                </div>
+                                                <span class="search-category-main-span">صنایع دستی</span>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-9 col-lg-9 col-md-8 col-sm-6 col-12 search-main">
+                    <div class="tab-top-shop round-corner">
+                        <div class="tab-cont-in">
+                            <div class="sort-by-title-bar">
+                                <div class="sort-categories display-inline-block">
+                                    <i class="fal fa-list"></i><span> مرتب سازی بر اساس: </span>
+                                    <div class="sort-categories-btns display-inline-block">
+                                        <button class="btn sort-category sort-category-active">پرفروش ترین</button>
+                                        <button class="btn sort-category">پربازدیدترین</button>
+                                    </div>
+                                </div>
+                                <div class="result-count display-inline-block float-left">
+                                    65 کالا
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="hr-line-search-side-bar"></div>
+                            <div class="whole-products">
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-xl-3 col-lg-4 col-md-6 whole-product-col">
+                                            <a href="">
+                                            <div class="whole-product">
+                                                <div class="whole-product-content">
+                                                    <div class="whole-product-img">
+                                                        <img src="{% static "/images/advanced-search1.png" %}" alt="">
+                                                    </div>
+                                                    <div class="whole-product-name">
+                                                        خرمای عسلی کریستال وزن 900 گرم
+                                                    </div>
+                                                    <div class="container">
+                                                        <div class="row">
+                                                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-7 whole-product-rating-col">
+                                                                <div class="rating whole-product-rating">
+                                                                    <label id="rate5">
+                                                                        <input type="radio" name="rating" value="5" title="5 stars"> 5
+                                                                    </label>
+                                                                    <label id="rate4">
+                                                                        <input type="radio" name="rating" value="4" title="4 stars"> 4
+                                                                    </label>
+                                                                    <label id="rate3">
+                                                                        <input type="radio" name="rating" value="3" title="3 stars"> 3
+                                                                    </label>
+                                                                    <label id="rate2">
+                                                                        <input type="radio" name="rating" value="2" title="2 stars"> 2
+                                                                    </label>
+                                                                    <label id="rate1">
+                                                                        <input type="radio" name="rating" value="1" title="1 star"> 1
+                                                                    </label>
+                                                                </div>
+                                                                <span>
+                                                                    نفر 15
+                                                                </span>
+                                                            </div>
+                                                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-5 whole-product-off-col">
+                                                                <div class="display-inline-block">
+                                                                    <p class="off-slider-darsad">35% تخفیف</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="whole-product-sell-price">
+                                                        <p class="sell-price-status">
+                                                            15,600 تومان
+                                                        </p>
+                                                    </div>
+                                                    <div class="clearfix"></div>
+                                                </div>
+                                                <div class="whole-product-shop-name">
+                                                    حجره: آرت صورت
+                                                </div>
+                                            </div>
+                                        </a>
+                                        </div>
+                                        <div class="col-xl-3 col-lg-4 col-md-6 whole-product-col">
+                                            <a href="">
+                                            <div class="whole-product">
+                                                <div class="whole-product-content">
+                                                    <div class="whole-product-img">
+                                                        <img src="{% static "/images/advanced-search1.png" %}" alt="">
+                                                    </div>
+                                                    <div class="whole-product-name">
+                                                        خرمای عسلی کریستال وزن 900 گرم
+                                                    </div>
+                                                    <div class="container">
+                                                        <div class="row">
+                                                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-7 whole-product-rating-col">
+                                                                <div class="rating whole-product-rating">
+                                                                    <label id="rate5">
+                                                                        <input type="radio" name="rating" value="5" title="5 stars"> 5
+                                                                    </label>
+                                                                    <label id="rate4">
+                                                                        <input type="radio" name="rating" value="4" title="4 stars"> 4
+                                                                    </label>
+                                                                    <label id="rate3">
+                                                                        <input type="radio" name="rating" value="3" title="3 stars"> 3
+                                                                    </label>
+                                                                    <label id="rate2">
+                                                                        <input type="radio" name="rating" value="2" title="2 stars"> 2
+                                                                    </label>
+                                                                    <label id="rate1">
+                                                                        <input type="radio" name="rating" value="1" title="1 star"> 1
+                                                                    </label>
+                                                                </div>
+                                                                <span>
+                                                                    نفر 15
+                                                                </span>
+                                                            </div>
+                                                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-5 whole-product-off-col">
+                                                                <div class="display-inline-block">
+                                                                    <p class="off-slider-darsad">35% تخفیف</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="whole-product-sell-price">
+                                                        <p class="sell-price-status">
+                                                            15,600 تومان
+                                                        </p>
+                                                    </div>
+                                                    <div class="clearfix"></div>
+                                                </div>
+                                                <div class="whole-product-shop-name">
+                                                    حجره: آرت صورت
+                                                </div>
+                                            </div>
+                                        </a>
+                                        </div>
+                                        <div class="col-xl-3 col-lg-4 col-md-6 whole-product-col">
+                                            <a href="">
+                                            <div class="whole-product">
+                                                <div class="whole-product-content">
+                                                    <div class="whole-product-img">
+                                                        <img src="{% static "/images/advanced-search1.png" %}" alt="">
+                                                    </div>
+                                                    <div class="whole-product-name">
+                                                        خرمای عسلی کریستال وزن 900 گرم
+                                                    </div>
+                                                    <div class="container">
+                                                        <div class="row">
+                                                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-7 whole-product-rating-col">
+                                                                <div class="rating whole-product-rating">
+                                                                    <label id="rate5">
+                                                                        <input type="radio" name="rating" value="5" title="5 stars"> 5
+                                                                    </label>
+                                                                    <label id="rate4">
+                                                                        <input type="radio" name="rating" value="4" title="4 stars"> 4
+                                                                    </label>
+                                                                    <label id="rate3">
+                                                                        <input type="radio" name="rating" value="3" title="3 stars"> 3
+                                                                    </label>
+                                                                    <label id="rate2">
+                                                                        <input type="radio" name="rating" value="2" title="2 stars"> 2
+                                                                    </label>
+                                                                    <label id="rate1">
+                                                                        <input type="radio" name="rating" value="1" title="1 star"> 1
+                                                                    </label>
+                                                                </div>
+                                                                <span>
+                                                                    نفر 15
+                                                                </span>
+                                                            </div>
+                                                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-5 whole-product-off-col">
+                                                                <div class="display-inline-block">
+                                                                    <p class="off-slider-darsad">35% تخفیف</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="whole-product-sell-price">
+                                                        <p class="sell-price-status">
+                                                            15,600 تومان
+                                                        </p>
+                                                    </div>
+                                                    <div class="clearfix"></div>
+                                                </div>
+                                                <div class="whole-product-shop-name">
+                                                    حجره: آرت صورت
+                                                </div>
+                                            </div>
+                                        </a>
+                                        </div>
+                                        <div class="col-xl-3 col-lg-4 col-md-6 whole-product-col">
+                                            <a href="">
+                                            <div class="whole-product">
+                                                <div class="whole-product-content">
+                                                    <div class="whole-product-img">
+                                                        <img src="{% static "/images/advanced-search1.png" %}" alt="">
+                                                    </div>
+                                                    <div class="whole-product-name">
+                                                        خرمای عسلی کریستال وزن 900 گرم
+                                                    </div>
+                                                    <div class="container">
+                                                        <div class="row">
+                                                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-7 whole-product-rating-col">
+                                                                <div class="rating whole-product-rating">
+                                                                    <label id="rate5">
+                                                                        <input type="radio" name="rating" value="5" title="5 stars"> 5
+                                                                    </label>
+                                                                    <label id="rate4">
+                                                                        <input type="radio" name="rating" value="4" title="4 stars"> 4
+                                                                    </label>
+                                                                    <label id="rate3">
+                                                                        <input type="radio" name="rating" value="3" title="3 stars"> 3
+                                                                    </label>
+                                                                    <label id="rate2">
+                                                                        <input type="radio" name="rating" value="2" title="2 stars"> 2
+                                                                    </label>
+                                                                    <label id="rate1">
+                                                                        <input type="radio" name="rating" value="1" title="1 star"> 1
+                                                                    </label>
+                                                                </div>
+                                                                <span>
+                                                                    نفر 15
+                                                                </span>
+                                                            </div>
+                                                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-5 whole-product-off-col">
+                                                                <div class="display-inline-block">
+                                                                    <p class="off-slider-darsad">35% تخفیف</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="whole-product-sell-price">
+                                                        <p class="sell-price-status">
+                                                            15,600 تومان
+                                                        </p>
+                                                    </div>
+                                                    <div class="clearfix"></div>
+                                                </div>
+                                                <div class="whole-product-shop-name">
+                                                    حجره: آرت صورت
+                                                </div>
+                                            </div>
+                                        </a>
+                                        </div>
+                                        <div class="col-xl-3 col-lg-4 col-md-6 whole-product-col">
+                                            <a href="">
+                                            <div class="whole-product">
+                                                <div class="whole-product-content">
+                                                    <div class="whole-product-img">
+                                                        <img src="{% static "/images/advanced-search1.png" %}" alt="">
+                                                    </div>
+                                                    <div class="whole-product-name">
+                                                        خرمای عسلی کریستال وزن 900 گرم
+                                                    </div>
+                                                    <div class="container">
+                                                        <div class="row">
+                                                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-7 whole-product-rating-col">
+                                                                <div class="rating whole-product-rating">
+                                                                    <label id="rate5">
+                                                                        <input type="radio" name="rating" value="5" title="5 stars"> 5
+                                                                    </label>
+                                                                    <label id="rate4">
+                                                                        <input type="radio" name="rating" value="4" title="4 stars"> 4
+                                                                    </label>
+                                                                    <label id="rate3">
+                                                                        <input type="radio" name="rating" value="3" title="3 stars"> 3
+                                                                    </label>
+                                                                    <label id="rate2">
+                                                                        <input type="radio" name="rating" value="2" title="2 stars"> 2
+                                                                    </label>
+                                                                    <label id="rate1">
+                                                                        <input type="radio" name="rating" value="1" title="1 star"> 1
+                                                                    </label>
+                                                                </div>
+                                                                <span>
+                                                                    نفر 15
+                                                                </span>
+                                                            </div>
+                                                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-5 whole-product-off-col">
+                                                                <div class="display-inline-block">
+                                                                    <p class="off-slider-darsad">35% تخفیف</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="whole-product-sell-price">
+                                                        <p class="sell-price-status">
+                                                            15,600 تومان
+                                                        </p>
+                                                    </div>
+                                                    <div class="clearfix"></div>
+                                                </div>
+                                                <div class="whole-product-shop-name">
+                                                    حجره: آرت صورت
+                                                </div>
+                                            </div>
+                                        </a>
+                                        </div>
+                                        <div class="col-xl-3 col-lg-4 col-md-6 whole-product-col">
+                                            <a href="">
+                                            <div class="whole-product">
+                                                <div class="whole-product-content">
+                                                    <div class="whole-product-img">
+                                                        <img src="{% static "/images/advanced-search1.png" %}" alt="">
+                                                    </div>
+                                                    <div class="whole-product-name">
+                                                        خرمای عسلی کریستال وزن 900 گرم
+                                                    </div>
+                                                    <div class="container">
+                                                        <div class="row">
+                                                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-7 whole-product-rating-col">
+                                                                <div class="rating whole-product-rating">
+                                                                    <label id="rate5">
+                                                                        <input type="radio" name="rating" value="5" title="5 stars"> 5
+                                                                    </label>
+                                                                    <label id="rate4">
+                                                                        <input type="radio" name="rating" value="4" title="4 stars"> 4
+                                                                    </label>
+                                                                    <label id="rate3">
+                                                                        <input type="radio" name="rating" value="3" title="3 stars"> 3
+                                                                    </label>
+                                                                    <label id="rate2">
+                                                                        <input type="radio" name="rating" value="2" title="2 stars"> 2
+                                                                    </label>
+                                                                    <label id="rate1">
+                                                                        <input type="radio" name="rating" value="1" title="1 star"> 1
+                                                                    </label>
+                                                                </div>
+                                                                <span>
+                                                                    نفر 15
+                                                                </span>
+                                                            </div>
+                                                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-5 whole-product-off-col">
+                                                                <div class="display-inline-block">
+                                                                    <p class="off-slider-darsad">35% تخفیف</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="whole-product-sell-price">
+                                                        <p class="sell-price-status">
+                                                            15,600 تومان
+                                                        </p>
+                                                    </div>
+                                                    <div class="clearfix"></div>
+                                                </div>
+                                                <div class="whole-product-shop-name">
+                                                    حجره: آرت صورت
+                                                </div>
+                                            </div>
+                                        </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade tab-cont-in" id="pills-shop" role="tabpanel" aria-labelledby="pills-shop-tab">
+            
+        </div>
+    </div>
+</div>
+
+<script>
+    var availableCats = $(".search-category-main-list > li");
+    var availableCatsCount = $(".search-category-main-list > li").length;
+    $(".target").on('input',function(e){ 
+        var filter = $("#searchCatInp").val();
+        for (var i = 0 ;i < availableCatsCount; i++)
+        {
+            if ($(".search-category-main-list > li")[i].innerText.indexOf(filter) > -1 )
+            {
+                $(".search-category-main-list > li").eq(i).show();
+                if (typeof $(".search-category-main-list > li") !== 'undefined')
+                {
+                    if ($(".search-category-main-list > li")[i].innerText.indexOf(filter) > -1)
+                    {
+                        $(".search-category-main-list > li").eq(i).show();
+                    }
+                }
+            }
+            else {
+                $(".search-category-main-list > li").eq(i).hide();
+            }
+        }
+    });
+
+
+    // $('input[name="level-1"],input[name="level-2"]').bind('click', function () {
+	// 	    $('input[type=checkbox]', $(this).parent('li')).attr('checked', ($(this).is(':checked')));
+	// 	});
+
+</script>
+
+{% block footer-section %}
+    {% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+    {% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

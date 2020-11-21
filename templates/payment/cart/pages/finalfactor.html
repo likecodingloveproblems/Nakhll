@@ -1,0 +1,373 @@
+{% load jformat %}
+{% load i18n static %}
+
+{% block header %}
+{% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+
+    <title>بازار نخل | فاکتور  نهایی</title>
+</head>
+
+
+{% block headertag %}
+{% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+<div class="modal fade" id="myModalerror" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">خطا ...</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="text_err">
+        
+      </div>
+      <div class="modal-footer" id="modal-footer-err">
+        <a href="{% url "Payment:cartdetail" %}" id="back-to-bag"><button type="button" class="btn btn-primary">بازگشت به سبد خرید</button></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="myModalwallet" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">پرداخت با کیف پول</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="text_res_wallet">
+        
+      </div>
+      <div class="modal-footer" id="modal-footer-wallet">
+        <a href="{% url "Payment:cartdetail" %}" id="back-to-bag"><button type="button" class="btn btn-primary">بازگشت</button></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<section id="brdcmb">
+    <div class="container">
+            <div class="row">
+                <div class="col-xl-12">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/">خانه</a></li>
+                            <li class="breadcrumb-item"><a href="{% url "Payment:cartdetail" %}">سبد خرید</a></li>
+                            <li class="breadcrumb-item"><a href="{% url "Payment:sendinfo" %}">اطلاعات ارسال</a></li>
+                            <li class="breadcrumb-item " aria-current="page"><a href="{% url "Payment:Pay_Detail" %}"> هزینه ارسال و شیوه پرداخت</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">فاکتور نهایی</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+    </div>
+</section>
+
+<script>
+    function printDiv(id) {
+      var printContents = document.getElementById(id).innerHTML;
+      var originalContents = document.body.innerHTML;
+      document.body.innerHTML = printContents;
+      window.print();
+      document.body.innerHTML = originalContents;
+      }
+</script>
+
+<section id="time">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-12">
+                <div class="product-cart">
+                    <div class="factor-style" id="endfactor">
+                        <div class="row">
+                            <div class="col-xl-8 col-12 logo-header">
+                                <a href="/"><img src="{% static "images/Logo SVG.svg" %}" alt="لوگو" class="img-responsive"></a>                             
+                            </div>
+                            <div class="col-xl-4 col-12 text-center left-factor">
+                                    {% if factor.PaymentStatus == True %}<h5 class="green-succeed">پرداخت موفق</h5>{% else %}<h5 class="red-failed">پرداخت نشده</h5>{% endif %}
+                                <h6 class="black-color">زمان ثبت : <span> {{Factor.OrderDate|jformat:'%H:%M - %Y/%m/%d'}}</span></h6>
+                                <h5 class="black-color">شماره فاکتور : {{Factor.FactorNumber}}</h5>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xl-12 col-12">
+                                <br><br>
+                                <h4>جزئیات :</h4>
+                                <br>
+                            </div>
+                            <div class="col-xl-6 col-12">
+                                    <h5>{{Factor.Description}}</h5>
+                                    <h5>شماره تلفن : {{Factor.MobileNumber}}</h5>
+                                    <h5>کد پستی : {{Factor.ZipCode}}</h5>
+                            </div>
+                            <div class="col-xl-6 col-12 ">
+                                <h5>استان : {{Factor.State}}</h5>
+                                <h5>شهر : {{Factor.City}}</h5>
+                                <h5>آدرس : {{Factor.Address}}</h5>
+                                
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xl-12 col-12">
+                                <br><br>
+                                <h4> محصولات فاکتور : </h4>
+                                <br>
+                            </div>
+                            <div class="col-xl-12 col-12">
+                                <table class="table">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>نام محصول</th>
+                                            <th>حجره</th>
+                                            <th>قیمت واحد</th>
+                                            <th>تعداد</th>
+                                            <th>مجموع قیمت</th>
+                                            <th>جزئیات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="code">
+                                        {% for item in Factor.FK_FactorPost.all %}
+                                            <tr>
+                                                <td>{{item.FK_Product.Title}}</td>
+                                                <td>
+                                                    <a href="/{{item.FK_Product.FK_Shop.Slug}}"><span>{{item.FK_Product.FK_Shop.Title}}</span></a>
+                                                </td>
+                                                <td><span class="numbersprice">{{item.FK_Product.Price}}</span> ریال</td>
+                                                <td>{{item.ProductCount}}</td>
+                                                <td><span class="numbersprice">{{ item.get_total_item_price }}</span> ریال</td>
+                                                <td>
+                                                    {% for item in Fpost.FK_AttrPrice.all %}
+                                                        <span>{{item.Value}}: <span class="numbersprice">{{item.ExtraPrice}}</span> ریال , </span>
+                                                    {% endfor %}
+                                                </td>
+                                            </tr>
+                                        {% empty %}
+                                        <div>
+                                            هیچ محصولی یافت نشد ...
+                                        </div>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-xl-12 col-12">
+                                <br>
+                                <h4> صورت حساب : </h4>
+                            </div>
+                        </div>
+                        <div class="row justify-content-md-center">
+                            <div class="col-12 mx-auto">
+                                <div class="factor-cart-summary">
+                                    <mark>جمع مبلغ کالا ها <span class="numbersprice">{{ Factor.get_total }} ریال</span></mark>
+                                    {% if Factor.check_order_total_weight %}<mark>هزینه ارسال <span class="numbersprice">{{ Factor.get_postprice }} ریال</span></mark>{% else %}<mark>هزینه ارسال <span class="numbersprice">{{ Factor.get_message_when_shipping_cost_by_customer }}</span></mark>{% endif %}
+                                    {% if Factor.FK_Coupon != None %}<mark> تخفیف :<span class="numbersprice">{{ Factor.Coupon_price_min }} ریال</span></mark>{% endif %}
+                                    <mark class="end-price">جمع کل <span class="numbersprice">{{ Factor.get_end_price }} ریال</span></mark>  
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-xl-12 col-12">
+                            <a id="btnPrint" name="btnPrint" onclick="printDiv('endfactor')"><button class="btn btn-primary" > چاپ پیش فاکتور </button></a>
+                            </div>
+                        </div>
+                        <br>
+                      </div>
+                      
+
+                </div>
+
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
+                <div class="sidebar-cart">
+                    <div class="summary-cart">
+                    <h5>محصولات سفارش :</h5>
+                    {% for item in Factor.FK_FactorPost.all %}
+                        <div class="row summary-prod">
+                            <div class="col-sm-3">
+                                <img src="{{item.FK_Product.Image_thumbnail_url}}" alt="{{item.FK_Product.Title}}">
+                            </div>
+                            <div class="col-sm-9">
+                                <h6>{{item.FK_Product.Title}} (<span class="numbersprice">{{item.FK_Product.Price}}</span> ریال)</h6>
+                                <h6>تعداد : {{item.ProductCount}} </h6>
+                                <h6>قیمت کل : <span class="numbersprice">{{item.get_total_item_price}}</span> </h6>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div>
+                            هیچ محصولی در سبد خرید موجود نیست ...
+                        </div>
+                    {% endfor %}
+
+                    <div class="summary-cart">
+                        <h5>خلاصه سفارش :</h5>                            
+                        <div class="factor-cart-summary">
+                            <mark>جمع مبلغ کالا ها <span class="numbersprice">{{ Factor.get_total }} ریال</span></mark>
+                            {% if Factor.check_order_total_weight %}<mark>هزینه ارسال <span class="numbersprice">{{ Factor.get_postprice }} ریال</span></mark>{% else %}<mark>هزینه ارسال <span class="numbersprice">{{ Factor.get_message_when_shipping_cost_by_customer }}</span></mark>{% endif %}
+                            {% if Factor.FK_Coupon != None %}<mark> تخفیف :<span class="numbersprice">{{ Factor.Coupon_price_min }} ریال</span></mark>{% endif %}
+                            <mark class="end-price">جمع کل <span class="numbersprice">{{ Factor.get_end_price }} ریال</span></mark>  
+                        </div>
+                    </div>
+                    <div class="continue-cart">
+                        <div class="loaderDiv">
+                            لطفا منتظر بمانید
+                            <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری">
+                        </div>
+                        {% if Factor.PaymentType == '1' %}
+                            <button class="btn btn-success" id ="target"><i class="fal fa-shopping-bag"></i> پرداخت </button>
+                        {% elif Factor.PaymentType == '2' %}
+                            <button class="btn btn-success" id ="target-wallet"><i class="fal fa-shopping-bag"></i> پرداخت از کیف پول </button>
+                        {% endif %}
+
+                        <!-- <a href="{% url 'Payment:request_first' Factor.ID bank_port %}" id="hide"><button class="btn btn-success"><i class="fal fa-shopping-bag"></i> پرداخت </button></a> -->
+                        
+                        
+
+                        <br>
+                        <a href="/" class="aback">بازگشت به صفحه اول</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+$("#target").click(function() {
+    $('.continue-cart .loaderDiv').css('display','show !important');
+    $('.loaderDiv').show();
+    var factorID ='{{ Factor.ID }}';
+    var bankPort ='{{ bankPort }}'
+        $.ajax({
+             type:'POST',
+             url:'{% url "Profile:Check_Factor_Inventory" %}',
+             data:{
+                 factor_id: factorID ,
+                 csrfmiddlewaretoken: '{{ csrf_token }}' ,
+             },    
+             dataType: 'json',
+             success:function(json){ 
+                 if (json.status == true){
+                    window.location.replace("{% url 'Payment:request_first' factor_id=Factor.ID bank_port=bank_port %}");     
+                    $(".loaderDiv").hide();
+                }else{  
+                    var res = json.products;
+                    $('#text_err').html('<p><strong class="Riyal">'+res+'</strong>به تعداد درخواست شما موجود نمی باشد.</p>');
+                    $('#myModalerror').modal('show');
+                    $(".loaderDiv").hide();
+                }
+            },
+            error : function(xhr,errmsg,err) {
+                $(".loaderDiv").hide();  
+                $('#text_err').html('<p> مشکلی در اتصال شما بوجود آمده است صفحه شما مجدد بارگذاری می شود </p>');
+                $('#modal-footer-err').hide(); 
+                $('#myModalerror').modal('show');
+                setTimeout(function() {
+                    location.reload();
+                }, 5000);
+                console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+            }
+        });
+
+});
+
+$("#target-wallet").click(function() {
+    $("#target-wallet").attr("disabled", true);
+    $('.continue-cart .loaderDiv').css('display','show !important');
+    $('.loaderDiv').show();
+    var factorID ='{{ Factor.ID }}';
+    $.ajax({
+        type:'POST',
+        url:'{% url "Profile:Check_Factor_Inventory" %}',
+        data:{
+            factor_id: factorID ,
+            csrfmiddlewaretoken: '{{ csrf_token }}' ,
+        },    
+        dataType: 'json',
+        success:function(json){ 
+            if (json.status == true){
+                $.ajax({
+                    type:'POST',
+                    url:'{% url "Profile:Pay_Factor_by_wallet" %}',
+                    data:{
+                        factor_id: factorID ,
+                        csrfmiddlewaretoken: '{{ csrf_token }}' ,
+                    },    
+                    dataType: 'json',
+                    success:function(json){ 
+                        $('#target-wallet').removeAttr("disabled");
+                        if (json.status == true){
+                            $('#text_res_wallet').html('<p><strong class="green-succeed">'+json.msg+'</strong</p>');
+                            $('#myModalwallet').modal('show');
+                            $('#modal-footer-wallet').hide(); 
+                            window.location.replace("/profile/factor/all/show_item/{{Factor.ID}}");     
+                            $(".loaderDiv").hide();
+                        }else{  
+                            console.log('saasdasdg')
+                            $('#text_res_wallet').html('<p><strong class="Riyal">'+json.msg+'</strong></p>');
+                            $('#myModalwallet').modal('show');
+                            $(".loaderDiv").hide();
+                        }
+                    },
+                    error : function(xhr,errmsg,err) {
+                        $('#target-wallet').removeAttr("disabled");
+                        console.log('sdsdsdsd')
+                        $(".loaderDiv").hide();  
+                        $('#text_res_wallet').html('<p><strong class="Riyal">'+json.msg+'</strong></p>');
+                        $('#myModalwallet').modal('show');
+                        $('#modal-footer-wallet').hide(); 
+                        setTimeout(function() {
+                            location.reload();
+                        }, 5000);
+                        console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                    }
+                });
+
+            }else{  
+                    var res = json.products;
+                    $('#target-wallet').removeAttr("disabled");
+                    $('#text_err').html('<p><strong class="Riyal">'+res+'</strong>به تعداد درخواست شما موجود نمی باشد.</p>');
+                    $('#myModalerror').modal('show');
+                    $(".loaderDiv").hide();
+                }
+            },
+            error : function(xhr,errmsg,err) {
+                $('#target-wallet').removeAttr("disabled");
+                $(".loaderDiv").hide();  
+                $('#text_err').html('<p> مشکلی در اتصال شما بوجود آمده است صفحه شما مجدد بارگذاری می شود </p>');
+                $('#modal-footer-err').hide(); 
+                $('#myModalerror').modal('show');
+                setTimeout(function() {
+                    location.reload();
+                }, 5000);
+                console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+            }
+    });
+});
+</script>
+
+{% block footer-section %}
+{% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+
+
+{% block footer %}
+{% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

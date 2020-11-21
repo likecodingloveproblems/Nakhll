@@ -1,0 +1,238 @@
+{% load i18n static %}
+{% load jformat %}
+
+{% block header %}
+    {% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+    <title>بازار نخل | ویرایش کوپن</title>
+</head>
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+<div class="modal fade" id="myModalerror" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">خطا ...</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" id="text_err">
+          <div id="coupon-text-error"></div>
+        </div>
+        <div class="modal-footer" id="modal-footer-err">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button></a>
+        </div>
+      </div>
+    </div>
+</div>
+  
+<section id="bg-profile-top">
+
+</section>
+
+<section id="category-sec">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-12 col-12">
+                <div class="alarm-section">
+                    <div class="row">
+                        {% if ShowAlart %}
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                                    <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                                    <p>
+                                        {{AlartMessage}}
+                                    </p>
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-3 col-12">
+                <div class="sidebar-web">
+                    <form method="POST" action="{% url "nakhll_market:EditManagementCoupon" UserCoupon %}">
+                        {% csrf_token %}
+                        <h5>فیلتر حجره ها </h5>
+                        <br>
+                        <h6>بازارچه :</h6>
+                        <select data-placeholder="انتخاب بازارچه" multiple class="chosen-select-rtl form-control" name="Market_Select" tabindex="14">    
+                            {% for item in Markets %}
+                                <option {% if item.Status %}selected{% endif %} value="{{item.Item.ID}}">{{item.Item.Title}}</option>
+                            {% endfor %}
+                        </select>
+                        <br><br>
+                        <h6>راسته :</h6>
+                        <select data-placeholder="انتخاب راسته" multiple class="chosen-select-rtl form-control" name="SubMarket_Select" tabindex="14">    
+                            {% for item in SubMarkets %}
+                                <option {% if item.Status %}selected{% endif %} value="{{item.Item.ID}}">{{item.Item.Title}}</option>
+                            {% endfor %}
+                        </select>
+                        <br><br>
+                        <h5>فیلتر محصولات </h5>
+                        <br>
+                        <h6>حجره :</h6>
+                        <select data-placeholder="انتخاب حجره" multiple class="chosen-select-rtl form-control" name="Shop_Select" tabindex="14">    
+                            {% for item in Shops %}
+                                <option {% if item.Status %}selected{% endif %} value="{{item.Item.ID}}">{{item.Item.Title}}</option>
+                            {% endfor %}
+                        </select>
+                        <br><br>
+                        <h6>دسته بندی :</h6>
+                        <select data-placeholder="انتخاب دسته بندی" multiple class="chosen-select-rtl form-control" name="Category_Select" tabindex="14">    
+                            {% for item in Categories %}
+                                <option {% if item.Status %}selected{% endif %} value="{{item.Item.id}}">{{item.Item.Title}}</option>
+                            {% endfor %}
+                        </select>
+                        <br><br>
+                        <button type="submit" class="btn btn-primary float-left">اعمال فیلتر ها</button>
+                        <br><br>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-xl-9 col-md-9 col-12">
+                <div class="postsbox-sec">   
+                    <div class="row">
+                        <div class="col-xl-12 col-12">
+                        <form id="coupon-form" method="POST" action="{% url "nakhll_market:SaveEditManagementCoupon" UserCoupon %}">
+                            {% csrf_token %}
+                            <div class="form-row">
+                                <div class="form-group col-md-12 shop-coupon-list">
+                                    <label for="inputCopun_Shops"> حجره ها </label>
+                                    <select data-placeholder="حجره ها" multiple class="chosen-select-rtl form-control" id="Shops_Select" name="copun_shops" tabindex="14">
+                                        {% for item in AllShops %}
+                                            <option {% if item.Status %}selected{% endif %} value="{{item.Item.ID}}">{{item.Item.Title}}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="button" class="btn-all-sel btn btn-warning chosen-toggle deselect">حذف انتخاب</button>
+                                    <small><span class="Riyal">حجره هایی</span> که می خواهید این کوپن روی آن ها اعمال شود را اینجا وارد نمایید.</small>
+                                    <br>
+                                    <small>در صورتی که می خواهید این کوپن شامل <span class="Riyal">همه حجره ها</span> باشد، این قسمت را خالی بگذارید.</small>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-12 product-coupon-list">
+                                    <label for="inputCopun_Products"> محصولات </label>
+                                    <select data-placeholder="محصولات" multiple class="chosen-select-rtl form-control" id="inputCopun_Products" name="copun_products" tabindex="14">
+                                        {% for item in AllProducts %}
+                                            <option {% if item.Status %}selected{% endif %} value="{{item.Item.ID}}">{{item.Item.Title}}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="button" class="btn-all-sel btn btn-warning chosen-toggle deselect">حذف انتخاب</button>
+                                    <small><span class="Riyal">محصولاتی</span> که می خواهید این کوپن روی آن ها اعمال شود را اینجا وارد نمایید.</small>
+                                    <br>
+                                    <small>در صورتی که می خواهید این کوپن شامل <span class="Riyal">همه محصولات</span> باشد، این قسمت را خالی بگذارید.</small>
+                                </div>
+
+                                <script>
+                                $('.chosen-toggle').each(function(index) {
+                                    console.log(index);
+                                        $(this).on('click', function(){
+                                        console.log($(this).parent().find('option').text());
+                                            $(this).parent().find('option').prop('selected', $(this).hasClass('select')).parent().trigger('chosen:updated');
+                                        });
+                                    });
+                                </script>
+                            </div>
+
+                            <div class="col-xl-12 col-12">
+                                <div class="form-row">
+                                    <div class="form-group col-md-12 users-coupon-list">
+                                        <label for="inputCopun_Users"> کاربران </label>
+                                        <select data-placeholder="کاربران" multiple class="chosen-select-rtl form-control" id="inputCopun_Users" name="copun_users" tabindex="14">
+                                            {% for item in AllUsers %}
+                                                <option {% if item.Status %}selected{% endif %} value="{{item.Item.id}}">{{item.Item.first_name}} {{item.Item.last_name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <br>
+                                        <small>اگر می خواهید <span class="Riyal">کاربر خاصی</span> از این کوپن استفاده کند، اسم اون شخص را اینجا وارد نمایید.</small>
+                                        <br>
+                                        <small>در صورتی که می خواهید این کوپن <span class="Riyal">برای همه قابل استفاده</span> باشد، این قسمت را خالی بگذارید.</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-xl-12 col-12">
+                                <div class="form-row">
+                                    <div class="form-group col-md-12 category-coupon-list">
+                                        <label for="inputCopun_Users"> دسته بندی </label>
+                                        <select data-placeholder="دسته بندی" multiple class="chosen-select-rtl form-control" id="inputCopun_Categories" name="copun_categories" tabindex="14">
+                                            {% for item in AllCategories %}
+                                                <option {% if item.Status %}selected{% endif %} value="{{item.Item.id}}">{{item.Item.Title}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <small><span class="Riyal">دسته بندی</span> های مورد نظر خور را اینجا وارد نمایید.</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <br> 
+                            <div class="col-xl-5 col-6">
+                                <span id="send-coupon" class="btn btn-primary">تایید</span>
+                            </div>
+                            <div class="clearfix"></div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    $("#send-coupon").click(function () {
+        var ValidCoupon = true
+        $('#coupon-text-error').text('');
+        if($(".shop-coupon-list .chosen-choices").find($(".search-choice")).length >= 999)
+        {
+            $('#coupon-text-error').append('<p>تعداد حجره های منتخب نمیتواند بیش از 1000 عدد باشد</p>');
+            ValidCoupon = false;            
+        }
+        if($(".product-coupon-list .chosen-choices").find($(".search-choice")).length >= 999)
+        {
+            $('#coupon-text-error').append('<p>تعداد محصولات منتخب نمیتواند بیش از 1000 عدد باشد</p>');
+            ValidCoupon = false;
+        }
+        if($(".users-coupon-list .chosen-choices").find($(".search-choice")).length >= 999)
+        {
+            $('#coupon-text-error').append('<p>تعداد کاربران منتخب نمیتواند بیش از 1000 عدد باشد</p>');
+            ValidCoupon = false;
+        }
+        if($(".category-coupon-list .chosen-choices").find($(".search-choice")).length >= 999)
+        {
+            $('#coupon-text-error').append('<p>تعداد دسته بندی های منتخب نمیتواند بیش از 1000 عدد باشد</p>');
+            ValidCoupon = false;
+        }
+
+        if(ValidCoupon)
+        {
+            $("#coupon-form").submit();
+        }
+        else {
+            $('#myModalerror').modal('show');
+            return false;
+        }
+    })
+</script>
+
+{% block footer-section %}
+    {% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+    {% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

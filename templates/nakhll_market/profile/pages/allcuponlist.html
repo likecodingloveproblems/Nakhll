@@ -1,0 +1,209 @@
+{% load jformat %}
+
+{% block header %}
+    {% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+    <title>بازار نخل | لیست کوپن ها</title>
+</head>
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+<section id="bg-profile-top">
+
+</section>
+
+<section id="profile-sec">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-3">
+                <div class="profile-sidebar-site">    
+                    {% block topsidebar %}
+                        {% include "nakhll_market/profile/parents/new-topsidebar.html" %}
+                    {% endblock %}
+                    <div class="profile-sidebar-main">
+                        <a href="/profile/dashboard/">
+                            <button>
+                                <i class="fas fa-id-badge"></i>
+                                <h5>داشبورد</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/transaction/">
+                            <button>
+                                <i class="fad fa-clipboard-list"></i>
+                            <h5>تراکنش ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/factor/">
+                            <button>
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <h5>فاکتور ها</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/ticketing/">
+                            <button>
+                                <i class="fad fa-user-headset"></i>
+                                <h5>پشتیبانی</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/shops/">
+                            <button class="activebtn">
+                                <i class="fas fa-store"></i>
+                                <h5>مدیریت حجره</h5>
+                            </button>
+                        </a>
+
+                        <a href="/profile/review/">
+                            <button>
+                                <i class="fad fa-comments-alt"></i>
+                                <h5>نقد ها و نظرات</h5>
+                            </button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-9">
+                {% block header-profile %}
+                    {% include "nakhll_market/profile/parents/new-header-profile.html" %}
+                {% endblock %}
+
+                <div class="row">
+                    {% if ShowAlert %}
+                        <div class="col-xl-6 xol-lg-6 col-md-6 col-sm-12 col-12">
+                            <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                                <i class="far fa-exclamation-circle"></i><strong>توجه</strong>
+                                <p>
+                                    {{AlartMessage}}
+                                </p>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
+                        <div class="order-profile">
+                            <h4>لیست کوپن ها</h4>
+                            <table class="table">
+                                <thead class="thead-light">
+                                    <tr>
+                                    <th>سریال کوپن</th>
+                                    <th>عنوان کوپن</th>
+                                    <th>توضیحات کوپن</th>
+                                    <th>نمایش کوپن</th>
+                                    <th>حذف کوپن</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in AllUserCupons %}
+                                        <tr>
+                                            <td>{{item.SerialNumber}}</td>
+                                            <td>{{item.Title}}</td>
+                                            <td>{{item.Description}}</td>
+                                            <td class="pointer"><a data-toggle="modal" data-target=".{{item.id}}"><i class="fad fa-eye"></i></a></td>
+                                            {% if item.Publish %}
+                                                <td><a href="/profile/shops/shop_copun_delete/{{item.id}}"><i class="fal fa-trash"></i></a></td>
+                                            {% else %}
+                                                <td>در حال بررسی</td>
+                                            {% endif %}
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                {% for item in AllUserCupons %}
+                    <div class="modal fade {{item.id}}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                
+                                <div class="modal-header">
+                                    <h5 class="modal-title">سریال کوپن : {{item.SerialNumber}}</h5>
+                                </div>
+
+                                <div class="modal-body factor-style" id="{{item.id}}">
+
+                                    <div class="row">
+
+                                        <div class="col-xl-12 col-12">
+                                            <h4>جزئیات کوپن</h4>
+                                        </div>
+
+                                        <div class="col-xl-6 col-12 text-center">
+
+                                                <h5>عنوان کوپن : {{item.Title}}</h5>
+                                                <h5>توضیحات کوپن : {{item.Description}}</h5>
+                                                <h5>تاریخ شروع کوپن : {{item.StartDate|jformat:'%Y/%m/%d'}}</h5>
+                                                <h5>تاریخ انقضاء کوپن : {{item.EndDate|jformat:'%Y/%m/%d'}}</h5>
+                                                {% if item.MinimumAmount != '' %}<h5>حداقل میزان خرید : {{item.MinimumAmount}}</h5>{% else %}{% endif %}
+
+                                        </div>
+
+                                        <div class="col-xl-6 col-12 text-center">
+
+                                            <h5>وضعیت کوپن : {% if item.Publish %}منتشر شده{% else %}در حال بررسی{% endif %}</h5>
+                                            <h5>نوع نخفیف : {% if item.DiscountType == '1' %}درصدی{% elif item.DiscountType == '2' %}اعتباری{% endif %}</h5>
+                                            <h5>میزان تخفیف : {{item.DiscountRate}}</h5>
+                                            <h5>تعداد دفعات مجاز استفاده : {{item.NumberOfUse}}</h5>
+                                            {% if item.MaximumAmount != '' %}<h5>حداکثر میزان خرید : {{item.MaximumAmount}}</h5>{% else %}{% endif %}
+                                               
+                                        </div>
+
+                                        {% if item.FK_Shops.all.count != 0 %}
+                                            <div class="col-xl-12 col-12">
+                                                <br>
+                                                <h4>حجره های شامل این کوپن :</h4>
+                                                <ul class="Shop-Product-In-Coupon">
+                                                    {% for shop in item.FK_Shops.all %}
+                                                        <li><h5>{{shop.Title}}</h5></li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        {% endif %}
+
+                                        {% if item.FK_Products.all.count != 0 %}
+                                            <div class="col-xl-12 col-12">
+                                                <br>
+                                                <h4>محصولات شامل این کوپن :</h4>
+                                                <ul class="Shop-Product-In-Coupon">
+                                                    {% for product in item.FK_Products.all %}
+                                                        <li><h5>{{product.Title}}</h5></li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
+{% block footer-section %}
+    {% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+    {% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

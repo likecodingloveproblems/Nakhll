@@ -1,0 +1,77 @@
+{% load i18n static %}
+{% load compress %}
+<!DOCTYPE html>
+<html lang="en">
+<head> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="language" content="Persion">
+    <meta name="author" content="viscal">
+    <meta name="theme-color" content="#f1fbff" />
+    <meta name="msapplication-navbutton-color" content="#f1fbff">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#f1fbff">
+    
+    {% compress css %}
+        <link rel="stylesheet" href="{% static "css/fontiran.css" %}" />
+        <link rel="stylesheet" href="{% static "css/all.min.css" %}" />
+        <link rel="stylesheet" href="{% static "css/ion.rangeSlider.min.css" %}" />
+        <link  rel="stylesheet" href="{% static "css/persianDatepicker.css" %}" />
+        <link rel="stylesheet" type="text/css" href="{% static "css/slick.css" %}" />
+        <link rel="stylesheet" type="text/css" href="{% static "css/slick-theme.css" %}" />
+        <link rel="stylesheet" href="{% static "css/bootstrap-rtl.min.css" %}" />
+        <link rel="stylesheet" href="{% static "css/chosen.css" %}" />
+        <link rel="stylesheet" href="{% static "css/style.css" %}" />
+    {% endcompress %}
+
+    <!-- faveicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static "images/favicon/apple-touch-icon.pn" %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static "images/favicon/favicon-32x32.png" %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static "images/favicon/favicon-16x16.png" %}">
+    <link rel="manifest" href="{% static "images/favicon/site.webmanifest" %}">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-156540827-1"></script>
+      
+    <!--JavaScript-->
+    {% compress js file base %}
+        <script type="text/javascript" charset="utf-8" src="{% static "js/jquery4.min.js" %}"></script>
+        <script type="text/javascript" charset="utf-8" src="{% static "js/jquery.min.js" %}"></script>
+        <script type="text/javascript" charset="utf-8" src="{% static "js/persianDatepicker.js" %}"></script>
+        <script type="text/javascript" charset="utf-8" src="{% static "js/ion.rangeSlider.min.js" %}"></script>
+    {% endcompress %}
+    {% compress js inline %}
+    <script type="text/javascript" charset="utf-8" >
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-156540827-1');
+    </script>
+    {% endcompress %}
+    <!--set session-->
+    {% if not request.user.is_authenticated %}
+        <script text="javascripts">
+            $('document').ready(function() {
+                var this_page_path = '{{request.path|safe}}';
+                $.ajax(
+                    {
+                        type: 'POST',
+                        url: '{% url "nakhll_market:set_session" %}',
+                        data :{
+                            this_path:this_page_path,
+                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                        },
+                        success: function (json) {
+                            if (json.status == true){
+                                console.log(json.status);
+                            }
+                        },
+                        error: function (xhr) {
+                            console.log(xhr.status + ": " + xhr.responseText);
+                        }
+                    }
+                );      
+            })
+        </script>
+    {% endif %}

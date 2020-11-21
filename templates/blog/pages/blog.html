@@ -1,0 +1,71 @@
+{% load i18n static %}
+{% load jformat %}
+
+{% block header %}
+    {% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+
+    <title>وبلاگ بازار نخل</title>
+</head>
+
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-xl-12 col-12">
+            <h4 class="title-box-vendor-story">
+               وبلاگ
+            </h4>
+            <div class="line"></div>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for item in Postblog %}
+            <div class="col-xl-3 col-lg-3 col-12">
+                <a href="{% url "blog:BlogPost" item.Blog.Slug %}">
+                    <div class="post-blog">
+                        <span class="tag-post">وبلاگ</span>
+                        <img src="{{item.Blog.Index_Image.url}}" alt="{{item.Blog.Slug}}">
+                        <div class="title-single-post">
+                            <h3>{{item.Blog.Title}}</h3>
+                        </div>
+                        <div class="line"></div>
+                        <div class="des-single-post">
+                            {% autoescape off %}<p>{{item.Blog.Summary}}</p>{% endautoescape %}
+                        </div>
+                        <div class="author-single-post">
+                            <div class="img-author">
+                                <img src="{{item.Writer.Image_thumbnail_url}}" alt="profile">
+                            </div>
+                            <div class="text-author">
+                                <h5>{{item.Blog.FK_User.first_name}} {{item.Blog.FK_User.last_name}}</h5>
+                                <span>{{item.Blog.DateCreate}}</span>
+                            </div>
+                            <div class="cat-post">
+                                <h6></h6>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% block footer-section %}
+    {% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+    {% include "nakhll_market/parents/footermain.html" %}
+{% endblock %}

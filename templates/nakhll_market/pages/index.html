@@ -1,0 +1,462 @@
+{% block header %}
+{% include "nakhll_market/parents/headersite.html" %}
+{% endblock %}
+{% load i18n static %}
+
+<meta name="keywords" content="فروشگاه آنلاین نخل ,فروشگاه آنلاین ,خریدوفروش محصول ,خریدوفروش ,داستان حجره داران ,سرزمین نخل ,فروشگاه اینترنتی رایگان ,بازار نخل ,ساخت فروشگاه آنلاین ,پاساژآنلاین ,کسب وکار آنلاین ,سوغات ,بوش بیستون پژو mpn 405 ,مواد شوینده ,سوغات کرمان ,فروشگاه اینترنتی کرمان ,لوازم خانگی">
+<meta name="description" content="بازار نخل، بازاری اجتماعی است که برای رفع نیاز خرید و فروش محصولات با مشارکت فروشنده ها و خریدار ها پدید آمده است">
+
+<title>بازار نخل | به وسعت یک سرزمین</title>
+
+</head>
+<body>
+
+<script>
+
+    setTimeout(function(){
+        $(".loading-index").remove();
+    }, 1600);
+
+</script>
+
+<div class="loading-index">
+    <div class="loadingpage">
+        <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        <p>
+            در حال بارگذاری ...
+        </p>
+    </div>
+</div>
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+<main>
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+<!-- --------------------------------header slider section------------------------------->
+<div id="slider-index-top">
+    <div class="slidertop">
+        <div class="bd-example">
+            <div id="carouselExampleCaptions" class="carousel slide" data-ride="carousel">
+
+                    <div class="carousel-inner">
+                        {% for slidr in Sliders %}
+                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                <a href="{{slidr.URL}}/"><img src="{{slidr.Image.url}}" class="d-block w-100" alt="{{slidr.Title}}">
+                                    {% if slidr.ShowInfo %}
+                                    <div class="carousel-caption">
+                                        <h3>{{slidr.Title}}</h3>
+                                        <p>{{slidr.Description}}</p>
+                                    </div>
+                                    {% endif %}
+                                </a>
+                            </div>
+                        {% endfor %} 
+                    </div>   
+
+                <a class="carousel-control-prev" href="#carouselExampleCaptions" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">قبلی</span>
+                </a>
+                <a class="carousel-control-next" href="#carouselExampleCaptions" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">بعدی</span>
+                </a>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- --------------------------------slider-prod-cat------------------------------->
+<div class="slider-prod-cat">
+    <div class="container-fluid">        
+        <h4><span>دسته بندی محصولات</span></h4>
+        <div class="postslidebt">
+            <section class="autoplay slider sliderbox">
+                {% for category in Categories %}
+                    <div>
+                        <a href="/category/{{category.Slug}}/newest/none/">
+                            <img src="{{category.Image_thumbnail_url}}" alt="{{category.Title}}">
+                            <h2 class="titbox">{{category.Title}}</h2>
+                        </a>
+                    </div>
+                {% endfor %}
+            </section>
+        </div>
+    </div>
+</div>
+<!---------------------------------seller------------------------------->        
+<div id="seller">
+    <div class="container">
+        <div class="row name-section-title">   
+            <div class="col-xl-12 col-12">
+                <h4 class="title-box-vendor-story title-borderbt">
+                    حجره ها
+                </h4>
+                
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                <div class="slider-full-width off-slick-slider">
+                    <div class="clearfix"></div>
+                    <div class="slider-full-seller">
+                        <div class="postslidebt">
+                            <section class="autoplay slider sliderfullseller">
+
+                                {% for shop in Shops %}
+                                    <div class="boxslider-slick">
+                                        <a href="/{{shop.Slug}}/">
+                                            <img src="{{shop.Image_thumbnail_url}}"  alt="{{shop.Title}}" class="seller-img">
+                                            <h3 class="titbox">{{category.Title}}</h3>
+                                            <div class="ratecode">{{shop.Point}}</div>
+                                            <div class="nameseller">
+                                                <h3>{{shop.Title}}</h3>
+                                            </div>
+                                        </a>
+                                    </div>
+                                {% endfor %}
+
+                            </section>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!---------------------------------banner-------------------------------->
+
+<section id="two-bannerhome">
+    <div class="container">
+        <div class="row">
+           {% for adv in CenterAdvertisings %}
+                <div class="col-xl-6 col-md-6">
+                    <div class="baner-2-slider">
+                        <a href="{{adv.URL}}">
+                            <img src="{{adv.Image.url}}" alt="{{adv.URL}}">
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!---------------------------------slider-takhfifat-prod------------------------------->
+
+
+    
+<!---------------------------------three-box-slider------------------------------->
+
+<section id="three-box-slider">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-xl-3 col-lg-3 col-md-4 col-sm-12 col-12 one-slider-col">
+                <div class="oneslide">
+                    <h3  class="title-borderbt">تخفیفات ویژه</h3>
+
+                    <img src="{{DisProduct.UserProduct.Image_thumbnail_url}}" alt="عکس تخفیفات ویژه" width="175px" height="175px">
+                    
+                    <a href="/product/{{DisProduct.UserShop.Slug}}/{{DisProduct.UserProduct.Slug}}/"><h4 class="longtitle">{{DisProduct.UserProduct.Title}}</h4></a>
+                    {% if DisProduct.UserProduct.OldPrice != '0' %}<span class="strikeprice numbersprice">{{DisProduct.UserProduct.OldPrice}} ریال</span>{% else %}{% endif %}
+                    <br>
+                    <span class="priceline numbersprice">{{DisProduct.UserProduct.Price}} ریال</span>
+
+                </div>
+            </div>
+
+            <div class="col-xl-9 col-lg-9 col-md-8 col-sm-12 col-12 slider-hialf-sec">
+                <div class="slider-full-width">
+                    <h5><a href="#"></a>جدید ترین محصولات</h5>
+                    <h6><a href="/product/all/">نمایش همه محصولات</a></h6>
+                    <div class="clearfix"></div>
+                    <div class="slider-full-cat slider-half">
+                        <div class="postslidebt">
+                            <section class="autoplay slider sliderhalf">
+                                {% for item in Products %}
+                                    <div class="boxslider-slick products-new">
+                                        <a href="/product/{{item.FK_Shop.Slug}}/{{item.Slug}}/">
+                                            <img src="{{item.Image_thumbnail_url}}" alt="{{item.Title}}"  width="175px" height="175px" >
+                                            <h4 class="titbox">{{item.Title}}</h4>
+                                            {% if item.Status != '4' %}<span><span class="numbersprice">{{item.Price}}</span> ریال</span>{% else %}<span class="empty">ناموجود</span>{% endif %}
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </section>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</section>
+
+<section id="three-box-slider">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 slider-hialf-sec">
+                <div class="slider-full-width">
+                    <h5><a href="#">محصولات پیشنهادی</a></h5>
+                    <h6><a href="/product/all/">نمایش همه محصولات</a></h6>
+                    <div class="clearfix"></div>
+                    <div class="slider-full-cat slider-half">
+                        <div class="postslidebt">
+                            <section class="autoplay slider sliderfull">
+                                {% for item in Productsold %}
+                                    <div class="boxslider-slick">
+                                        <a href="/product/{{item.FK_Shop.Slug}}/{{item.Slug}}/">
+                                            <img src="{{item.Image_thumbnail_url}}" alt="{{item.Title}}" width="175px" height="175px">
+                                            <h3 class="titbox">{{item.Title}}</h3>
+                                            {% if item.Status != '4' %}<span><span class="numbersprice">{{item.Price}}</span> ریال</span>{% else %}<span class="empty">نا موجود</span>{% endif %}
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </section>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--------------------------------campain------------------------------->
+
+
+
+<!----------------------------------محصولات تخفیف دار----------------------------->
+
+<section id="three-box-slider">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 slider-hialf-sec">
+                <div class="slider-full-width off-slider">
+                    <h5><a href="#"></a>جدید ترین تخفیفات</h5>
+                    <h6><a href="/product/all/">نمایش همه محصولات</a></h6>
+                
+                            <div class="clearfix"></div>
+                            <div class="slider-full-seller slider-full-cat">
+                                <div class="postslidebt">
+                                    <section class="autoplay slider sliderfull">
+                                {% for item in AllDisProduct %}
+                                    <div class="boxslider-slick">
+                                        <a href="/product/{{item.FK_Shop.Slug}}/{{item.Slug}}/">
+                                            <img src="{{item.Image_thumbnail_url}}" alt="{{item.Title}}" width="170px" height="170px">
+                                            <div class="title-off-slider">
+                                                <h3 class="titbox longtitle">{{item.Title}}</h3>
+                                            </div>
+                                            {% if item.Status != '4' %}                              
+                                                <span class="off-slider-darsad"> {{ item.get_discounted }}% تخفيف </span>
+                                                <div class="single-off-slide-price"><span class="numbersprice price-root">{{item.Price}}</span><span class="numbersprice off-price">{{item.OldPrice}}</span> ریال</div>
+                                            {% else %}
+                                                <span class="empty">ناموجود</span>
+                                            {% endif %}
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </section>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+
+        </div>
+    </div>
+</section>
+
+<!---------------------------------------پایان------------------------------------>
+
+<!-- 
+<section id="campain">
+
+</section> -->
+
+
+<!---------------------------------banner-img-top------------------------------->
+
+<section id="banner-img-top">
+        <div class="container">
+            <div class="row">
+                {% for adv in ButtomAdvertisings %}
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12">
+                        <div class="img-banner-top">
+                            <a href="{{adv.URL}}">
+                                <img src="{{adv.Image.url}}" alt="not found">
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+        </div>
+</section>
+
+<!--------------------------------- blog ------------------------------->
+                <section id="blog-section">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-xl-12 col-12">
+                                <div class="title-blog">
+                                    <div class="right-title-blog">
+                                        وبلاگ
+                                    </div>
+
+                                    <div class="main-title-blog">
+                                    </div>
+
+                                    <div class="left-title-blog">
+                                        <div>
+                                            <a href="/blog/index/"> مشاهده تمام محتوا </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            {% for item in Postblog %}
+                                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12">
+                                    <a href="/blog/post/{{item.Blog.Slug}}/">
+                                        <div class="post-blog">
+                                            <span class="tag-post">وبلاگ</span>
+                                            <img src="{{item.Blog.Index_Image.url}}" alt="{{item.Blog.Slug}}">
+                                            <div class="title-single-post">
+                                                <h2 class="title-borderbt">{{item.Blog.Title}}</h2>
+                                            </div>
+                                            <div class="des-single-post">
+                                                
+                                                {% autoescape off %}<p>{{item.Blog.Summary|truncatechars:150}}</p>{% endautoescape %}
+                                                
+                                            </div>
+                                            <div class="author-single-post">
+                                                <div class="img-author">
+                                                    <img src="{{item.Writer.Image_thumbnail.url}}" alt="profile" width="45" height="45">
+                                                </div>
+                                                <div class="text-author">
+                                                    <h5>{{item.Blog.FK_User.first_name}} {{item.Blog.FK_User.last_name}}</h5>
+                                                    <span>{{item.Blog.DateCreate}}</span>
+                                                </div>
+                                                <div class="cat-post">
+                                                    <h6></h6>
+                                                </div>
+                                                <div class="clearfix"></div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </section>
+
+
+<!--------------------------------- vendor story ------------------------------->
+                <section id="vendorstory">
+                     <div class="container">
+                        <div class="row">
+                            <div class="col-xl-12 col-12">
+                                <h4 class="title-box-vendor-story title-borderbt">
+                                    داستانی برای زندگی
+                                </h4>
+                            </div>
+                        </div>
+                        <div class="row">
+                            {% for vendorstory in Vendorstory %}
+                                <div class="col-xl-6 col-12">
+                                    <a href="{% url "blog:vendorstory" vendorstory.Slug %}">
+                                        <div class="box-vendor-story">
+                                            <div class="right-vstory">
+                                                {% if vendorstory.Show_Image %}<img src="{{vendorstory.Image_thumbnail_url}}" alt="{{vendorstory.Slug}}">{% else %}<img src="{{vendorstory.FK_Shop.Image_thumbnail_url}}" alt="{{vendorstory.Slug}}">{% endif %}
+                                                <div class="rate-vstory">{{vendorstory.Point}}</div>
+                                            </div>
+                                            <div class="left-vstory">
+                                                <div class="box-des-vstory">
+                                                    <p>
+                                                        {% autoescape off %}{{vendorstory.Summary}}{% endautoescape %}
+                                                        <br>
+                                                        <a href="{% url "blog:vendorstory" vendorstory.Slug %}" class="more-vstory">ادامه داستان</a>
+                                                    </p>
+                                                </div>
+                                                <h5>{{vendorstory.Title}}</h5>
+                                            </div>
+                                            <div class="clearfix"></div>
+                                        </div>
+                                    </a>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="row">
+                            <div class="col-xl-12 col-lg-12 text-center">
+                                <a class="more-stories" href="{% url "blog:show_all_blog_story" %}">بیشتر ...</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+    </main>
+
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": "بازار نخل - nakhl",
+            "image": "https://nakhll.com/static/images/Logo%20SVG.svg",
+            "@id": "https://www.nakhll.com",
+            "url": "https://www.nakhll.com",
+            "telephone": "+983432476561",
+            "priceRange": "IRR",
+            "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "بلوار کوثر، ساختمان پارک علم و فناوری شرکت نخل",
+            "addressLocality": "کرمان",
+            "postalCode": "7781922222",
+            "addressCountry": "IR"
+            },
+            "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 30.2935487,
+            "longitude": 57.0234476
+            },
+            "openingHoursSpecification": {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Saturday",
+                "Sunday"
+            ],
+            "opens": "08:30",
+            "closes": "16:30"
+            },
+            "sameAs": [
+            "https://www.facebook.com/Nakhll-107761244188761/",
+            "https://www.instagram.com/nakhll1"
+            ]
+            }
+    </script>
+
+{% block footer-section %}
+{% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+
+
+{% block footer %}
+{% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

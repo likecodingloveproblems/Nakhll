@@ -1,0 +1,263 @@
+{% load i18n static %}
+{% load jformat %}
+
+{% block header %}
+    {% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+<title>وبلاگ بازار نخل | {{Vendorstory.Title}}</title>
+</head>
+
+{% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+<div class="blog-post">
+    <div class="container">
+        <div class="row">
+            {% if ShowAlart %}
+                <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12">
+                    <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                        <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
+                        <p>
+                            {{AlartMessage}}
+                        </p>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="col-xl-8 col-lg-8 col-md-8 col-12">
+                <div class="blog-post-main">
+                    <img class="blog-post-img-1" src="{{Vendorstory.Slider.url}}" alt="اسلایدر های حجره">
+                    <div class="blog-post-main-content">
+                        <div class="blog-post-writer-date">
+                            <div class="blog-post-writer">
+                                نوشته شده توسط
+                                <span>
+                                    <a href="#">{{Vendorstory.FK_User.first_name}} {{Vendorstory.FK_User.last_name}}</a>
+                                </span>
+                            </div>
+                            <div class="blog-post-date">
+                                ارسال شده {{StoryDate}}
+                            </div>
+                        </div>
+                        <div class="clearfix">
+
+                        </div>
+                        <div class="blog-post-main-title-div">
+                            <div class="blog-post-main-title">
+                                <h4>{{Vendorstory.Title}}</h4>
+                            </div>
+                            <div class="blog-post-views">
+                                <p class="view-count">بازدید : {{View_Count}}</p>
+                            </div>
+                        </div>
+                        <div class="clearfix">
+
+                        </div>
+                        <div class="row blog-post-rate">
+                            <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7 col-7 hr-line-after-rate-col">
+                                <div class="hr-line-after-rate">
+
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 col-5 blog-post-stars-col">
+                                <form method="POST" action="set-point">
+                                    <div class="blog-post-rate-stars-point">
+                                        <div class="rating blog-post-stars">
+                                            <label id="rate10">
+                                                <input type="radio" name="rating" value="10" title="10 stars"> 10
+                                            </label>
+                                            <label id="rate9">
+                                                <input type="radio" name="rating" value="9" title="9 stars"> 9
+                                            </label>
+                                            <label id="rate8">
+                                                <input type="radio" name="rating" value="8" title="8 stars"> 8
+                                            </label>
+                                            <label id="rate7">
+                                                <input type="radio" name="rating" value="7" title="7 stars"> 7
+                                            </label>
+                                            <label id="rate6">
+                                                <input type="radio" name="rating" value="6" title="6 stars"> 6
+                                            </label>
+                                            <label id="rate5">
+                                                <input type="radio" name="rating" value="5" title="5 stars"> 5
+                                            </label>
+                                            <label id="rate4">
+                                                <input type="radio" name="rating" value="4" title="4 stars"> 4
+                                            </label>
+                                            <label id="rate3">
+                                                <input type="radio" name="rating" value="3" title="3 stars"> 3
+                                            </label>
+                                            <label id="rate2">
+                                                <input type="radio" name="rating" value="2" title="2 stars"> 2
+                                            </label>
+                                            <label id="rate1">
+                                                <input type="radio" name="rating" value="1" title="1 star"> 1
+                                            </label>
+                                        </div>
+                                        <span>
+                                            {% if Post.get_poin == 0.0 %}0{% else %}{{ Vendorstory.get_poin }}{% endif %}
+                                        </span>
+                                    </div>
+                                    <div class="blog-post-rating-user-count">
+                                        رای داده شده توسط <span class="point-count">{{PointCount}}</span> نفر
+                                    </div>
+                                </form>
+                                <script type="text/javascript">
+                                $('.blog-post-stars label').change(function(){
+                                    $("#resendcode").show();
+                                    var pointer = 0;
+                                    var rate1 = $('#rate1').hasClass("selected");
+                                    var rate2 = $('#rate2').hasClass("selected");
+                                    var rate3 = $('#rate3').hasClass("selected");
+                                    var rate4 = $('#rate4').hasClass("selected");
+                                    var rate5 = $('#rate5').hasClass("selected");
+                                    var rate6 = $('#rate6').hasClass("selected");
+                                    var rate7 = $('#rate7').hasClass("selected");
+                                    var rate8 = $('#rate8').hasClass("selected");
+                                    var rate9 = $('#rate9').hasClass("selected");
+                                    var rate10 = $('#rate10').hasClass("selected");
+                                    if(rate1){
+                                        pointer = 1;
+                                    }
+                                    else if(rate2){
+                                        pointer = 2;
+                                    }
+                                    else if(rate3){
+                                        pointer = 3;
+                                    }
+                                    else if(rate4){
+                                        pointer = 4;
+                                    }
+                                    else if(rate5){
+                                        pointer = 5;
+                                    }
+                                    else if(rate6){
+                                        pointer = 6;
+                                    }
+                                    else if(rate7){
+                                        pointer = 7;
+                                    }
+                                    else if(rate8){
+                                        pointer = 8;
+                                    }
+                                    else if(rate9){
+                                        pointer = 9;
+                                    }
+                                    else if(rate10){
+                                        pointer = 10;
+                                    }
+                                    else {
+                                        pointer = 0;
+                                    }
+                                    var slug = "{{ Vendorstory.Slug | safe }}";
+
+                            $.ajax({
+                                type:'POST',
+                                url:'{% url "blog:SetStoryPoint" %}',
+                                data:{
+                                    rating: pointer,
+                                    Slug: slug,
+                                    csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+                                    action: 'post',
+                                },    
+                                success:function(json){ 
+                                    if (json.status == true){
+                                        location.reload();
+                                    }else{
+                                        alert(json.error)
+                                    }
+                                },
+                                error : function(xhr,errmsg,err) {
+                                    alert('صفحه را مجددا بارگذاری کنید و دوباره امتحان کنید');
+                                    console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                                }
+                            });
+
+
+                                });
+                                </script>
+                            </div>
+                        </div>
+                        <div class="clearfix">
+
+                        </div>
+                        <div class="blog-post-content">
+                            <p>{% autoescape off %}{{Vendorstory.Content}}{% endautoescape %}</p>
+                            <br>
+                            <div class="blog-post-tags">
+                                {% for item in Tags %}
+                                <!-- <a href="#"> -->
+                                    <div class="blog-post-tag">
+                                        <h2>
+                                            {{item.Title}}
+                                        </h2>
+                                    </div>
+                                <!-- </a> -->
+                                {% endfor %}
+
+                            </div>
+                        </div>
+                        {% block comment %}
+                            {% include "blog/pages/story_comment.html" %}
+                        {% endblock %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4 col-lg-4 col-md-4 col-12">
+                <div class="blog-sidebar">
+                    <p class="blog-sidebar-title">درباره نویسنده</p>
+                    <p>
+                        {{Writer}}
+                    </p>
+
+                </div>
+                <div class="blog-sidebar blog-sidebar-2nd">
+                    <p class="blog-sidebar-title">آخرین داستان ها</p>
+                    <ul>
+                        {% for item in LastStory %}
+                            <a href="{% url "blog:vendorstory" item.Slug %}">
+                                <li>{{item.Title}}</li>
+                            </a>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var replyClicked = false;
+        $("#reply").click(function (e) {
+            e.preventDefault();
+            if (!replyClicked) {
+                var txt1 = '<div id="reply-comment-div"><div class="blog-post-user-comment"><div class="blog-post-pic-comment"><div class="row"><div class="col-xl-1 col-lg-2 col-md-2 col-sm-2 col-2"><div class="blog-post-user-pic"><img src="{% static "images/user-pic.jpg" %}"></div></div><div class="col-xl-11 col-lg-10 col-md-10 col-sm-10 col-10"><div class="blog-post-comment-input"><div class="form-group"><textarea class="form-control" id="exampleFormControlTextarea1"  rows="2"placeholder="پاسخ خود را اینجا وارد کنید..."></textarea></div></div></div></div></div></div><a href="#"><div class="blog-post-comment-send-button">ارسال</div></a><div class="clearfix"></div></div>'
+                $("#like-count").append(txt1);
+                replyClicked = true;
+            }
+            else if (replyClicked) {
+                $("div#reply-comment-div").remove();
+                replyClicked = false;
+            }
+        })
+    });
+</script>
+
+{% block footer-section %}
+{% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+{% block footer %}
+{% include "nakhll_market/parents/footermain.html" %}
+{% endblock %}

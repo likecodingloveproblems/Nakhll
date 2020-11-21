@@ -1,0 +1,345 @@
+{% load jformat %}
+{% load i18n static %}
+
+{% block header %}
+{% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+
+
+    <title>بازار نخل | هزینه ارسال و شیوه پرداخت</title>
+</head>
+
+
+{% block headertag %}
+{% include "nakhll_market/parents/new-headertag-section.html" %}
+{% endblock %}
+
+
+{% block headersection %}
+    {% include "nakhll_market/parents/menuheader-section.html" %}
+{% endblock %}
+
+
+<section id="brdcmb">
+    <div class="container">
+            <div class="row">
+                <div class="col-xl-12">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/">خانه</a></li>
+                            <li class="breadcrumb-item"><a href="{% url "Payment:cartdetail" %}">سبد خرید</a></li>
+                            <li class="breadcrumb-item"><a href="{% url "Payment:sendinfo" %}">اطلاعات ارسال</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">هزینه ارسال و شیوه پرداخت</li>
+                            <li class="breadcrumb-item " aria-current="page">فاکتور نهایی</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+    </div>
+</section>
+
+<section id="time">
+    <div class="container">
+        
+            <div class="row">
+
+                <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-12">
+                    <div class="box-cart-page">
+                        <h4>جزئیات ارسال محصولات</h4>
+
+                        <div class="row">
+                            {% if AISC_List|length != 0 %}
+                                <div class="col-xl-12 col-md-12 col-xs-12 col-12">
+                                    <div class="detail-post-box">
+                                        <p>                                       
+                                            <strong>
+                                                پست درون شهری 
+                                            </strong>
+                                            <br>
+                                            <ul>
+                                                {% for item in AISC_List %}
+                                                    <li><a href="/product/{{item.FK_Product.FK_Shop.Slug}}/{{item.FK_Product.Slug}}" target="_blank">{{item.FK_Product.Title}}</a></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </p>
+                                        <p class="left-price-post-page">
+                                            <strong>
+                                                هزینه ارسال : <span class="numbersprice">80000</span> ریال
+                                            </strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            
+                            {% if SCBC_List|length != 0 %}
+                                <div class="col-xl-12 col-md-12 col-xs-12 col-12">
+                                    <div class="detail-post-box">
+                                        <p>                                       
+                                            <strong>
+                                                هزینه پست بر عهده مشتری (پس کرایه)
+                                            </strong>
+                                            <br>
+                                            <ul>
+                                                {% for item in SCBC_List %}
+                                                    <li><a href="/product/{{item.FK_Product.FK_Shop.Slug}}/{{item.FK_Product.Slug}}" target="_blank">{{item.FK_Product.Title}}</a></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </p>
+                                        <p class="left-price-post-page">
+                                            <strong>
+                                                {{ Factor.get_message_when_shipping_cost_by_customer }}
+                                            </strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            {% if PM_List|length != 0 %}
+                                <div class="col-xl-12 col-md-12 col-xs-12 col-12">
+                                    <div class="detail-post-box">
+                                        <p>                                       
+                                            <strong>
+                                                ارسال با پست 
+                                            </strong>
+                                            <br>
+                                            <ul>
+                                                {% for item in PM_List %}
+                                                    <li><a href="/product/{{item.FK_Product.FK_Shop.Slug}}/{{item.FK_Product.Slug}}" target="_blank">{{item.FK_Product.Title}}</a></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </p>
+                                        <p class="left-price-post-page">
+                                            <strong>
+                                                هزینه ارسال : <span class="numbersprice">{{PM_Price}}</span> ریال
+                                            </strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                    <form method="POST" action="{% url "Payment:final_factor" %}" id="pay_status_form_check">
+                        {% csrf_token %}
+                        <div class="box-cart-page">
+                            <h4>شیوه پرداخت</h4>
+                            <!-- <p> مبلغ شارژ کیف پول شما : 50000 ریال است </p> -->
+                            <div class="boxin-cartbox">
+                                <img class="logo-radio" src="https://pec.ir/uploads/assets/images/pec-logo-new.png" alt="پارسیان" >
+                                <div class="custom-control custom-radio custom-control-inline">
+                                    <input type="radio" id="customRadioInline2" name="pay_status_btn" value="pay_pec" class="custom-control-input" checked>
+                                    <label class="custom-control-label" for="customRadioInline2"></label>
+                                    <span class="nameradiobox">پرداخت آنلاین</span>
+                                    
+                                </div>
+                                <small class="nameradiobox">پرداخت کل مبلغ فاکتور به صورت آنلاین با تمام کارت های بانکی عضو شتاب در درگاه پارسیان ...</small>
+                            </div>
+                            <div class="boxin-cartbox">
+                                <img class="logo-radio" src="http://anillsismoni.ir/wp-content/uploads/2018/03/ldx_image_png_286x199_pixels.png" alt="زرین پال" >
+                                <div class="custom-control custom-radio custom-control-inline">
+                                    <input type="radio" id="customRadioInline2" name="pay_status_btn" value="pay_zarin" class="custom-control-input">
+                                    <label class="custom-control-label" for="customRadioInline2"></label>
+                                    <span class="nameradiobox">پرداخت آنلاین</span>
+                                    
+                                </div>
+                                <small class="nameradiobox">پرداخت کل مبلغ فاکتور به صورت آنلاین با تمام کارت های بانکی عضو شتاب در درگاه زرین پال ...</small>
+                            </div>
+                            {% if Wallet_Pay_Status %}
+                                <div class="boxin-cartbox">
+                                    <img class="logo-radio" src="https://cdn1.iconfinder.com/data/icons/ecommerce-61/48/eccomerce_-_wallet-512.png" alt="test" >
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="radio" id="customRadioInline1" name="pay_status_btn" value="pay_wallet" class="custom-control-input">
+                                        <label class="custom-control-label" for="customRadioInline1"></label>
+                                        
+                                        <span class="nameradiobox">پرداخت از کیف پول ( موجودی <span class="numbersprice">{{This_User_Inverntory}}</span> ریال )</span>
+                                        
+                                    </div>
+                                    <small class="nameradiobox">پرداخت کل مبلغ فاکتور از کیف پول</small>
+                                    <!-- <small class="nameradiobox">پرداخت مبلغ 9000 ریال از کیف پول و  مبلغ 2000 ریال به صورت آنلاین در درگاه زرین پال</small> -->
+                                </div>
+                            {% else %}
+                                <div class="boxin-cartbox disabled">
+                                    <img class="logo-radio" src="https://cdn1.iconfinder.com/data/icons/ecommerce-61/48/eccomerce_-_wallet-512.png" alt="test" >
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="radio" id="radio3" name="radioDisabled" id="customRadioDisabled" class="custom-control-input" disabled>
+                                        <label class="custom-control-label" for="customRadioDisabled"></label>
+                                        <span class="nameradiobox">پرداخت از کیف پول ( موجودی <span class="numbersprice">{{This_User_Inverntory}}</span> ریال )</span>
+                                    </div>
+                                    <small class="nameradiobox">موجودی کیف پول شما کافی نمی باشد.<a href="/cart/detail/"></a></small>
+                                    
+                                    <!-- <small class="nameradiobox">پرداخت مبلغ 9000 ریال از کیف پول و  مبلغ 2000 ریال به صورت آنلاین در درگاه زرین پال</small> -->
+                                </div>
+
+                            {% endif %}
+
+                            <!-- <div class="boxin-cartbox">
+                                <img class="logo-radio" src="http://blog.arzjoo.com/wp-content/uploads/2019/08/wallet-free-arzkade-icon.jpg" alt="test" >
+                                <div class="custom-control custom-radio custom-control-inline">
+                                    <input type="radio" id="customRadioInline2" name="customRadioInline1" class="custom-control-input" checked>
+                                    <label class="custom-control-label" for="customRadioInline2"></label>
+                                    <span class="nameradiobox">پرداخت از کیف پول</span>
+                                    
+                                </div>
+                                <small class="nameradiobox">پرداخت کامل از کیف پول ،موجودی کیف پول شما برای پرداخت این فاکتور کافی است . </small>
+                            </div> -->
+                            
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
+                    <div class="sidebar-cart">
+                        <div class="summary-cart">
+                            {% if Factor.FK_Coupon == None %}
+                                <form class="takhfif-form" method="POST" id="takhfif-form">
+                                    {% csrf_token %}
+                                    <div class="form-group">
+                                        <label for="takhfif-code">کد تخفیف :</label>
+                                        <input type="text" class="form-control" id="takhfif-code" placeholder="کد تخفیف شما">
+                                        <button type="submit">بررسی</button>
+                                    </div>
+                                </form>
+                                
+                                <div id="loaderDiv" class="loaderDivclass">
+                                    در حال بررسی
+                                    <img src="{% static "images/loading.svg" %}" alt="در حال بررسی">
+                                </div>
+                                <div id="results"></div>
+
+                                <script>
+                                $(document).on('submit', '#takhfif-form',function(e){
+                                    $("#loaderDiv").show();
+                                    $("#alerterror").remove(); 
+                                    e.preventDefault();
+                                        $.ajax({
+                                            type:'POST',
+                                            url:'{% url "Profile:CheckCopun" %}',
+                                            data:{
+                                                code: $('#takhfif-code').val(),
+                                                factor : '{{ Factor.FactorNumber |safe }}',
+                                                csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+                                                action: 'post',
+                                            },    
+                                            success:function(json){
+                                                if (json.status == true){
+                                                    var x = json.status
+                                                    $('#results').html('<div style="color: red">'+json.error+'</div')
+                                                    $("#loaderDiv").hide();
+                                                    $("#takhfif-form").remove();
+                                                    location.reload();
+                                                }else{
+                                                    $('#results').html("<div class='alert-box alert radius' data-alert id='alerterror'>"+json.error+
+                                                    "</div>");
+                                                    $("#loaderDiv").hide();
+                                                }
+                                            },
+                                            error : function(xhr,errmsg,err) {
+                                                $('#results').html("<div class='alert-box alert radius' data-alert id='alerterror'>"+json.error+
+                                                "</div>");
+                                                $("#loaderDiv").hide();
+                                            }
+                                        });
+
+                                    
+                                    });
+                                </script>
+                            {% endif %}
+
+                            {% if Factor.FK_Coupon != None %}
+                                <div class="row summary-prod">
+                                    <div class="col-xl-12">
+                                        <span>
+                                            کد تخفیف 
+                                            <span class="couponcart__status">
+                                                {{Factor.FK_Coupon.Title}}
+                                                <a class="btn btn-primary btn-all btn-left" href="{% url "Payment:delete-coupon-factor" Factor.FK_Coupon.id %}">حذف</a>
+                                            </span>
+                                            برای شما ثبت شده است.
+                                        </span>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="summary-cart">
+                            <h5>محصولات سفارش :</h5>
+                            {% for item in Factor.FK_FactorPost.all %}
+                                <div class="row summary-prod">
+                                    <div class="col-sm-3">
+                                        <img src="{{item.FK_Product.Image_thumbnail_url}}" alt="{{item.FK_Product.Title}}">
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <h6>{{item.FK_Product.Title}} (<span class="numbersprice">{{item.FK_Product.Price}}</span> ریال)</h6>
+                                        <h6>تعداد : {{item.ProductCount}} </h6>
+                                        <h6>قیمت کل : <span class="numbersprice">{{item.get_total_item_price}}</span> </h6>
+                                    </div>
+                                </div>
+                            {% empty %}
+                            <div>
+                                هیچ محصولی در سبد خرید موجود نیست ...
+                            </div>
+                            {% endfor %}
+                            <div class="summary-cart">
+                                <h5>خلاصه سفارش :</h5>
+                                <div class="factor-cart-summary">
+                                    <mark>جمع مبلغ کالا ها <span class="numbersprice">{{ Factor.get_total }} ریال</span></mark>
+                                    {% if Factor.check_order_total_weight %}<mark>هزینه ارسال <span class="numbersprice">{{ Factor.get_postprice }} ریال</span></mark>{% else %}<mark>هزینه ارسال <span class="numbersprice">{{ Factor.get_message_when_shipping_cost_by_customer }}</span></mark>{% endif %}
+                                    {% if Factor.FK_Coupon != None %}<mark> تخفیف :<span class="numbersprice">{{ Factor.Coupon_price_min }} ریال</span></mark>{% endif %}
+                                    <mark class="end-price">جمع کل <span class="numbersprice">{{ Factor.get_end_price }} ریال</span></mark>  
+                                </div>
+                            </div>
+
+                            <div class="continue-cart">
+                            {% if SCBC_List|length == 0 %}
+                                <button class="btn btn-success" id="pay_status_form_check_send"><i class="fal fa-shopping-bag"></i> فاکتور نهایی </button>
+                            {% else %}
+                        
+                                <a data-toggle="modal" data-target="#myModalerror"><button class="btn btn-success"><i class="fal fa-shopping-bag"></i> فاکتور نهایی </button></a>
+                                
+                                <div class="modal fade" id="myModalerror" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h4 class="modal-title" id="exampleModalLabel">هشدار</h4>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body" id="text_err">
+                                        هزینه ارسال محصولات با پست پس کرایه شما توسط درگاه ارسال کننده محاسبه می شود هنگام دریافت کالا (در صورت سالم بودن محصول ) شما موظف به پرداخت آن هستید .
+                                        </div>
+                                        <div class="modal-footer" id="modal-footer-err">
+                                            <button class="btn btn-success ml-auto" id="pay_status_form_check_send">تایید می کنم و می پذیرم </button>
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                                <script>
+                                $('#pay_status_form_check_send').click(function() {
+                                    $("#pay_status_form_check").submit();
+                                })
+                                </script>
+                                <br>
+                                <a href="/" class="aback">بازگشت به صفحه اول</a>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+    </div>
+</section>
+
+{% block footer-section %}
+{% include "nakhll_market/parents/footer-section.html" %}
+{% endblock %}
+
+
+
+{% block footer %}
+{% include "nakhll_market/parents/footersite.html" %}
+{% endblock %}

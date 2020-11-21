@@ -1,0 +1,34 @@
+{% load jformat %}
+{% if submarket_list %}
+    {% for submarket in submarket_list %} 
+    {{submarket.Title}}
+    <br>
+    {{submarket.Description}}
+    <br>
+    {{submarket.Slug}}
+    <br>
+    {{submarket.DateCreate|jformat:'%y/%m/%d _ %H:%M:%S'}}
+    <br>
+    {{submarket.Publish}}
+    <br>
+    {{submarket.FK_User}}
+    <hr>
+    {% endfor %}
+
+    {% if is_paginated %}
+        {% if page_obj.has_previous %}
+            <a href="{{ request.path }}?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <p>     </p>
+
+        {% if page_obj.has_next %}
+             <a href="{{ request.path }}?page={{ page_obj.next_page_number }}">next</a>
+        {% endif %}
+    {% endif %}
+
+    <h4>Page {{ page_obj.number }} Of {{ page_obj.paginator.num_pages }} Pages</h4>
+
+    {% else %}
+    <h1>No SubMarket Are Found!</h1>
+{% endif %}
