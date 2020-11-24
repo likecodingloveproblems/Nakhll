@@ -873,7 +873,7 @@ def Show_All_Shoper_User_Info(request):
             'ShowAlart':False,
         }
 
-        return render(request, 'nakhll_market/parents/base_management.html', context)
+        return render(request, 'nakhll_market/management/content/show_all_user_info.html', context)
 
     else:
 
