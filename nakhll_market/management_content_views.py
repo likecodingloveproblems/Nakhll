@@ -1010,7 +1010,7 @@ def Show_All_Content(request):
             return HttpResponse('this method is not allowed!')
 
         # pagination of all shops
-        allShopListPaginator = Paginator (Shops, 10)
+        allShopListPaginator = Paginator (Shops, 30)
         page = request.GET.get('page')
         Shops = allShopListPaginator.get_page(page)
 

@@ -260,7 +260,7 @@
 </div>
 
 
-<!-- {% compress js inline %} -->
+{% compress js inline %}
     {% if request.user.is_authenticated %}
         <script type="text/javascript" charset="utf-8">
             $(".shop-bag-more-products-p").hide();
@@ -698,8 +698,8 @@
                         </a>
                         <a href="{% url "nakhll_market:Message" %}">
                             <div>
-                                {% if new_message_count %}
-                                    <div class="new-message-count">{{new_message_count}}</div>
+                                {% if userMessagesCount %}
+                                    <div class="new-message-count">{{userMessagesCount}}</div>
                                 {% endif %}
                                 <i class="far fa-bell"></i>
                             </div>
