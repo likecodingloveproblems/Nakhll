@@ -862,7 +862,7 @@ def Show_All_Shoper_User_Info(request):
 
         context = {
             'Profiles':profiles,
-            'useProfile':userProfile,
+            'userProfile':userProfile,
             'userWallet':userWallet,
             'Options': options,
             'MenuList':navbar,
