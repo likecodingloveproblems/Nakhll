@@ -126,7 +126,7 @@ def Show_All_User_Info(request):
                     'ShowAlart':False,
                 }
 
-                return render(request, 'nakhll_market/parents/base_management.html', context)
+                return render(request, 'nakhll_market/management/content/show_all_user_info.html', context)
 
             else:
 
@@ -173,7 +173,7 @@ def Show_All_User_Info(request):
                 'userProfile':userProfile,
                 'userWallet':userWallet,
             }
-            return render(request, 'nakhll_market/parents/base_management.html', context)
+            return render(request, 'nakhll_market/management/content/show_all_user_info.html', context)
 
     else:
 
@@ -1029,14 +1029,18 @@ def Management_Edit_User_Info(request, id, msg = None):
 # Content Section ------------------------------------
 
 # Get Shop Statistics
-def GetShopStatistics():
+def GetShopStatistics(request):
     # Build Statistics Class
     class StatisticsClass:
-        def __init__(self,  Product_Count, Not_Count, Off_Count, False_Count):
+        def __init__(self,  Product_Count, Not_Count, Off_Count, False_Count, userProfile, userWallet, options, navbar):
             self.Product_Count = Product_Count
             self.Not_Count = Not_Count
             self.Off_Count = Off_Count
             self.False_Count = False_Count
+            self.userProfile = userProfile
+            self.userWallet = userWallet
+            self.options = options
+            self.navbar = navbar
 
     # Get All Product
     product_count = Product.objects.all().count()
@@ -1046,139 +1050,61 @@ def GetShopStatistics():
     off_count = Product.objects.filter(Available = False).count()
     # False Product Count
     false_count = Product.objects.filter(Publish = False).count()
+    # user profile 
+    userProfile = request.user.User_Profile
+    # user wallet 
+    userWallet = request.user.WalletManager
+    # Get Menu Item
+    options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+    # Get Nav Bar Menu Item
+    navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
 
-    return StatisticsClass(product_count, not_count, off_count, false_count)
+    return StatisticsClass(product_count, not_count, off_count, false_count, userProfile, userWallet, options, navbar)
 
 
 # Show All Content
 def Show_All_Content(request):
 
     search_list = None
-
+    
     if request.user.is_authenticated :
+
+        # Get Statistics
+        Statistic = GetShopStatistics(request)
 
         if request.method == 'POST':
             
-            try:
-                shop_title = request.POST["shop_title"]
-            except MultiValueDictKeyError:
-                shop_title = False
+            shop_title = request.POST.get("shop_title")
+            shop_manager_first_name = request.POST.get("shop_manager_first_name")
+            shop_manager_last_name = request.POST.get("shop_manager_last_name")
 
-            if shop_title != '':
-
-                search_list = Shop.objects.filter(Q(Title__icontains = shop_title))
-
-                AllShop = []
-
-                if search_list != None:
-                    for item in search_list:
-                        AllShop.append(item)
-
-                AllShop = list(dict.fromkeys(AllShop))
-                # ----------------------------------------------------------------------
-                # Get User Info
-                user = User.objects.all()
-                # Get User Profile
-                profile = Profile.objects.all()
-                # Get Wallet Inverntory
-                wallets = Wallet.objects.all()
-                # Get Menu Item
-                options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-                # Get Nav Bar Menu Item
-                navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-                # ----------------------------------------------------------------------
-                # Build Shop Info Class
-                class ShopInfoClass:
-                    def __init__(self,  item, shop_manage):
-                        self.Shop = item
-                        self.Shoper = shop_manage
-
-                AllShopList = []
-
-                # Get All Shop
-                for item in AllShop:
-                    user_shoper = User.objects.get(id = item.FK_ShopManager.id)
-                    Shop_Manager = user_shoper.first_name + ' ' + user_shoper.last_name
-                    New_Item = ShopInfoClass(item, Shop_Manager)
-                    AllShopList.append(New_Item)
-
-                # Get Statistics
-                Statistic = GetShopStatistics()
-
-                context = {
-                    'Users':user,
-                    'Profile':profile,
-                    'Wallet': wallets,
-                    'Options': options,
-                    'MenuList':navbar,
-                    'AllShops':AllShopList,
-                    'ProductCount':Statistic.Product_Count,
-                    'NotProductCount':Statistic.Not_Count,
-                    'OffProductCount':Statistic.Off_Count,
-                    'FalseProductCount':Statistic.False_Count,
-                    'ShowAlart':False,
-                }
-
-                return render(request, 'nakhll_market/management/content/show_all_content.html', context)
-
-
-            else:
-
-                return redirect("nakhll_market:Show_All_Content")
-
+            Shops = Shop.objects.filter(
+                Title__icontains = shop_title,
+                FK_ShopManager__first_name__icontains = shop_manager_first_name,
+                FK_ShopManager__last_name__icontains = shop_manager_last_name
+                )
         else:
-            
-            # Get User Info
-            user = User.objects.all()
-            # Get User Profile
-            profile = Profile.objects.all()
-            # Get Wallet Inverntory
-            wallets = Wallet.objects.all()
-            # Get Menu Item
-            options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-            # Get Nav Bar Menu Item
-            navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-            # ----------------------------------------------------------------------
-            # Build Shop Info Class
-            class ShopInfoClass:
-                def __init__(self,  item, shop_manage):
-                    self.Shop = item
-                    self.Shoper = shop_manage
+            Shops = Shop.objects.all()
 
-            AllShopList = []
+        # pagination of all shops
+        allShopListPaginator = Paginator (Shops, 10)
+        page = request.GET.get('page')
+        Shops = allShopListPaginator.get_page(page)
 
-            # Get All Shop
-            for item in Shop.objects.all():
-                user_shoper = User.objects.get(id = item.FK_ShopManager.id)
-                Shop_Manager = user_shoper.first_name + ' ' + user_shoper.last_name
-                New_Item = ShopInfoClass(item, Shop_Manager)
-                AllShopList.append(New_Item)
+        context = {
+            'userProfile':Statistic.userProfile,
+            'userWallet':Statistic.userWallet,
+            'Options': Statistic.options,
+            'MenuList':Statistic.navbar,
+            'ProductCount':Statistic.Product_Count,
+            'NotProductCount':Statistic.Not_Count,
+            'OffProductCount':Statistic.Off_Count,
+            'FalseProductCount':Statistic.False_Count,
+            'ShowAlart':False,
+            'Shops':Shops
+        }
 
-
-            # pagination of all shops
-            allShopListPaginator = Paginator (AllShopList, 10)
-            page = request.GET.get('page')
-
-            AllShopList = allShopListPaginator.get_page(page)
-
-            # Get Statistics
-            Statistic = GetShopStatistics()
-
-            context = {
-                'Users':user,
-                'Profile':profile,
-                'Wallet': wallets,
-                'Options': options,
-                'MenuList':navbar,
-                'AllShops':AllShopList,
-                'ProductCount':Statistic.Product_Count,
-                'NotProductCount':Statistic.Not_Count,
-                'OffProductCount':Statistic.Off_Count,
-                'FalseProductCount':Statistic.False_Count,
-                'ShowAlart':False,
-            }
-
-            return render(request, 'nakhll_market/management/content/show_all_content.html', context)
+        return render(request, 'nakhll_market/management/content/show_all_content.html', context)
 
     else:
 
