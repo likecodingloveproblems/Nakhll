@@ -162,8 +162,8 @@ class GetUserInfo(threading.Thread):
 # ---------------------------------------------------- User Profile Pages ---------------------------------------------------------
 
 
-# Get User Dashbord Info
-def ProfileDashbord(request):
+# Get User Dashboard Info
+def ProfileDashboard(request):
     # Check User Status
     if request.user.is_authenticated :
         # Get User Info
@@ -2895,7 +2895,7 @@ def ProfileAlert(request):
 #--------------------------------------------------------------------------------------------------------------------------------
 
 # Update Dashboard (User Info) Values
-def UpdateUserDashbord(request):
+def UpdateUserDashboard(request):
     if request.user.is_authenticated:
         try:
             # Get Data
@@ -3082,7 +3082,7 @@ def UpdateUserDashbord(request):
             if edit_profile:
                 this_profile.save()
             # -----------------------------------------
-            return redirect("nakhll_market:Dashbord")
+            return redirect("nakhll_market:Dashboard")
         except Exception as e:
             return redirect("nakhll_market:error_500", error_text = str(e))
     else:

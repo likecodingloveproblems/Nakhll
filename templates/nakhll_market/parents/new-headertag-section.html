@@ -27,12 +27,12 @@
                 <div class="icon-top">
                     {% if request.user.is_authenticated %}
                         <div class="user-top dropdown cls-avatar">               
-                            <a href="{% url "nakhll_market:Dashbord" %}" class="dropdown-toggle" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <a href="{% url "nakhll_market:Dashboard" %}" class="dropdown-toggle" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <img src="{% static "images/useronline.svg" %}" alt="ناحیه کاربری">
                             </a>
                             <div class="dropdown-menu dropdown-primary sh-cart">
 
-                                <a href="{% url "nakhll_market:Dashbord" %}" >
+                                <a href="{% url "nakhll_market:Dashboard" %}" >
                                 <div class="profile-top">
                                     <img src="{{This_User_Profile.Image_thumbnail_url}}" class="profileimg" alt="profileimg">
                                     <span>خوش آمدید</span>
@@ -44,7 +44,7 @@
                                     <i class="fal fa-wallet"></i> کیف پول : <span class="numbersprice">{{This_User_Inverntory}}</span> ریال
                                 </a>
                                     <div class="dropdown-listmenu">
-                                        <a class="dropdown-item" href="{% url "nakhll_market:Dashbord" %}"><i class="fad fa-user"></i> پروفایل </a>
+                                        <a class="dropdown-item" href="{% url "nakhll_market:Dashboard" %}"><i class="fad fa-user"></i> پروفایل </a>
                                         <!-- <a class="dropdown-item" href="#"><img src="{% static "images/shopping-basket.svg" %}" alt=""> فروش های اخیر</a> -->
                                         <a class="dropdown-item" href="{% url "nakhll_market:UserShops" %}"><i class="fad fa-store-alt"></i> مدیریت حجره </a>
                                         <a class="dropdown-item" href="{% url 'logout' %}"><i class="fad fa-sign-out-alt"></i> خروج</a>

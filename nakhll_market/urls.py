@@ -270,8 +270,8 @@ urlpatterns = [
     path('profile/message/check/', profileviews.CheckUserMessage, name='CheckUserMessage'),
     # ------------------------------------------------------ Profile Path ---------------------------------------------------------------
 
-    # Dashbord Path
-    path('profile/dashboard/', profileviews.ProfileDashbord, name='Dashbord'),
+    # Dashboard Path
+    path('profile/dashboard/', profileviews.ProfileDashboard, name='Dashboard'),
     # Wallet Path
     path('profile/wallet/', profileviews.ProfileWallet, name='Wallet'),
     # Message Path
@@ -402,10 +402,10 @@ urlpatterns = [
     #---------------------------------------- Update Profile Values Path -------------------------------------
     # Send Push Path
     path('profile/send-push/', profileviews.SendPush, name='SendPush'),
-    # Update Dashbord (User Info) Values Path
-    path('profile/dashboard/update', profileviews.UpdateUserDashbord, name='UpdateUserInfo'),
-    # # Update Dashbord (Profile Info) Values Path
-    # re_path(r'^profile/dashboard/update/profileinfo/(?P<profile>[-\w\d]+)/$', profileviews.UpdateProfileDashbord, name='UpdateProfileInfo'),
+    # Update Dashboard (User Info) Values Path
+    path('profile/dashboard/update', profileviews.UpdateUserDashboard, name='UpdateUserInfo'),
+    # # Update Dashboard (Profile Info) Values Path
+    # re_path(r'^profile/dashboard/update/profileinfo/(?P<profile>[-\w\d]+)/$', profileviews.UpdateProfileDashboard, name='UpdateProfileInfo'),
 
     #------------------------------------------------ Pages Path ---------------------------------------------
 

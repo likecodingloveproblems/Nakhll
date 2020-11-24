@@ -72,7 +72,7 @@ from Payment.models import Wallet, Factor ,FactorPost, Coupon
 from blog.models import CategoryBlog, PostBlog, VendorStory
 
 from .forms import Login, CheckEmail
-from .profileviews import ProfileDashbord
+from .profileviews import ProfileDashboard
 
 # Get Username
 User_username = None

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.db.models import Q
 from kavenegar import *
 import datetime
@@ -10,9 +10,46 @@ from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib.auth.models import User
 from .models import Alert, Product, Profile, Shop, Category, Option_Meta, Market, SubMarket, Message, User_Message_Status, BankAccount, ShopBanner, ProductBanner, Attribute, AttrPrice, AttrProduct, Field, PostRange, AttrProduct, AttrPrice
 from Payment.models import Coupon, Wallet, Factor, FactorPost
-
+from django.urls import reverse
 
 # --------------------------------------------------------------------------------------------------------------------------------------
+def baseData(request, activeSidebarMenu):
+    # user profile 
+    userProfile = request.user.User_Profile
+    # user wallet 
+    userWallet = request.user.WalletManager
+    # Get Menu Item
+    options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+    # Get Nav Bar Menu Item
+    navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+    # number of unseen massagged
+    new_message_count = Message.objects.filter(FK_Users__FK_User=request.user, FK_Users__SeenStatus=False).count()
+    # side bar menu
+    sidebarMenu = [
+        {'id':'dasboard', 'name':'داشبورد', 'url':reverse('nakhll_market:Dashboard'), 'class':'fas fa-id-badge', 'isActive':False, 'staffOnly':False},
+        {'id':'transaction', 'name':'تراکنش ها', 'url':reverse('nakhll_market:Transaction'), 'class':'fad fa-clipboard-list', 'isActive':False, 'staffOnly':False},
+        {'id':'factor', 'name':' فاکتور ها', 'url':reverse('nakhll_market:Factor'), 'class':'fas fa-file-invoice-dollar', 'isActive':False, 'staffOnly':False},
+        {'id':'ticketing', 'name':'پشتیبانی', 'url':reverse('nakhll_market:Ticketing'), 'class':'fad fa-user-headset', 'isActive':False, 'staffOnly':False},
+        {'id':'userShop', 'name':'مدیریت حجره', 'url':reverse('nakhll_market:UserShops'), 'class':'fas fa-store', 'isActive':False, 'staffOnly':False},
+        {'id':'review', 'name':'نقدها و نظرات', 'url':reverse('nakhll_market:Review'), 'class':'fad fa-comments-alt', 'isActive':False, 'staffOnly':False},
+        {'id':'alert', 'name':'هشدار ها', 'url':reverse('nakhll_market:Alert'), 'class':'fas fa-bell', 'isActive':False, 'staffOnly':True},
+        {'id':'allUser', 'name':'کاربران', 'url':reverse('nakhll_market:Show_All_User_Info'), 'class':'fas fa-users', 'isActive':False, 'staffOnly':True},
+        {'id':'coupon', 'name':'کوپن ها', 'url':reverse('nakhll_market:ManagementCoupunList'), 'class':'fad fa-window-maximize', 'isActive':False, 'staffOnly':True},
+        {'id':'allShop', 'name':'مدیریت محتوا', 'url':reverse('nakhll_market:Show_All_Content'), 'class':'fas fa-sliders-h', 'isActive':False, 'staffOnly':True},
+    ]
+    for n, menu in enumerate(sidebarMenu):
+        if menu['id']==activeSidebarMenu:
+            sidebarMenu[n]['isActive'] = True
+
+    return {
+        'userProfile':userProfile,
+        'userWallet':userWallet,
+        'Options': options,
+        'MenuList':navbar,
+        'userMessagesCount':new_message_count,
+        'ShowAlart':False,
+        'sidebarMenu':sidebarMenu,
+    }
 
 # Get User Statistics
 def GetUserStatistics():
@@ -31,16 +68,7 @@ def GetUserStatistics():
     shop_count = Shop.objects.all().count()
     # Publish Shop Count
     pub_shop_count = Shop.objects.filter(Publish = False).count()
-    # Shoper Count
-    # Shop_Profile = []
-
-    # for shop_pro in Shop.objects.all():
-    #     user_profile = Profile.objects.get(FK_User = shop_pro.FK_ShopManager)
-    #     Shop_Profile.append(user_profile)
-
-    # Shop_Profile = list(dict.fromkeys(Shop_Profile))
-
-    # shoper_count = len(Shop_Profile)
+    # number of shop manager
     shoper_count = Shop.objects.values('FK_ShopManager').distinct().count()
     # Block Count
     block_count = User.objects.filter(is_active = False).count()
@@ -50,7 +78,7 @@ def GetUserStatistics():
 # Show All User Info
 def Show_All_User_Info(request):
 
-    if request.user.is_authenticated :
+    if request.user.is_staff:
 
         if request.method == 'POST':
 
@@ -92,94 +120,36 @@ def Show_All_User_Info(request):
                 
                 # make profiles unique
                 profiles = profiles.distinct()
-                # Get Menu Item
-                options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-                # Get Nav Bar Menu Item
-                navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-                # ----------------------------------------------------------------------
-                # find user
-                userProfile = Profile.objects.filter(FK_User=request.user)
-                if userProfile.count() == 1:
-                    userProfile = userProfile[0]
-                else:
-                    userProfile = False
-                userWallet = Wallet.objects.filter(FK_User=request.user)
-                if userWallet.count() == 1:
-                    userWallet = userWallet[0]
-                else:
-                    userWallet = False
-
-                # Get Statistics
-                Statistic = GetUserStatistics()
-
-                context = {
-                    'Profiles':profiles,
-                    'userProfile':userProfile,
-                    'userWallet':userWallet,
-                    'Options': options,
-                    'MenuList':navbar,
-                    'UserCount':Statistic.User_Count,
-                    'ShopCount':Statistic.Shop_Count,
-                    'PublishShopCount':Statistic.Pub_Shop_Count,
-                    'ShoperCount':Statistic.Shoper_Count,
-                    'BlockCount':Statistic.Block_User,
-                    'ShowAlart':False,
-                }
-
-                return render(request, 'nakhll_market/management/content/show_all_user_info.html', context)
-
             else:
-
                 return redirect("nakhll_market:Show_All_User_Info")
 
-        else:
+        elif request.method == 'GET':
             # Get User Profile
             profiles = Profile.objects.all()
-            # find user
-            userProfile = Profile.objects.filter(FK_User=request.user)
-            if userProfile.count() == 1:
-                userProfile = userProfile[0]
-            else:
-                userProfile = False
-            userWallet = Wallet.objects.filter(FK_User=request.user)
-            if userWallet.count() == 1:
-                userWallet = userWallet[0]
-            else:
-                userWallet = False
-            # Get Menu Item
-            options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-            # Get Nav Bar Menu Item
-            navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
             # Get All User
             profilesPaginator = Paginator (profiles, 20)
             page = request.GET.get('page')
 
             profiles = profilesPaginator.get_page(page)
 
-            # Get Statistics
-            Statistic = GetUserStatistics()
-
-
-            context = {
-                'Profiles':profiles,
-                'Options': options,
-                'MenuList':navbar,
-                'UserCount':Statistic.User_Count,
-                'ShopCount':Statistic.Shop_Count,
-                'PublishShopCount':Statistic.Pub_Shop_Count,
-                'ShoperCount':Statistic.Shoper_Count,
-                'BlockCount':Statistic.Block_User,
-                'ShowAlart':False,
-                'userProfile':userProfile,
-                'userWallet':userWallet,
-            }
-            return render(request, 'nakhll_market/management/content/show_all_user_info.html', context)
-
     else:
-
         return redirect("nakhll_market:AccountLogin")
 
+    context = baseData(request, 'allUser')
+    context['Profiles']=profiles
+    # Get All User Count
+    context['UserCount']=Profile.objects.all().count()
+    # Shop Count
+    context['ShopCount']=Shop.objects.all().count()
+    # Publish Shop Count
+    context['PublishShopCount']=Shop.objects.filter(Publish = False).count()
+    # number of shop manager
+    context['ShoperCount']=Shop.objects.values('FK_ShopManager').distinct().count()
+    # Block Count
+    context['BlockCount']=User.objects.filter(is_active = False).count()
 
+    return render(request, 'nakhll_market/management/content/show_all_user_info.html', context)
+    
 
 # Change User Status
 def Change_User_Status(request, User_ID):
@@ -206,39 +176,15 @@ def Change_User_Status(request, User_ID):
 # Add New User
 def Add_New_User(request):
 
-    if request.user.is_authenticated :
+    if request.user.is_staff :
 
         if request.method == 'POST':
-
-            try:
-                First_Name = request.POST["User_FirstName"]
-            except:
-                First_Name = False
-
-            try:
-                Last_Name = request.POST["User_LastName"]
-            except:
-                Last_Name = False
-            
-            try:
-                NationalCode = request.POST["User_NationalCode"]
-            except:
-                NationalCode = False
-            
-            try:
-                MobileNumber = request.POST["User_MobileNumber"]
-            except:
-                MobileNumber = False
-
-            try:
-                Wallet_Amount = request.POST["User_Amount"]
-            except:
-                Wallet_Amount = False
-
-            try:
-                Status = request.POST["status"]
-            except:
-                Status = ''
+            First_Name = request.POST.get("User_FirstName")
+            Last_Name = request.POST.get("User_LastName")
+            NationalCode = request.POST.get("User_NationalCode")
+            MobileNumber = request.POST.get("User_MobileNumber")
+            Wallet_Amount = request.POST.get("User_Amount")
+            Status = request.POST.get("status")
 
             if (First_Name != '') and (Last_Name != '') and (NationalCode != '') and (MobileNumber != ''):
 
@@ -836,42 +782,23 @@ def Add_Bank_Account(request, id):
 # Show All Shoper User Info
 def Show_All_Shoper_User_Info(request):
 
-    if request.user.is_authenticated :
+    if request.user.is_staff :
         # Get shop manager user Profile
         profiles_id =  Shop.objects.values_list('FK_ShopManager').distinct()
         profiles = Profile.objects.filter(FK_User__in=profiles_id)
-        # Get user profile
-        userProfile = Profile.objects.filter(FK_User=request.user)
-        if userProfile.count() == 1:
-            userProfile = userProfile[0]
-        else:
-            userProfile = False
-        # Get user wallet
-        userWallet = Wallet.objects.filter(FK_User=request.user)
-        if userWallet.count() == 1:
-            userWallet = userWallet[0]
-        else:
-            userWallet = False
-        # Get Menu Item
-        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-        # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
 
-        # Get Statistics
-        Statistic = GetUserStatistics()
-
-        context = {
-            'Profiles':profiles,
-            'userProfile':userProfile,
-            'userWallet':userWallet,
-            'Options': options,
-            'MenuList':navbar,
-            'UserCount':Statistic.User_Count,
-            'ShopCount':Statistic.Shop_Count,
-            'ShoperCount':Statistic.Shoper_Count,
-            'BlockCount':Statistic.Block_User,
-            'ShowAlart':False,
-        }
+        context = baseData(request, 'allUser')
+        context['Profiles']=profiles
+        # Get All User Count
+        context['UserCount']=Profile.objects.all().count()
+        # Shop Count
+        context['ShopCount']=Shop.objects.all().count()
+        # Publish Shop Count
+        context['PublishShopCount']=Shop.objects.filter(Publish = False).count()
+        # number of shop manager
+        context['ShoperCount']=Shop.objects.values('FK_ShopManager').distinct().count()
+        # Block Count
+        context['BlockCount']=User.objects.filter(is_active = False).count()
 
         return render(request, 'nakhll_market/management/content/show_all_user_info.html', context)
 
@@ -1064,45 +991,35 @@ def GetShopStatistics(request):
 
 # Show All Content
 def Show_All_Content(request):
-
     search_list = None
-    
-    if request.user.is_authenticated :
-
+    if request.user.is_staff :
         # Get Statistics
         Statistic = GetShopStatistics(request)
-
         if request.method == 'POST':
-            
             shop_title = request.POST.get("shop_title")
             shop_manager_first_name = request.POST.get("shop_manager_first_name")
             shop_manager_last_name = request.POST.get("shop_manager_last_name")
-
             Shops = Shop.objects.filter(
                 Title__icontains = shop_title,
                 FK_ShopManager__first_name__icontains = shop_manager_first_name,
                 FK_ShopManager__last_name__icontains = shop_manager_last_name
                 )
-        else:
+        elif request.method == 'GET':
             Shops = Shop.objects.all()
+        else:
+            return HttpResponse('this method is not allowed!')
 
         # pagination of all shops
         allShopListPaginator = Paginator (Shops, 10)
         page = request.GET.get('page')
         Shops = allShopListPaginator.get_page(page)
 
-        context = {
-            'userProfile':Statistic.userProfile,
-            'userWallet':Statistic.userWallet,
-            'Options': Statistic.options,
-            'MenuList':Statistic.navbar,
-            'ProductCount':Statistic.Product_Count,
-            'NotProductCount':Statistic.Not_Count,
-            'OffProductCount':Statistic.Off_Count,
-            'FalseProductCount':Statistic.False_Count,
-            'ShowAlart':False,
-            'Shops':Shops
-        }
+        context = baseData(request, 'allShop')
+        context['ProductCount']=Statistic.Product_Count,
+        context['NotProductCount']=Statistic.Not_Count,
+        context['OffProductCount']=Statistic.Off_Count,
+        context['FalseProductCount']=Statistic.False_Count,
+        context['Shops']=Shops
 
         return render(request, 'nakhll_market/management/content/show_all_content.html', context)
 

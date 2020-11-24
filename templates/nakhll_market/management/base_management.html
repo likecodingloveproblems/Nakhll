@@ -111,12 +111,12 @@
                 <div class="icon-top">
                     {% if request.user.is_authenticated %}
                         <div class="user-top dropdown cls-avatar">               
-                            <a href="{% url "nakhll_market:Dashbord" %}" class="dropdown-toggle" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <a href="{% url "nakhll_market:Dashboard" %}" class="dropdown-toggle" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <img src="{% static "images/useronline.svg" %}" alt="ناحیه کاربری">
                             </a>
                             <div class="dropdown-menu dropdown-primary sh-cart">
 
-                                <a href="{% url "nakhll_market:Dashbord" %}" >
+                                <a href="{% url "nakhll_market:Dashboard" %}" >
                                 <div class="profile-top">
                                     <img src="{{This_User_Profile.Image_thumbnail_url}}" class="profileimg" alt="profileimg">
                                     <span>خوش آمدید</span>
@@ -128,7 +128,7 @@
                                     <i class="fal fa-wallet"></i> کیف پول : <span class="numbersprice">{{This_User_Inverntory}}</span> ریال
                                 </a>
                                     <div class="dropdown-listmenu">
-                                        <a class="dropdown-item" href="{% url "nakhll_market:Dashbord" %}"><i class="fad fa-user"></i> پروفایل </a>
+                                        <a class="dropdown-item" href="{% url "nakhll_market:Dashboard" %}"><i class="fad fa-user"></i> پروفایل </a>
                                         <!-- <a class="dropdown-item" href="#"><img src="{% static "images/shopping-basket.svg" %}" alt=""> فروش های اخیر</a> -->
                                         <a class="dropdown-item" href="{% url "nakhll_market:UserShops" %}"><i class="fad fa-store-alt"></i> مدیریت حجره </a>
                                         <a class="dropdown-item" href="{% url 'logout' %}"><i class="fad fa-sign-out-alt"></i> خروج</a>
@@ -666,10 +666,8 @@
                 <div class="profile-sidebar-site">
                     <!-- topsidebar -->
                     <div class="profile-sidebar">
-                        {% if request.user.is_authenticated %}
-                            {% if userProfile %}
-                                    <img src="{{userProfile.Image_thumbnail_url}}" alt="profile-img">
-                            {% endif %}
+                        {% if userProfile %}
+                                <img src="{{userProfile.Image_thumbnail_url}}" alt="profile-img">
                         {% endif %}
                         <h4>
                         {% if request.user.is_authenticated %}
@@ -700,7 +698,9 @@
                         </a>
                         <a href="{% url "nakhll_market:Message" %}">
                             <div>
-                                <div class="new-message-count"></div>
+                                {% if new_message_count %}
+                                    <div class="new-message-count">{{new_message_count}}</div>
+                                {% endif %}
                                 <i class="far fa-bell"></i>
                             </div>
                         </a>
@@ -711,7 +711,7 @@
                         </a>
                     </div>
 
-                    <script>
+                    <!-- <script>
                         // $("#new-message").hide();
                         $(".new-message-count").hide();
                         $(document).ready( function () {
@@ -736,82 +736,36 @@
                             );
                         })
 
-                    </script>
+                    </script> -->
                     <!-- topsidebar -->
+                    <p>{{simpleDict.user.name}}</p>
                     <div class="profile-sidebar-main">
+                        {% for menu in sidebarMenu %}
+                            {% if menu.staffOnly and request.user.is_staff%}
+                                <a href="{{menu.url}}">
+                                    {% if menu.isActive %}
+                                    <button class="activebtn">
+                                    {% else %}
+                                    <button>
+                                    {% endif %}
+                                        <i class="{{menu.class}}"></i>
+                                        <h5>{{menu.name}}</h5>
+                                    </button>
+                                </a>
+                            {% else %}
+                                <a href="{{menu.url}}">
+                                    {% if menu.isActive %}
+                                    <button class="activebtn">
+                                    {% else %}
+                                    <button>
+                                    {% endif %}
+                                        <i class="{{menu.class}}"></i>
+                                        <h5>{{menu.name}}</h5>
+                                    </button>
+                                </a>
+                            {% endif %}
+                        {% endfor %}
 
-                        <a href="/profile/dashboard/">
-                            <button>
-                                <i class="fas fa-id-badge"></i>
-                                <h5>داشبورد</h5>
-                            </button>
-                        </a>
-
-                        <a href="/profile/transaction/">
-                            <button>
-                                <i class="fad fa-clipboard-list"></i>
-                                <h5>تراکنش ها</h5>
-                            </button>
-                        </a>
-
-                        <a href="/profile/factor/">
-                            <button>
-                                <i class="fas fa-file-invoice-dollar"></i>
-                                <h5>فاکتور ها</h5>
-                            </button>
-                        </a>
-
-                        <a href="/profile/ticketing/">
-                            <button>
-                                <i class="fad fa-user-headset"></i>
-                                <h5>پشتیبانی</h5>
-                            </button>
-                        </a>
-
-                        <a href="/profile/shops/">
-                            <button>
-                                <i class="fas fa-store"></i>
-                                <h5>مدیریت حجره</h5>
-                            </button>
-                        </a>
-
-                        <a href="/profile/review/">
-                            <button>
-                                <i class="fad fa-comments-alt"></i>
-                                <h5>نقد ها و نظرات</h5>
-                            </button>
-                        </a>
-
-                        {% if request.user.is_staff %}
-                            <!-- menu_for_alluser -->
-                            <a href="/profile/alert/">
-                                <button>
-                                    <i class="fas fa-bell"></i>
-                                    <h5>هشدار ها</h5>
-                                </button>
-                            </a>
-                            
-                            <a href="{% url "nakhll_market:Show_All_User_Info" %}">
-                                <button class="activebtn">
-                                    <i class="fas fa-users"></i>
-                                    <h5>کاربران</h5>
-                                </button>
-                            </a>
-                            
-                            <a href="{% url "nakhll_market:ManagementCoupunList" %}">
-                                <button>
-                                    <i class="fad fa-window-maximize"></i>
-                                    <h5>کوپن ها</h5>
-                                </button>
-                            </a>
-                            
-                            <a href="{% url "nakhll_market:Show_All_Content" %}">
-                                <button>
-                                    <i class="fas fa-sliders-h"></i>
-                                    <h5>مدیریت محتوا</h5>
-                                </button>
-                            </a>
-                            
                             <!-- <a href="/profile/shops/manage_campaign_list/">
                                 <button>
                                     <i class="fas fa-tag"></i>
@@ -819,7 +773,6 @@
                                 </button>
                             </a> -->
                             <!-- menu_for_alluser -->
-                        {% endif %}
 
                     </div>
                 </div>
