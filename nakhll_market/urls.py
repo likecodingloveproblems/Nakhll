@@ -122,7 +122,7 @@ urlpatterns = [
     # Show User Info Path
     path('management/content/show-user-info/<int:id>/', management_content_views.Management_Show_User_Info, name = 'Show_User_Info'),
     # Edit User Info Path
-    path('management/content/edit-user-info/<int:id>/<str:msg>', management_content_views.Management_Edit_User_Info, name = 'Edit_User_Info'),
+    path('management/content/edit-user-info/<int:id>/', management_content_views.Management_Edit_User_Info, name = 'Edit_User_Info'),
     # Show All Content Path
     path('management/content/show-all-content/', management_content_views.Show_All_Content, name='Show_All_Content'),
     # Change Shop Seen Status Path

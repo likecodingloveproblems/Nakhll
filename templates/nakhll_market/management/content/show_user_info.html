@@ -253,7 +253,7 @@
             {% endif %}
         </div>
     </div>
-    <form method="GET" action="{% url "nakhll_market:Edit_User_Info" User_Selected.id 'none' %}">
+    <form method="GET" action="{% url "nakhll_market:Edit_User_Info" User_Selected.id %}">
         <button type="submit" class="btn btn-primary mr-auto" id="send-left">ویرایش</button>
         <a class="btn btn-primary btn-all btn-left right-buttom" href="{% url "nakhll_market:Add_Bank_Account" User_Selected.id %}">ثبت حساب بانکی</a>
         <div class="clearfix"></div>

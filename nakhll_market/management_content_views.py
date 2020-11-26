@@ -479,107 +479,79 @@ def Management_Show_User_Info(request, id):
 
         return redirect("nakhll_market:AccountLogin")
 
-
 # Edit User Info In Managment Section
-def Management_Edit_User_Info(request, id, msg = None):
+def Management_Edit_User_Info(request, id):
+    '''
+    TODO this page is a very ... page, it only give three option to modify:
+        1-username
+        2-nationalcode
+        3-mobilenumber
+    editing bank account is not possible in site!
+    if the user modify all option alert message showed in oneline
+    '''
 
-    # Check User Status
     if request.user.is_authenticated :
         
+        # base data
+        fields = ['username', 'nationalcode', 'mobilenumber']
+        context = baseData(request, 'allUser')
+        context = getPostData(request, context, fields)
+        # Get Select User
+        context['User_Selected'] = User.objects.get(id = id)
+        # Get Select Profile
+        context['Profile_Selected'] = Profile.objects.get(FK_User = context['User_Selected'])
+
         if request.method == 'POST':
-
-            UserName = request.POST["username"]
-            NationalCode = request.POST["nationalcode"]
-            MobileNumber = request.POST["mobilenumber"]
-            #-------------------------------------------
-            # Get Select User
-            user_select = User.objects.get(id = id)
-            # Get Select Profile
-            profile_select = Profile.objects.get(FK_User = user_select)
+            context['AlartMessage'] = ''
             # Check New Data
-            if (UserName != user_select.username):
-                try:
-                    user_select.username = UserName
-                    user_select.save()
-                except:
-                    if Profile.objects.filter(NationalCode = NationalCode).exists():
-                        return redirect('nakhll_market:Edit_User_Info',
-                        id = id,
-                        msg =  'نام کاربری وارد شده تکراری می باشد!')
-                    else:
-                        return redirect('nakhll_market:Edit_User_Info',
-                        id = id,
-                        msg =  'نام کاربری وارد شده مطابق الگو ها نمی باشد!')
-            elif (NationalCode != profile_select.NationalCode):
-                try:
-                    profile_select.NationalCode = NationalCode
-                    profile_select.save()
-                except:
-                    if Profile.objects.filter(NationalCode = NationalCode).exists():
-                        return redirect('nakhll_market:Edit_User_Info',
-                        id = id,
-                        msg =  'کد ملی وارد شده تکراری می باشد!')
-                    else:
-                        return redirect('nakhll_market:Edit_User_Info',
-                        id = id,
-                        msg =  'کد ملی وارد شده مطابق الگو ها نمی باشد!')
-            elif (MobileNumber != profile_select.MobileNumber):
-                try:
-                    profile_select.MobileNumber = MobileNumber
-                    profile_select.save()
-                except:
-                    if Profile.objects.filter(MobileNumber = MobileNumber).exists():
-                        return redirect('nakhll_market:Edit_User_Info',
-                        id = id,
-                        msg =  'شماره موبایل وارد شده تکراری می باشد!')
-                    else:
-                        return redirect('nakhll_market:Edit_User_Info',
-                        id = id,
-                        msg =  'شماره موبایل وارد شده مطابق الگو ها نمی باشد!')
+            if (context['username'] == context['User_Selected'].username) and\
+            (context['nationalcode'] == context['Profile_Selected'].NationalCode) and\
+            (context['mobilenumber'] == context['Profile_Selected'].MobileNumber):
+                context['AlartMessage'] =  'شما تغییری ایجاد نکرده اید!'
             else:
-                return redirect('nakhll_market:Edit_User_Info',
-                    id = id,
-                    msg =  'شما تغییری ایجاد نکرده اید!')
+                if (context['username'] != context['User_Selected'].username):
+                    try:
+                        context['User_Selected'].username = context['username']
+                        context['User_Selected'].save()
+                        context['AlartMessage'] =  'نام کاربری با موفقیت اصلاح شد.'
+                    except:
+                        if Profile.objects.filter(NationalCode = context['nationalcode']).exists():
+                            context['AlartMessage'] =  'نام کاربری وارد شده تکراری می باشد!'
+                        else:
+                            context['AlartMessage'] =  'نام کاربری وارد شده مطابق الگو ها نمی باشد!'
 
-            return redirect('nakhll_market:Show_All_User_Info')
+                if (context['nationalcode'] != context['Profile_Selected'].NationalCode):
+                    try:
+                        context['Profile_Selected'].NationalCode = context['nationalcode']
+                        context['Profile_Selected'].save()
+                        if context['AlartMessage'] != '':
+                            context['AlartMessage'] += '\n'
+                            context['AlartMessage'] +=  'کد ملی با موفقیت اصلاح شد.'
+                    except:
+                        if Profile.objects.filter(NationalCode = context['nationalcode']).exists():
+                            context['AlartMessage'] =  'کد ملی وارد شده تکراری می باشد!'
+                        else:
+                            context['AlartMessage'] =  'کد ملی وارد شده مطابق الگو ها نمی باشد!'
+
+                if (context['mobilenumber'] != context['Profile_Selected'].MobileNumber):
+                    try:
+                        context['Profile_Selected'].MobileNumber = context['mobilenumber']
+                        context['Profile_Selected'].save()
+                        if context['AlartMessage'] != '':
+                            context['AlartMessage'] += '\n'
+                            context['AlartMessage'] +=  'شماره موبایل با موفقیت اصلاح شد.'
+                    except:
+                        if Profile.objects.filter(MobileNumber = context['mobilenumber']).exists():
+                            context['AlartMessage'] =  'شماره موبایل وارد شده تکراری می باشد!'
+                        else:
+                            context['AlartMessage'] =  'شماره موبایل وارد شده مطابق الگو ها نمی باشد!'
+                        
+            context['ShowAlart'] = True
+            return render(request, 'nakhll_market/management/content/edit_user_info.html', context)
 
         else:
 
-            # Get User Info
-            user = User.objects.all()
-            # Get User Profile
-            profile = Profile.objects.all()
-            # Get Wallet Inverntory
-            wallets = Wallet.objects.all()
-            # Get Menu Item
-            options = Option_Meta.objects.filter(Title='index_page_menu_items')
-            # Get Nav Bar Menu Item
-            navbar = Option_Meta.objects.filter(Title='nav_menu_items')
-            #-----------------------------------------------------------------------
-            # Get Select User
-            user_select = User.objects.get(id = id)
-            # Get Select Profile
-            profile_select = Profile.objects.get(FK_User = user_select)
-            # Check Message
-            if (msg != None) and (msg != 'none'):
-                message = msg
-                show = True
-            else:
-                message = msg
-                show = False
-
-            context = {
-                'Users':user,
-                'Profile':profile,
-                'Wallet': wallets,
-                'Options': options,
-                'MenuList':navbar,
-                'User_Selected':user_select,
-                'Profile_Selected':profile_select,
-                'ShowAlart':show,
-                'AlartMessage':message,
-            }
-
+            context['ShowAlart'] = False
             return render(request, 'nakhll_market/management/content/edit_user_info.html', context)
 
     else:
