@@ -284,9 +284,7 @@ def Register(request):
             return JsonResponse(response_data)
         
     else:
-        context = {
-        }
-        return render (request, 'registration/register.html', context)
+        return render (request, 'registration/register.html')
 # Show Change Password Page
 def ShowChangePassword(request):    
 

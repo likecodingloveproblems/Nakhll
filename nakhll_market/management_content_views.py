@@ -13,6 +13,7 @@ from Payment.models import Coupon, Wallet, Factor, FactorPost
 from django.urls import reverse
 
 # --------------------------------------------------------------------------------------------------------------------------------------
+# base data for base template
 def baseData(request, activeSidebarMenu):
     # user profile 
     userProfile = request.user.User_Profile
@@ -51,91 +52,43 @@ def baseData(request, activeSidebarMenu):
         'sidebarMenu':sidebarMenu,
     }
 
-# Get User Statistics
-def GetUserStatistics():
-    # Build Statistics Class
-    class StatisticsClass:
-        def __init__(self,  User_Count, Shop_Count, Shoper_Count, Block_User, Pub_Shop_Count):
-            self.User_Count = User_Count
-            self.Shop_Count = Shop_Count
-            self.Shoper_Count = Shoper_Count
-            self.Block_User = Block_User
-            self.Pub_Shop_Count = Pub_Shop_Count
 
-    # Get All User
-    user_count = Profile.objects.all().count()
-    # Shop Count
-    shop_count = Shop.objects.all().count()
-    # Publish Shop Count
-    pub_shop_count = Shop.objects.filter(Publish = False).count()
-    # number of shop manager
-    shoper_count = Shop.objects.values('FK_ShopManager').distinct().count()
-    # Block Count
-    block_count = User.objects.filter(is_active = False).count()
+# get post method data and put to context
+def getPostData(request, context, fields, undefined=''):
+    for field in fields:
+        context[field] = request.POST.get(field, undefined)
+    return context
 
-    return StatisticsClass(user_count, shop_count, shoper_count, block_count, pub_shop_count)
 
 # Show All User Info
 def Show_All_User_Info(request):
 
     if request.user.is_staff:
-
+        context = baseData(request, 'allUser')
+        fields = ['First_Name', 'Last_Name', 'PhoneNumber']
         if request.method == 'POST':
-
-            try:
-                first = request.POST["First_Name"]
-            except:
-                first = False
-
-            try:
-                last = request.POST["Last_Name"]
-            except:
-                last = False
-
-            try:
-                phone = request.POST["PhoneNumber"]
-            except:
-                phone = False
-
-            if (first != '') or (last != '') or (phone != ''):
-                profiles = None
-
-                if (first != '') and (last == '') and (phone == ''):
-                    profiles = Profile.objects.filter(FK_User__in = User.objects.filter(Q(first_name__icontains = first)))
-                elif (last != '') and (first == '') and (phone == ''):
-                    profiles = Profile.objects.filter(FK_User__in = User.objects.filter(Q(last_name__icontains = last)))
-                elif (phone != '') and (first == '') and (last == ''):
-                    profiles = Profile.objects.filter(Q(MobileNumber__icontains = phone))
-                elif (first != '') and (last != '') and (phone == ''):
-                    profiles = Profile.objects.filter(FK_User__in = User.objects.filter(Q(first_name__icontains = first, last_name__icontains = last)))
-                elif (first != '') and (phone != '') and (last == ''):
-                    profiles = Profile.objects.filter(FK_User__in = User.objects.filter(Q(first_name__icontains = first)))
-                    profiles = profiles.filter(Q(MobileNumber__icontains = phone))
-                elif (last != '') and (phone != '') and (first == ''):
-                    profiles = Profile.objects.filter(FK_User__in = User.objects.filter(Q(last_name__icontains = last)))
-                    profiles = profiles.filter(Q(MobileNumber__icontains = phone))
-                else:
-                    profiles = Profile.objects.filter(FK_User__in = User.objects.filter(Q(first_name__icontains = first, last_name__icontains = last)))
-                    profiles = profiles.filter(Q(MobileNumber__icontains = phone))
-                
-                # make profiles unique
-                profiles = profiles.distinct()
-            else:
-                return redirect("nakhll_market:Show_All_User_Info")
+            context = getPostData(request, context, fields)
+            profiles = Profile.objects.filter(
+                FK_User__first_name__icontains=context['First_Name'], 
+                FK_User__last_name__icontains=context['Last_Name'],
+                MobileNumber__icontains=context['PhoneNumber'])
 
         elif request.method == 'GET':
             # Get User Profile
             profiles = Profile.objects.all()
-            # Get All User
-            profilesPaginator = Paginator (profiles, 20)
-            page = request.GET.get('page')
-
-            profiles = profilesPaginator.get_page(page)
+            # initialize fields
+            context = getPostData(request, context, fields)
+        else:
+            HttpResponse('this method is not allowed!', status_code=405)
 
     else:
         return redirect("nakhll_market:AccountLogin")
 
-    context = baseData(request, 'allUser')
+    # Paginate Profiles
+    profilesPaginator = Paginator (profiles, 20)
+    page = request.GET.get('page')
+
+    profiles = profilesPaginator.get_page(page)
     context['Profiles']=profiles
     # Get All User Count
     context['UserCount']=Profile.objects.all().count()
@@ -177,39 +130,39 @@ def Change_User_Status(request, User_ID):
 def Add_New_User(request):
 
     if request.user.is_staff :
-
+        context = baseData(request, 'allUser')
+        fields = ['User_FirstName', 'User_LastName', 'User_NationalCode',
+            'User_MobileNumber', 'User_Amount', 'status']
         if request.method == 'POST':
-            First_Name = request.POST.get("User_FirstName")
-            Last_Name = request.POST.get("User_LastName")
-            NationalCode = request.POST.get("User_NationalCode")
-            MobileNumber = request.POST.get("User_MobileNumber")
-            Wallet_Amount = request.POST.get("User_Amount")
-            Status = request.POST.get("status")
+            context = getPostData(request, context, fields)
+            if context['status'] != '1':
+                context['status'] = context['status'].replace('', '0')
+            context['status'] = int(context['status'])
 
-            if (First_Name != '') and (Last_Name != '') and (NationalCode != '') and (MobileNumber != ''):
+            if (context['User_FirstName'] != '') and (context['User_LastName'] != '') and (context['User_NationalCode'] != '') and (context['User_MobileNumber'] != ''):
 
-                if (len(NationalCode) == 10) and (len(MobileNumber) == 11):
+                if (len(context['User_NationalCode']) == 10) and (len(context['User_MobileNumber']) == 11):
 
-                    if Profile.objects.filter(MobileNumber = MobileNumber, NationalCode = NationalCode).count() == 0:
+                    if not Profile.objects.filter(MobileNumber = context['User_MobileNumber'], NationalCode = context['User_NationalCode']).exists():
 
                         # Build User
-                        new_user = User(username = MobileNumber, first_name = First_Name, last_name = Last_Name)
+                        new_user = User(username = context['User_MobileNumber'], first_name = context['User_FirstName'], last_name = context['User_LastName'] )
                         new_user.save()
                         # Set Password
-                        new_user.set_password(NationalCode)
+                        new_user.set_password(context['User_NationalCode'])
                         new_user.save()
                         # Build Profile
-                        new_profile = Profile(FK_User = new_user, MobileNumber = MobileNumber, NationalCode = NationalCode)
+                        new_profile = Profile(FK_User = new_user, MobileNumber = context['User_MobileNumber'], NationalCode = context['User_NationalCode'])
                         new_profile.save()
                         # Build User Wallet
-                        if (Wallet_Amount != '') and (Wallet_Amount != 0):
-                            new_user_wallet = Wallet(FK_User = new_user, Inverntory = Wallet_Amount)
+                        if (context['User_Amount'] != '') and (context['User_Amount'] != 0):
+                            new_user_wallet = Wallet(FK_User = new_user, Inverntory = context['User_Amount'])
                             new_user_wallet.save()
 
                             # Get Description
                             transaction_description = Option_Meta.objects.get(Title = 'add_new_user').Value_1
                             # Set Transaction
-                            transaction = Transaction(FK_User = new_user, Price = Wallet_Amount, Type = '1', FK_Wallet = new_user_wallet, Description = transaction_description)
+                            transaction = Transaction(FK_User = new_user, Price = context['User_Amount'], Type = '1', FK_Wallet = new_user_wallet, Description = transaction_description)
                             transaction.save()
                         else:
                             new_user_wallet = Wallet(FK_User = new_user)
@@ -217,250 +170,94 @@ def Add_New_User(request):
 
                         # Send SMS To User
                         url = 'https://api.kavenegar.com/v1/4E41676D4B514A4143744C354E6135314E4F47686B33594B747938794D30426A784A692F3579596F3767773D/verify/lookup.json' 
-                        params = {'receptor': MobileNumber, 'token' : new_user.username, 'token2' : new_profile.NationalCode, 'template' : 'nakhll-addnewuser'}
+                        params = {'receptor': context['User_MobileNumber'], 'token' : new_user.username, 'token2' : new_profile.NationalCode, 'template' : 'nakhll-addnewuser'}
                         result = requests.post(url, params = params)
                         Message = result.json()
                         MessageReturn = Message["return"]
                         print(MessageReturn["status"])
 
-                        if Status == '1':
+
+                        if context['status'] == 1:
        
                             return redirect("nakhll_market:Add_New_Shop", id = new_user.id)
 
-
-                        elif Status == '0':
+                        elif context['status'] == 0:
 
                             return redirect("nakhll_market:Show_All_User_Info")
 
                     else:
-
-                        # Get User Info
-                        user = User.objects.all()
-                        # Get User Profile
-                        profile = Profile.objects.all()
-                        # Get Wallet Inverntory
-                        wallets = Wallet.objects.all()
-                        # Get Menu Item
-                        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-                        # Get Nav Bar Menu Item
-                        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-
-                        context = {
-                            'Users':user,
-                            'Profile':profile,
-                            'Wallet': wallets,
-                            'Options': options,
-                            'MenuList':navbar,
-                            'ShowAlart':True,
-                            'AlartMessage':'کاربری با این شماره موبایل یا کد ملی قبلا ثبت شده است!',
-                        }
-
-                        return render(request, 'nakhll_market/management/content/add_new_user.html', context)
+                        context['ShowAlart'] = True
+                        context['AlartMessage'] = 'کاربری با این شماره موبایل یا کد ملی قبلا ثبت شده است!'
 
                 else:
-
-                    # Get User Info
-                    user = User.objects.all()
-                    # Get User Profile
-                    profile = Profile.objects.all()
-                    # Get Wallet Inverntory
-                    wallets = Wallet.objects.all()
-                    # Get Menu Item
-                    options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-                    # Get Nav Bar Menu Item
-                    navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-
-                    context = {
-                        'Users':user,
-                        'Profile':profile,
-                        'Wallet': wallets,
-                        'Options': options,
-                        'MenuList':navbar,
-                        'ShowAlart':True,
-                        'AlartMessage':'کد ملی 10 و شماره موبایل 11 رقم باید باشد!',
-                    }
-
-                    return render(request, 'nakhll_market/management/content/add_new_user.html', context)
+                    context['ShowAlart'] = True
+                    context['AlartMessage'] = 'کد ملی 10 و شماره موبایل 11 رقم باید باشد!'
 
             else:
 
-                # Get User Info
-                user = User.objects.all()
-                # Get User Profile
-                profile = Profile.objects.all()
-                # Get Wallet Inverntory
-                wallets = Wallet.objects.all()
-                # Get Menu Item
-                options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-                # Get Nav Bar Menu Item
-                navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+                context['ShowAlart'] = True
+                context['AlartMessage'] = 'نام، نام خانوادگی، کد ملی و شماره موبایل نمی تواند خالی باشد!'
 
-                context = {
-                    'Users':user,
-                    'Profile':profile,
-                    'Wallet': wallets,
-                    'Options': options,
-                    'MenuList':navbar,
-                    'ShowAlart':True,
-                    'AlartMessage':'نام، نام خانوادگی، کد ملی و شماره موبایل نمی تواند خالی باشد!',
-                }
-
-                return render(request, 'nakhll_market/management/content/add_new_user.html', context)
+        elif request.method == 'GET':
+            context = getPostData(request, context, fields)
+            context['status'] = 0
 
         else:
-
-            # Get User Info
-            user = User.objects.all()
-            # Get User Profile
-            profile = Profile.objects.all()
-            # Get Wallet Inverntory
-            wallets = Wallet.objects.all()
-            # Get Menu Item
-            options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-            # Get Nav Bar Menu Item
-            navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-
-            context = {
-                'Users':user,
-                'Profile':profile,
-                'Wallet': wallets,
-                'Options': options,
-                'MenuList':navbar,
-                'ShowAlart':False,
-            }
-
-            return render(request, 'nakhll_market/management/content/add_new_user.html', context)
+            HttpResponse('this method is not allowed!')
 
     else:
-
         return redirect("nakhll_market:AccountLogin")
+
+    return render(request, 'nakhll_market/management/content/add_new_user.html', context)
+
 
 
 # Add New User`s Shop
 def Add_New_Shop(request, id):
 
     if request.user.is_authenticated :
-
+        context = baseData(request, 'allShop')
+        fields = ['Shop_Title', 'Shop_Slug']
+        context = getPostData(request, context, fields)
+        subMarkets = request.POST.getlist("Shop_SubMarket")
+        context['Shop_SubMarket'] = subMarkets
+        # Get This User
+        new_user = User.objects.get(id = id)
         if request.method == 'POST':
+            if (context['Shop_Title'] != '') and (context['Shop_Slug'] != '') and (len(subMarkets) != 0):
 
-            try:
-                Title = request.POST["Shop_Title"]
-            except:
-                Title = ''
-            
-            try:
-                Slug = request.POST["Shop_Slug"]
-            except:
-                Slug = ''
-            
-            Submarkets = request.POST.getlist("Shop_SubMarket")
+                if not Shop.objects.filter(Slug = context['Shop_Slug']).exists():
 
-            if (Title != '') and (Slug != '') and (len(Submarkets) != 0):
-
-                if (Shop.objects.filter(Slug = Slug).count() == 0):
-
-                    # Get This User
-                    new_user = User.objects.get(id = id)
                     # Build Shop
-                    new_shop = Shop.objects.create(FK_ShopManager = new_user, Title = Title, Slug = Slug, Publish = True, Available = False, FK_User = request.user)
+                    new_shop = Shop(FK_ShopManager = new_user, Title = context['Shop_Title'], Slug = context['Shop_Slug'], Publish = True, Available = False, FK_User = request.user)
                     # Set SubMarket
-                    for item in Submarkets:
-                        this_submarket = SubMarket.objects.get(Title = item)
-                        new_shop.FK_SubMarket.add(this_submarket)
+                    for item in subMarkets:
+                        this_subMarket = SubMarket.objects.get(Title = item)
+                        new_shop.FK_SubMarket.add(this_subMarket)
+                    # because of errors in above for i relocate it here
+                    new_shop.save()
 
                     return redirect("nakhll_market:Add_New_Product", shop = new_shop.ID)
 
                 else:
-
-                    # Get User Info
-                    user = User.objects.all()
-                    # Get User Profile
-                    profile = Profile.objects.all()
-                    # Get Wallet Inverntory
-                    wallets = Wallet.objects.all()
-                    # Get Menu Item
-                    options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-                    # Get Nav Bar Menu Item
-                    navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-                    # ------------------------------------------------------------------------------------
-                    # Get All SubMarkets
-                    submarkets = SubMarket.objects.filter(Publish = True)
-                    # Get This User
-                    new_user = User.objects.get(id = id)
-                
-                    context = {
-                        'Profile':profile,
-                        'Wallet': wallets,
-                        'Options': options,
-                        'MenuList':navbar,
-                        'ThisUser':new_user,
-                        'SubMarkets':submarkets,
-                        'ShowAlart':True,
-                        'AlartMessage':'حجره ای با این شناسه موجود می باشد!',
-                    }
-
-                    return render(request, 'nakhll_market/management/content/add_new_shop.html', context)
+                    context['AlartMessage'] = 'حجره ای با این شناسه موجود می باشد!'
 
             else:
+                context['AlartMessage'] = 'عنوان، شناسه، راسته حجره نمی تواند خالی باشد!'
 
-                # Get User Profile
-                profile = Profile.objects.all()
-                # Get Wallet Inverntory
-                wallets = Wallet.objects.all()
-                # Get Menu Item
-                options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-                # Get Nav Bar Menu Item
-                navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-                # ------------------------------------------------------------------------------------
-                # Get All SubMarkets
-                submarkets = SubMarket.objects.filter(Publish = True)
-                # Get This User
-                new_user = User.objects.get(id = id)
-            
-                context = {
-                    'Profile':profile,
-                    'Wallet': wallets,
-                    'Options': options,
-                    'MenuList':navbar,
-                    'ThisUser':new_user,
-                    'SubMarkets':submarkets,
-                    'ShowAlart':True,
-                    'AlartMessage':'عنوان، شناسه، راسته حجره نمی تواند خالی باشد!',
-                }
 
-                return render(request, 'nakhll_market/management/content/add_new_shop.html', context)
 
-        else:
-
-            # Get User Profile
-            profile = Profile.objects.all()
-            # Get Wallet Inverntory
-            wallets = Wallet.objects.all()
-            # Get Menu Item
-            options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-            # Get Nav Bar Menu Item
-            navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-            # ------------------------------------------------------------------------------------
-            # Get All SubMarkets
-            submarkets = SubMarket.objects.filter(Publish = True)
-            # Get This User
-            new_user = User.objects.get(id = id)
-        
-            context = {
-                'Profile':profile,
-                'Wallet': wallets,
-                'Options': options,
-                'MenuList':navbar,
-                'ThisUser':new_user,
-                'SubMarkets':submarkets,
-            }
-
-            return render(request, 'nakhll_market/management/content/add_new_shop.html', context)
 
     else:
 
         return redirect("nakhll_market:AccountLogin")
 
+    context['ShowAlart'] = True
+    context['ThisUser'] = new_user
+    # Get All SubMarkets
+    subMarkets = SubMarket.objects.filter(Publish = True)        
+    context['SubMarkets'] = subMarkets
+    return render(request, 'nakhll_market/management/content/add_new_shop.html', context)
 
 # Add New Product In User`s Shop
 def Add_New_Product(request, shop):
@@ -1419,80 +1216,28 @@ def Change_Product_AttrPrice_Status(request, id):
 def Add_New_Full_Shop(request, msg = None):
 
     if request.user.is_authenticated :
+        context = baseData(request, 'allShop')
 
         if request.method == 'POST':
-
-            try:
-                image = request.FILES["Shop_Image"]
-            except MultiValueDictKeyError:
-                image = ''
-            try:
-                title = request.POST["Shop_Title"]
-            except MultiValueDictKeyError:
-                title = ''
-            try:
-                slug = request.POST["Shop_Slug"]
-            except MultiValueDictKeyError:
-                slug = ''
-            try:
-                des = request.POST["Shop_Des"]
-            except MultiValueDictKeyError:
-                des = ''
-            try:
-                state = request.POST["Shop_State"]
-            except MultiValueDictKeyError:
-                state = ''
-            try:
-                bigcity = request.POST["Shop_BigCity"]
-            except MultiValueDictKeyError:
-                bigcity = ''
-            try:
-                city = request.POST["Shop_City"]
-            except MultiValueDictKeyError:
-                city = ''
+            image = request.FILES.get("Shop_Image", '')
+            title = request.POST.get("Shop_Title", '')
+            slug = request.POST.get("Shop_Slug", '')
+            des = request.POST.get("Shop_Des", '')
+            state = request.POST.get("Shop_State", '')
+            bigcity = request.POST.get("Shop_BigCity", '')
+            city = request.POST.get("Shop_City", '')
+            bio = request.POST.get("Shop_Bio", '')
+            sat = request.POST.get("SATCheck", '')
+            sun = request.POST.get("SUNCheck", '')
+            mon = request.POST.get("MONCheck", '')
+            tue = request.POST.get("TUECheck", '')
+            wed = request.POST.get("WEDCheck", '')
+            thu = request.POST.get("THUCheck", '')
+            fri = request.POST.get("FRICheck", '')
+            seen = request.POST.get("Shop_Seen", '')
+            status = request.POST.get("Shop_Status", '')
             submarkets = request.POST.getlist("Shop_SubMarket")
             user = request.POST.getlist("Shop_User")
-            try:
-                bio = request.POST["Shop_Bio"]
-            except MultiValueDictKeyError:
-                bio = ''
-            try:
-                sat = request.POST["SATCheck"]
-            except MultiValueDictKeyError:
-                sat = ''
-            try:
-                sun = request.POST["SUNCheck"]
-            except MultiValueDictKeyError:
-                sun = ''
-            try:
-                mon = request.POST["MONCheck"]
-            except MultiValueDictKeyError:
-                mon = ''
-            try:
-                tue = request.POST["TUECheck"]
-            except MultiValueDictKeyError:
-                tue = ''
-            try:
-                wed = request.POST["WEDCheck"]
-            except MultiValueDictKeyError:
-                wed = ''
-            try:
-                thu = request.POST["THUCheck"]
-            except MultiValueDictKeyError:
-                thu = ''
-            try:
-                fri = request.POST["FRICheck"]
-            except MultiValueDictKeyError:
-                fri = ''
-            try:
-                seen = request.POST["Shop_Seen"]
-            except MultiValueDictKeyError:
-                seen = ''
-            try:
-                status = request.POST["Shop_Status"]
-            except MultiValueDictKeyError:
-                status = ''
-         
 
             if len(user) == 1:
                 if (title != '') and (slug != '') and (Shop.objects.filter(Slug = slug).count() == 0):
@@ -1537,55 +1282,35 @@ def Add_New_Full_Shop(request, msg = None):
                             return redirect('nakhll_market:Show_Shop_Info',
                             Shop_Slug = shop.Slug)
                     else:
-
-                        return redirect('nakhll_market:Add_New_Full_Shop',
-                        msg =  'راسته، استان، شهرستان و شهر نمی تواند خالی باشد.')
+                        msg =  'راسته، استان، شهرستان و شهر نمی تواند خالی باشد.'
 
                 else:
-                    return redirect('nakhll_market:Add_New_Full_Shop',
-                    msg =  'عنوان و شناسه نمی تواند خالی باشد - شناسه تکراری می باشد.')
+                    msg =  'عنوان و شناسه نمی تواند خالی باشد - شناسه تکراری می باشد.'
 
             else:
-
-                return redirect('nakhll_market:Add_New_Full_Shop',
-                msg =  'شما باید یک کاربر را به عنوان حجره دار انتخاب نمایید.')
+                msg =  'شما باید یک کاربر را به عنوان حجره دار انتخاب نمایید.'
 
 
+        elif request.method == 'GET':
+            pass
         else:
+            HttpResponse('this method is not allowed!', status_code=405)
             
-            # Get User Info
-            user = User.objects.all()
-            # Get User Profile
-            profile = Profile.objects.all()
-            # Get Wallet Inverntory
-            wallets = Wallet.objects.all()
-            # Get Menu Item
-            options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-            # Get Nav Bar Menu Item
-            navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-            # -------------------------------------------------------------------
-            # Get All Submarket
-            allsubmarket = SubMarket.objects.filter(Available = True, Publish = True)
+        # Get All Submarket
+        allsubmarket = SubMarket.objects.filter(Available = True, Publish = True)
 
-            if msg != 'None':
-                message = msg
-                show = True
-            else:
-                message = ''
-                show = False
+        if msg != 'None':
+            message = msg
+            show = True
+        else:
+            message = ''
+            show = False
 
-            context = {
-                'Users':user,
-                'Profile':profile,
-                'Wallet': wallets,
-                'Options': options,
-                'MenuList':navbar,
-                'SubMarkets':allsubmarket,
-                'ShowAlart':show,
-                'AlartMessage':message,
-            }
+        context['SubMarkets'] = allsubmarket
+        context['ShowAlart'] = show
+        context['AlartMessage'] = message
 
-            return render(request, 'nakhll_market/management/content/add_new_full_shop.html', context)
+        return render(request, 'nakhll_market/management/content/add_new_full_shop.html', context)
 
     else:
 
