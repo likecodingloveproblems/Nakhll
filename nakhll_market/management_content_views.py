@@ -240,19 +240,20 @@ def Add_New_Shop(request, id):
                     return redirect("nakhll_market:Add_New_Product", shop = new_shop.ID)
 
                 else:
+                    context['ShowAlart'] = True
                     context['AlartMessage'] = 'حجره ای با این شناسه موجود می باشد!'
 
             else:
+                context['ShowAlart'] = True
                 context['AlartMessage'] = 'عنوان، شناسه، راسته حجره نمی تواند خالی باشد!'
-
-
-
+        
+        else:
+            context['ShowAlart'] = False
 
     else:
 
         return redirect("nakhll_market:AccountLogin")
 
-    context['ShowAlart'] = True
     context['ThisUser'] = new_user
     # Get All SubMarkets
     subMarkets = SubMarket.objects.filter(Publish = True)        
