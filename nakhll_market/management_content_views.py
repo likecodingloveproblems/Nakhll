@@ -427,29 +427,31 @@ def Add_Bank_Account(request, id):
 def Show_All_Shoper_User_Info(request):
 
     if request.user.is_staff :
-        # Get shop manager user Profile
-        profiles_id =  Shop.objects.values_list('FK_ShopManager').distinct()
-        profiles = Profile.objects.filter(FK_User__in=profiles_id)
+        if request.method == 'GET':
+            # Get shop manager user Profile
+            profiles_id =  Shop.objects.values_list('FK_ShopManager').distinct()
+            profiles = Profile.objects.filter(FK_User__in=profiles_id)
 
-        context = baseData(request, 'allUser')
-        context['Profiles']=profiles
-        # Get All User Count
-        context['UserCount']=Profile.objects.all().count()
-        # Shop Count
-        context['ShopCount']=Shop.objects.all().count()
-        # Publish Shop Count
-        context['PublishShopCount']=Shop.objects.filter(Publish = False).count()
-        # number of shop manager
-        context['ShoperCount']=Shop.objects.values('FK_ShopManager').distinct().count()
-        # Block Count
-        context['BlockCount']=User.objects.filter(is_active = False).count()
-
-        return render(request, 'nakhll_market/management/content/show_all_user_info.html', context)
+            context = baseData(request, 'allUser')
+            context['Profiles']=profiles
+            # Get All User Count
+            context['UserCount']=Profile.objects.all().count()
+            # Shop Count
+            context['ShopCount']=Shop.objects.all().count()
+            # Publish Shop Count
+            context['PublishShopCount']=Shop.objects.filter(Publish = False).count()
+            # number of shop manager
+            context['ShoperCount']=Shop.objects.values('FK_ShopManager').distinct().count()
+            # Block Count
+            context['BlockCount']=User.objects.filter(is_active = False).count()
+            
+            return render(request, 'nakhll_market/management/content/show_all_user_info.html', context)
+        else:
+            return HttpResponse('this method is not allowed!', status_code=405)
 
     else:
 
         return redirect("nakhll_market:AccountLogin")
-
 
 # Show User Info In Managment Section
 def Management_Show_User_Info(request, id):
