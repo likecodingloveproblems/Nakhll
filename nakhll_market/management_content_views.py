@@ -52,14 +52,14 @@ def baseData(request, activeSidebarMenu):
         'sidebarMenu':sidebarMenu,
     }
 
-
 # get post method data and put to context
 def getPostData(request, context, fields, undefined=''):
     for field in fields:
         context[field] = request.POST.get(field, undefined)
     return context
 
-
+# --------------------------------------------------------------------------------------------------------------------------------------
+# allUser module
 # Show All User Info
 def Show_All_User_Info(request):
 
