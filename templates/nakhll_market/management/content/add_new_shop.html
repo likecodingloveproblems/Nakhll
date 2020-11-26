@@ -27,7 +27,7 @@
                 <label for="inputSubMarket">راسته حجره <code>*</code></label>
                 <select data-placeholder="انتخاب راسته" multiple class="chosen-select-rtl form-control" name="Shop_SubMarket" tabindex="14">
                     {% for submarket in SubMarkets %}
-                        <option>{{submarket.Title}}</option>
+                        <option value="{{submarket.ID}}">{{submarket.Title}}</option>
                     {% endfor %}
                 </select>
                 <small>حجره شما در کدام راسته ها قرار می گیرد؟</small>                                

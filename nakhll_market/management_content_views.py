@@ -230,15 +230,19 @@ def Add_New_Shop(request, id):
 
                     # Build Shop
                     new_shop = Shop(FK_ShopManager = new_user, Title = context['Shop_Title'], Slug = context['Shop_Slug'], Publish = True, Available = False, FK_User = request.user)
-                    # Set SubMarket
-                    for item in subMarkets:
-                        this_subMarket = SubMarket.objects.get(Title = item)
-                        new_shop.FK_SubMarket.add(this_subMarket)
-                    # because of errors in above for i relocate it here
                     new_shop.save()
-
-                    return redirect("nakhll_market:Add_New_Product", shop = new_shop.ID)
-
+                    # Set SubMarket
+                    try:
+                        for item in subMarkets:
+                            this_subMarket = SubMarket.objects.get(ID = item)
+                            new_shop.FK_SubMarket.add(this_subMarket)
+                            
+                        return redirect("nakhll_market:Add_New_Product", shop = new_shop.ID)
+                    except:
+                        new_shop.delete()
+                        context['ShowAlart'] = True
+                        context['AlartMessage'] = 'در هنگام ثبت بازارچه برای حجره شما مشکلی رخ داده است. لطفا با پشتیبانی تماس بگیرید.'
+                        
                 else:
                     context['ShowAlart'] = True
                     context['AlartMessage'] = 'حجره ای با این شناسه موجود می باشد!'
