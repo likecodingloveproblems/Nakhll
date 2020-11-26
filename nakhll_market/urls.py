@@ -126,13 +126,13 @@ urlpatterns = [
     # Show All Content Path
     path('management/content/show-all-content/', management_content_views.Show_All_Content, name='Show_All_Content'),
     # Change Shop Seen Status Path
-    path('management/content/change-shop-seen-status/<slug:id>/', management_content_views.Change_Shop_Seen_Status, name='Change_Shop_Seen_Status'),
+    path('management/content/change-shop-seen-status/<uuid:id>/', management_content_views.Change_Shop_Seen_Status, name='Change_Shop_Seen_Status'),
     # Change Shop Publish Status Path
     path('management/content/change-shop-publish-status/<slug:id>/', management_content_views.Change_Shop_Publish_Status, name='Change_Shop_Publish_Status'),
     # Show Shop Info Path
     path('management/content/show-shop-info/<slug:Shop_Slug>/', management_content_views.Show_Shop_Info, name='Show_Shop_Info'),
     # Change Product Seen Status Path
-    path('management/content/change-product-seen-status/<uuid:id>/', management_content_views.Change_Product_Seen_Status, name='Change_Shop_Seen_Status'),
+    path('management/content/change-product-seen-status/<uuid:id>/', management_content_views.Change_Product_Seen_Status, name='Change_Product_Seen_Status'),
     # Change Product Publish Status Path
     path('management/content/change-product-publish-status/<uuid:id>/', management_content_views.Change_Product_Publish_Status, name='Change_Shop_Publish_Status'),
     # Change Shop Banner Seen Status Path
