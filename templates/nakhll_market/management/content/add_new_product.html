@@ -34,12 +34,12 @@
         <div class="form-row">
             <div class="form-group col-md-6">
             <label for="inputprod_title">عنوان محصول <code>*</code></label>
-                <input type="text" name="prod_title" class="form-control" id="inputprod_title" minlength="2" maxlength="200" required>
+                <input type="text" name="prod_title" value="{{prod_title}}" class="form-control" id="inputprod_title" minlength="2" maxlength="200" required>
                 <small>عنوان باید فارسی و <span class="Riyal">حداکثر 200 کاراکتر</span> باشد.</small>
             </div>
             <div class="form-group col-md-6">
                 <label for="inputslugProd">شناسه محصول <code>*</code></label>
-                <input type="text" name="slugProd" class="form-control" id="inputslugProd" pattern="[a-z0-9\-_]{2,}" required>
+                <input type="text" name="slugProd" value="{{slugProd}}" class="form-control" id="inputslugProd" pattern="[a-z0-9\-_]{2,}" required>
                 <small>شناسه محصول باید شامل <span class="Riyal">حروف انگلیسی کوچک</span>، <span class="Riyal">خط تیره ("_" یا "-")</span> و <span class="Riyal">بدون فاصله</span> باشد.</small>
             </div>
         </div>
@@ -48,8 +48,8 @@
             <div class="form-group col-md-6">
                 <label for="inputCat">دسته بندی محصول <code>*</code></label>
                 <select data-placeholder="انتخاب دسته بندی" multiple class="chosen-select-rtl form-control" name="ProdCat" tabindex="14">
-                    {% for shop in Categort %}
-                        <option>{{shop.Title}}</option>
+                    {% for category in Categories %}
+                        <option value="{{category.id}}">{{category.Title}}</option>
                     {% endfor %}
                 </select>
                 <small>محصول شما شامل کدام دسته بندی ها می باشد؟</small>
@@ -57,8 +57,8 @@
             <div class="form-group col-md-6">
                 <label for="inputSubMarket">راسته محصول <code>*</code></label>
                 <select id="inputSubMarket" name="ProdSub" class="form-control">
-                    {% for shop in SubMarket %}
-                        <option>{{shop.Title}}</option>
+                    {% for subMarket in SubMarkets %}
+                        <option value="{{subMarket.ID}}">{{subMarket.Title}}</option>
                     {% endfor %}
                 </select>
                 <small>محصول شما در کدام راسته قرار می گیرد؟</small>
@@ -68,12 +68,12 @@
         <div class="form-row">
             <div class="form-group col-md-6">
             <label for="inputprod_title">قیمت فروش محصول <code>*</code></label>
-                <input type="text" name="prod_Price" class="form-control" pattern="[0-9]{5,}" id="inputprod_title" required>
+                <input type="text" name="prod_Price" value="{{prod_Price}}" class="form-control" pattern="[0-9]{5,}" id="inputprod_title" required>
                 <small>قیمت را به <span class="Riyal">ریال</span> وارد نمایید.</small>
             </div>
             <div class="form-group col-md-6">
                 <label for="inputprod_weight">وزن <code>*</code></label>
-                    <input type="text" name="prod_weight" class="form-control" pattern="[0-9]{1,}" id="inputprod_weight" required>
+                    <input type="text" name="prod_weight" value="{{prod_weight}}" class="form-control" pattern="[0-9]{1,}" id="inputprod_weight" required>
                     <small>وزن محصول را با <span class="Riyal">بسته بندی</span> و به صورت <span class="Riyal">گرم</span> وارد نمایید.</small>
             </div>
         </div>

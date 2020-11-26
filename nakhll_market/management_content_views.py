@@ -269,190 +269,89 @@ def Add_New_Product(request, shop):
 
     if request.user.is_authenticated :
 
+        fields = ['prod_title', 'ProdCat', 'ProdSub', 
+            'prod_Price', 'slugProd', 'prod_weight']
+        context = baseData(request, 'allUser')
+        context = getPostData(request, context, fields)
+        context['Product_Image'] = request.FILES.get('Product_Image')
+        Categories = request.POST.getlist("ProdCat")
+
         if request.method == 'POST':
 
-            try:
-                Image = request.FILES["Product_Image"]
-            except:
-                Image = False
+            if (context['prod_title'] != '') and \
+                (context['slugProd'] != '') and \
+                (len(Categories) != 0) and \
+                (context['ProdSub'] != '') and \
+                (context['prod_Price'] != '') and \
+                (context['prod_weight'] != '') and \
+                (context['Product_Image'] != '' or context['Product_Image'] != None):
 
-            try:
-                Title = request.POST["prod_title"]
-            except:
-                Title = ''
-
-            Categories = request.POST.getlist("ProdCat")
-            
-            try:
-                Submarket = request.POST["ProdSub"]
-            except:
-                Submarket = ''
-            
-            try:
-                Price = request.POST["prod_Price"]
-            except:
-                Price = ''
-
-            try:
-                Slug = request.POST["slugProd"]
-            except:
-                Slug = ''
-
-            try:
-                Wight = request.POST["prod_weght"]
-            except:
-                Wight = ''
-
-            if (Title != '') and (Slug != '') and (len(Categories) != 0) and (Submarket != '') and (Price != '') and (Wight != '') and (Image != ''):
-
-                if Product.objects.filter(Slug = Slug).count() == 0:
+                if not Product.objects.filter(Slug = context['slugProd']).exists():
 
                     # Get This User
                     this_shop = Shop.objects.get(ID = shop)
                     # Get This Submarket
-                    this_submarket = SubMarket.objects.get(Title = Submarket)
-                    # Build Product
-                    new_product = Product.objects.create(Title = Title, Slug = Slug, FK_SubMarket = this_submarket, Image = Image, FK_Shop = this_shop, Price = Price, PostRangeType = '1', Status = '4', Available = False, Publish = True, FK_User = request.user, Weight = Wight)
-                    # Set Category
-                    for item in Categories:
-                        this_category = Category.objects.get(Title = item)
-                        new_product.FK_Category.add(this_category)
-                    # Set Post Range
-                    # this_range = PostRange.objects.filter(State = 'کرمان', BigCity = 'کرمان', City = '')
-                    # if this_range.count() == 0:
-                    #     this_range = PostRange.objects.create(State = 'کرمان', BigCity = 'کرمان', City = '')
-                    # else:
-                    #     this_range = this_range[0]
+                    context['ProdSub'] = SubMarket.objects.get(ID = context['ProdSub'])
+                    try:
+                        # Build Product
+                        # TODO POSTRANGE and STATUS must be get from user not set fixxed,
+                        # at the most low level inform the user about this variables
+                        new_product = Product.objects.create(Title = context['prod_title'], 
+                                                            Slug = context['slugProd'], 
+                                                            FK_SubMarket = context['ProdSub'], 
+                                                            Image = context['Product_Image'], 
+                                                            FK_Shop = this_shop, 
+                                                            Price = context['prod_Price'], 
+                                                            PostRangeType = '1', 
+                                                            Status = '4', 
+                                                            Available = False, 
+                                                            Publish = True, 
+                                                            FK_User = request.user, 
+                                                            Net_Weight = context['prod_weight'],
+                                                            )
+                        # Set Category
+                        for item in Categories:
+                            this_category = Category.objects.get(pk = item)
+                            new_product.FK_Category.add(this_category)
 
-                    # new_product.FK_PostRange.add(this_range)
-                    # --------------------------------------------------------------------------------------------------------------
-                    # Get User Profile
-                    profile = Profile.objects.all()
-                    # Get Wallet Inverntory
-                    wallets = Wallet.objects.all()
-                    # Get Menu Item
-                    options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-                    # Get Nav Bar Menu Item
-                    navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-                    # ----------------------------------------------------------------------
-                    # Get All Categories
-                    category = Category.objects.filter(Available = True, Publish = True)
-                    # Get All Shop`s Submarkets
-                    submartek = this_shop.FK_SubMarket.all()
-
-                    context = {
-                        'Profile':profile,
-                        'Wallet': wallets,
-                        'Options': options,
-                        'MenuList':navbar,
-                        'ThisShop':this_shop,
-                        'Categort':category,
-                        'SubMarket':submartek,
-                        'ShowAlart':True,
-                        'AlartMessage':'محصول شما با موفقیت ثبت شد!',
-                    }
+                        # TODO , when process is successful it must show some green alert
+                        context['ShowAlart'] = True
+                        context['AlartMessage'] = 'محصول شما با موفقیت ثبت شد.'
                     
-                    return render(request, 'nakhll_market/management/content/add_new_product.html', context)
-
+                    except:
+                        try:
+                            new_product.delete()
+                        except:
+                            pass
+                        context['ShowAlart'] = True
+                        context['AlartMessage'] = 'در فرایند ذخیره سازی محصول مشکلی رخ داده است. لطفا با پشتیبانی تماس بگیرید.'
+                    
                 else:
-
-                    # Get User Profile
-                    profile = Profile.objects.all()
-                    # Get Wallet Inverntory
-                    wallets = Wallet.objects.all()
-                    # Get Menu Item
-                    options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-                    # Get Nav Bar Menu Item
-                    navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-                    # ----------------------------------------------------------------------
-                    # Get This Shop
-                    this_shop = Shop.objects.get(ID = shop)
-                    # Get All Categories
-                    category = Category.objects.filter(Available = True, Publish = True)
-                    # Get All Shop`s Submarkets
-                    submartek = this_shop.FK_SubMarket.all()
-
-                    context = {
-                        'Profile':profile,
-                        'Wallet': wallets,
-                        'Options': options,
-                        'MenuList':navbar,
-                        'ThisShop':this_shop,
-                        'Categort':category,
-                        'SubMarket':submartek,
-                        'ShowAlart':True,
-                        'AlartMessage':'محصولی با این شناسه موجود می باشد!',
-                    }
-
-                    return render(request, 'nakhll_market/management/content/add_new_product.html', context)
+                    context['ShowAlart'] = True
+                    context['AlartMessage'] = 'محصولی با این شناسه موجود می باشد!'
 
             else:
 
-                # Get User Profile
-                profile = Profile.objects.all()
-                # Get Wallet Inverntory
-                wallets = Wallet.objects.all()
-                # Get Menu Item
-                options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-                # Get Nav Bar Menu Item
-                navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-                # ----------------------------------------------------------------------
-                # Get This Shop
-                this_shop = Shop.objects.get(ID = shop)
-                # Get All Categories
-                category = Category.objects.filter(Available = True, Publish = True)
-                # Get All Shop`s Submarkets
-                submartek = this_shop.FK_SubMarket.all()
+                context['ShowAlart'] = True
+                context['AlartMessage'] = 'عنوان، شناسه، راسته، دسته بندی، قیمت، وزن و عکس محصول نمی تواند خالی باشد!'
 
-                context = {
-                    'Profile':profile,
-                    'Wallet': wallets,
-                    'Options': options,
-                    'MenuList':navbar,
-                    'ThisShop':this_shop,
-                    'Categort':category,
-                    'SubMarket':submartek,
-                    'ShowAlart':True,
-                    'AlartMessage':'عنوان، شناسه، راسته، دسته بندی، قیمت، وزن و عکس محصول نمی تواند خالی باشد!',
-                }
-
-                return render(request, 'nakhll_market/management/content/add_new_product.html', context)
-
+        elif request.method == 'GET':
+            pass
         else:
-
-            # Get User Info
-            user = User.objects.all()
-            # Get User Profile
-            profile = Profile.objects.all()
-            # Get Wallet Inverntory
-            wallets = Wallet.objects.all()
-            # Get Menu Item
-            options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-            # Get Nav Bar Menu Item
-            navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-            # ----------------------------------------------------------------------
-            # Get This Shop
-            this_shop = Shop.objects.get(ID = shop)
-            # Get All Categories
-            category = Category.objects.filter(Available = True, Publish = True)
-            # Get All Shop`s Submarkets
-            submartek = this_shop.FK_SubMarket.all()
-
-            context = {
-                'Profile':profile,
-                'Wallet': wallets,
-                'Options': options,
-                'MenuList':navbar,
-                'ThisShop':this_shop,
-                'Categort':category,
-                'SubMarket':submartek,
-            }
-
-            return render(request, 'nakhll_market/management/content/add_new_product.html', context)
-
+            HttpResponse('this method is not allowed!', status_code=405)
+        
     else:
 
         return redirect("nakhll_market:AccountLogin")
+
+    # Get This Shop
+    context['ThisShop'] = Shop.objects.get(ID = shop)
+    # Get All Categories
+    context['Categories'] = Category.objects.filter(Available = True, Publish = True)
+    # Get All Shop`s Submarkets
+    context['SubMarkets'] = context['ThisShop'].FK_SubMarket.all()
+
+    return render(request, 'nakhll_market/management/content/add_new_product.html', context)
 
 
 # Add User`s Bank Account Info
