@@ -102,12 +102,11 @@ def Show_All_User_Info(request):
     context['BlockCount']=User.objects.filter(is_active = False).count()
 
     return render(request, 'nakhll_market/management/content/show_all_user_info.html', context)
-    
 
 # Change User Status
 def Change_User_Status(request, User_ID):
 
-    if request.user.is_authenticated :
+    if request.user.is_staff :
 
         # Get This User
         this_user = User.objects.get(id = User_ID)
@@ -124,7 +123,6 @@ def Change_User_Status(request, User_ID):
     else:
 
         return redirect("nakhll_market:AccountLogin")
-
 
 # Add New User
 def Add_New_User(request):
@@ -210,11 +208,10 @@ def Add_New_User(request):
 
     return render(request, 'nakhll_market/management/content/add_new_user.html', context)
 
-
 # Add New User`s Shop
 def Add_New_Shop(request, id):
 
-    if request.user.is_authenticated :
+    if request.user.is_staff :
         context = baseData(request, 'allShop')
         fields = ['Shop_Title', 'Shop_Slug']
         context = getPostData(request, context, fields)
@@ -266,7 +263,7 @@ def Add_New_Shop(request, id):
 # Add New Product In User`s Shop
 def Add_New_Product(request, shop):
 
-    if request.user.is_authenticated :
+    if request.user.is_staff :
 
         fields = ['prod_title', 'ProdCat', 'ProdSub', 
             'prod_Price', 'slugProd', 'prod_weight']
@@ -363,7 +360,7 @@ def Add_Bank_Account(request, id):
     and after that i think we must make that a user not just get first_name and last_name at field
     '''
 
-    if request.user.is_authenticated :
+    if request.user.is_staff :
 
         fields = ['Shop_CreditCardNumber', 'Shop_ShabaBankNumber', 'Shop_AccountOwner']
         context = baseData(request, 'allUser')
@@ -457,7 +454,7 @@ def Show_All_Shoper_User_Info(request):
 def Management_Show_User_Info(request, id):
 
     # Check User Status
-    if request.user.is_authenticated :
+    if request.user.is_staff :
 
         if request.method == 'GET':
 
@@ -490,7 +487,7 @@ def Management_Edit_User_Info(request, id):
     if the user modify all option alert message showed in oneline
     '''
 
-    if request.user.is_authenticated :
+    if request.user.is_staff :
         
         # base data
         fields = ['username', 'nationalcode', 'mobilenumber']
