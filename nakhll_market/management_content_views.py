@@ -561,7 +561,7 @@ def Management_Edit_User_Info(request, id):
 def Show_All_Content(request):
     '''
     show_all_content return all shops of site
-    if support two methods of get and post
+    it support two methods of get and post
     get method return all shops
     post method used for filtering and return shops based on the post data
     and is for staff users
@@ -578,6 +578,10 @@ def Show_All_Content(request):
                 FK_ShopManager__last_name__icontains = context['shop_manager_last_name']
                 )
         elif request.method == 'GET':
+            # check request is a redirect from change methods
+            if request.GET.get('message'):
+                context['ShowAlart'] = True
+                context['AlartMessage'] = request.GET.get('message')
             Shops = Shop.objects.all()
         else:
             return HttpResponse('this method is not allowed!', status_code=405)
@@ -604,32 +608,49 @@ def Show_All_Content(request):
 
 # Change Shop Seen Status
 def Change_Shop_Seen_Status(request, id):
+    '''
+    Change_Shop_Seen_Status change shop and all of its product "Available" attribute
+    the algorithm loop over all products of a shop and maybe there is a better way
+    only GET method is allowed
+    and is for staff users
+    '''
 
-    if request.user.is_authenticated :
+    if request.user.is_staff :
 
-        # Get This Shop
-        this_shop = get_object_or_404(Shop, Slug = id)
-        # Get All Shop`s Product
-        all_product = Product.objects.filter(FK_Shop = this_shop)
-        # Shop Change Status
-        if this_shop.Available:
-            # Change Product Status
-            for item in all_product:
-                item.Available = False
-                item.save()
+        if request.method == 'GET':
+            # Get This Shop
+            this_shop = Shop.objects.filter(pk=id)
+            if this_shop.exists():
+                this_shop = this_shop[0]
+                # Get All Shop`s Product
+                all_product = Product.objects.filter(FK_Shop = this_shop)
+                # Shop Change Status
+                if this_shop.Available:
+                    # Change Product Status
+                    for item in all_product:
+                        item.Available = False
+                        item.save()
 
-            this_shop.Available = False
-            this_shop.save()
+                    this_shop.Available = False
+                    this_shop.save()
+                else:
+                    # Change Product Status
+                    for item in all_product:
+                        item.Available = True
+                        item.save()
+
+                    this_shop.Available = True
+                    this_shop.save()
+
+                message = 'تغییرات با موفقیت انجام شد.'
+            else:
+                message = 'خطایی رخ داده است. فروشگاه مورد نظر پیدا نشد.'
+            # redirect to with parameter
+            return redirect('{}?{}'.format(reverse("nakhll_market:Show_All_Content"), 
+                            'message={}'.format(message)))
+        
         else:
-            # Change Product Status
-            for item in all_product:
-                item.Available = True
-                item.save()
-
-            this_shop.Available = True
-            this_shop.save()
-
-        return redirect("nakhll_market:Show_All_Content")
+            HttpResponse('this method is not allowed!', status_code=405)
 
     else:
 

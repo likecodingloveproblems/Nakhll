@@ -99,28 +99,28 @@
                     <td>{{shop.DateCreate|jformat:'%Y/%m/%d'}}</td>
                     {% if shop.Available %}
                     <td title="برای عدم نمایش این حجره کلیک کنید."><a
-                            href="{% url "nakhll_market:Change_Shop_Seen_Status" shop.Slug %}">
+                            href="{% url "nakhll_market:Change_Shop_Seen_Status" shop.ID %}">
                             <p style="color: green">در حال نمایش</p>
                         </a></td>
                     {% else %}
                     <td title="برای نمایش این حجره کلیک کنید."><a
-                            href="{% url "nakhll_market:Change_Shop_Seen_Status" shop.Slug %}">
+                            href="{% url "nakhll_market:Change_Shop_Seen_Status" shop.ID %}">
                             <p style="color: red">عدم نمایش</p>
                         </a></td>
                     {% endif %}
                     {% if shop.Publish %}
                     <td title="برای عدم انتشار این حجره کلیک کنید."><a
-                            href="{% url "nakhll_market:Change_Shop_Publish_Status" shop.Slug %}">
+                            href="{% url "nakhll_market:Change_Shop_Publish_Status" shop.ID %}">
                             <p style="color: green">منتشر شده</p>
                         </a></td>
                     {% else %}
                     <td title="برای انتشار این حجره کلیک کنید."><a
-                            href="{% url "nakhll_market:Change_Shop_Publish_Status" shop.Slug %}">
+                            href="{% url "nakhll_market:Change_Shop_Publish_Status" shop.ID %}">
                             <p style="color: red">منتشر نشده</p>
                         </a></td>
                     {% endif %}
                     <td title="برای مشاهده اطلاعات حجره کلیک کنید." class="pointer"><a
-                            href="{% url "nakhll_market:Show_Shop_Info" shop.Slug %}"><i
+                            href="{% url "nakhll_market:Show_Shop_Info" shop.ID %}"><i
                                 class="fad fa-eye"></i></a></td>
                 </tr>
             {% endfor %}
