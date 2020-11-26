@@ -558,74 +558,46 @@ def Management_Edit_User_Info(request, id):
 
         return redirect("nakhll_market:AccountLogin")
 
-
 # Content Section ------------------------------------
-
-# Get Shop Statistics
-def GetShopStatistics(request):
-    # Build Statistics Class
-    class StatisticsClass:
-        def __init__(self,  Product_Count, Not_Count, Off_Count, False_Count, userProfile, userWallet, options, navbar):
-            self.Product_Count = Product_Count
-            self.Not_Count = Not_Count
-            self.Off_Count = Off_Count
-            self.False_Count = False_Count
-            self.userProfile = userProfile
-            self.userWallet = userWallet
-            self.options = options
-            self.navbar = navbar
-
-    # Get All Product
-    product_count = Product.objects.all().count()
-    # Not Product Count
-    not_count = Product.objects.filter(Status = '4').count()
-    # Off Product Count
-    off_count = Product.objects.filter(Available = False).count()
-    # False Product Count
-    false_count = Product.objects.filter(Publish = False).count()
-    # user profile 
-    userProfile = request.user.User_Profile
-    # user wallet 
-    userWallet = request.user.WalletManager
-    # Get Menu Item
-    options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-    # Get Nav Bar Menu Item
-    navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-
-    return StatisticsClass(product_count, not_count, off_count, false_count, userProfile, userWallet, options, navbar)
-
 
 # Show All Content
 def Show_All_Content(request):
-    search_list = None
+    '''
+    show_all_content return all shops of site
+    if support two methods of get and post
+    get method return all shops
+    post method used for filtering and return shops based on the post data
+    and is for staff users
+    '''
     if request.user.is_staff :
-        # Get Statistics
-        Statistic = GetShopStatistics(request)
+
+        fields = ['shop_title', 'shop_manager_first_name', 'shop_manager_last_name']
+        context = baseData(request, 'allShop')
+        context = getPostData(request, context, fields)
         if request.method == 'POST':
-            shop_title = request.POST.get("shop_title")
-            shop_manager_first_name = request.POST.get("shop_manager_first_name")
-            shop_manager_last_name = request.POST.get("shop_manager_last_name")
             Shops = Shop.objects.filter(
-                Title__icontains = shop_title,
-                FK_ShopManager__first_name__icontains = shop_manager_first_name,
-                FK_ShopManager__last_name__icontains = shop_manager_last_name
+                Title__icontains = context['shop_title'],
+                FK_ShopManager__first_name__icontains = context['shop_manager_first_name'],
+                FK_ShopManager__last_name__icontains = context['shop_manager_last_name']
                 )
         elif request.method == 'GET':
             Shops = Shop.objects.all()
         else:
-            return HttpResponse('this method is not allowed!')
+            return HttpResponse('this method is not allowed!', status_code=405)
 
         # pagination of all shops
         allShopListPaginator = Paginator (Shops, 30)
         page = request.GET.get('page')
         Shops = allShopListPaginator.get_page(page)
 
-        context = baseData(request, 'allShop')
-        context['ProductCount']=Statistic.Product_Count,
-        context['NotProductCount']=Statistic.Not_Count,
-        context['OffProductCount']=Statistic.Off_Count,
-        context['FalseProductCount']=Statistic.False_Count,
-        context['Shops']=Shops
+        # Get All Product
+        context['ProductCount'] = Product.objects.all().count()
+        # Not Product Count
+        context['NotProductCount'] = Product.objects.filter(Status = '4').count()
+        # Off Product Count
+        context['OffProductCount'] = Product.objects.filter(Available = False).count()
+        # False Product Count
+        context['FalseProductCount'] = Product.objects.filter(Publish = False).count()
 
         return render(request, 'nakhll_market/management/content/show_all_content.html', context)
 
