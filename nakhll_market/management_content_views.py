@@ -607,9 +607,9 @@ def Show_All_Content(request):
         return redirect("nakhll_market:AccountLogin")
 
 # Change Shop Seen Status
-def Change_Shop_Seen_Status(request, id):
+def Change_Shop_Status(request, attribute, id):
     '''
-    Change_Shop_Seen_Status change shop and all of its product "Available" attribute
+    Change_Shop_Status change shop and all of its product "Available" and "Publish" attribute
     the algorithm loop over all products of a shop and maybe there is a better way
     only GET method is allowed
     and is for staff users
@@ -624,23 +624,49 @@ def Change_Shop_Seen_Status(request, id):
                 this_shop = this_shop[0]
                 # Get All Shop`s Product
                 all_product = Product.objects.filter(FK_Shop = this_shop)
-                # Shop Change Status
-                if this_shop.Available:
-                    # Change Product Status
-                    for item in all_product:
-                        item.Available = False
-                        item.save()
+                # check attribute
+                if attribute == 'Available':
+                    # Shop Change Status
+                    if this_shop.Available:
+                        # Change Product Status
+                        for item in all_product:
+                            item.Available = False
+                            item.save()
 
-                    this_shop.Available = False
-                    this_shop.save()
+                        this_shop.Available = False
+                        this_shop.save()
+                    else:
+                        # Change Product Status
+                        for item in all_product:
+                            item.Available = True
+                            item.save()
+
+                        this_shop.Available = True
+                        this_shop.save()
+                        
+                elif attribute == 'Publish':
+                    if this_shop.Publish:
+                        # Change Product Status
+                        for item in all_product:
+                            item.Publish = False
+                            item.save()
+
+                        this_shop.Publish = False
+                        this_shop.save()
+                    else:
+                        # Change Product Status
+                        for item in all_product:
+                            item.Publish = True
+                            item.save()
+
+                        this_shop.Publish = True
+                        this_shop.save()
+
                 else:
-                    # Change Product Status
-                    for item in all_product:
-                        item.Available = True
-                        item.save()
-
-                    this_shop.Available = True
-                    this_shop.save()
+                    message = 'ویژگی مورد نظر تعریف نشده است.'
+                    # redirect to with parameter
+                    return redirect('{}?{}'.format(reverse("nakhll_market:Show_All_Content"), 
+                            'message={}'.format(message)))
 
                 message = 'تغییرات با موفقیت انجام شد.'
             else:
@@ -655,42 +681,6 @@ def Change_Shop_Seen_Status(request, id):
     else:
 
         return redirect("nakhll_market:AccountLogin")
-
-
-# Change Shop Publish Status
-def Change_Shop_Publish_Status(request, id):
-
-    if request.user.is_authenticated :
-
-        # Get This Shop
-        this_shop = get_object_or_404(Shop, Slug = id)
-        # Get All Shop`s Product
-        all_product = Product.objects.filter(FK_Shop = this_shop)
-        # Shop Change Status
-        if this_shop.Publish:
-            # Change Product Status
-            for item in all_product:
-                item.Publish = False
-                item.save()
-
-            this_shop.Publish = False
-            this_shop.save()
-        else:
-            # Change Product Status
-            for item in all_product:
-                item.Publish = True
-                item.save()
-
-            this_shop.Publish = True
-            this_shop.save()
-
-        return redirect("nakhll_market:Show_All_Content")
-
-    else:
-
-        return redirect("nakhll_market:AccountLogin")
-
-
 
 # Show Shop Info
 def Show_Shop_Info(request, Shop_Slug):
