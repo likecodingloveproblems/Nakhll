@@ -211,7 +211,6 @@ def Add_New_User(request):
     return render(request, 'nakhll_market/management/content/add_new_user.html', context)
 
 
-
 # Add New User`s Shop
 def Add_New_Shop(request, id):
 
@@ -353,132 +352,76 @@ def Add_New_Product(request, shop):
 
     return render(request, 'nakhll_market/management/content/add_new_product.html', context)
 
-
 # Add User`s Bank Account Info
 def Add_Bank_Account(request, id):
     # Check User Status
+    '''
+    TODO this function get id of user that want ot add bank account but 
+    get the first_name and last name of him/her at the same time.
+    it can be for that because a user can add bank account that is not for shopManager
+    if this is not the case i think this is a bug!
+    and after that i think we must make that a user not just get first_name and last_name at field
+    '''
+
     if request.user.is_authenticated :
 
+        fields = ['Shop_CreditCardNumber', 'Shop_ShabaBankNumber', 'Shop_AccountOwner']
+        context = baseData(request, 'allUser')
+        context = getPostData(request, context, fields)
+        # Get This User
+        context['ThisUser'] = User.objects.get(id = id)
+
         if request.method == 'POST': 
+            # TODO every user can have only one account?
+            if BankAccount.objects.filter(FK_Profile = Profile.objects.get(FK_User = context['ThisUser'])).exists():
 
-            try:
-                CreditCardNumber = request.POST["Shop_CreditCardNumber"]
-            except:
-                CreditCardNumber = ''
-
-            try:
-                ShabaBankNumber = request.POST["Shop_ShabaBankNumber"]
-            except:
-                ShabaBankNumber = ''
-
-            try:
-                AccountOwner = request.POST["Shop_AccountOwner"]
-            except:
-                AccountOwner = ''
-            
-            # Get This User
-            this_user = User.objects.get(id = id)
-
-            if BankAccount.objects.filter(FK_Profile = Profile.objects.get(FK_User = this_user)).exists():
-
-                return redirect("nakhll_market:Show_All_User_Info")
+                context['ShowAlart'] = True
+                context['AlartMessage'] = 'یک حساب بانکی به نام {} {} موجود می باشد.'.format(
+                            context['ThisUser'].first_name, context['ThisUser'].last_name)
 
             else:
 
-                if (CreditCardNumber != '') and (ShabaBankNumber != '') and (AccountOwner != ''):
+                if (context['Shop_CreditCardNumber'] != '') and \
+                    (context['Shop_ShabaBankNumber'] != '') and \
+                    (context['Shop_AccountOwner'] != ''):
 
-                    if (len(ShabaBankNumber) == 24) and (len(CreditCardNumber) == 16):
+                    if (len(context['Shop_ShabaBankNumber']) == 24) and (len(context['Shop_CreditCardNumber']) == 16):
 
-                        BankAccount.objects.create(FK_Profile = Profile.objects.get(FK_User = this_user), CreditCardNumber = CreditCardNumber, ShabaBankNumber = ShabaBankNumber, AccountOwner = AccountOwner)
+                        BankAccount.objects.create(FK_Profile = Profile.objects.get(FK_User = context['ThisUser']), 
+                                CreditCardNumber = context['Shop_CreditCardNumber'], 
+                                ShabaBankNumber = context['Shop_ShabaBankNumber'], 
+                                AccountOwner = context['Shop_AccountOwner'])
 
-                        return redirect("nakhll_market:Show_All_User_Info")
+                        context['ShowAlart'] = True
+                        context['AlartMessage'] = 'اکانت با موفقیت ثبت شد.'
 
                     else:
 
-                        # Get User Profile
-                        profile = Profile.objects.all()
-                        # Get Wallet Inverntory
-                        wallets = Wallet.objects.all()
-                        # Get Menu Item
-                        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-                        # Get Nav Bar Menu Item
-                        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-                        # ----------------------------------------------------------------------
-                        # Get This User
-                        this_user = User.objects.get(id = id)
-
-                        context = {
-                            'Profile':profile,
-                            'Wallet': wallets,
-                            'Options': options,
-                            'MenuList':navbar,
-                            'ThisUser':this_user,
-                            'ShowAlart':True,
-                            'AlartMessage':'شماره شباء 24 و شماره کارت 16 باید باشد!',
-                        }
-
-                        return render(request, 'nakhll_market/management/content/add_user_bank_account_info.html', context)
+                        context['ShowAlart'] = True
+                        context['AlartMessage'] = 'شماره شباء و شماره کارت باید 24 و 16 رقم باشند!'
 
                 else:
 
-                    # Get User Profile
-                    profile = Profile.objects.all()
-                    # Get Wallet Inverntory
-                    wallets = Wallet.objects.all()
-                    # Get Menu Item
-                    options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-                    # Get Nav Bar Menu Item
-                    navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-                    # ----------------------------------------------------------------------
-                    # Get This User
-                    this_user = User.objects.get(id = id)
-
-                    context = {
-                        'Profile':profile,
-                        'Wallet': wallets,
-                        'Options': options,
-                        'MenuList':navbar,
-                        'ThisUser':this_user,
-                        'ShowAlart':True,
-                        'AlartMessage':'نام صاحب حساب، شماره کارت و شماره شباء نمی تواند خالی باشد!',
-                    }
-
-                    return render(request, 'nakhll_market/management/content/add_user_bank_account_info.html', context)
+                    context['ShowAlart'] = True
+                    context['AlartMessage'] = 'نام صاحب حساب، شماره کارت و شماره شباء نمی تواند خالی باشد!'
 
         else:
 
-            # Get User Profile
-            profile = Profile.objects.all()
-            # Get Wallet Inverntory
-            wallets = Wallet.objects.all()
-            # Get Menu Item
-            options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-            # Get Nav Bar Menu Item
-            navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-            # ----------------------------------------------------------------------
-            # Get This User
-            this_user = User.objects.get(id = id)
             # Get Bank Account
-            if BankAccount.objects.filter(FK_Profile = Profile.objects.get(FK_User = this_user)).exists():
-                account = BankAccount.objects.get(FK_Profile = Profile.objects.get(FK_User = this_user))
+            # TODO in the get method it get user account and put its data in the field 
+            # maybe it's better to load data bank account and show then in a table 
+            if BankAccount.objects.filter(FK_Profile = Profile.objects.get(FK_User = context['ThisUser'])).exists():
+                account = BankAccount.objects.get(FK_Profile = Profile.objects.get(FK_User = context['ThisUser']))
             else:
                 account = None
 
-            context = {
-                'Profile':profile,
-                'Wallet': wallets,
-                'Options': options,
-                'MenuList':navbar,
-                'ThisUser':this_user,
-                'Account':account,
-            }
-
-            return render(request, 'nakhll_market/management/content/add_user_bank_account_info.html', context)
+            context['Account'] = account
 
     else:
 
         return redirect("nakhll_market:AccountLogin")
 
+    return render(request, 'nakhll_market/management/content/add_user_bank_account_info.html', context)
 
 # Show All Shoper User Info
 def Show_All_Shoper_User_Info(request):
