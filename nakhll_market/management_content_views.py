@@ -12,6 +12,12 @@ from .models import Alert, Product, Profile, Shop, Category, Option_Meta, Market
 from Payment.models import Coupon, Wallet, Factor, FactorPost
 from django.urls import reverse
 
+'''
+TODO
+Use standard styles such as camle case, pascal and ...
+Use of decoratore for checking is_authenticated or is_staff instead of if condition
+Use of class bass view instead of functions and using if condition
+'''
 # --------------------------------------------------------------------------------------------------------------------------------------
 # base data for base template
 def baseData(request, activeSidebarMenu):
