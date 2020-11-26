@@ -586,7 +586,7 @@ def Show_All_Content(request):
         allShopListPaginator = Paginator (Shops, 30)
         page = request.GET.get('page')
         Shops = allShopListPaginator.get_page(page)
-
+        context['Shops'] = Shops
         # Get All Product
         context['ProductCount'] = Product.objects.all().count()
         # Not Product Count
@@ -601,7 +601,6 @@ def Show_All_Content(request):
     else:
 
         return redirect("nakhll_market:AccountLogin")
-
 
 # Change Shop Seen Status
 def Change_Shop_Seen_Status(request, id):
