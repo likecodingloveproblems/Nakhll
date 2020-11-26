@@ -459,33 +459,21 @@ def Management_Show_User_Info(request, id):
     # Check User Status
     if request.user.is_authenticated :
 
-        # Get User Info
-        user = User.objects.all()
-        # Get User Profile
-        profile = Profile.objects.all()
-        # Get Wallet Inverntory
-        wallets = Wallet.objects.all()
-        # Get Menu Item
-        options = Option_Meta.objects.filter(Title='index_page_menu_items')
-        # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
-        #-----------------------------------------------------------------------
-        # Get Select User
-        user_select = User.objects.get(id = id)
-        # Get Select Profile
-        profile_select = Profile.objects.get(FK_User = user_select)
+        if request.method == 'GET':
 
-        context = {
-            'Users':user,
-            'Profile':profile,
-            'Wallet': wallets,
-            'Options': options,
-            'MenuList':navbar,
-            'User_Selected':user_select,
-            'Profile_Selected':profile_select,
-        }
+            context = baseData(request, 'allUser')
+            # Get Select User
+            user_select = User.objects.get(id = id)
+            # Get Select Profile
+            profile_select = Profile.objects.get(FK_User = user_select)
 
-        return render(request, 'nakhll_market/management/content/show_user_info.html', context)
+            context['User_Selected'] = user_select
+            context['Profile_Selected'] = profile_select
+
+            return render(request, 'nakhll_market/management/content/show_user_info.html', context)
+
+        else:
+            HttpResponse('this method is not allowed!', status_code=405)
 
     else:
 
