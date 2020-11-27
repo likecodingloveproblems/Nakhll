@@ -619,6 +619,8 @@ def Change_Shop_Status(request, attribute, id):
     the algorithm loop over all products of a shop and maybe there is a better way
     only GET method is allowed
     and is for staff users
+    TODO it query shop and all its product and then loop over the product and change attribute 
+    and then change shop attribute i think it's better to use stored procedure
     '''
 
     if request.user.is_staff :
@@ -695,6 +697,7 @@ def Show_Shop_Info(request, id):
     only get method is allowed
     get the id of shop
     TODO for the calculation of number of sales and ... it needs stored procedure
+    TODO shop banners are a link to show them but don't work
     '''
 
     if request.user.is_authenticated :
@@ -839,17 +842,7 @@ def Show_Product_Info(request, Product_Slug):
 
     if request.user.is_authenticated :
 
-        # Get User Info
-        user = User.objects.all()
-        # Get User Profile
-        profile = Profile.objects.all()
-        # Get Wallet Inverntory
-        wallets = Wallet.objects.all()
-        # Get Menu Item
-        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-        # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-        # ----------------------------------------------------------------------
+        context = baseData(request, 'allShop')
         # Get This Product
         this_product = get_object_or_404(Product, Slug = Product_Slug)
         # Get All Product Banner
@@ -860,37 +853,19 @@ def Show_Product_Info(request, Product_Slug):
         context['ThisProduct_Sales_ISSend_Count'] = \
             FactorPost.objects.filter(FK_Product=this_product, ProductStatus='3').count()
 
-        for item in FactorPost.objects.filter(FK_Product = this_product):
-            if item.ProductStatus != '0':
-                if item.ProductStatus == '3':
-                    AllSales_Send.append(item)
-                    AllSales.append(item)
-                else:
-                    AllSales.append(item)
-
-        AllSales = list(dict.fromkeys(AllSales))
-        AllSales_Send = list(dict.fromkeys(AllSales_Send))
         # Get All Product Attribute
         this_attribute = AttrProduct.objects.filter(FK_Product = this_product)
         # Get All Product Attribute Price
         this_attribute_price = AttrPrice.objects.filter(FK_Product = this_product)
 
-        context = {
-            'Users':user,
-            'Profile':profile,
-            'Wallet': wallets,
-            'Options': options,
-            'MenuList':navbar,
-            'Shop':this_product.FK_Shop.Slug,
-            'Product':this_product,
-            'ThisProduct_Banners_Count':this_banners.count(),
-            'ThisProduct_Sales_Count':len(AllSales),
-            'ThisProduct_Sales_ISSend_Count':len(AllSales_Send),
+
         context['Shop'] = this_product.FK_Shop.ID
         context['Product'] = this_product
         context['ProductAttribute'] = this_attribute
         context['ProductAttributePrice'] = this_attribute_price
         context['ProductBanner'] = this_banners
+
+        return render(request, 'nakhll_market/management/content/show_product_info.html', context)
 
     else:
 
@@ -1334,122 +1309,58 @@ def Add_New_Shop_Banner(request, id, msg = None):
 
     if request.user.is_authenticated :
 
+        fields = ['Banner_Title', 'Banner_URL', 
+                'Banner_Description', 'Banner_Builder', 'Banner_URL_Builder',
+                'Banner_Seen', 'Banner_Status']
+        context = baseData(request, 'allShop')
+        context = getPostData(request, context, fields)
+        context['Banner_Image'] = request.FILES.get('Banner_Image')
+
+        # This Shop
+        context['ThisShop'] = Shop.objects.get(pk = id)
+
         if request.method == 'POST':
 
-            try:
-                Banner_Image = request.FILES["Banner_Image"]
-            except:
-                Banner_Image = ''
+            if (context['Banner_Title'] != '') and (context['Banner_Image'] != ''):
 
-            try:
-                Banner_Title = request.POST["Banner_Title"]
-            except:
-                Banner_Title = ''
-
-            try:
-                Banner_URL = request.POST["Banner_URL"]
-            except:
-                Banner_URL = ''
-            
-            try:
-                Banner_Description = request.POST["Banner_Description"]
-            except:
-                Banner_Description = ''
-            
-            try:
-                Banner_Builder = request.POST["Banner_Builder"]
-            except:
-                Banner_Builder = ''
-
-            try:
-                Banner_URL_Builder = request.POST["Banner_URL_Builder"]
-            except:
-                Banner_URL_Builder = ''
-
-            try:
-                Banner_Seen = request.POST["Banner_Seen"]
-            except:
-                Banner_Seen = ''
-
-            try:
-                Banner_Status = request.POST["Banner_Status"]
-            except:
-                Banner_Status = ''
-
-            if (Banner_Title != '') and (Banner_Image != ''):
-
-                # This Shop
-                this_shop = Shop.objects.get(ID = id)
                 # Create New Object
-                thisbanner = ShopBanner.objects.create(FK_Shop = this_shop, Title = Banner_Title, Description = Banner_Description, Image = Banner_Image, Available = bool(Banner_Seen), Publish = bool(Banner_Status))
+                thisbanner = ShopBanner.objects.create(FK_Shop = context['ThisShop'], 
+                                                        Title = context['Banner_Title'], 
+                                                        Description = context['Banner_Description'], 
+                                                        Image = context['Banner_Image'], 
+                                                        Available = bool(context['Banner_Seen']), 
+                                                        Publish = bool(context['Banner_Status']))
                 # Set New Alert
-                Alert.objects.create(Part = '4', FK_User = request.user, Slug = thisbanner.id, Seen = True, Status = True, FK_Staff = request.user)
+                Alert.objects.create(Part = '4', 
+                                    FK_User = request.user, 
+                                    Slug = thisbanner.id, 
+                                    Seen = True, 
+                                    Status = True, 
+                                    FK_Staff = request.user)
                 # Save Data
-                if (Banner_URL != ''):
-                    thisbanner.URL = Banner_URL
+                if (context['Banner_URL'] != ''):
+                    thisbanner.URL = context['Banner_URL']
                     thisbanner.save()
 
-                if (Banner_Builder != ''):
-                    thisbanner.BannerBuilder = Banner_Builder
+                if (context['Banner_Builder'] != ''):
+                    thisbanner.BannerBuilder = context['Banner_Builder']
                     thisbanner.save()
                 
-                if (Banner_URL_Builder != ''):
-                    thisbanner.BannerURL = Banner_URL_Builder
+                if (context['Banner_URL_Builder'] != ''):
+                    thisbanner.BannerURL = context['Banner_URL_Builder']
                     thisbanner.save()
-                # -----------------------------------------------------------------
-                # Get User Info
-                user = User.objects.all()
-                # Get User Profile
-                profile = Profile.objects.all()
-                # Get Wallet Inverntory
-                wallets = Wallet.objects.all()
-                # Get Menu Item
-                options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-                # Get Nav Bar Menu Item
-                navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
 
                 return redirect('nakhll_market:Show_Shop_Info',
-                Shop_Slug = this_shop.Slug)
+                id = context['ThisShop'].ID)
 
             else:
 
-                return redirect('nakhll_market:Add_New_Shop_Banner',
-                msg =  'عنوان و عکس بنر حجره نمی تواند خالی باشد.')
-
+                context['ShowAlart'] = True
+                context['AlartMessage'] = 'عنوان و عکس بنر حجره نمی تواند خالی باشد.'
+                return render(request, 'nakhll_market/management/content/add_new_shop_banner.html', context)        
+        
         else:
             
-            # Get User Info
-            user = User.objects.all()
-            # Get User Profile
-            profile = Profile.objects.all()
-            # Get Wallet Inverntory
-            wallets = Wallet.objects.all()
-            # Get Menu Item
-            options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-            # Get Nav Bar Menu Item
-            navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-            # -------------------------------------------------------------------
-            # This Shop
-            this_shop = Shop.objects.get(ID = id)
-
-            if msg != 'None':
-                message = msg
-                show = True
-            else:
-                message = ''
-                show = False
-
-            context = {
-                'Users':user,
-                'Profile':profile,
-                'Wallet': wallets,
-                'Options': options,
-                'MenuList':navbar,
-                'Shop':this_shop,
-                'ShowAlart':show,
-                'AlartMessage':message,
-            }
-
             return render(request, 'nakhll_market/management/content/add_new_shop_banner.html', context)
 
     else:
