@@ -805,7 +805,7 @@ def Change_Shop_Banner_Seen_Status(request, id):
             this_banner.Available = True
             this_banner.save()
 
-        return redirect("nakhll_market:Show_Shop_Info", Shop_Slug = this_banner.FK_Shop.Slug)
+        return redirect("nakhll_market:Show_Shop_Info", id = this_banner.FK_Shop.ID)
 
     else:
 
