@@ -11,12 +11,12 @@ from django.contrib.auth.models import User
 from .models import Alert, Product, Profile, Shop, Category, Option_Meta, Market, SubMarket, Message, User_Message_Status, BankAccount, ShopBanner, ProductBanner, Attribute, AttrPrice, AttrProduct, Field, PostRange, AttrProduct, AttrPrice
 from Payment.models import Coupon, Wallet, Factor, FactorPost
 from django.urls import reverse
-
 '''
 TODO
 Use standard styles such as camle case, pascal and ...
 Use of decoratore for checking is_authenticated or is_staff instead of if condition
 Use of class bass view instead of functions and using if condition
+Use slogify instead of getting from user for Shop and Product Slug
 '''
 # --------------------------------------------------------------------------------------------------------------------------------------
 # base data for base template
@@ -689,84 +689,62 @@ def Change_Shop_Status(request, attribute, id):
         return redirect("nakhll_market:AccountLogin")
 
 # Show Shop Info
-def Show_Shop_Info(request, Shop_Slug):
+def Show_Shop_Info(request, id):
+    '''
+    return information about the shop
+    only get method is allowed
+    get the id of shop
+    TODO for the calculation of number of sales and ... it needs stored procedure
+    '''
 
     if request.user.is_authenticated :
 
-        # Get User Info
-        user = User.objects.all()
-        # Get User Profile
-        profile = Profile.objects.all()
-        # Get Wallet Inverntory
-        wallets = Wallet.objects.all()
-        # Get Menu Item
-        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-        # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-        # ----------------------------------------------------------------------
-        # Get This Shop
-        this_shop = get_object_or_404(Shop, Slug = Shop_Slug)
-        # Get All Shop`s Products
-        AllProducts = Product.objects.filter(FK_Shop = this_shop)
-        # Get All Shop`s Banners
-        AllBanners = ShopBanner.objects.filter(FK_Shop = this_shop)
-        # Get All Shop`s Sale
-        AllSales = []
-        AllSales_Send = []
+        if request.method == 'GET':
 
-        for item in Factor.objects.filter(PaymentStatus = True, Publish = True):
-            for factor_item in item.FK_FactorPost.all():
-                if factor_item.FK_Product.FK_Shop == this_shop:
-                    if item.OrderStatus == '5':
-                        AllSales_Send.append(item)
-                        AllSales.append(item)
-                    else:
-                        AllSales.append(item)
+            context = baseData(request, 'allShop')
+            try:
+                # Get This Shop
+                context['ThisShop'] = Shop.objects.get(pk = id)
+                # Get All Shop`s Products
+                context['ThisShopProducts'] = Product.objects.filter(FK_Shop = context['ThisShop'])
+                # Get All Shop`s Banners
+                context['ThisShopBanners'] = ShopBanner.objects.filter(FK_Shop = context['ThisShop'])
+                # Get SubMarkets of the shop
+                context['SubMarkets'] = context['ThisShop'].FK_SubMarket.all()
+                # Get Shop Holiday
+                context['Week'] = context['ThisShop'].Holidays.split('-')
 
-        AllSales = list(dict.fromkeys(AllSales))
-        AllSales_Send = list(dict.fromkeys(AllSales_Send))
-        # Get Shop Holiday
-        week = this_shop.Holidays.split('-')
-        # Build Shop_Submarket Class
-        class SubmarketClass:
-            def __init__(self,  item, status):
-                self.Submarket = item
-                self.Status = status
+                # TODO number of sales of a shop must be a stored procedure  
+                # Get All Shop`s Sale
+                AllSales = []
+                AllSales_Send = []
 
-        AllSubmarketList = []
+                for item in Factor.objects.filter(PaymentStatus = True, Publish = True):
+                    for factor_item in item.FK_FactorPost.all():
+                        if factor_item.FK_Product.FK_Shop == context['ThisShop']:
+                            if item.OrderStatus == '5':
+                                AllSales_Send.append(item)
+                                AllSales.append(item)
+                            else:
+                                AllSales.append(item)
 
-        for item in SubMarket.objects.all():
-            New_Item = SubmarketClass(item, False)
-            AllSubmarketList.append(New_Item)
+                AllSales = list(dict.fromkeys(AllSales))
+                AllSales_Send = list(dict.fromkeys(AllSales_Send))
+                
+                context['ThisShop_Sales_Count'] = len(AllSales)
+                context['ThisShop_Sales_ISSend_Count'] = len(AllSales_Send)
 
-        for item in this_shop.FK_SubMarket.all():
-            for submarket_item in AllSubmarketList:
-                if item == submarket_item.Submarket:
-                    submarket_item.Status = True
+                return render(request, 'nakhll_market/management/content/show_shop_info.html', context)
 
-        context = {
-            'Users':user,
-            'Profile':profile,
-            'Wallet': wallets,
-            'Options': options,
-            'MenuList':navbar,
-            'Shop':this_shop,
-            'ThisShop_Products_Count':AllProducts.count(),
-            'ThisShop_Bannners_Count':AllBanners.count(),
-            'ThisShop_Sales_Count':len(AllSales),
-            'ThisShop_Sales_ISSend_Count':len(AllSales_Send),
-            'Week':week,
-            'SubMarkets':AllSubmarketList,
-            'ThisShop_Product':AllProducts,
-            'ShopBanners':AllBanners,
-        }
-
-        return render(request, 'nakhll_market/management/content/show_shop_info.html', context)
-
+            except:
+                # return a message that this shop does not exist
+                message = 'خطایی رخ داده است. فروشگاه مورد نظر پیدا نشد.'
+                # redirect to show_all_content with message
+                return redirect('{}?{}'.format(reverse("nakhll_market:Show_All_Content"), 
+                                'message={}'.format(message)))
     else:
 
         return redirect("nakhll_market:AccountLogin")
-
 
 # Change Product Seen Status
 def Change_Product_Seen_Status(request, id):

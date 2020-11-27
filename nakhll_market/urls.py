@@ -128,7 +128,7 @@ urlpatterns = [
     # Change Shop Status Path
     path('management/content/change-shop-status/<str:attribute>/<uuid:id>/', management_content_views.Change_Shop_Status, name='Change_Shop_Status'),
     # Show Shop Info Path
-    path('management/content/show-shop-info/<slug:Shop_Slug>/', management_content_views.Show_Shop_Info, name='Show_Shop_Info'),
+    path('management/content/show-shop-info/<uuid:id>/', management_content_views.Show_Shop_Info, name='Show_Shop_Info'),
     # Change Product Seen Status Path
     path('management/content/change-product-seen-status/<uuid:id>/', management_content_views.Change_Product_Seen_Status, name='Change_Product_Seen_Status'),
     # Change Product Publish Status Path
