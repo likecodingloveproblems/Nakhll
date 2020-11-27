@@ -855,8 +855,10 @@ def Show_Product_Info(request, Product_Slug):
         # Get All Product Banner
         this_banners = ProductBanner.objects.filter(FK_Product = this_product)
         # Get Sales Product Count
-        AllSales = []
-        AllSales_Send = []
+        context['ThisProduct_Sales_Count'] = \
+            FactorPost.objects.filter(FK_Product=this_product).exclude(ProductStatus='0').count()
+        context['ThisProduct_Sales_ISSend_Count'] = \
+            FactorPost.objects.filter(FK_Product=this_product, ProductStatus='3').count()
 
         for item in FactorPost.objects.filter(FK_Product = this_product):
             if item.ProductStatus != '0':
@@ -884,12 +886,11 @@ def Show_Product_Info(request, Product_Slug):
             'ThisProduct_Banners_Count':this_banners.count(),
             'ThisProduct_Sales_Count':len(AllSales),
             'ThisProduct_Sales_ISSend_Count':len(AllSales_Send),
-            'ProductAttribute':this_attribute,
-            'ProductAttributePrice':this_attribute_price,
-            'ProductBanner':this_banners,
-        }
-
-        return render(request, 'nakhll_market/management/content/show_product_info.html', context)
+        context['Shop'] = this_product.FK_Shop.ID
+        context['Product'] = this_product
+        context['ProductAttribute'] = this_attribute
+        context['ProductAttributePrice'] = this_attribute_price
+        context['ProductBanner'] = this_banners
 
     else:
 

@@ -5,7 +5,7 @@
 <div class="dashboard">
     <a class="btn btn-primary btn-all btn-left" href="{% url "nakhll_market:Edit_Full_Shop" ThisShop.ID None %}">ویرایش حجره</a>
     <a class="btn btn-primary btn-all btn-left" href="{% url "nakhll_market:Add_New_Shop_Product" ThisShop.ID None %}" style="margin: 0 10px 0 10px;">ایجاد محصول جدید</a>
-    <a class="btn btn-primary btn-all btn-left" href="{% url "nakhll_market:Add_New_Shop_Banner" ThisShop.ID None %}">ایجاد بنر جدید</a>
+    <a class="btn btn-primary btn-all btn-left" href="{% url "nakhll_market:Add_New_Shop_Banner" ThisShop.ID %}">ایجاد بنر جدید</a>
     <h4>آمار کلی حجره {{ThisShop.Title}}</h4> 
     <br>
     <table class="table">
@@ -227,14 +227,14 @@
                     <td>{{item.DateCreate|jformat:'%Y/%m/%d'}}</td>
                     <td>{{item.Point}}</td>
                     {% if item.Available %}
-                        <td title="برای عدم نمایش این محصول کلیک کنید."><a href="{% url "nakhll_market:Change_Shop_Status" attribute='Available' id=item.ID %}"><p style="color: green">در حال نمایش</p></a></td>
+                        <td title="برای عدم نمایش این محصول کلیک کنید."><a href="{% url "nakhll_market:Change_Product_Seen_Status" id=item.ID %}"><p style="color: green">در حال نمایش</p></a></td>
                     {% else %}
-                        <td title="برای نمایش این محصول کلیک کنید."><a href="{% url "nakhll_market:Change_Shop_Status" attribute='Available' id=item.ID %}"><p style="color: red">عدم نمایش</p></a></td>
+                        <td title="برای نمایش این محصول کلیک کنید."><a href="{% url "nakhll_market:Change_Product_Seen_Status" id=item.ID %}"><p style="color: red">عدم نمایش</p></a></td>
                     {% endif %}
                     {% if item.Publish %}
-                        <td title="برای عدم انتشار این محصول کلیک کنید."><a href="{% url "nakhll_market:Change_Shop_Status" attribute='Publish' id=item.ID %}"><p style="color: green">منتشر شده</p></a></td>
+                        <td title="برای عدم انتشار این محصول کلیک کنید."><a href="{% url "nakhll_market:Change_Product_Publish_Status" id=item.ID %}"><p style="color: green">منتشر شده</p></a></td>
                     {% else %}
-                        <td title="برای انتشار این محصول کلیک کنید."><a href="{% url "nakhll_market:Change_Shop_Status" attribute='Publish' id=item.ID %}"><p style="color: red">منتشر نشده</p></a></td>
+                        <td title="برای انتشار این محصول کلیک کنید."><a href="{% url "nakhll_market:Change_Product_Publish_Status" id=item.ID %}"><p style="color: red">منتشر نشده</p></a></td>
                     {% endif %}
                     <td title="برای مشاهده اطلاعات محصول کلیک کنید." class="pointer"><a href="{% url "nakhll_market:Show_Product_Info" item.Slug %}"><i class="fad fa-eye"></i></a></td>
                 </tr>
