@@ -761,7 +761,7 @@ def Change_Product_Seen_Status(request, id):
             this_product.Available = True
             this_product.save()
 
-        return redirect("nakhll_market:Show_Shop_Info", Shop_Slug = this_product.FK_Shop.Slug)
+        return redirect("nakhll_market:Show_Shop_Info", id = this_product.FK_Shop.ID)
 
     else:
 
@@ -783,7 +783,7 @@ def Change_Product_Publish_Status(request, id):
             this_product.Publish = True
             this_product.save()
 
-        return redirect("nakhll_market:Show_Shop_Info", Shop_Slug = this_product.FK_Shop.Slug)
+        return redirect("nakhll_market:Show_Shop_Info", id = this_product.FK_Shop.ID)
 
     else:
 
@@ -827,7 +827,7 @@ def Change_Shop_Banner_Publish_Status(request, id):
             this_banner.Publish = True
             this_banner.save()
 
-        return redirect("nakhll_market:Show_Shop_Info", Shop_Slug = this_banner.FK_Shop.Slug)
+        return redirect("nakhll_market:Show_Shop_Info", id = this_banner.FK_Shop.ID)
 
     else:
 
