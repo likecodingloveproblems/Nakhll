@@ -137,8 +137,8 @@ def Add_New_User(request):
         context = baseData(request, 'allUser')
         fields = ['User_FirstName', 'User_LastName', 'User_NationalCode',
             'User_MobileNumber', 'User_Amount', 'status']
+        context = getPostData(request, context, fields)
         if request.method == 'POST':
-            context = getPostData(request, context, fields)
             if context['status'] != '1':
                 context['status'] = context['status'].replace('', '0')
             context['status'] = int(context['status'])
@@ -147,7 +147,7 @@ def Add_New_User(request):
 
                 if (len(context['User_NationalCode']) == 10) and (len(context['User_MobileNumber']) == 11):
 
-                    if not Profile.objects.filter(MobileNumber = context['User_MobileNumber'], NationalCode = context['User_NationalCode']).exists():
+                    if not Profile.objects.filter( Q(MobileNumber = context['User_MobileNumber']) and Q(NationalCode = context['User_NationalCode'])).exists():
 
                         # Build User
                         new_user = User(username = context['User_MobileNumber'], first_name = context['User_FirstName'], last_name = context['User_LastName'] )
@@ -203,7 +203,6 @@ def Add_New_User(request):
                 context['AlartMessage'] = 'نام، نام خانوادگی، کد ملی و شماره موبایل نمی تواند خالی باشد!'
 
         elif request.method == 'GET':
-            context = getPostData(request, context, fields)
             context['status'] = 0
 
         else:
