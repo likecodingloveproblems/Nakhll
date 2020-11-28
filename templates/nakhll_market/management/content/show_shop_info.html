@@ -4,7 +4,7 @@
 {% block dashboard %}
 <div class="dashboard">
     <a class="btn btn-primary btn-all btn-left" href="{% url "nakhll_market:Edit_Full_Shop" ThisShop.ID None %}">ویرایش حجره</a>
-    <a class="btn btn-primary btn-all btn-left" href="{% url "nakhll_market:Add_New_Shop_Product" ThisShop.ID None %}" style="margin: 0 10px 0 10px;">ایجاد محصول جدید</a>
+    <a class="btn btn-primary btn-all btn-left" href="{% url "nakhll_market:Add_New_Shop_Product" ThisShop.ID %}" style="margin: 0 10px 0 10px;">ایجاد محصول جدید</a>
     <a class="btn btn-primary btn-all btn-left" href="{% url "nakhll_market:Add_New_Shop_Banner" ThisShop.ID %}">ایجاد بنر جدید</a>
     <h4>آمار کلی حجره {{ThisShop.Title}}</h4> 
     <br>

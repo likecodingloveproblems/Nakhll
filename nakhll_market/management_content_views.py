@@ -1306,6 +1306,9 @@ def Edit_Full_Shop(request, id, msg = None):
 
 # Add New Shop Banner
 def Add_New_Shop_Banner(request, id, msg = None):
+    '''
+    TODO send back data to template if request failed.
+    '''
 
     if request.user.is_authenticated :
 
@@ -1369,135 +1372,60 @@ def Add_New_Shop_Banner(request, id, msg = None):
 
 
 # Add New Shop`s Product
-def Add_New_Shop_Product(request, id, msg = None):
+def Add_New_Shop_Product(request, id):
 
     if request.user.is_authenticated :
 
+        fields = [
+            'prod_title', 'slugProd', 'ProdDes', 'ProdSub', 'ProdBio', 'ProdStory', 'prod_Price',
+            'Prodoldprice', 'ProdRange', 'ProdPostType', 'product_netweight', 'product_packingweight',
+            'product_lengthwithpackaging', 'product_widthwithpackaging', 'product_heightwithpackaging',
+            'Banner_Seen', 'Banner_Status'
+        ]
+        context = baseData(request, 'allShop')
+        context = getPostData(request, context, fields)
+        context['ThisShop'] = Shop.objects.get(pk=id)
+        Image = request.FILES.get("Product_Image")
+        category_list = request.POST.getlist("ProdCat")
+        Product_PostRange = request.POST.getlist("PostRange")
+        Product_ExePostRange = request.POST.getlist("ExePostRange")
+        # Get All Category
+        context['Categort'] = Category.objects.filter(Publish = True)
+        # Get All Submarket
+        context['SubMarket'] = SubMarket.objects.filter(Publish = True)
+        # Get All PostRange
+        context['PostRange'] = PostRange.objects.all()
+        
         if request.method == 'POST':
 
-            try:
-                Image = request.FILES["Product_Image"]
-            except:
-                Image = ''
+            if (context['prod_title'] != '') and \
+                (len(category_list) != 0) and \
+                (context['slugProd'] != '') and \
+                (context['ProdSub'] != '') and \
+                (Image != '') and \
+                (context['prod_Price'] != '') and \
+                (context['ProdPostType'] != ''):
 
-            try:
-                Title = request.POST["prod_title"]
-            except:
-                Title = ''
-
-            try:
-                Slug = request.POST["slugProd"]
-            except:
-                Slug = ''
-
-            try:
-                Des = request.POST["ProdDes"]
-            except:
-                Des = ''
-    
-            category_list = request.POST.getlist("ProdCat")
-
-            try:
-                Submarket = request.POST["ProdSub"]
-            except:
-                Submarket = ''
-            
-            try:
-                Bio = request.POST["ProdBio"]
-            except:
-                Bio = ''
-
-            try:
-                Story = request.POST["ProdStory"]
-            except:
-                Story = ''
-
-            try:
-                Price = request.POST["prod_Price"]
-            except:
-                Price = ''
-
-            try:
-                OldPrice = request.POST["Prodoldprice"]
-            except:
-                OldPrice = ''
-    
-            try:
-                Range = request.POST["ProdRange"]
-            except:
-                Range = ''
-
-            try:
-                PostType = request.POST["ProdPostType"]
-            except:
-                PostType = ''
-            
-            Product_PostRange = request.POST.getlist("PostRange")
-
-            Product_ExePostRange = request.POST.getlist("ExePostRange")
-
-            try:
-                Prod_Net_Weight = request.POST["product_netweight"]
-            except:
-                Prod_Net_Weight = ''
-
-            try:
-                Prod_Packing_Weight = request.POST["product_packingweight"]
-            except:
-                Prod_Packing_Weight = ''
-
-            try:
-                Prod_Length_With_Packaging = request.POST["product_lengthwithpackaging"]
-            except:
-                Prod_Length_With_Packaging = ''
-
-            try:
-                Prod_Width_With_Packaging = request.POST["product_widthwithpackaging"]
-            except:
-                Prod_Width_With_Packaging = ''
-
-            try:
-                Prod_Height_With_Packaging = request.POST["product_heightwithpackaging"]
-            except:
-                Prod_Height_With_Packaging = ''
-
-            try:
-                Banner_Seen = request.POST["Banner_Seen"]
-            except:
-                Banner_Seen = ''
-
-            try:
-                Banner_Status = request.POST["Banner_Status"]
-            except:
-                Banner_Status = ''
-
-            if (Title != '') and (len(category_list) != 0) and (Slug != '') and (Submarket != '') and (Image != '') and (Price != '') and (PostType != ''):
-
-                if (OldPrice == '') or ((OldPrice != Price) and (int(OldPrice) > int(Price))):
-
-                    this_shop = Shop.objects.get(ID = id)
+                if (context['Prodoldprice'] == '') or \
+                    ((context['Prodoldprice'] != context['prod_Price']) and \
+                    (int(context['Prodoldprice']) > int(context['prod_Price']))):
                     
-                    if Product.objects.filter(Slug = Slug).exists():
+                    if Product.objects.filter(Slug = context['slugProd']).exists():
 
-                        return redirect('nakhll_market:Add_New_Shop_Product',
-                        msg =  'محصولی بااین شناسه ثبت شده است.')
+                        context['ShowAlart'] = True
+                        context['AlartMessage'] = 'محصولی بااین شناسه ثبت شده است.'
+                        return render(request, 'nakhll_market/management/content/add_new_shop_full_product.html', context)
 
                     else:
-
-                        PT = None
-                        R = None
-
-                        if PostType != '':
-                            if PostType == 'آماده در انبار':
-                                PT = '1'
-                            elif PostType == 'تولید بعد از سفارش':
-                                PT = '2'
-                            elif PostType == 'سفارشی سازی فروش':
-                                PT = '3'
-                            elif PostType == 'موجود نیست':
-                                PT = '4'
-
-                        product = Product.objects.create(Title = Title, Slug = Slug, FK_SubMarket = SubMarket.objects.get(ID = Submarket), Image = Image, FK_Shop = this_shop, Price = Price, Status = PT, Available = bool(Banner_Seen), Publish = bool(Banner_Status))
+                        product = Product.objects.create(Title = context['prod_title'], 
+                                                        Slug = context['slugProd'], 
+                                                        FK_SubMarket = SubMarket.objects.get(ID = context['ProdSub']), 
+                                                        Image = Image, 
+                                                        FK_Shop = context['ThisShop'], 
+                                                        Price = context['prod_Price'], 
+                                                        Status = context['ProdPostType'], 
+                                                        Available = bool(context['Banner_Seen']), 
+                                                        Publish = bool(context['Banner_Status']))
 
                         for item in category_list:
                             product.FK_Category.add(Category.objects.get(id = item))
@@ -1510,39 +1438,29 @@ def Add_New_Shop_Product(request, id, msg = None):
                             for item in Product_ExePostRange:
                                 product.FK_ExceptionPostRange.add(PostRange.objects.get(id = item))
 
-                        if Des != '':
-                            product.Description = Des
+                        if context['ProdDes'] != '':
+                            product.Description = context['ProdDes']
 
-                        if Bio != '':
-                            product.Bio = Bio
+                        if context['ProdBio'] != '':
+                            product.Bio = context['ProdBio']
 
-                        if Story != '':
-                            product.Story = Story
+                        if context['ProdStory'] != '':
+                            product.Story = context['ProdStory']
 
-                        if OldPrice != '':
-                            product.OldPrice = OldPrice
+                        if context['Prodoldprice'] != '':
+                            product.OldPrice = context['Prodoldprice']
                         else:
                             product.OldPrice = '0'
 
-                        if Range != '':
-                            if Range == 'سراسر کشور':
-                                R = '1'
-                            elif Range == 'استانی':
-                                R = '2'
-                            elif Range == 'شهرستانی':
-                                R = '3'
-                            elif Range == 'شهری':
-                                R = '4'
-                            
-                            product.PostRangeType = R
+                        product.PostRangeType = context['ProdRange']
 
                         # Product Weight Info
-                        product.Net_Weight = Prod_Net_Weight
-                        product.Weight_With_Packing = Prod_Packing_Weight
+                        product.Net_Weight = context['product_netweight']
+                        product.Weight_With_Packing = context['product_packingweight']
                         # Product Dimensions Info
-                        product.Length_With_Packaging = Prod_Length_With_Packaging
-                        product.Width_With_Packaging = Prod_Width_With_Packaging
-                        product.Height_With_Packaging = Prod_Height_With_Packaging
+                        product.Length_With_Packaging = context['product_lengthwithpackaging']
+                        product.Width_With_Packaging = context['product_widthwithpackaging']
+                        product.Height_With_Packaging = context['product_heightwithpackaging']
 
                         product.save()
                                                     
@@ -1553,64 +1471,25 @@ def Add_New_Shop_Product(request, id, msg = None):
 
                 else:
                     
-                    if Price == OldPrice:
+                    if context['prod_Price'] == context['Prodoldprice']:
 
-                        return redirect('nakhll_market:Add_New_Shop_Product',
-                        msg =  'قیمت فروش محصول و قیمت واقعی نمی تواند با هم برابر باشد.')
+                        context['ShowAlart'] = True
+                        context['AlartMessage'] = 'قیمت فروش محصول و قیمت واقعی نمی تواند با هم برابر باشد.'
+                        return render(request, 'nakhll_market/management/content/add_new_shop_full_product.html', context)
 
-                    elif int(Price) > int(OldPrice):
+                    elif int(context['prod_Price']) > int(context['Prodoldprice']):
 
-                        return redirect('nakhll_market:Add_New_Shop_Product',
-                        msg =  'قیمت واقعی نمیتواند از قیمت فروش محصول کمتر باشد.')
+                        context['ShowAlart'] = True
+                        context['AlartMessage'] = 'قیمت واقعی نمیتواند از قیمت فروش محصول کمتر باشد.'
+                        return render(request, 'nakhll_market/management/content/add_new_shop_full_product.html', context)
 
             else:
 
-                return redirect('nakhll_market:Add_New_Shop_Product',
-                msg =  'عنوان - دسته بندی - حجره - شناسه - عکس - قیمت و نوع ارسال محصول اجباریست.')
+                context['ShowAlart'] = True
+                context['AlartMessage'] = 'عنوان - دسته بندی - حجره - شناسه - عکس - قیمت و نوع ارسال محصول اجباریست.'
+                return render(request, 'nakhll_market/management/content/add_new_shop_full_product.html', context)
 
         else:
-            
-            # Get User Info
-            user = User.objects.all()
-            # Get User Profile
-            profile = Profile.objects.all()
-            # Get Wallet Inverntory
-            wallets = Wallet.objects.all()
-            # Get Menu Item
-            options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-            # Get Nav Bar Menu Item
-            navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-            # -------------------------------------------------------------------
-            # This Shop
-            this_shop = Shop.objects.get(ID = id)
-            # Get All Submarket
-            submarkets = SubMarket.objects.filter(Publish = True)
-            # Get All Category
-            categories = Category.objects.filter(Publish = True)
-            # Get All PostRange
-            postrange = PostRange.objects.all()
-
-            if msg != 'None':
-                message = msg
-                show = True
-            else:
-                message = ''
-                show = False
-
-            context = {
-                'Users':user,
-                'Profile':profile,
-                'Wallet': wallets,
-                'Options': options,
-                'MenuList':navbar,
-                'Shop':this_shop,
-                'Categort':categories,
-                'SubMarket':submarkets,
-                'PostRange':postrange,
-                'ShowAlart':show,
-                'AlartMessage':message,
-            }
-
             return render(request, 'nakhll_market/management/content/add_new_shop_full_product.html', context)
 
     else:
