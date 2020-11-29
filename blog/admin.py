@@ -1,8 +1,5 @@
 from django.contrib import admin
-
-from django.contrib import admin
 from .models import PostBlog, VendorStory, CategoryBlog, CommentPost
-from django.contrib import admin
 # Register your models here.
 
 #post admin panel

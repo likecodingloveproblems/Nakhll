@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+from django.contrib.sites.models import Site
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -103,13 +104,17 @@ ADMIN_REORDER = (
         'Payment.Campaign',
         'Payment.Installment',
         'Payment.Invitation',
+        'Payment.PecOrder',
+        'Payment.PecTransaction',
+        'Payment.PecConfirmation',        
+        'Payment.PecReverse',        
     )},
     
     {'app': 'blog', 'label': 'وبلاگ','models':(
         'blog.CategoryBlog',
         'blog.PostBlog',
         'blog.VendorStory',
-        'blog.CommentPost',
+        'blog.CommentPost',  
     )},
 
     {'app': 'Ticketing', 'label': 'بخش پشتیبانی و گزارشات','models':(
@@ -157,16 +162,6 @@ IMAGEKIT_CACHEFILE_DIR = 'media/CACHE/images'
 
 
 PERSISTENT_STORAGE = "/mnt/shared-volume"
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'nakhlldb',
-#         'USER': 'root',
-#         'PASSWORD': 'mmad9132412982',
-#         'HOST' : 'nakhlldb',
-#         'PORT' : '3306',
-#     }
-# }
 
 DATABASES = {
     "default": {
@@ -178,42 +173,6 @@ DATABASES = {
         "PORT": os.environ.get("SQL_PORT", "3306"),
     }
 }
-
-
-#  Liara DB
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'awesome_yalow',
-#         'USER': 'root',
-#         'PASSWORD': 'sS2bfePdX99iWttgn2PiTCzP',
-#         'HOST' : 's11.liara.ir',
-#         'PORT' : '34522',
-#     }
-# }
-
-# PythonAnyWhere DB
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'markrahimi$nakhll_db',
-#         'USER': 'markrahimi',
-#         'PASSWORD': 'moeintaheri@7677',
-#         'HOST': 'markrahimi.mysql.pythonanywhere-services.com',
-
-#     }
-# }
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'nakhll_analyze',
-#         'USER': 'root',
-#         'PASSWORD': '',
-#         'HOST' : '127.0.0.1',
-#         'PORT' : '3306',
-#     }
-# }
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -283,3 +242,5 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
     ),
 }
+
+SITE_ID = Site.objects.get(domain='https://nakhll.com')

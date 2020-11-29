@@ -974,6 +974,11 @@ class PecOrder(models.Model):
     Status = models.IntegerField(verbose_name='کد وضعیت', null=True, blank=True)
     Token = models.BigIntegerField(verbose_name='توکن', null=True, blank=True)
 
+    class Meta:
+        ordering = ('id',)
+        verbose_name = "درخواست تراکنش پارسیان"
+        verbose_name_plural = "درخواست تراکنش های پارسیان"
+
 class PecTransaction(models.Model):
     Token = models.BigIntegerField(verbose_name='توکن')
     OrderId = models.BigIntegerField(verbose_name='شماره تراکنش')
@@ -985,6 +990,11 @@ class PecTransaction(models.Model):
     DiscountedAmount = models.BigIntegerField(verbose_name='هزینه با احتساب تخفیف')
     STraceNo = models.CharField(max_length=127)
 
+    class Meta:
+        ordering = ('id',)
+        verbose_name = "تراکنش پارسیان"
+        verbose_name_plural = "تراکنش های پارسیان"
+
 class PecConfirmation(models.Model):
     Status = models.IntegerField(verbose_name='کد وضعیت')
     CardNumberMasked = models.CharField(verbose_name='شماره کارت خریدار', max_length=127)
@@ -992,8 +1002,18 @@ class PecConfirmation(models.Model):
     RRN = models.BigIntegerField(verbose_name='شماره یکتایی')
     OrderId = models.BigIntegerField(verbose_name='شماره تراکنش')
 
+    class Meta:
+        ordering = ('id',)
+        verbose_name = "تراکنش تایید شده پارسیان"
+        verbose_name_plural = "تراکنش های تایید شده پارسیان"
+
 class PecReverse(models.Model):
     Status = models.IntegerField(verbose_name='کد وضعیت')
     Token = models.BigIntegerField(verbose_name='توکن')
     Message = models.CharField(verbose_name='پیام پارسیان', max_length=127, null=True, blank=True)
     OrderId = models.BigIntegerField(verbose_name='شماره تراکنش')
+
+    class Meta:
+        ordering = ('id',)
+        verbose_name = "تراکنش برگشتی پارسیان"
+        verbose_name_plural = "تراکنش های برگشتی پارسیان"

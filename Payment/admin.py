@@ -1,5 +1,19 @@
 from django.contrib import admin
-from .models import  Wallet, Transaction, Installment, Invitation, Campaign, Coupon, FactorPost, Factor, PostBarCode, ManegerFactor
+from .models import  Wallet, \
+                    Transaction, \
+                    Installment, \
+                    Invitation, \
+                    Campaign, \
+                    Coupon, \
+                    FactorPost, \
+                    Factor, \
+                    PostBarCode, \
+                    ManegerFactor, \
+                    PecOrder, \
+                    PecTransaction, \
+                    PecConfirmation, \
+                    PecReverse
+
 
 #Wallet admin panel
 @admin.register(Wallet)
@@ -66,3 +80,35 @@ class CouponAdmin(admin.ModelAdmin):
     list_filter=('DiscountType','DiscountType','StartDate','Publish')
     ordering=['id','Title','StartDate','EndDate']
     readonly_fields = ('Log',)
+#-------------------------------------------------
+#PecOrder admin panel
+@admin.register(PecOrder)
+class PecOrderAdmin(admin.ModelAdmin):
+    list_display=('AdditionalData','Originator','Amount','FactorNumber','Message','Token')
+    list_filter=('AdditionalData','Originator','Amount','FactorNumber','Message','Token')
+    readonly_fields=('AdditionalData','Originator','Amount','FactorNumber','Message','Token')
+    ordering=('AdditionalData','Originator','Amount','FactorNumber','Message','Token')
+#-------------------------------------------------
+#PecTransaction admin panel
+@admin.register(PecTransaction)
+class PecTransactionAdmin(admin.ModelAdmin):
+    list_display=('Token','OrderId','TerminalNo','RRN','status','HashCardNumber','Amount','DiscountedAmount','STraceNo')
+    list_filter=('Token','OrderId','TerminalNo','RRN','status','HashCardNumber','Amount','DiscountedAmount','STraceNo')
+    readonly_fields=('Token','OrderId','TerminalNo','RRN','status','HashCardNumber','Amount','DiscountedAmount','STraceNo')
+    ordering=('Token','OrderId','TerminalNo','RRN','status','HashCardNumber','Amount','DiscountedAmount','STraceNo')
+#-------------------------------------------------
+#PecConfirmation admin panel
+@admin.register(PecConfirmation)
+class PecConfirmationAdmin(admin.ModelAdmin):
+    list_display=('Status', 'CardNumberMasked', 'Token', 'RRN', 'OrderId')
+    list_filter=('Status', 'CardNumberMasked', 'Token', 'RRN', 'OrderId')
+    readonly_fields=('Status', 'CardNumberMasked', 'Token', 'RRN', 'OrderId')
+    ordering=('Status', 'CardNumberMasked', 'Token', 'RRN', 'OrderId')
+#-------------------------------------------------
+#PecReverse admin panel
+@admin.register(PecReverse)
+class PecReverseAdmin(admin.ModelAdmin):
+    list_display=('Status', 'Token', 'Message', 'OrderId')
+    list_filter=('Status', 'Token', 'Message', 'OrderId')
+    readonly_fields=('Status', 'Token', 'Message', 'OrderId')
+    ordering=('Status', 'Token', 'Message', 'OrderId')
