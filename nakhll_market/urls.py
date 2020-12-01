@@ -98,7 +98,7 @@ urlpatterns = [
     # Add New Shop`s Product Path
     path('management/content/add-new-shop-product/<uuid:id>/', management_content_views.Add_New_Shop_Product, name='Add_New_Shop_Product'),
     # Add Edit Shop`s Product Path
-    path('management/content/edit-full-product/<uuid:id>/<str:msg>', management_content_views.Edit_Full_Product, name='Edit_Full_Product'),
+    path('management/content/edit-full-product/<uuid:id>/', management_content_views.Edit_Full_Product, name='Edit_Full_Product'),
     # Add New Product Banner Path
     path('management/content/add-new-product-banner/<uuid:id>/<str:msg>', management_content_views.Add_New_Product_Banner, name='Add_New_Product_Banner'),
     # Add New Product Attribute Path

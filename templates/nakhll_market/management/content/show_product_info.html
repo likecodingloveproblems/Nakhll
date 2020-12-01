@@ -3,7 +3,7 @@
 
 {% block dashboard %}
 <div class="dashboard">
-    <a class="btn btn-primary btn-all btn-left" href="{% url "nakhll_market:Edit_Full_Product" Product.ID None %}">ویرایش</a>
+    <a class="btn btn-primary btn-all btn-left" href="{% url "nakhll_market:Edit_Full_Product" Product.ID %}">ویرایش</a>
     <a class="btn btn-primary btn-all btn-left" href="{% url "nakhll_market:Add_New_Product_Banner" Product.ID None %}" style="margin: 0 10px 0 10px;">ایجاد بنر محصول</a>
     <a class="btn btn-primary btn-all btn-left" href="{% url "nakhll_market:Add_New_Product_Attribute" Product.ID None %}" style="margin: 0 10px 0 0;">ایجاد ویژگی محصول</a>
     <a class="btn btn-primary btn-all btn-left" href="{% url "nakhll_market:Add_New_Product_AttrPrice" Product.ID None %}" style="margin: 0 10px 0 0;">ایجاد ارزش ویژگی محصول</a>

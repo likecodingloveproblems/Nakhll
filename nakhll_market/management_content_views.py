@@ -8,7 +8,28 @@ import datetime
 import threading
 from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib.auth.models import User
-from .models import Alert, Product, Profile, Shop, Category, Option_Meta, Market, SubMarket, Message, User_Message_Status, BankAccount, ShopBanner, ProductBanner, Attribute, AttrPrice, AttrProduct, Field, PostRange, AttrProduct, AttrPrice
+from .models import (
+                    Alert, 
+                    Product, 
+                    Profile, 
+                    Shop, 
+                    Category, 
+                    Option_Meta, 
+                    Market, 
+                    SubMarket, 
+                    Message, 
+                    User_Message_Status, 
+                    BankAccount, 
+                    ShopBanner, 
+                    ProductBanner, 
+                    Attribute, 
+                    AttrPrice, 
+                    AttrProduct, 
+                    Field, 
+                    PostRange, 
+                    AttrProduct, 
+                    AttrPrice
+                    )
 from Payment.models import Coupon, Wallet, Factor, FactorPost
 from django.urls import reverse
 '''
@@ -1407,161 +1428,92 @@ def Add_New_Shop_Product(request, id):
 
 
 # Edit Full Product
-def Edit_Full_Product(request, id, msg = None):
+def Edit_Full_Product(request, id):
 
     if request.user.is_authenticated :
 
+        fields = [
+            'prod_title', 'ProdDes', 'ProdSub', 'ProdBio', 'ProdStory', 
+            'prod_Price','Prodoldprice', 'ProdRange', 'ProdPostType', 
+            'product_netweight', 'product_packingweight', 'product_lengthwithpackaging',
+            'product_widthwithpackaging', 'product_heightwithpackaging'
+            ]
+        context = baseData(request, 'allShop')
+        context = getPostData(request, context, fields)
+        # This Product
+        context['Product'] = Product.objects.get(ID = id)
+        Image = request.FILES.get("Product_Image")
+        category_list = request.POST.getlist("ProdCat")
+        Product_PostRange = request.POST.getlist("PostRange")
+        Product_ExePostRange = request.POST.getlist("ExePostRange")
+
         if request.method == 'POST':
 
-            try:
-                Image = request.FILES["Product_Image"]
-            except:
-                Image = ''
+            if (context['prod_title'] != '') and \
+                (len(category_list) != 0) and \
+                (context['ProdSub'] != '') and \
+                (context['prod_Price'] != '') and \
+                (context['ProdPostType'] != ''):
 
-            try:
-                Title = request.POST["prod_title"]
-            except:
-                Title = ''
+                if (context['Prodoldprice'] == '') or ((context['Prodoldprice'] != context['prod_Price']) and \
+                    (int(context['Prodoldprice']) > int(context['prod_Price']))):
 
-            try:
-                Des = request.POST["ProdDes"]
-            except:
-                Des = ''
-    
-            category_list = request.POST.getlist("ProdCat")
+                    alert = Alert.objects.create(
+                                                Part = '7', 
+                                                FK_User = request.user, 
+                                                Slug = context['Product'].ID, 
+                                                Seen = True, 
+                                                Status = True, 
+                                                FK_Staff = request.user
+                                                )
 
-            try:
-                Submarket = request.POST["ProdSub"]
-            except:
-                Submarket = ''
-            
-            try:
-                Bio = request.POST["ProdBio"]
-            except:
-                Bio = ''
-
-            try:
-                Story = request.POST["ProdStory"]
-            except:
-                Story = ''
-
-            try:
-                Price = request.POST["prod_Price"]
-            except:
-                Price = ''
-
-            try:
-                OldPrice = request.POST["Prodoldprice"]
-            except:
-                OldPrice = ''
-    
-            try:
-                Range = request.POST["ProdRange"]
-            except:
-                Range = ''
-
-            try:
-                PostType = request.POST["ProdPostType"]
-            except:
-                PostType = ''
-            
-            Product_PostRange = request.POST.getlist("PostRange")
-
-            Product_ExePostRange = request.POST.getlist("ExePostRange")
-
-            try:
-                Prod_Net_Weight = request.POST["product_netweight"]
-            except:
-                Prod_Net_Weight = ''
-
-            try:
-                Prod_Packing_Weight = request.POST["product_packingweight"]
-            except:
-                Prod_Packing_Weight = ''
-
-            try:
-                Prod_Length_With_Packaging = request.POST["product_lengthwithpackaging"]
-            except:
-                Prod_Length_With_Packaging = ''
-
-            try:
-                Prod_Width_With_Packaging = request.POST["product_widthwithpackaging"]
-            except:
-                Prod_Width_With_Packaging = ''
-
-            try:
-                Prod_Height_With_Packaging = request.POST["product_heightwithpackaging"]
-            except:
-                Prod_Height_With_Packaging = ''
-
-            this_product = Product.objects.get(ID = id)
-
-            if (Title != '') and (len(category_list) != 0) and (Submarket != '') and (Price != '') and (PostType != ''):
-
-                if (OldPrice == '') or ((OldPrice != Price) and (int(OldPrice) > int(Price))):
-
-                    alert = Alert.objects.create(Part = '7', FK_User = request.user, Slug = this_product.ID, Seen = True, Status = True, FK_Staff = request.user)
-                    
-                    PT = None
-                    R = None
-
-                    if Title != this_product.Title:
-                        this_product.Title = Title
-                        this_product.save()
-                        TitleField = Field.objects.create(Title = 'Title', Value = Title)
+                    if context['prod_title'] != context['Product'].Title:
+                        context['Product'].Title = context['prod_title']
+                        context['Product'].save()
+                        TitleField = Field.objects.create(Title = 'Title', Value = context['prod_title'])
                         alert.FK_Field.add(TitleField)
 
-                    if SubMarket.objects.get(ID = Submarket) != this_product.FK_SubMarket:
-                        this_product.FK_SubMarket = SubMarket.objects.get(ID = Submarket)
-                        this_product.save()
-                        SubMarketField = Field.objects.create(Title = 'SubMarket', Value = SubMarket.objects.get(ID = Submarket).Title)
+                    if SubMarket.objects.get(ID = context['ProdSub']) != context['Product'].FK_SubMarket:
+                        context['Product'].FK_SubMarket = SubMarket.objects.get(ID = context['ProdSub'])
+                        context['Product'].save()
+                        SubMarketField = Field.objects.create(Title = 'SubMarket', Value = SubMarket.objects.get(ID = context['ProdSub']).Title)
                         alert.FK_Field.add(SubMarketField)
                         
                     if Image != '':
-                        this_product.Image = Image
-                        this_product.save()
-                        img_str = 'NewImage' + '#' + str(this_product.Image)
+                        context['Product'].Image = Image
+                        context['Product'].save()
+                        img_str = 'NewImage' + '#' + str(context['Product'].Image)
                         ImageField = Field.objects.create(Title = 'Image', Value = img_str)
                         alert.FK_Field.add(ImageField)
 
-                    if Price != str(this_product.Price):
-                        this_product.Price = Price
-                        this_product.save()
-                        PriceField = Field.objects.create(Title = 'Price', Value = Price)
+                    if context['prod_Price'] != str(context['Product'].Price):
+                        context['Product'].Price = context['prod_Price']
+                        context['Product'].save()
+                        PriceField = Field.objects.create(Title = 'Price', Value = context['prod_Price'])
                         alert.FK_Field.add(PriceField)
 
-                    if PostType != '':
-                        if PostType == 'آماده در انبار':
-                            PT = '1'
-                        elif PostType == 'تولید بعد از سفارش':
-                            PT = '2'
-                        elif PostType == 'سفارشی سازی فروش':
-                            PT = '3'
-                        elif PostType == 'موجود نیست':
-                            PT = '4'
-
-                        if this_product.Status != PT:
-                            this_product.Status = PT
-                            this_product.save()
-                            StatusField = Field.objects.create(Title = 'ProdPostType', Value = PT)
+                        if context['Product'].Status != context['ProdPostType']:
+                            context['Product'].Status = context['ProdPostType']
+                            context['Product'].save()
+                            StatusField = Field.objects.create(Title = 'ProdPostType', Value = context['ProdPostType'])
                             alert.FK_Field.add(StatusField)            
 
-                    if Des != this_product.Description:
-                        this_product.Description = Des
-                        this_product.save()
-                        DescriptionField = Field.objects.create(Title = 'Description', Value = Des)
+                    if context['ProdDes'] != context['Product'].Description:
+                        context['Product'].Description = context['ProdDes']
+                        context['Product'].save()
+                        DescriptionField = Field.objects.create(Title = 'Description', Value = context['ProdDes'])
                         alert.FK_Field.add(DescriptionField)
 
-                    if Bio != this_product.Bio:
-                        this_product.Bio = Bio
-                        this_product.save()
-                        BioField = Field.objects.create(Title = 'Bio', Value = Bio)
+                    if context['ProdBio'] != context['Product'].Bio:
+                        context['Product'].Bio = context['ProdBio']
+                        context['Product'].save()
+                        BioField = Field.objects.create(Title = 'Bio', Value = context['ProdBio'])
                         alert.FK_Field.add(BioField)
 
-                    if Story != this_product.Story:
-                        this_product.Story = Story
-                        this_product.save()
-                        StoryField = Field.objects.create(Title = 'Story', Value = Story)
+                    if context['ProdStory'] != context['Product'].Story:
+                        context['Product'].Story = context['ProdStory']
+                        context['Product'].save()
+                        StoryField = Field.objects.create(Title = 'Story', Value = context['ProdStory'])
                         alert.FK_Field.add(StoryField)
 
                     if len(category_list) != 0:
@@ -1572,11 +1524,11 @@ def Edit_Full_Product(request, id, msg = None):
                         CategoryField = Field.objects.create(Title = 'Category', Value = Categori)
                         alert.FK_Field.add(CategoryField)
 
-                        for item in this_product.FK_Category.all():
-                            this_product.FK_Category.remove(item)
+                        for item in context['Product'].FK_Category.all():
+                            context['Product'].FK_Category.remove(item)
 
                         for item in category_list:
-                            this_product.FK_Category.add(Category.objects.get(id = item))
+                            context['Product'].FK_Category.add(Category.objects.get(id = item))
 
                     if len(Product_PostRange) != 0:
                         Product_PR = '-'
@@ -1586,11 +1538,11 @@ def Edit_Full_Product(request, id, msg = None):
                         PostRangeField = Field.objects.create(Title = 'PostRange', Value = Product_PR)
                         alert.FK_Field.add(PostRangeField)
 
-                        for item in this_product.FK_PostRange.all():
-                            this_product.FK_PostRange.remove(item)
+                        for item in context['Product'].FK_PostRange.all():
+                            context['Product'].FK_PostRange.remove(item)
 
                         for item in Product_PostRange:
-                            this_product.FK_PostRange.add(PostRange.objects.get(id = item))
+                            context['Product'].FK_PostRange.add(PostRange.objects.get(id = item))
                         
                     if len(Product_ExePostRange) != 0:
 
@@ -1601,99 +1553,70 @@ def Edit_Full_Product(request, id, msg = None):
                         ExePostRangeField = Field.objects.create(Title = 'ExePostRange', Value = Product_EPR)
                         alert.FK_Field.add(ExePostRangeField)
 
-                        for item in this_product.FK_ExceptionPostRange.all():
-                            this_product.FK_ExceptionPostRange.remove(item)
+                        for item in context['Product'].FK_ExceptionPostRange.all():
+                            context['Product'].FK_ExceptionPostRange.remove(item)
 
                         for item in Product_ExePostRange:
-                            this_product.FK_ExceptionPostRange.add(PostRange.objects.get(id = item))
+                            context['Product'].FK_ExceptionPostRange.add(PostRange.objects.get(id = item))
 
-                    if OldPrice != '':
-                        if OldPrice != this_product.OldPrice:
-                            this_product.OldPrice = OldPrice
-                            this_product.save()
-                            OldPriceField = Field.objects.create(Title = 'OldPrice', Value = OldPrice)
+                    if context['Prodoldprice'] != '':
+                        if context['Prodoldprice'] != context['Product'].OldPrice:
+                            context['Product'].OldPrice = context['Prodoldprice']
+                            context['Product'].save()
+                            OldPriceField = Field.objects.create(Title = 'OldPrice', Value = context['Prodoldprice'])
                             alert.FK_Field.add(OldPriceField)
                     else:
-                        if OldPrice != this_product.OldPrice:
-                            this_product.OldPrice = '0'
-                            this_product.save()
+                        if context['Prodoldprice'] != context['Product'].OldPrice:
+                            context['Product'].OldPrice = '0'
+                            context['Product'].save()
 
-                    if Range != '':
-                        if Range == 'سراسر کشور':
-                            R = '1'
-                        elif Range == 'استانی':
-                            R = '2'
-                        elif Range == 'شهرستانی':
-                            R = '3'
-                        elif Range == 'شهری':
-                            R = '4'
+                    if context['ProdRange'] != '':
 
-                        if this_product.PostRangeType != R:
-                            this_product.PostRangeType = R
-                            this_product.save()
-                            ProdRangeField = Field.objects.create(Title = 'ProdRange', Value = R)
+                        if context['Product'].PostRangeType != context['ProdRange']:
+                            context['Product'].PostRangeType = context['ProdRange']
+                            context['Product'].save()
+                            ProdRangeField = Field.objects.create(Title = 'ProdRange', Value = context['ProdRange'])
                             alert.FK_Field.add(ProdRangeField)
 
 
                     # Product Weight Info
-                    if this_product.Net_Weight != Prod_Net_Weight:
-                        this_product.Net_Weight = Prod_Net_Weight
-                        this_product.save()
+                    if context['Product'].Net_Weight != context['product_netweight']:
+                        context['Product'].Net_Weight = context['product_netweight']
+                        context['Product'].save()
 
-                    if this_product.Weight_With_Packing != Prod_Packing_Weight:
-                        this_product.Weight_With_Packing = Prod_Packing_Weight
-                        this_product.save()
+                    if context['Product'].Weight_With_Packing != context['product_packingweight']:
+                        context['Product'].Weight_With_Packing = context['product_packingweight']
+                        context['Product'].save()
                     # Product Dimensions Info
-                    if this_product.Length_With_Packaging != Prod_Length_With_Packaging:
-                        this_product.Length_With_Packaging = Prod_Length_With_Packaging
-                        this_product.save()
+                    if context['Product'].Length_With_Packaging != context['product_lengthwithpackaging']:
+                        context['Product'].Length_With_Packaging = context['product_lengthwithpackaging']
+                        context['Product'].save()
 
-                    if this_product.Width_With_Packaging != Prod_Width_With_Packaging:
-                        this_product.Width_With_Packaging = Prod_Width_With_Packaging
-                        this_product.save()
+                    if context['Product'].Width_With_Packaging != context['product_widthwithpackaging']:
+                        context['Product'].Width_With_Packaging = context['product_widthwithpackaging']
+                        context['Product'].save()
 
-                    if this_product.Height_With_Packaging != Prod_Height_With_Packaging:
-                        this_product.Height_With_Packaging = Prod_Height_With_Packaging
-                        this_product.save()
+                    if context['Product'].Height_With_Packaging != context['product_heightwithpackaging']:
+                        context['Product'].Height_With_Packaging = context['product_heightwithpackaging']
+                        context['Product'].save()
                         
                     return redirect('nakhll_market:Show_Product_Info',
-                    Product_Slug = this_product.Slug)
+                    Product_Slug = context['Product'].Slug)
 
                 else:
-                    
-                    if Price == OldPrice:
+                    context['ShowAlart'] = True
+                    if context['prod_Price'] == context['Prodoldprice']:
+                        context['AlartMessage'] =  'قیمت فروش محصول و قیمت واقعی نمی تواند با هم برابر باشد.'
 
-                        return redirect('nakhll_market:Edit_Full_Product',
-                        id = this_product.ID,
-                        msg =  'قیمت فروش محصول و قیمت واقعی نمی تواند با هم برابر باشد.')
-
-                    elif int(Price) > int(OldPrice):
-
-                        return redirect('nakhll_market:Edit_Full_Product',
-                        id = this_product.ID,
-                        msg =  'قیمت واقعی نمیتواند از قیمت فروش محصول کمتر باشد.')
+                    elif int(context['prod_Price']) > int(context['Prodoldprice']):
+                        context['AlartMessage'] =  'قیمت واقعی نمیتواند از قیمت فروش محصول کمتر باشد.'
 
             else:
-
-                return redirect('nakhll_market:Edit_Full_Product',
-                id = this_product.ID,
-                msg =  'عنوان - دسته بندی - حجره - شناسه - عکس - قیمت و نوع ارسال محصول اجباریست.')
+                context['ShowAlart'] = True
+                context['AlartMessage'] =  'عنوان - دسته بندی - حجره - شناسه - عکس - قیمت و نوع ارسال محصول اجباریست.'
 
         else:
             
-            # Get User Info
-            user = User.objects.all()
-            # Get User Profile
-            profile = Profile.objects.all()
-            # Get Wallet Inverntory
-            wallets = Wallet.objects.all()
-            # Get Menu Item
-            options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-            # Get Nav Bar Menu Item
-            navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-            # -------------------------------------------------------------------
-            # This Product
-            this_product = Product.objects.get(ID = id)
             # Get All Submarket
             submarkets = SubMarket.objects.filter(Publish = True)
             # Build Class
@@ -1721,7 +1644,7 @@ def Edit_Full_Product(request, id, msg = None):
                 ItemsList.append(item)
                 
             
-            for item in this_product.FK_Category.all():
+            for item in context['Product'].FK_Category.all():
                 for i in ItemsList:
                     if i.Category == item:
                         i.Status = True
@@ -1733,7 +1656,7 @@ def Edit_Full_Product(request, id, msg = None):
                 PostRangeList.append(newitem)
                 
             
-            for item in this_product.FK_PostRange.all():
+            for item in context['Product'].FK_PostRange.all():
                 for i in PostRangeList:
                     if i.PostRange == item:
                         i.Status = True
@@ -1745,39 +1668,20 @@ def Edit_Full_Product(request, id, msg = None):
                 ExePostRangeList.append(newitem)
                 
             
-            for item in this_product.FK_ExceptionPostRange.all():
+            for item in context['Product'].FK_ExceptionPostRange.all():
                 for i in ExePostRangeList:
                     if i.ExePostRange == item:
                         i.Status = True
 
-            if msg != 'None':
-                message = msg
-                show = True
-            else:
-                message = ''
-                show = False
-
-            context = {
-                'Users':user,
-                'Profile':profile,
-                'Wallet': wallets,
-                'Options': options,
-                'MenuList':navbar,
-                'Product':this_product,
-                'Categort':ItemsList,
-                'SubMarket':submarkets,
-                'ProPostRange':PostRangeList,
-                'ProExePostRange':ExePostRangeList,
-                'ShowAlart':show,
-                'AlartMessage':message,
-            }
-
-            return render(request, 'nakhll_market/management/content/edit_full_product.html', context)
-
+            context['Categort'] = ItemsList
+            context['SubMarket'] = submarkets
+            context['ProdRange'] = PostRangeList
+            context['ProExePostRange'] = ExePostRangeList
     else:
 
         return redirect("nakhll_market:AccountLogin")
 
+    return render(request, 'nakhll_market/management/content/edit_full_product.html', context)
 
 # Add New Product Banner
 def Add_New_Product_Banner(request, id, msg = None):
