@@ -241,5 +241,3 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
     ),
 }
-
-SITE_ID = 3
