@@ -1786,9 +1786,13 @@ def Add_New_Product_Attribute(request, id):
     return render(request, 'nakhll_market/management/content/add_new_product_attribute.html', context)
 
 # Add New Product AttrPrice
-def Add_New_Product_AttrPrice(request, id, msg = None):
+def Add_New_Product_AttrPrice(request, id):
 
     if request.user.is_authenticated :
+        context = baseData(request)
+        # This Product
+        this_product = Product.objects.get(ID = id)
+        context['Product'] = this_product
 
         if request.method == 'POST':
             
@@ -1817,10 +1821,8 @@ def Add_New_Product_AttrPrice(request, id, msg = None):
             if (AttrPrice_Value != '') and (AttrPrice_Exp != '') and (AttrPrice_Unit != ''):
 
                 if AttrPrice.objects.filter(FK_Product = this_product, Value = AttrPrice_Value, ExtraPrice = AttrPrice_Exp, Unit = AttrPrice_Unit).exists():
-
-                    return redirect('nakhll_market:Add_New_Product_AttrPrice',
-                    id = this_product.ID,
-                    msg =  'این ارزش ویژگی تکراری می باشد.')
+                    context['ShowAlart'] = True
+                    context['AlartMessage'] =  'این ارزش ویژگی تکراری می باشد.'
 
                 else:
 
@@ -1832,52 +1834,14 @@ def Add_New_Product_AttrPrice(request, id, msg = None):
 
                     Alert.objects.create(Part = '17', FK_User = request.user, Slug = attrprice.id, Seen = True, Status = True, FK_Staff = request.user)
 
-                    return redirect('nakhll_market:Add_New_Product_AttrPrice',
-                    id = this_product.ID,
-                    msg = None)
-
             else:
-
-                return redirect('nakhll_market:Add_New_Product_AttrPrice',
-                id = this_product.ID,
-                msg =  'مقادیر ستاره دار نمی تواند خالی باشد.')
+                context['ShowAlart'] = True
+                context['AlartMessage'] =  'مقادیر ستاره دار نمی تواند خالی باشد.'
 
         else:
-            
-            # Get User Info
-            user = User.objects.all()
-            # Get User Profile
-            profile = Profile.objects.all()
-            # Get Wallet Inverntory
-            wallets = Wallet.objects.all()
-            # Get Menu Item
-            options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-            # Get Nav Bar Menu Item
-            navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-            # -------------------------------------------------------------------
-            # This Product
-            this_product = Product.objects.get(ID = id)
-
-            if msg != 'None':
-                message = msg
-                show = True
-            else:
-                message = ''
-                show = False
-
-            context = {
-                'Users':user,
-                'Profile':profile,
-                'Wallet': wallets,
-                'Options': options,
-                'MenuList':navbar,
-                'Product':this_product,
-                'ShowAlart':show,
-                'AlartMessage':message,
-            }
-
-            return render(request, 'nakhll_market/management/content/add_new_product_attrprice.html', context)
-
+            pass
+        
     else:
-
         return redirect("nakhll_market:AccountLogin")
+
+    return render(request, 'nakhll_market/management/content/add_new_product_attrprice.html', context)
