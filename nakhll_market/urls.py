@@ -92,7 +92,7 @@ urlpatterns = [
     # Add New Full Shop Path
     path('management/content/add-new-full-shop/<str:msg>', management_content_views.Add_New_Full_Shop, name='Add_New_Full_Shop'),
     # Edit Full Shop Path
-    path('management/content/edit-full-shop/<uuid:id>/<str:msg>', management_content_views.Edit_Full_Shop, name='Edit_Full_Shop'),
+    path('management/content/edit-full-shop/<uuid:id>/', management_content_views.Edit_Full_Shop, name='Edit_Full_Shop'),
     # Add New Shop Banner Path
     path('management/content/add-new-shop-banner/<uuid:id>/', management_content_views.Add_New_Shop_Banner, name='Add_New_Shop_Banner'),
     # Add New Shop`s Product Path

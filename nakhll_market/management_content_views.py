@@ -1016,7 +1016,7 @@ def Add_New_Full_Shop(request, msg = None):
                             Alert.objects.create(Part = '2', FK_User = request.user, Slug = shop.ID, Seen = True, Status = True, FK_Staff = request.user)
 
                             return redirect('nakhll_market:Show_Shop_Info',
-                            Shop_Slug = shop.Slug)
+                            id = shop.ID)
 
                         else:
 
@@ -1027,7 +1027,7 @@ def Add_New_Full_Shop(request, msg = None):
                             Alert.objects.create(Part = '2', FK_User = request.user, Slug = shop.ID, Seen = True, Status = True, FK_Staff = request.user)
              
                             return redirect('nakhll_market:Show_Shop_Info',
-                            Shop_Slug = shop.Slug)
+                            id = shop.ID)
                     else:
                         msg =  'راسته، استان، شهرستان و شهر نمی تواند خالی باشد.'
 
@@ -1066,99 +1066,43 @@ def Add_New_Full_Shop(request, msg = None):
 
 
 # Edit Full Shop
-def Edit_Full_Shop(request, id, msg = None):
+def Edit_Full_Shop(request, id):
 
     if request.user.is_authenticated :
+        
+        fields = ['Shop_Image', 'Shop_Title', 'Shop_Des', 'Shop_State', 'Shop_BigCity',
+            'Shop_City', 'Shop_Bio', 'SATCheck', 'SUNCheck', 'MONCheck', 'TUECheck',
+            'WEDCheck', 'THUCheck', 'FRICheck']
+        context = baseData(request, 'allShop')
+        context = getPostData(request, context, fields)
+        submarkets = request.POST.getlist("Shop_SubMarket")
+        user = request.POST.getlist("Shop_User")
+        # Get This Shop
+        context['Shop'] = get_object_or_404(Shop, ID = id)
 
         if request.method == 'POST':
 
-            try:
-                image = request.FILES["Shop_Image"]
-            except MultiValueDictKeyError:
-                image = ''
-            try:
-                title = request.POST["Shop_Title"]
-            except MultiValueDictKeyError:
-                title = ''
-            # try:
-            #     slug = request.POST["Shop_Slug"]
-            # except MultiValueDictKeyError:
-            #     slug = ''
-            try:
-                des = request.POST["Shop_Des"]
-            except MultiValueDictKeyError:
-                des = ''
-            try:
-                state = request.POST["Shop_State"]
-            except MultiValueDictKeyError:
-                state = ''
-            try:
-                bigcity = request.POST["Shop_BigCity"]
-            except MultiValueDictKeyError:
-                bigcity = ''
-            try:
-                city = request.POST["Shop_City"]
-            except MultiValueDictKeyError:
-                city = ''
-            submarkets = request.POST.getlist("Shop_SubMarket")
-            user = request.POST.getlist("Shop_User")
-            try:
-                bio = request.POST["Shop_Bio"]
-            except MultiValueDictKeyError:
-                bio = ''
-            try:
-                sat = request.POST["SATCheck"]
-            except MultiValueDictKeyError:
-                sat = ''
-            try:
-                sun = request.POST["SUNCheck"]
-            except MultiValueDictKeyError:
-                sun = ''
-            try:
-                mon = request.POST["MONCheck"]
-            except MultiValueDictKeyError:
-                mon = ''
-            try:
-                tue = request.POST["TUECheck"]
-            except MultiValueDictKeyError:
-                tue = ''
-            try:
-                wed = request.POST["WEDCheck"]
-            except MultiValueDictKeyError:
-                wed = ''
-            try:
-                thu = request.POST["THUCheck"]
-            except MultiValueDictKeyError:
-                thu = ''
-            try:
-                fri = request.POST["FRICheck"]
-            except MultiValueDictKeyError:
-                fri = ''
-         
-            # Get This Shop
-            this_shop = get_object_or_404(Shop, ID = id)
-
-            if (title != ''):
-                if (len(submarkets) != 0) and (state != '') and (city != '') and (bigcity != ''):
+            if (context['Shop_Title'] != ''):
+                if (len(submarkets) != 0) and (context['Shop_State'] != '') and (context['Shop_City'] != '') and (context['Shop_BigCity'] != ''):
 
                     week = ''
 
-                    if sat != '':
+                    if context['SATCheck'] != '':
                         week += "0-"
-                    if sun != '':
+                    if context['SUNCheck'] != '':
                         week += "1-"
-                    if mon != '':
+                    if context['MONCheck'] != '':
                         week += "2-"
-                    if tue != '':
+                    if context['TUECheck'] != '':
                         week += "3-"
-                    if wed != '':
+                    if context['WEDCheck'] != '':
                         week += "4-"
-                    if thu != '':
+                    if context['THUCheck'] != '':
                         week += "5-"
-                    if fri != '':
+                    if context['FRICheck'] != '':
                         week += "6-"
                 
-                    alert = Alert.objects.create(Part = '3', FK_User = request.user, Slug = this_shop.ID, Seen = True, Status = True, FK_Staff = request.user)
+                    alert = Alert.objects.create(Part = '3', FK_User = request.user, Slug = context['Shop'].ID, Seen = True, Status = True, FK_Staff = request.user)
 
                     if (len(submarkets) != 0):
                         Sub = '-'
@@ -1168,58 +1112,58 @@ def Edit_Full_Shop(request, id, msg = None):
                         SubMarketField = Field.objects.create(Title = 'SubMarket', Value = Sub)
                         alert.FK_Field.add(SubMarketField)
                         # Set New Data
-                        for item in this_shop.FK_SubMarket.all():
-                            this_shop.FK_SubMarket.remove(item)
+                        for item in context['Shop'].FK_SubMarket.all():
+                            context['Shop'].FK_SubMarket.remove(item)
                         for item in submarkets:
-                            this_shop.FK_SubMarket.add(SubMarket.objects.get(Title = item))
+                            context['Shop'].FK_SubMarket.add(SubMarket.objects.get(Title = item))
 
                 
-                    if image != '':
-                        this_shop.Image = image
-                        this_shop.save()
-                        img_str = 'NewImage' + '#' + str(this_shop.Image)
+                    if context['Shop_Image'] != '':
+                        context['Shop'].Image = context['Shop_Image']
+                        context['Shop'].save()
+                        img_str = 'NewImage' + '#' + str(context['Shop'].Image)
                         ImageField = Field.objects.create(Title = 'Image', Value = img_str)
                         alert.FK_Field.add(ImageField)
 
-                    if title != this_shop.Title:
-                        this_shop.Title = title
-                        this_shop.save()
-                        TitleField = Field.objects.create(Title = 'Title', Value = title)
+                    if context['Shop_Title'] != context['Shop'].Title:
+                        context['Shop'].Title = context['Shop_Title']
+                        context['Shop'].save()
+                        TitleField = Field.objects.create(Title = 'Title', Value = context['Shop_Title'])
                         alert.FK_Field.add(TitleField)
 
-                    if des != this_shop.Description:
-                        this_shop.Description = des
-                        this_shop.save()
-                        DescriptionField = Field.objects.create(Title = 'Description', Value = des)
+                    if context['Shop_Des'] != context['Shop'].Description:
+                        context['Shop'].Description = context['Shop_Des']
+                        context['Shop'].save()
+                        DescriptionField = Field.objects.create(Title = 'Description', Value = context['Shop_Des'])
                         alert.FK_Field.add(DescriptionField)
 
-                    if bio != this_shop.Bio:
-                        this_shop.Bio = bio
-                        this_shop.save()
-                        BioField = Field.objects.create(Title = 'Bio', Value = bio)
+                    if context['Shop_Bio'] != context['Shop'].Bio:
+                        context['Shop'].Bio = context['Shop_Bio']
+                        context['Shop'].save()
+                        BioField = Field.objects.create(Title = 'Bio', Value = context['Shop_Bio'])
                         alert.FK_Field.add(BioField)
 
-                    if state != this_shop.State:
-                        this_shop.State = state
-                        this_shop.save()
-                        StateField = Field.objects.create(Title = 'State', Value = state)
+                    if context['Shop_State'] != context['Shop'].State:
+                        context['Shop'].State = context['Shop_State']
+                        context['Shop'].save()
+                        StateField = Field.objects.create(Title = 'State', Value = context['Shop_State'])
                         alert.FK_Field.add(StateField)
 
-                    if bigcity != this_shop.BigCity:
-                        this_shop.BigCity = bigcity
-                        this_shop.save()
-                        BigCityField = Field.objects.create(Title = 'BigCity', Value = bigcity)
+                    if context['Shop_BigCity'] != context['Shop'].BigCity:
+                        context['Shop'].BigCity = context['Shop_BigCity']
+                        context['Shop'].save()
+                        BigCityField = Field.objects.create(Title = 'BigCity', Value = context['Shop_BigCity'])
                         alert.FK_Field.add(BigCityField)
 
-                    if city != this_shop.City:
-                        this_shop.City = city
-                        this_shop.save()
-                        CityField = Field.objects.create(Title = 'City', Value = city)
+                    if context['Shop_City'] != context['Shop'].City:
+                        context['Shop'].City = context['Shop_City']
+                        context['Shop'].save()
+                        CityField = Field.objects.create(Title = 'City', Value = context['Shop_City'])
                         alert.FK_Field.add(CityField)
 
-                    if week != this_shop.Holidays:
-                        this_shop.Holidays = week
-                        this_shop.save()
+                    if week != context['Shop'].Holidays:
+                        context['Shop'].Holidays = week
+                        context['Shop'].save()
                         HolidaysField = Field.objects.create(Title = 'Holidays', Value = week)
                         alert.FK_Field.add(HolidaysField)
                     
@@ -1227,38 +1171,21 @@ def Edit_Full_Shop(request, id, msg = None):
                         alert.delete()
 
                     return redirect('nakhll_market:Show_Shop_Info',
-                    Shop_Slug = this_shop.Slug)
+                    id = context['Shop'].ID)
 
                 else:
-
-                    return redirect('nakhll_market:Edit_Full_Shop',
-                    id = this_shop.ID,
-                    msg =  'راسته، استان، شهرستان و شهر نمی تواند خالی باشد.')
+                    context['ShowAlart'] = True
+                    context['AlartMessage'] =  'راسته، استان، شهرستان و شهر نمی تواند خالی باشد.'
 
             else:
-                return redirect('nakhll_market:Edit_Full_Shop',
-                id = this_shop.ID,
-                msg =  'عنوان حجره نمی تواند خالی باشد.')
+                context['ShowAlart'] = True
+                context['AlartMessage'] =  'عنوان حجره نمی تواند خالی باشد.'
 
 
 
         else:
-            
-            # Get User Info
-            user = User.objects.all()
-            # Get User Profile
-            profile = Profile.objects.all()
-            # Get Wallet Inverntory
-            wallets = Wallet.objects.all()
-            # Get Menu Item
-            options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-            # Get Nav Bar Menu Item
-            navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-            # -------------------------------------------------------------------
-            # Get This Shop
-            this_shop = get_object_or_404(Shop, ID = id)
             # Get Holiday
-            week = this_shop.Holidays.split('-')
+            week = context['Shop'].Holidays.split('-')
             # Build Class
             class Items:
                 def __init__(self, submarket, status):
@@ -1271,37 +1198,19 @@ def Edit_Full_Shop(request, id, msg = None):
                 new_item = Items(item, False)
                 ItemsList.append(new_item)
             
-            for item in this_shop.FK_SubMarket.all():
+            for item in context['Shop'].FK_SubMarket.all():
                 for list_item in ItemsList:
                     if list_item.SubMarket == item:
                         list_item.Status = True
 
-            if msg != 'None':
-                message = msg
-                show = True
-            else:
-                message = ''
-                show = False
 
-            context = {
-                'Users':user,
-                'Profile':profile,
-                'Wallet': wallets,
-                'Options': options,
-                'MenuList':navbar,
-                'SubMarkets':ItemsList,
-                'Shop':this_shop,
-                'Week':week,
-                'ShowAlart':show,
-                'AlartMessage':message,
-            }
 
-            return render(request, 'nakhll_market/management/content/edit_full_shop.html', context)
-
+            context['SubMarkets'] = ItemsList
+            context['Week'] = week
     else:
-
         return redirect("nakhll_market:AccountLogin")
 
+    return render(request, 'nakhll_market/management/content/edit_full_shop.html', context)
 
 # Add New Shop Banner
 def Add_New_Shop_Banner(request, id, msg = None):
