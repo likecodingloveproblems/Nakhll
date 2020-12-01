@@ -100,11 +100,11 @@ urlpatterns = [
     # Add Edit Shop`s Product Path
     path('management/content/edit-full-product/<uuid:id>/', management_content_views.Edit_Full_Product, name='Edit_Full_Product'),
     # Add New Product Banner Path
-    path('management/content/add-new-product-banner/<uuid:id>/<str:msg>', management_content_views.Add_New_Product_Banner, name='Add_New_Product_Banner'),
+    path('management/content/add-new-product-banner/<uuid:id>/', management_content_views.Add_New_Product_Banner, name='Add_New_Product_Banner'),
     # Add New Product Attribute Path
-    path('management/content/add-new-product-attrbuit/<uuid:id>/<str:msg>', management_content_views.Add_New_Product_Attribute, name='Add_New_Product_Attribute'),
+    path('management/content/add-new-product-attrbuit/<uuid:id>/', management_content_views.Add_New_Product_Attribute, name='Add_New_Product_Attribute'),
     # Add New Product AttrPrice Path
-    path('management/content/add-new-product-attrprice/<uuid:id>/<str:msg>', management_content_views.Add_New_Product_AttrPrice, name='Add_New_Product_AttrPrice'),
+    path('management/content/add-new-product-attrprice/<uuid:id>/', management_content_views.Add_New_Product_AttrPrice, name='Add_New_Product_AttrPrice'),
     # Add New User Path
     path('management/content/add-new-user', management_content_views.Add_New_User, name='Add_New_User'),
     # Add New User`s Shop Path
