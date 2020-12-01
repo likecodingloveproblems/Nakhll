@@ -19,6 +19,7 @@ from kavenegar import *
 import threading
 import jdatetime
 import requests
+from nakhll_market.management_content_views import baseData
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
@@ -288,51 +289,19 @@ def ProfileMessage(request, status = None, start = None, end = None):
 def ProfileFactor(request):
     # Check User Status
     if request.user.is_authenticated :
-        # Get User Info
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
-        # Get Menu Item
-        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-        # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-        # --------------------------------------------------------------------
+        context = baseData(request, 'factor')
         # Get All User Factor
         this_user_factors = Factor.objects.filter(FK_User = request.user, PaymentStatus = True).order_by('-OrderDate')
         # Factor List
-        factor_items_wait = []
-        factor_items_ready = []
-        factor_items_send = []
-        factor_items_cansel = []
-        for item in Factor.objects.filter(PaymentStatus = True, Publish = True, Checkout = False).order_by('-OrderDate'):
-            # Get Factor When Factor Post Is Status == 1
-            if item.get_wait_user_factor(request):
-                factor_items_wait.append(item)
-                continue
-            elif item.get_inpreparation_factor(request):
-                # Get Factor When Factor Post Is Status == 2
-                factor_items_ready.append(item)
-                continue
-            elif item.get_send_user_factor(request):
-                # Get Factor When Factor Post Is Status == 3
-                factor_items_send.append(item)
-                continue
-            elif item.get_cancel_factor(request):
-                # Get Factor When Factor Post Is Status == 4
-                factor_items_cansel.append(item)
-                continue
-
-        context = {
-            'This_User_Profile':this_profile,
-            'This_User_Inverntory': this_inverntory,
-            'Options': options,
-            'MenuList':navbar,
-            'This_User_Factor':this_user_factors,
-            'ShopFactors':factor_items_wait,
-            'ShopRedyFactors':factor_items_ready,
-            'ShopSendFactors':factor_items_send,
-            'ShopCanselFactors':factor_items_cansel,
-        }
+        factor_items_wait = Factor.objects.filter(PaymentStatus = True, Publish = True, Checkout = False, FK_FactorPost__ProductStatus = '1', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user)
+        factor_items_ready = Factor.objects.filter(PaymentStatus = True, Publish = True, Checkout = False, FK_FactorPost__ProductStatus = '2', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user)
+        factor_items_send = Factor.objects.filter(PaymentStatus = True, Publish = True, Checkout = False, FK_FactorPost__ProductStatus = '3', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user)
+        factor_items_cansel = Factor.objects.filter(PaymentStatus = True, Publish = True, Checkout = False, FK_FactorPost__ProductStatus = '4', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user)
+        context['This_User_Factor'] = this_user_factors
+        context['ShopFactors'] = factor_items_wait
+        context['ShopRedyFactors'] = factor_items_ready
+        context['ShopSendFactors'] = factor_items_send
+        context['ShopCanselFactors'] = factor_items_cansel
      
         return render(request, 'nakhll_market/profile/pages/factor.html', context)
     else: 
