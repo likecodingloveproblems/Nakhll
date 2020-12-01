@@ -739,23 +739,10 @@ def Show_Shop_Info(request, id):
 
                 # TODO number of sales of a shop must be a stored procedure  
                 # Get All Shop`s Sale
-                AllSales = []
-                AllSales_Send = []
-
-                for item in Factor.objects.filter(PaymentStatus = True, Publish = True):
-                    for factor_item in item.FK_FactorPost.all():
-                        if factor_item.FK_Product.FK_Shop == context['ThisShop']:
-                            if item.OrderStatus == '5':
-                                AllSales_Send.append(item)
-                                AllSales.append(item)
-                            else:
-                                AllSales.append(item)
-
-                AllSales = list(dict.fromkeys(AllSales))
-                AllSales_Send = list(dict.fromkeys(AllSales_Send))
-                
-                context['ThisShop_Sales_Count'] = len(AllSales)
-                context['ThisShop_Sales_ISSend_Count'] = len(AllSales_Send)
+                numAllSalesSend = Factor.objects.filter(PaymentStatus=True, Publish=True, FK_FactorPost__FK_Product__FK_Shop=context['ThisShop'], OrderStatus='5').distinct().count()
+                numAllSales = Factor.objects.filter(PaymentStatus=True, Publish=True, FK_FactorPost__FK_Product__FK_Shop=context['ThisShop']).distinct().count()
+                context['ThisShop_Sales_Count'] = numAllSales
+                context['ThisShop_Sales_ISSend_Count'] = numAllSalesSend
 
                 return render(request, 'nakhll_market/management/content/show_shop_info.html', context)
 
