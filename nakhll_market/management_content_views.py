@@ -1740,9 +1740,15 @@ def Add_New_Product_Banner(request, id):
 
         
 # Add New Product Attribut
-def Add_New_Product_Attribute(request, id, msg = None):
+def Add_New_Product_Attribute(request, id):
 
     if request.user.is_authenticated :
+
+        context = baseData(request, 'allShop')
+        this_product = Product.objects.get(ID = id)
+        context['Product'] = this_product
+        # Get All Attribute
+        context['Attributes'] = Attribute.objects.filter(Publish = True)
 
         if request.method == 'POST':
 
@@ -1756,7 +1762,6 @@ def Add_New_Product_Attribute(request, id, msg = None):
             except:
                 AttrValue = ''
 
-            this_product = Product.objects.get(ID = id)
 
             if (AttrTitle != '') and (AttrValue != ''):
 
@@ -1766,58 +1771,19 @@ def Add_New_Product_Attribute(request, id, msg = None):
                 Alert.objects.create(Part = '11', FK_User = request.user, Slug = attrproduct.id, Seen = True, Status = True, FK_Staff = request.user)
 
                 return redirect('nakhll_market:Add_New_Product_Attribute',
-                id = this_product.ID,
-                msg = None)
+                id = this_product.ID)
 
             else:
-
-                return redirect('nakhll_market:Add_New_Product_Attribute',
-                id = this_product.ID,
-                msg =  'مقادیر عنوان و واحد نمی تواند خالی باشد.')
+                context['ShowAlart'] = True
+                context['AlartMessage'] =  'مقادیر عنوان و واحد نمی تواند خالی باشد.'
 
         else:
-            
-            # Get User Info
-            user = User.objects.all()
-            # Get User Profile
-            profile = Profile.objects.all()
-            # Get Wallet Inverntory
-            wallets = Wallet.objects.all()
-            # Get Menu Item
-            options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-            # Get Nav Bar Menu Item
-            navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-            # -------------------------------------------------------------------
-            # Get All Attribute
-            pubattributes = Attribute.objects.filter(Publish = True)
-            # This Product
-            this_product = Product.objects.get(ID = id)
-
-            if msg != 'None':
-                message = msg
-                show = True
-            else:
-                message = ''
-                show = False
-
-            context = {
-                'Users':user,
-                'Profile':profile,
-                'Wallet': wallets,
-                'Options': options,
-                'MenuList':navbar,
-                'Attributes':pubattributes,
-                'Product':this_product,
-                'ShowAlart':show,
-                'AlartMessage':message,
-            }
-
-            return render(request, 'nakhll_market/management/content/add_new_product_attribute.html', context)
+            pass
 
     else:
-
         return redirect("nakhll_market:AccountLogin")
 
+    return render(request, 'nakhll_market/management/content/add_new_product_attribute.html', context)
 
 # Add New Product AttrPrice
 def Add_New_Product_AttrPrice(request, id, msg = None):
