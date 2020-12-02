@@ -314,24 +314,9 @@ def ProfileTransactione(request):
     # Check User Status
     if request.user.is_authenticated :
         # Get User Info
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
-        # Get Menu Item
-        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-        # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-        # -------------------------------------------------------------------
+        context = baseData(request, 'factor')
         # Get All User Transaction
-        transaction = Transaction.objects.filter(FK_User = request.user).order_by('-Date')
-
-        context = {
-            'This_User_Profile':this_profile,
-            'This_User_Inverntory': this_inverntory,
-            'Options': options,
-            'MenuList':navbar,
-            'Transactions':transaction,
-        }
+        context['Transactions'] = Transaction.objects.filter(FK_User = request.user).order_by('-Date')
      
         return render(request, 'nakhll_market/profile/pages/transaction.html', context)
     else:
