@@ -741,17 +741,19 @@
                     <p>{{simpleDict.user.name}}</p>
                     <div class="profile-sidebar-main">
                         {% for menu in sidebarMenu %}
-                            {% if menu.staffOnly and request.user.is_staff%}
-                                <a href="{{menu.url}}">
-                                    {% if menu.isActive %}
-                                    <button class="activebtn">
-                                    {% else %}
-                                    <button>
-                                    {% endif %}
-                                        <i class="{{menu.class}}"></i>
-                                        <h5>{{menu.name}}</h5>
-                                    </button>
-                                </a>
+                            {% if menu.staffOnly %}
+                                {% if request.user.is_staff %}
+                                    <a href="{{menu.url}}">
+                                        {% if menu.isActive %}
+                                        <button class="activebtn">
+                                        {% else %}
+                                        <button>
+                                        {% endif %}
+                                            <i class="{{menu.class}}"></i>
+                                            <h5>{{menu.name}}</h5>
+                                        </button>
+                                    </a>
+                                {% endif %}
                             {% else %}
                                 <a href="{{menu.url}}">
                                     {% if menu.isActive %}

@@ -1013,7 +1013,7 @@ def AddManagementCopun(request):
 # Management Coupun List
 def ManagementCopunList(request):
     # Check User Status
-    if request.user.is_authenticated :
+    if request.user.is_staff :
         # Get User Info
         This_User_Info = GetUserInfo().run(request)
         this_profile = This_User_Info["user_profiel"]
