@@ -960,9 +960,8 @@ class GetBlog(threading.Thread):
     
 def index(request):
     if request.user.is_authenticated:
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        this_profile = get_object_or_404(Profile, FK_User = request.user)
+        this_inverntory = get_object_or_404(Wallet, FK_User = request.user).Inverntory
     else:
         this_profile = None
         this_inverntory = None
@@ -973,29 +972,39 @@ def index(request):
     # ------------------------------------------------------------------------
     # Get All Products
     pubproduct = Product.objects.filter(Publish = True, Available = True, OldPrice = '0', Status__in = ['1', '2', '3']).order_by('-DateCreate')[:12]
-    pubproductold = SuggestedProducts().run()
+    pubproductoldquery = Product.objects.filter(Publish = True, Available = True, OldPrice = '0', Status__in = ['1', '2', '3'])
+    numpubproductold = pubproductoldquery.count()
+    pubproductold = []
+    for i in random.sample(range(0,numpubproductold), 16):
+        pubproductold.append(pubproductoldquery[i])
     # Get All Discounted Product
-    dis_product = DiscountedProductList().run()
+    dis_product = Product.objects.filter(Publish = True, Available = True, Status__in = ['1', '2', '3']).exclude(OldPrice='0').order_by('-DateCreate')[:16]
     # Get Index Sliders
     pubsliders = Slider.objects.filter(Location = 1, Publish = True)
     # Get All Categories
-    categories = RandomCategories().run()
+    numcategories = Category.objects.filter(Publish = True, Available = True, FK_SubCategory = None).count()
+    categories = Category.objects.filter(pk__in=random.sample(range(0,numcategories), 12), Publish = True, Available = True, FK_SubCategory = None)
     # Get All Index Advertising - Buttom
     pubbuttomadvsliders = Slider.objects.filter(Location = 2, Publish = True)
     # Get All Index Advertising - Center
     pubcenteradvsliders = Slider.objects.filter(Location = 3, Publish = True)
-    postblog = GetBlog().run()
+    postblog = PostBlog.objects.filter(Publish = True).order_by('-DateCreate')[:4]
     vendorstory = VendorStory.objects.filter(Publish = True).order_by('-DateCreate')[:2]
     catblog = CategoryBlog.objects.filter(Publish = True)
     # Get All Shops
-    pubshops = RandomShops().run()
+    pubshopsquery = Shop.objects.filter(Publish = True, Available = True)
+    numpubshops = pubshopsquery.count()
+    pubshops = []
+    for i in random.sample(range(0, numpubshops), 12):
+        pubshops.append(pubshopsquery[i])
     # Build Discounted Product Class
     class DisPro:
         def __init__(self, Product, Shop):
             self.UserShop = Shop
             self.UserProduct = Product
     # Discounted Product
-    disprods = RandomDiscountedProduct().run()
+    disprods = Product.objects.filter(Publish = True, Available = True, Status__in = ['1', '2', '3'])
+    disprods = disprods[random.randint(0,disprods.count())]
     try:   
         disprod = Product.objects.get(Slug = disprods.Slug)
         disprod_shop = Shop.objects.get(ID = disprod.FK_Shop.ID)

@@ -331,16 +331,16 @@
                         <div class="row">
                             {% for item in Postblog %}
                                 <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12">
-                                    <a href="/blog/post/{{item.Blog.Slug}}/">
+                                    <a href="/blog/post/{{item.Slug}}/">
                                         <div class="post-blog">
                                             <span class="tag-post">وبلاگ</span>
-                                            <img src="{{item.Blog.Index_Image.url}}" alt="{{item.Blog.Slug}}">
+                                            <img src="{{item.Index_Image.url}}" alt="{{item.Slug}}">
                                             <div class="title-single-post">
-                                                <h2 class="title-borderbt">{{item.Blog.Title}}</h2>
+                                                <h2 class="title-borderbt">{{item.Title}}</h2>
                                             </div>
                                             <div class="des-single-post">
                                                 
-                                                {% autoescape off %}<p>{{item.Blog.Summary|truncatechars:150}}</p>{% endautoescape %}
+                                                {% autoescape off %}<p>{{item.Summary|truncatechars:150}}</p>{% endautoescape %}
                                                 
                                             </div>
                                             <div class="author-single-post">
@@ -348,8 +348,8 @@
                                                     <img src="{{item.Writer.Image_thumbnail.url}}" alt="profile" width="45" height="45">
                                                 </div>
                                                 <div class="text-author">
-                                                    <h5>{{item.Blog.FK_User.first_name}} {{item.Blog.FK_User.last_name}}</h5>
-                                                    <span>{{item.Blog.DateCreate}}</span>
+                                                    <h5>{{item.FK_User.first_name}} {{item.FK_User.last_name}}</h5>
+                                                    <span>{{item.DateCreate}}</span>
                                                 </div>
                                                 <div class="cat-post">
                                                     <h6></h6>
