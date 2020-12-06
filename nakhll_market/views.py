@@ -930,20 +930,6 @@ class SuggestedProducts(threading.Thread):
 
         return FinalList
 
-
-class GetUserInfo(threading.Thread):
-    def run(self, request):
-        # Get This User Profile
-        this_user_profile = get_object_or_404(Profile, FK_User = request.user)
-        this_user_inverntory = get_object_or_404(Wallet, FK_User = request.user).Inverntory
-        # Set Result
-        result = {
-            "user_profiel": this_user_profile,
-            "user_inverntory": this_user_inverntory,
-        }
-        return result
-
-
 class GetBlog(threading.Thread):
     def run(self):
         # Get 4 Blog For Index
