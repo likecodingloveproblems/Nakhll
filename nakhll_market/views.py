@@ -1095,9 +1095,9 @@ class get_shop_other_info(threading.Thread):
 def market(request):
     # Get User Info
     if request.user.is_authenticated:
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
     else:
         this_profile = None
         this_inverntory = None
@@ -1134,9 +1134,9 @@ def market(request):
 def submarket(request, submarket_slug):
     # Get User Info
     if request.user.is_authenticated:
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
     else:
         this_profile = None
         this_inverntory = None
@@ -1166,9 +1166,9 @@ def submarket(request, submarket_slug):
 def ShopsDetail(request, shop_slug, msg = None):
     # Get User Info
     if request.user.is_authenticated:
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
     else:
         this_profile = None
         this_inverntory = None
@@ -1239,9 +1239,9 @@ def ShopsDetail(request, shop_slug, msg = None):
 def AllShop(request):
     # Get User Info
     if request.user.is_authenticated:
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
     else:
         this_profile = None
         this_inverntory = None
@@ -1289,9 +1289,9 @@ def AllShop(request):
 # Get Category Detail
 def category(request, slug, status, delta_price):
     if request.user.is_authenticated:
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
     else:
         this_profile = None
         this_inverntory = None
@@ -1509,9 +1509,9 @@ class get_related_products(threading.Thread):
 def ProductsDetail(request, shop_slug, product_slug, status = None, msg = None):
     # Get User Info
     if request.user.is_authenticated:
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
     else:
         this_profile = None
         this_inverntory = None
@@ -1688,9 +1688,9 @@ def connectus(request):
 def Advanced_Search(request):
     # Get User Info
     if request.user.is_authenticated:
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
     else:
         this_profile = None
         this_inverntory = None
@@ -2380,9 +2380,9 @@ def ShowCampaing(request):
 
     # Get User Info
     if request.user.is_authenticated:
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
     else:
         this_profile = None
         this_inverntory = None
@@ -2417,9 +2417,9 @@ def ShowCampProducts(request):
 
     # Get User Info
     if request.user.is_authenticated:
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
     else:
         this_profile = None
         this_inverntory = None

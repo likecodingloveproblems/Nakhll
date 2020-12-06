@@ -112,9 +112,9 @@ def show_cart(request):
     
     if request.user.is_authenticated :
         # Get User Info
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -310,9 +310,9 @@ def Set_Send_Info(request):
 def Pay_Detail(request):
     if request.user.is_authenticated:
         # Get User Info
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -613,9 +613,9 @@ def verify(request):
         # zarin pal
         this_profile = get_object_or_404(Profile, FK_User = request.user)
         this_inverntory = get_object_or_404(Wallet, FK_User = request.user).Inverntory
-        # This_User_Info = GetUserInfo().run(request)
-        # this_profile = This_User_Info["user_profiel"]
-        # this_inverntory = This_User_Info["user_inverntory"]
+        # 
+        # this_profile = Profile.objects.get(FK_User=request.user)
+        # this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -869,9 +869,9 @@ def add_single_item_from_cart(request, ID):
 # unsuccessful Page
 def unsuccessful(request):
     # Get User Info
-    This_User_Info = GetUserInfo().run(request)
-    this_profile = This_User_Info["user_profiel"]
-    this_inverntory = This_User_Info["user_inverntory"]
+    
+    this_profile = Profile.objects.get(FK_User=request.user)
+    this_inverntory = request.user.WalletManager.Inverntory
     # Get Menu Item
     options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
     # Get Nav Bar Menu Item
@@ -1347,9 +1347,9 @@ def verify_wallet(request):
         status_pay = False
     # Get User Info
     if request.user.is_authenticated:
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
     else:
         this_profile = None
         this_inverntory = None

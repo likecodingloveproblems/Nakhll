@@ -282,9 +282,9 @@ def EditManagementCoupon(request, id):
                         Product_List.append(Itemclass(item, False))
                 # -----------------------------------------------------------------------
                 # Get User Info
-                This_User_Info = GetUserInfo().run(request)
-                this_profile = This_User_Info["user_profiel"]
-                this_inverntory = This_User_Info["user_inverntory"]
+                
+                this_profile = Profile.objects.get(FK_User=request.user)
+                this_inverntory = request.user.WalletManager.Inverntory
                 # Get Menu Item
                 options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
                 # Get Nav Bar Menu Item
@@ -865,9 +865,9 @@ def AddManagementCopun(request):
                             status = False
                         else:                 
                             # Get User Info
-                            This_User_Info = GetUserInfo().run(request)
-                            this_profile = This_User_Info["user_profiel"]
-                            this_inverntory = This_User_Info["user_inverntory"]
+                            
+                            this_profile = Profile.objects.get(FK_User=request.user)
+                            this_inverntory = request.user.WalletManager.Inverntory
                             # Get Menu Item
                             options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
                             # Get Nav Bar Menu Item
@@ -908,9 +908,9 @@ def AddManagementCopun(request):
                     copun.save()
                 #-----------------------------------------------------------------------
                 # Get User Info
-                This_User_Info = GetUserInfo().run(request)
-                this_profile = This_User_Info["user_profiel"]
-                this_inverntory = This_User_Info["user_inverntory"]
+                
+                this_profile = Profile.objects.get(FK_User=request.user)
+                this_inverntory = request.user.WalletManager.Inverntory
                 # Get Menu Item
                 options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
                 # Get Nav Bar Menu Item
@@ -966,9 +966,9 @@ def AddManagementCopun(request):
                 return render(request, 'nakhll_market/management/coupon/manageaddshopincoupon.html', context)
             else:
                 # Get User Info
-                This_User_Info = GetUserInfo().run(request)
-                this_profile = This_User_Info["user_profiel"]
-                this_inverntory = This_User_Info["user_inverntory"]
+                
+                this_profile = Profile.objects.get(FK_User=request.user)
+                this_inverntory = request.user.WalletManager.Inverntory
                 # Get Menu Item
                 options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
                 # Get Nav Bar Menu Item
@@ -1013,9 +1013,9 @@ def ManagementCopunList(request):
     # Check User Status
     if request.user.is_staff :
         # Get User Info
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
