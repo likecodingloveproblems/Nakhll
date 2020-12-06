@@ -205,9 +205,8 @@ def CommentAlert(request, id):
     # Check User Status
     if request.user.is_authenticated:
         # Get User Info
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -233,9 +232,8 @@ def ReviewAlert(request, id):
     # Check User Status
     if request.user.is_authenticated:
         # Get User Info
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -262,9 +260,8 @@ def ShopAlert(request, id):
     # Check User Status
     if request.user.is_authenticated:
         # Get User Info
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -291,9 +288,8 @@ def ShopBannerAlert(request, id):
     # Check User Status
     if request.user.is_authenticated:
         # Get User Info
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -320,9 +316,8 @@ def ShopBannerAlert(request, id):
 def ProductAlert(request, id):
    # Check User Status
     if request.user.is_authenticated :
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -347,9 +342,8 @@ def ProductAlert(request, id):
 def ProductBannerAlert(request, id):
    # Check User Status
     if request.user.is_authenticated :
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -374,9 +368,8 @@ def ProductBannerAlert(request, id):
 def AttributeAlert(request, id):
    # Check User Status
     if request.user.is_authenticated :
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -401,9 +394,8 @@ def AttributeAlert(request, id):
 def ProductAttributeAlert(request, id):
    # Check User Status
     if request.user.is_authenticated :
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -429,9 +421,8 @@ def EditeShopBannerAlert(request, id):
    # Check User Status
     if request.user.is_authenticated :
         # Get User Info
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -461,9 +452,8 @@ def EditeProductBannerAlert(request, id):
    # Check User Status
     if request.user.is_authenticated :
         # Get User Info
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -492,9 +482,8 @@ def EditeShopAlert(request, id):
    # Check User Status
     if request.user.is_authenticated :
         # Get User Info
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -554,9 +543,8 @@ def EditeShopAlert(request, id):
 def EditeProductAlert(request, id):
    # Check User Status
     if request.user.is_authenticated :
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -639,9 +627,8 @@ def TicketAlert(request, id):
    # Check User Status
     if request.user.is_authenticated :
         # Get User Info
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -684,9 +671,8 @@ def AttributePriceAlert(request, id):
    # Check User Status
     if request.user.is_authenticated :
         # Get User Info
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -714,9 +700,8 @@ def ConnectUsAlert(request, id):
    # Check User Status
     if request.user.is_authenticated :
         # Get User Info
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -743,9 +728,8 @@ def FactorAlert(request, id):
    # Check User Status
     if request.user.is_authenticated:
         # Get User Info
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -772,9 +756,8 @@ def DeleteShopBannerAlert(request, id):
    # Check User Status
     if request.user.is_authenticated :
         # Get User Info
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -801,9 +784,8 @@ def DeleteProductBannerAlert(request, id):
    # Check User Status
     if request.user.is_authenticated :
         # Get User Info
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -830,9 +812,8 @@ def DeleteAttributeProductAlert(request, id):
    # Check User Status
     if request.user.is_authenticated :
         # Get User Info
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -859,9 +840,8 @@ def DeleteAttributePriceAlert(request, id):
    # Check User Status
     if request.user.is_authenticated :
         # Get User Info
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -889,9 +869,8 @@ def OrderAlert(request, id):
    # Check User Status
     if request.user.is_authenticated :
         # Get User Info
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -920,9 +899,8 @@ def SendInfoAlert(request, id):
    # Check User Status
     if request.user.is_authenticated :
         # Get User Info
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -955,9 +933,8 @@ def CanselOrderAlert(request, id):
    # Check User Status
     if request.user.is_authenticated :
         # Get User Info
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -988,9 +965,8 @@ def DeleteCouponAlert(request, id):
    # Check User Status
     if request.user.is_authenticated :
         # Get User Info
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -1018,9 +994,8 @@ def AddCouponAlert(request, id):
    # Check User Status
     if request.user.is_authenticated :
         # Get User Info
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -1098,9 +1073,8 @@ def AddPostCommentAlert(request, id):
             return redirect("nakhll_market:Alert")
         else:
             # Get User Info
-            This_User_Info = GetUserInfo().run(request)
-            this_profile = This_User_Info["user_profiel"]
-            this_inverntory = This_User_Info["user_inverntory"]
+            this_profile = Profile.objects.get(FK_User=request.user)
+            this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
             options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
             # Get Nav Bar Menu Item
@@ -1189,9 +1163,8 @@ def RecordStoryCommentAlert(request, id):
         
         else:
             # Get User Info
-            This_User_Info = GetUserInfo().run(request)
-            this_profile = This_User_Info["user_profiel"]
-            this_inverntory = This_User_Info["user_inverntory"]
+            this_profile = Profile.objects.get(FK_User=request.user)
+            this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
             options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
             # Get Nav Bar Menu Item
@@ -1271,9 +1244,8 @@ def RecordShopCommentAlert(request, id):
             return redirect("nakhll_market:Alert")
         else:
             # Get User Info
-            This_User_Info = GetUserInfo().run(request)
-            this_profile = This_User_Info["user_profiel"]
-            this_inverntory = This_User_Info["user_inverntory"]
+            this_profile = Profile.objects.get(FK_User=request.user)
+            this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
             options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
             # Get Nav Bar Menu Item
@@ -1417,9 +1389,8 @@ def Add_New_Optional_Attribute(request, id):
             return redirect("nakhll_market:Alert")
         else:
             # Get User Info
-            This_User_Info = GetUserInfo().run(request)
-            this_profile = This_User_Info["user_profiel"]
-            this_inverntory = This_User_Info["user_inverntory"]
+            this_profile = Profile.objects.get(FK_User=request.user)
+            this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
             options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
             # Get Nav Bar Menu Item
@@ -1483,9 +1454,8 @@ def Delete_Optional_Attribute(request, id):
             return redirect("nakhll_market:Alert")
         else:
             # Get User Info
-            This_User_Info = GetUserInfo().run(request)
-            this_profile = This_User_Info["user_profiel"]
-            this_inverntory = This_User_Info["user_inverntory"]
+            this_profile = Profile.objects.get(FK_User=request.user)
+            this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
             options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
             # Get Nav Bar Menu Item

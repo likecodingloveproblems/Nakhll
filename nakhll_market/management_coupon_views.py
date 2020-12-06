@@ -313,9 +313,8 @@ def EditManagementCoupon(request, id):
                 return redirect("nakhll_market:ManagementCoupunList")
         else:
             # Get User Info
-            This_User_Info = GetUserInfo().run(request)
-            this_profile = This_User_Info["user_profiel"]
-            this_inverntory = This_User_Info["user_inverntory"]
+            this_profile = Profile.objects.get(FK_User=request.user)
+            this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
             options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
             # Get Nav Bar Menu Item
@@ -988,9 +987,8 @@ def AddManagementCopun(request):
                 return render(request, 'nakhll_market/management/coupon/addmanagecoupon.html', context)
         else:
             # Get User Info
-            This_User_Info = GetUserInfo().run(request)
-            this_profile = This_User_Info["user_profiel"]
-            this_inverntory = This_User_Info["user_inverntory"]
+            this_profile = Profile.objects.get(FK_User=request.user)
+            this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
             options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
             # Get Nav Bar Menu Item

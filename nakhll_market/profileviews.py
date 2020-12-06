@@ -460,9 +460,8 @@ def AddNewMessage(request, msg = None):
                 msg = 'عنوان و متن پیام نمی تواند خالی باشد!')
         else:
             # Get User Info
-            This_User_Info = GetUserInfo().run(request)
-            this_profile = This_User_Info["user_profiel"]
-            this_inverntory = This_User_Info["user_inverntory"]
+            this_profile = Profile.objects.get(FK_User=request.user)
+            this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
             options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
             # Get Nav Bar Menu Item
@@ -728,9 +727,8 @@ def add_new_shop(request):
                 return render(request, 'nakhll_market/profile/pages/newshop.html', context)
         else:
             # Get User Info
-            This_User_Info = GetUserInfo().run(request)
-            this_profile = This_User_Info["user_profiel"]
-            this_inverntory = This_User_Info["user_inverntory"]
+            this_profile = Profile.objects.get(FK_User=request.user)
+            this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
             options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
             # Get Nav Bar Menu Item
@@ -986,9 +984,8 @@ def edit_shop_info(request, shop_slug):
                 return render(request, 'nakhll_market/profile/pages/shopdetails.html', context)
         else:
             # Get User Info
-            This_User_Info = GetUserInfo().run(request)
-            this_profile = This_User_Info["user_profiel"]
-            this_inverntory = This_User_Info["user_inverntory"]
+            this_profile = Profile.objects.get(FK_User=request.user)
+            this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
             options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
             # Get Nav Bar Menu Item
@@ -1262,9 +1259,8 @@ def edit_shop_banner(request, banner_id):
                 return render(request, 'nakhll_market/profile/pages/shopbannerlist.html', context)
         else:
             # Get User Info
-            This_User_Info = GetUserInfo().run(request)
-            this_profile = This_User_Info["user_profiel"]
-            this_inverntory = This_User_Info["user_inverntory"]
+            this_profile = Profile.objects.get(FK_User=request.user)
+            this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
             options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
             # Get Nav Bar Menu Item
@@ -1467,9 +1463,8 @@ def add_shop_banner(request, shop_slug):
                 return render(request, 'nakhll_market/profile/pages/addshopbanner.html', context)
         else:
             # Get User Info
-            This_User_Info = GetUserInfo().run(request)
-            this_profile = This_User_Info["user_profiel"]
-            this_inverntory = This_User_Info["user_inverntory"]
+            this_profile = Profile.objects.get(FK_User=request.user)
+            this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
             options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
             # Get Nav Bar Menu Item
@@ -1668,9 +1663,8 @@ def add_to_product_gallery(request, product_slug):
             
                 return render(request, 'nakhll_market/profile/pages/productimage.html', context)
         else:
-            This_User_Info = GetUserInfo().run(request)
-            this_profile = This_User_Info["user_profiel"]
-            this_inverntory = This_User_Info["user_inverntory"]
+            this_profile = Profile.objects.get(FK_User=request.user)
+            this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
             options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
             # Get Nav Bar Menu Item
@@ -1915,9 +1909,8 @@ def edit_product_banner(request, banner_id):
                 return render(request, 'nakhll_market/profile/pages/editeproductbanner.html', context)
 
         else:
-            This_User_Info = GetUserInfo().run(request)
-            this_profile = This_User_Info["user_profiel"]
-            this_inverntory = This_User_Info["user_inverntory"]
+            this_profile = Profile.objects.get(FK_User=request.user)
+            this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
             options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
             # Get Nav Bar Menu Item
@@ -2121,9 +2114,8 @@ def add_product_attribute(request, product_slug):
                 return render(request, 'nakhll_market/profile/pages/productattribute.html', context)
 
         else:
-            This_User_Info = GetUserInfo().run(request)
-            this_profile = This_User_Info["user_profiel"]
-            this_inverntory = This_User_Info["user_inverntory"]
+            this_profile = Profile.objects.get(FK_User=request.user)
+            this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
             options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
             # Get Nav Bar Menu Item
@@ -2290,9 +2282,8 @@ def add_new_attribute(request, product_slug):
             
                 return render(request, 'nakhll_market/profile/pages/productattribute.html', context)
         else:
-            This_User_Info = GetUserInfo().run(request)
-            this_profile = This_User_Info["user_profiel"]
-            this_inverntory = This_User_Info["user_inverntory"]
+            this_profile = Profile.objects.get(FK_User=request.user)
+            this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
             options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
             # Get Nav Bar Menu Item
@@ -2493,9 +2484,8 @@ def add_product_attribute_price(request, product_slug):
                 return render(request, 'nakhll_market/profile/pages/showattrprice.html', context)
         else:
             # Get User Info
-            This_User_Info = GetUserInfo().run(request)
-            this_profile = This_User_Info["user_profiel"]
-            this_inverntory = This_User_Info["user_inverntory"]
+            this_profile = Profile.objects.get(FK_User=request.user)
+            this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
             options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
             # Get Nav Bar Menu Item
@@ -3599,9 +3589,8 @@ def AddShopCopun(request):
                 return render(request, 'nakhll_market/profile/pages/addshopcupon.html', context)
         else:
             # Get User Info
-            This_User_Info = GetUserInfo().run(request)
-            this_profile = This_User_Info["user_profiel"]
-            this_inverntory = This_User_Info["user_inverntory"]
+            this_profile = Profile.objects.get(FK_User=request.user)
+            this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
             options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
             # Get Nav Bar Menu Item
@@ -4347,9 +4336,8 @@ def MessageFilter(request):
 
         # ----------------------------------------------------------------------
             # Get User Info
-            This_User_Info = GetUserInfo().run(request)
-            this_profile = This_User_Info["user_profiel"]
-            this_inverntory = This_User_Info["user_inverntory"]
+            this_profile = Profile.objects.get(FK_User=request.user)
+            this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
             options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
             # Get Nav Bar Menu Item
@@ -4450,9 +4438,8 @@ def ManageFactorFilter(request):
                 return redirect("nakhll_market:ShowAllFactorList")
             # ----------------------------------------------------------------------
             # Get User Info
-            This_User_Info = GetUserInfo().run(request)
-            this_profile = This_User_Info["user_profiel"]
-            this_inverntory = This_User_Info["user_inverntory"]
+            this_profile = Profile.objects.get(FK_User=request.user)
+            this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
             options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
             # Get Nav Bar Menu Item
@@ -4543,9 +4530,8 @@ def AlertFilter(request):
                 return redirect("nakhll_market:Alert")
             # ----------------------------------------------------------------------
             # Get User Info
-            This_User_Info = GetUserInfo().run(request)
-            this_profile = This_User_Info["user_profiel"]
-            this_inverntory = This_User_Info["user_inverntory"]
+            this_profile = Profile.objects.get(FK_User=request.user)
+            this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
             options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
             # Get Nav Bar Menu Item

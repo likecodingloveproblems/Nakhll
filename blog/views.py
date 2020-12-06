@@ -115,9 +115,8 @@ def CheckView(request, obj_slug, obj_type):
 # All Blog Post
 def Blog(request):
     if request.user.is_authenticated:
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
     else:
         this_profile = None
         this_inverntory = None
@@ -213,9 +212,8 @@ def BlogLike(request, obj_id, type):
 # Single Post
 def SinglePost(request, Post_Slug, status = None, msg = None):
     if request.user.is_authenticated:
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
     else:
         this_profile = None
         this_inverntory = None
@@ -418,9 +416,8 @@ def AddNewPostComment(request, Post_Slug, id = None):
 # Single Post
 def SingleVendorStory(request, Story_Slug, status = None, msg = None):
     if request.user.is_authenticated:
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
     else:
         this_profile = None
         this_inverntory = None
@@ -621,9 +618,8 @@ def AddNewStoryComment(request, Story_Slug, id = None):
 # Show All Blog Story
 def show_all_blog_story(request):
     if request.user.is_authenticated:
-        This_User_Info = GetUserInfo().run(request)
-        this_profile = This_User_Info["user_profiel"]
-        this_inverntory = This_User_Info["user_inverntory"]
+        this_profile = Profile.objects.get(FK_User=request.user)
+        this_inverntory = request.user.WalletManager.Inverntory
     else:
         this_profile = None
         this_inverntory = None

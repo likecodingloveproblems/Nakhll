@@ -208,9 +208,8 @@ def Set_Send_Info(request):
             Factor_CityPerCode = request.POST["Factor_CityPerCode"]
             # -----------------------------------------------------------------------------
              # Get User Info
-            This_User_Info = GetUserInfo().run(request)
-            this_profile = This_User_Info["user_profiel"]
-            this_inverntory = This_User_Info["user_inverntory"]
+            this_profile = Profile.objects.get(FK_User=request.user)
+            this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
             options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
             # Get Nav Bar Menu Item
@@ -280,9 +279,8 @@ def Set_Send_Info(request):
 
         else:
             # Get User Info
-            This_User_Info = GetUserInfo().run(request)
-            this_profile = This_User_Info["user_profiel"]
-            this_inverntory = This_User_Info["user_inverntory"]
+            this_profile = Profile.objects.get(FK_User=request.user)
+            this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
             options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
             # Get Nav Bar Menu Item
@@ -358,9 +356,8 @@ def Final_Factor(request):
             # Get Date
             pay_type = request.POST["pay_status_btn"]
             # Get User Info
-            This_User_Info = GetUserInfo().run(request)
-            this_profile = This_User_Info["user_profiel"]
-            this_inverntory = This_User_Info["user_inverntory"]
+            this_profile = Profile.objects.get(FK_User=request.user)
+            this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
             options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
             # Get Nav Bar Menu Item
@@ -1119,9 +1116,8 @@ def send_factor(request, ID, status = None, msg = None):
                 status = True,
                 msg = 'فیلد های یارکد پستی، هزینه ارسال، نام ارسال کننده، نوع ارسال، تاریخ ارسال و وارد کردن محصولات ارسال شده اجباری می با شد!')
         else:
-            This_User_Info = GetUserInfo().run(request)
-            this_profile = This_User_Info["user_profiel"]
-            this_inverntory = This_User_Info["user_inverntory"]
+            this_profile = Profile.objects.get(FK_User=request.user)
+            this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
             options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
             # Get Nav Bar Menu Item

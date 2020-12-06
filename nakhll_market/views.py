@@ -1728,9 +1728,8 @@ def search(request):
         # ----------------------------------------------------------------
         # Get User Info
         if request.user.is_authenticated:
-            This_User_Info = GetUserInfo().run(request)
-            this_profile = This_User_Info["user_profiel"]
-            this_inverntory = This_User_Info["user_inverntory"]
+            this_profile = Profile.objects.get(FK_User=request.user)
+            this_inverntory = request.user.WalletManager.Inverntory
         else:
             this_profile = None
             this_inverntory = None
@@ -1798,9 +1797,8 @@ def FilterSearch(request):
         # -----------------------------------------------------------------
         # Get User Info
         if request.user.is_authenticated:
-            This_User_Info = GetUserInfo().run(request)
-            this_profile = This_User_Info["user_profiel"]
-            this_inverntory = This_User_Info["user_inverntory"]
+            this_profile = Profile.objects.get(FK_User=request.user)
+            this_inverntory = request.user.WalletManager.Inverntory
         else:
             this_profile = None
             this_inverntory = None
@@ -1901,9 +1899,8 @@ def FilterSearch(request):
     else:
         # Get User Info
         if request.user.is_authenticated:
-            This_User_Info = GetUserInfo().run(request)
-            this_profile = This_User_Info["user_profiel"]
-            this_inverntory = This_User_Info["user_inverntory"]
+            this_profile = Profile.objects.get(FK_User=request.user)
+            this_inverntory = request.user.WalletManager.Inverntory
         else:
             this_profile = None
             this_inverntory = None
