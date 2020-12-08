@@ -264,24 +264,19 @@ def ProfileMessage(request, status = None, start = None, end = None):
     else:
         return redirect("nakhll_market:AccountLogin")
 
-  
+
 # Get User Factors Info
 def ProfileFactor(request):
     # Check User Status
     if request.user.is_authenticated :
         context = baseData(request, 'factor')
         # Get All User Factor
-        this_user_factors = Factor.objects.filter(FK_User = request.user, PaymentStatus = True).order_by('-OrderDate')
+        context['This_User_Factor'] = Factor.objects.filter(FK_User = request.user, PaymentStatus = True).order_by('-OrderDate')
         # Factor List
-        factor_items_wait = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus = '1', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
-        factor_items_ready = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus = '2', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
-        factor_items_send = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus = '3', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
-        factor_items_cansel = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus = '0', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
-        context['This_User_Factor'] = this_user_factors
-        context['ShopFactors'] = factor_items_wait
-        context['ShopRedyFactors'] = factor_items_ready
-        context['ShopSendFactors'] = factor_items_send
-        context['ShopCanselFactors'] = factor_items_cansel
+        context['ShopFactors'] = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus__in = '1', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
+        context['ShopRedyFactors'] = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus__in = '2', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
+        context['ShopSendFactors'] = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus__in = '3', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
+        context['ShopCanselFactors'] = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus__in = '0', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
      
         return render(request, 'nakhll_market/profile/pages/factor.html', context)
     else: 
