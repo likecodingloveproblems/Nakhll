@@ -246,6 +246,7 @@ SITE_ID = os.environ.get('SITE_ID',3)
 
 # admin users that detail trace back of unhandelled exception are sent to them.
 ADMINS = [tuple(os.environ.get('ADMINS').split())]
+SERVER_EMAIL = os.environ.get('EMAIL_HOST_USER')
 
 # setup email configurations
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND')
