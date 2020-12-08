@@ -273,10 +273,10 @@ def ProfileFactor(request):
         # Get All User Factor
         context['This_User_Factor'] = Factor.objects.filter(FK_User = request.user, PaymentStatus = True).order_by('-OrderDate')
         # Factor List
-        context['ShopFactors'] = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus__in = '1', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
-        context['ShopRedyFactors'] = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus__in = '2', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
-        context['ShopSendFactors'] = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus__in = '3', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
-        context['ShopCanselFactors'] = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus__in = '0', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
+        context['ShopFactors'] = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus = '1', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
+        context['ShopRedyFactors'] = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus = '2', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
+        context['ShopSendFactors'] = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus = '3', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
+        context['ShopCanselFactors'] = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus = '0', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
      
         return render(request, 'nakhll_market/profile/pages/factor.html', context)
     else: 
