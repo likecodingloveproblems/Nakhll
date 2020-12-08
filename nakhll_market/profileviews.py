@@ -273,10 +273,10 @@ def ProfileFactor(request):
         # Get All User Factor
         this_user_factors = Factor.objects.filter(FK_User = request.user, PaymentStatus = True).order_by('-OrderDate')
         # Factor List
-        factor_items_wait = Factor.objects.filter(PaymentStatus = True, Publish = True, Checkout = False, FK_FactorPost__ProductStatus = '1', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
-        factor_items_ready = Factor.objects.filter(PaymentStatus = True, Publish = True, Checkout = False, FK_FactorPost__ProductStatus = '2', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
-        factor_items_send = Factor.objects.filter(PaymentStatus = True, Publish = True, Checkout = False, FK_FactorPost__ProductStatus = '3', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
-        factor_items_cansel = Factor.objects.filter(PaymentStatus = True, Publish = True, Checkout = False, FK_FactorPost__ProductStatus = '0', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
+        factor_items_wait = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus = '1', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
+        factor_items_ready = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus = '2', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
+        factor_items_send = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus = '3', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
+        factor_items_cansel = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus = '0', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
         context['This_User_Factor'] = this_user_factors
         context['ShopFactors'] = factor_items_wait
         context['ShopRedyFactors'] = factor_items_ready

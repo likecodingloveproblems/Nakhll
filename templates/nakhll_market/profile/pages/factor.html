@@ -17,6 +17,7 @@
                     <th>وضعیت پرداخت</th>
                     <th>وضعیت سفارش</th>
                     <th>وضعیت</th>
+                    <th>وضعیت تسویه</th>
                     <th>نمایش</th>
                     </tr>
                 </thead>
@@ -41,6 +42,7 @@
                                 <td>سفارش ارسال شده است</td>
                             {% endif %}
                             <td>{% if factor.Publish == True %}تایید شده{% else %}تایید نشده{% endif %}</td>
+                            <td>{% if factor.Checkout %}تسویه شده{% else %}تسویه نشده{% endif %}</td>
                             <td class="pointer"><a href="{% url "nakhll_market:ShowFactorItem" factor.ID %}" target="_blank"><i class="fad fa-eye"></i></a></td>
                         </tr>
                     {% endfor %}
