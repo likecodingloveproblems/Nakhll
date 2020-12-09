@@ -6,6 +6,7 @@ from django.urls import reverse
 class StaticViewSitemap(sitemaps.Sitemap):
     priority = 1
     changefreq = 'daily'
+    protocol = 'https'
 
     def items(self):
         return ['Profile:index','Profile:Markets']
@@ -17,6 +18,7 @@ class StaticViewSitemap(sitemaps.Sitemap):
 class ProductSitemap(Sitemap):    
     changefreq = "monthly"
     priority = 0.5
+    protocol = 'https'
  
     def items(self):
         return Product.objects.filter(Publish = True, Available = True)
@@ -28,6 +30,7 @@ class ProductSitemap(Sitemap):
 class ShopSitemap(Sitemap):    
     changefreq = "monthly"
     priority = 0.8
+    protocol = 'https'
  
     def items(self):
         return Shop.objects.filter(Publish = True, Available = True)

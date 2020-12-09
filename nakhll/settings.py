@@ -242,7 +242,7 @@ REST_FRAMEWORK = {
     ),
 }
 
-SITE_ID = os.environ.get('SITE_ID',3)
+SITE_ID = os.environ.get('SITE_ID',2)
 
 # admin users that detail trace back of unhandelled exception are sent to them.
 ADMINS = [tuple(os.environ.get('ADMINS').split())]
