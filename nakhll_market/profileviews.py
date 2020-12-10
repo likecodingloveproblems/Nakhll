@@ -289,7 +289,7 @@ def ProfileTransactione(request):
     # Check User Status
     if request.user.is_authenticated :
         # Get User Info
-        context = baseData(request, 'factor')
+        context = baseData(request, 'transaction')
         # Get All User Transaction
         context['Transactions'] = Transaction.objects.filter(FK_User = request.user).order_by('-Date')
      

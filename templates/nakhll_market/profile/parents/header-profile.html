@@ -4,11 +4,7 @@
         <div class="body-top-profile">
             <span>
                 {% if request.user.is_authenticated %}
-                    {% for pro in Profile %}
-                        {% if pro.FK_User == request.user %}
-                            امتیاز کاربر : {{pro.Point}}
-                        {% endif %} 
-                    {% endfor %} 
+                    امتیاز کاربر : {{request.user.User_Profile.Point}}
                 {% endif %}
             </span>
         </div>
@@ -17,11 +13,7 @@
             <div class="body-top-profile">
             <a href="{% url "nakhll_market:Wallet" %}">
                 {% if request.user.is_authenticated %}
-                    {% for wallet in Wallet %}
-                        {% if wallet.FK_User == request.user %}
-                            کیف پول : <span class="priceline"><span class="numbersprice">{{wallet.Inverntory}}</span></span> ریال
-                        {% endif %} 
-                    {% endfor %} 
+                    کیف پول : <span class="priceline"><span class="numbersprice">{{request.user.WalletManager.Inverntory}}</span></span> ریال
                 {% endif %}
             </a>
             </div>
@@ -30,11 +22,7 @@
             <div class="body-top-profile">
                 <span>
                     {% if request.user.is_authenticated %}
-                        {% for pro in Profile %}
-                            {% if pro.FK_User == request.user %}
-                                کد معرف شما : {{pro.UserReferenceCode}}
-                            {% endif %} 
-                        {% endfor %}
+                        کد معرف شما : {{request.user.User_Profile.UserReferenceCode}}
                     {% endif %}
                 </span>
             </div>

@@ -2,11 +2,7 @@
 
 <div class="profile-sidebar">
     {% if request.user.is_authenticated %}
-        {% for pro in Profile %}
-            {% if pro.FK_User == request.user %}
-                <img src="{{pro.Image_thumbnail_url}}" alt="profile-img">
-            {% endif %}
-        {% endfor %}
+        <img src="{{request.user.User_Profile.Image_thumbnail_url}}" alt="profile-img">
     {% endif %}
     <h4>
     {% if request.user.is_authenticated %}
@@ -18,11 +14,7 @@
             <img src="https://cdn0.iconfinder.com/data/icons/shopping-and-ecommerce-1/38/Shopping_icons_1_Converted-09-512.png"
                 alt=".">
                 {% if request.user.is_authenticated %}
-                    {% for wallet in Wallet %}
-                        {% if wallet.FK_User == request.user %}
-                            کیف پول : <span class="priceline"><span class="numbersprice">{{wallet.Inverntory}}</span></span> ریال
-                        {% endif %}
-                    {% endfor %}
+                    کیف پول : <span class="priceline"><span class="numbersprice">{{request.user.WalletManager.Inverntory}}</span></span> ریال
                 {% endif %}
         </h5>
     </a>

@@ -248,50 +248,46 @@
                         {% for item in UserShops %}
                             <div class="tab-pane fade {% if forloop.counter == 1 %} show active {% endif %} row" id="{{item.Shop.Slug}}" role="tabpanel" aria-labelledby="{{item.Shop.Slug}}-tab">
                                 
-                                {% for productsus in UserProducts %}
-
-                                    {%if item.Shop.Slug == productsus.FK_Shop.Slug%}
-                                        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12">
-                                            <div class="prod-sec prod-sec-inprofile product-setting">
-                
-                                                <div class="product-img">
-                                                    <img class="prodimg" src="{{productsus.Image_thumbnail_url}}" alt="{{item.Title}}">
-                                                </div>
-                
-                                                <h3>{{productsus.Title}}</h3>
-                
-                                                <span class="numbersprice">{{productsus.Price}} ریال</span>
-                
-                                                <div class="link-prod-profile">
-                                                    <div class="container">
-                
-                                                        <div class="row">
-                                                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 product-setting-btns product-edit-btn">
-                                                                <a href="{% url "nakhll_market:Shop_Manager_EditProduct" productsus.Slug %}">ویرایش</a>
-                                                            </div>
+                                {% for productsus in item.Shop.get_products %}
+                                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12">
+                                        <div class="prod-sec prod-sec-inprofile product-setting">
+            
+                                            <div class="product-img">
+                                                <img class="prodimg" src="{{productsus.Image_thumbnail_url}}" alt="{{item.Title}}">
+                                            </div>
+            
+                                            <h3>{{productsus.Title}}</h3>
+            
+                                            <span class="numbersprice">{{productsus.Price}} ریال</span>
+            
+                                            <div class="link-prod-profile">
+                                                <div class="container">
+            
+                                                    <div class="row">
+                                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 product-setting-btns product-edit-btn">
+                                                            <a href="{% url "nakhll_market:Shop_Manager_EditProduct" productsus.Slug %}">ویرایش</a>
                                                         </div>
-                                                        <div class="row">
-                                                            <div class="col-12 product-setting-btns">
-                                                                <a href="{% url "nakhll_market:Shop_Manager_ProductBannerList" productsus.Slug %}">گالری محصول</a>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col-12 product-setting-btns">
-                                                                <a href="{% url "nakhll_market:Shop_Manager_ProductAttributeList" productsus.Slug %}">ویژگی های محصول</a>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col-12 product-setting-btns">
-                                                                <a href="{% url "nakhll_market:Shop_Manager_ProductPriceAttributeList" productsus.Slug %}">ویژگی های انتخابی</a>
-                                                            </div>
-                                                        </div>
-                
                                                     </div>
+                                                    <div class="row">
+                                                        <div class="col-12 product-setting-btns">
+                                                            <a href="{% url "nakhll_market:Shop_Manager_ProductBannerList" productsus.Slug %}">گالری محصول</a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-12 product-setting-btns">
+                                                            <a href="{% url "nakhll_market:Shop_Manager_ProductAttributeList" productsus.Slug %}">ویژگی های محصول</a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-12 product-setting-btns">
+                                                            <a href="{% url "nakhll_market:Shop_Manager_ProductPriceAttributeList" productsus.Slug %}">ویژگی های انتخابی</a>
+                                                        </div>
+                                                    </div>
+            
                                                 </div>
                                             </div>
                                         </div>
-                                    {% endif %}
-
+                                    </div>
                                 {% endfor %}
                             </div>
                         {% endfor %}
