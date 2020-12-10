@@ -453,10 +453,11 @@ def verify(request):
         status = request.POST.get('status')
         HashCardNumber = request.POST.get('HashCardNumber')
         Amount = request.POST.get('Amount').replace(',','')
-        DiscountedAmount = request.POST.get('SwAmount')
+        DiscountedAmount = request.POST.get('SwAmount').replace(',','')
         STraceNo = request.POST.get('STraceNo')
         try:
             PecTransaction.objects.create(
+                                    Token=Token,
                                     OrderId=OrderId, 
                                     TerminalNo=TerminalNo, 
                                     RRN=RRN, 
@@ -498,6 +499,7 @@ def verify(request):
 
         message=""
         if int(status) == 0 and float(RRN) > 0:
+            # transaction is correct
             requestData = ClientConfirmRequestData(LoginAccount=PIN, Token=Token)
             result = confirmService.service.ConfirmPayment(requestData)
             try:
@@ -512,6 +514,7 @@ def verify(request):
                 print('PecConfirmation can not save! Token: {}, OrderId:{}'.format(Token, OrderId))
 
             if result['Status'] == 0:
+                # transaction confirmed correctly
                 try:
                     factor = Factor.objects.get(FK_User = user, PaymentStatus = False)
                     factor.PaymentStatus = True
@@ -574,8 +577,17 @@ def verify(request):
                     transaction = Transaction.objects.create(FK_User = user, Price = pricefactori, Type = '2', Description = des_trans)
                     message = 'تراکنش موفق .\nشماره پیگیری: ' + str(result['RRN'])
                 except:
-                    message = 'تراکنش موفق .\nشماره پیگیری: ' + str(result['RRN'])+'\n خطای سبد خرید، با شماره پیگیری خود به پشتیبانی مراجعه کنید'
+                    # transaction is correct and confirmed but factor is not build correctly
+                    try: 
+                        response = reverseTransaction(PIN, Token, OrderId)
+                        message = 'تراکنش موفق نبوده و مبلغ کسر شده به حساب شما برگشت داده شده است. لطفا با پشتیبانی تماس حاصل فرمایید.'
+                    except:
+                        response = {'Status': 'FAIL'}
+                        message = 'تراکنش موفق بوده و لیکن فاکتور صادر نشده است. برای دریافت وجه پرداختی با پشتیبانی تماس حاصل فرمایید.'
+
+                    message =  '\nشماره پیگیری:{}' + str(result['RRN']) 
             else:
+                # transaction can not confirmed
                 try:
                     response = reverseTransaction(PIN, Token, OrderId)
                 except:
