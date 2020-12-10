@@ -498,7 +498,7 @@ def verify(request):
             return HttpResponse('خطای پرداخت تراکنش با پشتیبانی تماس بگیرید. وجه مورد نظر به حساب تان برگشت داده شده است.')
 
         message=""
-        if int(status) == 0 and float(RRN) > 0:
+        if int(status) == 0 and float(RRN) > 0 and factor.TotalPrice == Amount:
             # transaction is correct
             requestData = ClientConfirmRequestData(LoginAccount=PIN, Token=Token)
             result = confirmService.service.ConfirmPayment(requestData)
