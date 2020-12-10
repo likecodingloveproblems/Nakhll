@@ -65,7 +65,7 @@ from .forms import Login, CheckEmail
 # -----------------------------------------------------------------------------------------------------------------------------------
 
 # Send Alert SMS
-class SendMessage(threading.Thread):
+class SendMessage:
 
     def __init__(self, user_id, title, description, sender_id):
         self.user = User.objects.get(id = user_id)
@@ -147,7 +147,7 @@ def SendPostCode(Shop, FactorNum, PostCode, PhoneNumber):
 
 
 # Send Push notification
-class send_push_notification(threading.Thread):
+class send_push_notification:
     def run(self, title, description, push_id):
         try:
             TOKEN = '70c66e5fcb993ac51a432617941d5694c03c4943'

@@ -149,7 +149,7 @@ def show_cart(request):
         return ("nakhll_market:AccountLogin")
 
 
-class check_product_send_status(threading.Thread):
+class check_product_send_status:
     def run(self, this_factor):
         shipping_cost_by_customer = []
         area_in_shop_city = []

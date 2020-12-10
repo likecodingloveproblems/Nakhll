@@ -70,7 +70,7 @@ from .forms import Login, CheckEmail
 #---------------------------------------------------------------------------------------------------------------------------------
 
 # Send Pushnotification
-class SendPushnotif(threading.Thread):
+class SendPushnotif:
     def run(self, title, description, user_id):
         try:
             TOKEN = '70c66e5fcb993ac51a432617941d5694c03c4943'
@@ -111,7 +111,7 @@ class SendPushnotif(threading.Thread):
             print(str(e))
 
 # Send Alert SMS
-class SendMessage(threading.Thread):
+class SendMessage:
 
     def __init__(self, user_id):
         self.user = User.objects.get(id = user_id)

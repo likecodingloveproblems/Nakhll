@@ -2328,7 +2328,7 @@ def add_check_out(request):
 # get shop view in //req : request.user  // res: data OR err
 
 # Functions
-class get_shop_view_in_seven_day(threading.Thread):
+class get_shop_view_in_seven_day:
     def run(self, id):
         # View In Seven Day
         day_list = []
@@ -2351,7 +2351,7 @@ class get_shop_view_in_seven_day(threading.Thread):
                 day_list.append('0')
         return day_list
 
-class get_shop_view_in_seven_week(threading.Thread):
+class get_shop_view_in_seven_week:
     def run(self, id):
         # View In Seven Day
         week_list = []
@@ -2463,7 +2463,7 @@ class get_shop_view_in_seven_week(threading.Thread):
                 week_list.append('0')
         return week_list
 
-class get_shop_view_in_seven_month(threading.Thread):
+class get_shop_view_in_seven_month:
     def run(self, id):
         # View In Seven Day
         month_list = []
@@ -2549,7 +2549,7 @@ def get_chart(request):
 # detail Message // res: (User Message Count When Seen = False) OR err
 
 # Functions
-class get_user_massege_count_when_status_is_false(threading.Thread):
+class get_user_massege_count_when_status_is_false:
     def run(self, request):
         count = 0
         # Get User Message Count When Seen = False
@@ -2582,7 +2582,7 @@ def get_user_message_count(request):
 # detail Message // res: (Sale statistics) {send, wait, satisfaction}  OR err
 
 # Functions
-class get_wait_factors(threading.Thread):
+class get_wait_factors:
     def run(self, request):
         try:
             items = []
@@ -2600,7 +2600,7 @@ class get_wait_factors(threading.Thread):
         except Exception as e:
             return JsonResponse({'get-wait-factor-error' : str(e)}, status = HTTP_400_BAD_REQUEST)
 
-class get_send_factors(threading.Thread):
+class get_send_factors:
     def run(self, request):
         try:
             items = []

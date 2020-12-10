@@ -89,7 +89,7 @@ def get_accepted_alert_count(this_shop_alerts):
 
 
 # get shop factor
-class get_shop_factor(threading.Thread):
+class get_shop_factor:
     def run(self, this_shop):
         # result
         result = []

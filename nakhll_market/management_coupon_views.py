@@ -18,7 +18,7 @@ from Payment.models import Coupon, Wallet, Factor
 
 
 # Send SMS
-class SendSMS(threading.Thread):
+class SendSMS:
 
     def __init__(self, users, coupon_id):
         self.coupon = Coupon.objects.get(id = coupon_id)

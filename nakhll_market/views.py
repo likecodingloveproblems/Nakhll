@@ -917,7 +917,7 @@ def set_session(request):
 
 
 # get shop category
-class get_shop_other_info(threading.Thread):
+class get_shop_other_info:
     def run (self, request, shop):
         shop_submarkets = shop.FK_SubMarket.all()
         if shop_submarkets:
@@ -1331,7 +1331,7 @@ def TagDetail(request, tag_slug):
 
 
 # Get Product Total Sell
-class Product_Total_Sell(threading.Thread):
+class Product_Total_Sell:
     def run(self, product):
         # Total Sell
         total_sell = 0
@@ -1343,7 +1343,7 @@ class Product_Total_Sell(threading.Thread):
 
 
 # Get Related products
-class get_related_products(threading.Thread):
+class get_related_products:
     def run(self, product):
         # Get Product
         this_product = product.get_related_products()
@@ -2212,7 +2212,7 @@ def ShopCommentLike(request, id):
 # -------------------------------------------------------------------------------------------------------------------------------
 
 # Choise Random Product Function
-class Choise_Random_Product(threading.Thread):
+class Choise_Random_Product:
     def run(self):
         FinalList = []
         ProductList = []
