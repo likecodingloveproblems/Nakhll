@@ -280,7 +280,6 @@ def edit_shop(request):
         # check access level
         if this_shop.FK_ShopManager == request.user:
             # Check Alert
-            edit_shop_alert = None
             if not Alert.objects.filter(Part = '3', Slug = this_shop.ID, Seen = False).exists():
                 edit_shop_alert = Alert.objects.create(FK_User = request.user, Part = '3', Slug = this_shop.ID)
             else:

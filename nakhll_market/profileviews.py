@@ -825,7 +825,6 @@ def edit_shop_info(request, shop_slug):
                         holidays += '-'
                     holidays += '6'
                 # Shop Edit Alert
-                global edit_shop_alert
                 if not Alert.objects.filter(Part = '3', Slug = this_shop.ID, Seen = False).exists():
                     edit_shop_alert = Alert.objects.create(FK_User = request.user, Part = '3', Slug = this_shop.ID)
                 else:
