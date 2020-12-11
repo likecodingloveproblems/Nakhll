@@ -385,12 +385,10 @@ def send_request_first(request, factor_id, bank_port):
             if factpost.FK_Product.Inventory < factpost.ProductCount:
                 Inventory_true = False
     if  Inventory_true == True:
-        amounts = factor.get_end_price() / 10
-        if amounts >=1000 :
-            global amount
-            amount = amounts
+        amounts = factor.get_end_price()
+        if amounts >=10000 :
             mobile = factor.MobileNumber
-            return send_request(request, factor, amount, mobile, bank_port)
+            return send_request(request, factor, amounts, mobile, bank_port)
     else:
         redirect('Payment:final_factor')
 
@@ -400,7 +398,6 @@ def send_request(request, factor, amount, mobile, bank_port):
     if request.user.is_authenticated :
         description = 'first_name:{}, last_name:{}'.format(factor.FK_User.first_name, factor.FK_User.last_name)
         if bank_port == 'pay_pec':
-            amount = amount*10
             pecOrder = PecOrder(AdditionalData=description, Originator=mobile, Amount=int(amount), FactorNumber=factor.FactorNumber)
             pecOrder.save()
             requestData = ClientSaleRequestData(LoginAccount=PIN, Amount=int(amount), OrderId=pecOrder.id, CallBackUrl=CallbackURL, AdditionalData=description, Originator=mobile)
@@ -498,7 +495,7 @@ def verify(request):
             return HttpResponse('خطای پرداخت تراکنش با پشتیبانی تماس بگیرید. وجه مورد نظر به حساب تان برگشت داده شده است.')
 
         message=""
-        if int(status) == 0 and float(RRN) > 0 and factor.TotalPrice == Amount:
+        if int(status) == 0 and float(RRN) > 0 and int(factor.TotalPrice) == int(Amount):
             # transaction is correct
             requestData = ClientConfirmRequestData(LoginAccount=PIN, Token=Token)
             result = confirmService.service.ConfirmPayment(requestData)
