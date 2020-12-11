@@ -44,7 +44,7 @@
                     <div class="carousel-inner">
                         {% for slidr in Sliders %}
                             <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                                <a href="{{slidr.URL}}/"><img src="{{slidr.Image.url}}" class="d-block w-100" alt="{{slidr.Title}}">
+                                <a href="{{slidr.URL}}"><img src="{{slidr.Image.url}}" class="d-block w-100" alt="{{slidr.Title}}">
                                     {% if slidr.ShowInfo %}
                                     <div class="carousel-caption">
                                         <h3>{{slidr.Title}}</h3>
@@ -321,7 +321,7 @@
 
                                     <div class="left-title-blog">
                                         <div>
-                                            <a href="/blog/index/"> مشاهده تمام محتوا </a>
+                                            <a href="/blog/"> مشاهده تمام محتوا </a>
                                         </div>
                                     </div>
                                 </div>
@@ -331,7 +331,7 @@
                         <div class="row">
                             {% for item in Postblog %}
                                 <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12">
-                                    <a href="/blog/post/{{item.Slug}}/">
+                                    <a href="/blog/">
                                         <div class="post-blog">
                                             <span class="tag-post">وبلاگ</span>
                                             <img src="{{item.Index_Image.url}}" alt="{{item.Slug}}">
@@ -345,7 +345,7 @@
                                             </div>
                                             <div class="author-single-post">
                                                 <div class="img-author">
-                                                    <img src="{{item.Writer.Image_thumbnail.url}}" alt="profile" width="45" height="45">
+                                                    <img src="{{item.FK_User.User_Profile.Image.url}}" alt="profile" width="45" height="45">
                                                 </div>
                                                 <div class="text-author">
                                                     <h5>{{item.FK_User.first_name}} {{item.FK_User.last_name}}</h5>
@@ -378,7 +378,7 @@
                         <div class="row">
                             {% for vendorstory in Vendorstory %}
                                 <div class="col-xl-6 col-12">
-                                    <a href="{% url "blog:vendorstory" vendorstory.Slug %}">
+                                    <a href="/blog/">
                                         <div class="box-vendor-story">
                                             <div class="right-vstory">
                                                 {% if vendorstory.Show_Image %}<img src="{{vendorstory.Image_thumbnail_url}}" alt="{{vendorstory.Slug}}">{% else %}<img src="{{vendorstory.FK_Shop.Image_thumbnail_url}}" alt="{{vendorstory.Slug}}">{% endif %}
@@ -389,7 +389,7 @@
                                                     <p>
                                                         {% autoescape off %}{{vendorstory.Summary}}{% endautoescape %}
                                                         <br>
-                                                        <a href="{% url "blog:vendorstory" vendorstory.Slug %}" class="more-vstory">ادامه داستان</a>
+                                                        <a href="/blog/" class="more-vstory">ادامه داستان</a>
                                                     </p>
                                                 </div>
                                                 <h5>{{vendorstory.Title}}</h5>
@@ -402,7 +402,7 @@
                         </div>
                         <div class="row">
                             <div class="col-xl-12 col-lg-12 text-center">
-                                <a class="more-stories" href="{% url "blog:show_all_blog_story" %}">بیشتر ...</a>
+                                <a class="more-stories" href="/blog/">بیشتر ...</a>
                             </div>
                         </div>
                     </div>
