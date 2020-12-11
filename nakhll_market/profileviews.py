@@ -1102,7 +1102,6 @@ def edit_shop_banner(request, banner_id):
             this_banner = get_object_or_404(ShopBanner, id = banner_id)
             try:
                 # Shop Banner Edit Alert
-                global edit_shop_banner_alert
                 if not Alert.objects.filter(Part = '5', Slug = this_banner.id, Seen = False).exists():
                     edit_shop_banner_alert = Alert.objects.create(FK_User = request.user, Part = '5', Slug = this_banner.id)
                 else:
@@ -2917,17 +2916,16 @@ def UpdateUserDashboard(request):
             state = ''
             bigcity = ''
             city = ''
-            global object
             with open('Iran.json', encoding = 'utf8') as f:
-                object = json.load(f)
-            for i in object:
+                users = json.load(f)
+            for i in users:
                 if (i['divisionType'] == 1) and (i['id'] == int(State)):
                     state = i['name']
                 if (i['divisionType'] == 2) and (i['id'] == int(BigCity)):
                     bigcity = i['name']
                 if (i['divisionType'] == 3) and (i['id'] == int(City)):
                     if i['name'] == 'مرکزی':
-                        for j in object:
+                        for j in users:
                             if (j['divisionType'] == 2) and (j['id'] == i['parentCountryDivisionId']):
                                 city = j['name']
                     else:

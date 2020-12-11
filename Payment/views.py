@@ -629,6 +629,7 @@ def verify(request):
 
         message=""
         if request.GET.get('Status') == 'OK':
+            # TODO it will make Exception because amount is not defined and is not GLOBAL
             result = client.service.PaymentVerification(MERCHANT, request.GET['Authority'], amount)
             if result.Status == 100:
                 try:
@@ -1285,13 +1286,13 @@ def send_request_wallet(request):
                 chargeprice = int(convert_prise_to_int)
                 amounts = chargeprice / 10
                 if amounts >= 1000:
-                    global amount
+                    # global amount
                     amount = amounts
-                    global description
+                    # global description
                     description = ' شارژ کیف پول'+ request.user.first_name +' '+request.user.last_name +"("+request.user.username+ ")"   # Required
-                    global mobile
+                    # global mobile
                     mobile = get_object_or_404(Profile, FK_User = request.user).MobileNumber
-                    global CallbackURL
+                    # global CallbackURL
                     CallbackURL = 'http://localhost:8000/cart/verify_wallet/'
                 else:
                     return redirect("nakhll_market:Wallet")

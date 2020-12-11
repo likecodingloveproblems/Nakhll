@@ -1248,7 +1248,6 @@ def get_shop_submarkets(request):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_all_state(request):
-    global users
     with open('Iran.json', encoding = 'utf8') as f:
         users = json.load(f)
     # Build Class
@@ -1275,7 +1274,6 @@ def get_all_state(request):
 def get_state_bigcity(request):
         
     this_id = request.POST.get('id')
-    global users
     with open('Iran.json', encoding = 'utf8') as f:
         users = json.load(f)
     # Build Class
@@ -1302,7 +1300,6 @@ def get_state_bigcity(request):
 def get_bigcity_city(request):
 
     this_id = request.POST.get('id')
-    global users
     with open('Iran.json', encoding = 'utf8') as f:
         users = json.load(f)
     # Build Class
@@ -1314,7 +1311,6 @@ def get_bigcity_city(request):
             return json.dumps(self, default = lambda o: o.__dict__)
     # Set List
     result = []
-    global name
     for i in users:
         if (i['divisionType'] == 2) and (i['id'] == int(this_id)):
             name = i['name']
