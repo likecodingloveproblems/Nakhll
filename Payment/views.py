@@ -398,8 +398,7 @@ def send_request(request, factor, amount, mobile, bank_port):
     if request.user.is_authenticated :
         description = 'first_name:{}, last_name:{}'.format(factor.FK_User.first_name, factor.FK_User.last_name)
         # set factor TotalPrice and PostPrice
-        factor.TotalPrice = factor.amount
-        factor.PostPrice = factor.get_postprice()
+        factor.TotalPrice = amount
         factor.save()
         if bank_port == 'pay_pec':
             pecOrder = PecOrder(AdditionalData=description, Originator=mobile, Amount=int(amount), FactorNumber=factor.FactorNumber)
