@@ -1511,7 +1511,7 @@ def add_new_product(request):
 def edit_product(request, product_slug):
    # Check User Status
     if request.user.is_authenticated :
-        
+
         this_profile = Profile.objects.get(FK_User=request.user)
         this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
@@ -1524,7 +1524,7 @@ def edit_product(request, product_slug):
         allcategory = this_product.get_product_categories()
         allpostrange = this_product.get_product_inpostrange()
         allexepostrange = this_product.get_product_outpostrange()
-
+        otherSubMarkets = SubMarket.objects.exclude(ID=this_product.FK_SubMarket.ID)
         context = {
             'This_User_Profile':this_profile,
             'This_User_Inverntory': this_inverntory,
@@ -1535,9 +1535,186 @@ def edit_product(request, product_slug):
             'Categort':allcategory,
             'ProPostRange':allpostrange,
             'ProExePostRange':allexepostrange,
+            'OtherSubMarkets':otherSubMarkets,
         }
-        
-        return render(request, 'nakhll_market/profile/pages/editeproduct.html', context)
+        if request.method == 'GET':
+            context['ShowAlart'] = True
+            return render(request, 'nakhll_market/profile/pages/editeproduct.html', context)
+    
+        if request.method == 'POST':
+            # Get Data
+            title = request.POST.get("prod_title")
+            shop_id = request.POST.get("ProdShop")
+            categories = request.POST.getlist("ProdCat")
+            submarket_id = request.POST.get("ProdSub")
+            discount = request.POST.get("Prodoffamount", 0)
+            if discount == '':
+                discount = '0'
+            oldprice = request.POST.get("prod_OldPrice", 0)
+            if oldprice == '':
+                oldprice = '0'
+            price = str(int(oldprice)-int(discount))
+            send_type = request.POST.get("ProdRange")
+            status = request.POST.get("ProdPostType")
+            net_weight = request.POST.get("product_netweight")
+            packing_weight = request.POST.get("product_packingweight")
+            length = request.POST.get("product_lengthwithpackaging")
+            width = request.POST.get("product_widthwithpackaging")
+            height = request.POST.get("product_heightwithpackaging")
+            try:
+                image = request.FILES["image"]
+            except MultiValueDictKeyError:
+                image = None
+            try:
+                description = request.POST["ProdDes"]
+            except:
+                description = None
+            try:
+                bio = request.POST["ProdBio"]
+            except:
+                bio = None
+            try:
+                story = request.POST["ProdStory"]
+            except:
+                story = None
+            try:
+                within_range = request.POST.getlist("PostRange")
+            except:
+                within_range = None
+            try:
+                out_of_range = request.POST.getlist("ExePostRange")
+            except:
+                out_of_range = None
+            try:
+                inventory = request.POST["prod_num_in_store"]
+            except:
+                inventory = None
+            # get this product
+            this_product = Product.objects.get(Slug = product_slug)
+            # check access level
+            if (this_product.FK_Shop.FK_ShopManager == request.user) and (Shop.objects.get(ID = shop_id).FK_ShopManager == request.user):
+                # check alert
+                edit_product_alert = None
+                if not Alert.objects.filter(Part = '7', Slug = this_product.ID, Seen = False).exists():
+                    edit_product_alert = Alert.objects.create(FK_User = request.user, Part = '7', Slug = this_product.ID)
+                else:
+                    edit_product_alert = Alert.objects.get(Part = '7', Slug = this_product.ID, Seen = False)
+                    edit_product_alert.FK_Field.all().delete()
+                # check product title
+                if this_product.Title != title:
+                    product_title_field = Field.objects.create(Title = 'Title', Value = title)
+                    edit_product_alert.FK_Field.add(product_title_field)
+                # check product price
+                if this_product.Price != price:
+                    product_price_field = Field.objects.create(Title = 'Price', Value = price)
+                    edit_product_alert.FK_Field.add(product_price_field)
+                # check product oldprice
+                if this_product.OldPrice != oldprice:
+                    product_oldprice_field = Field.objects.create(Title = 'OldPrice', Value = oldprice)
+                    edit_product_alert.FK_Field.add(product_oldprice_field)
+                # check product send_type
+                if this_product.PostRangeType != send_type:
+                    product_sendtype_field = Field.objects.create(Title = 'ProdRange', Value = send_type)
+                    edit_product_alert.FK_Field.add(product_sendtype_field)
+                # check product status
+                if this_product.Status != status:
+                    product_status_field = Field.objects.create(Title = 'ProdPostType', Value = status)
+                    edit_product_alert.FK_Field.add(product_status_field)
+                # check product inventory
+                if status == '1':
+                    # check product inventory
+                    if (inventory != None) and (this_product.Inventory != int(inventory)):
+                        product_inventory_field = Field.objects.create(Title = 'ProdInStore', Value = inventory)
+                        edit_product_alert.FK_Field.add(product_inventory_field)
+                elif (status == '4') or (status == '3') or (status == '2'):
+                    # check product inventory
+                    product_inventory_field = Field.objects.create(Title = 'ProdInStore', Value = 0)
+                    edit_product_alert.FK_Field.add(product_inventory_field)
+                # check product net_weight
+                if this_product.Net_Weight != net_weight:
+                    product_netweight_field = Field.objects.create(Title = 'ProdNetWeight', Value = net_weight)
+                    edit_product_alert.FK_Field.add(product_netweight_field)
+                # check product packing_weight
+                if this_product.Weight_With_Packing != packing_weight:
+                    product_packingweight_field = Field.objects.create(Title = 'ProdPackingWeight', Value = packing_weight)
+                    edit_product_alert.FK_Field.add(product_packingweight_field)
+                # check product length
+                if this_product.Length_With_Packaging != length:
+                    product_length_field = Field.objects.create(Title = 'ProdLengthWithPackaging', Value = length)
+                    edit_product_alert.FK_Field.add(product_length_field)
+                # check product width
+                if this_product.Width_With_Packaging != width:
+                    product_width_field = Field.objects.create(Title = 'ProdWidthWithPackaging', Value = width)
+                    edit_product_alert.FK_Field.add(product_width_field)
+                # check product height
+                if this_product.Height_With_Packaging != height:
+                    product_height_field = Field.objects.create(Title = 'ProdHeightWithPackaging', Value = height)
+                    edit_product_alert.FK_Field.add(product_height_field)
+                # check product shop
+                if this_product.FK_Shop != Shop.objects.get(ID = shop_id):
+                    product_shop_field = Field.objects.create(Title = 'Shop', Value = shop_id)
+                    edit_product_alert.FK_Field.add(product_shop_field)
+                # check product submarket
+                if this_product.FK_SubMarket != SubMarket.objects.get(ID = submarket_id):
+                    product_submarket_field = Field.objects.create(Title = 'SubMarket', Value = submarket_id)
+                    edit_product_alert.FK_Field.add(product_submarket_field)
+                # check product image
+                if (image != '') and (image != None):
+                    this_product.NewImage = image
+                    this_product.save()
+                    new_image_string = 'NewImage' + '#' + str(this_product.NewImage)
+                    product_image_field = Field.objects.create(Title = 'Image', Value = new_image_string)
+                    edit_product_alert.FK_Field.add(product_image_field)
+                # check product bio
+                if (bio != '') and (bio != None) and (this_product.Bio != bio):
+                    product_bio_field = Field.objects.create(Title = 'Bio', Value = bio)
+                    edit_product_alert.FK_Field.add(product_bio_field)
+                # check product description
+                if (description != None) and (this_product.Description != description):
+                    product_description_field = Field.objects.create(Title = 'Description', Value = description)
+                    edit_product_alert.FK_Field.add(product_description_field)
+                # check product story
+                if (story != '') and (story != None) and (this_product.Story != story):
+                    product_story_field = Field.objects.create(Title = 'Story', Value = story)
+                    edit_product_alert.FK_Field.add(product_story_field)
+                # check product categories
+                product_category = categories
+                category_list = ''
+                for item in product_category:
+                    category_list += item + '-'
+                product_category_field = Field.objects.create(Title = 'Category', Value = category_list)
+                edit_product_alert.FK_Field.add(product_category_field)
+                # check product within range
+                product_within = within_range
+                in_range_list = ''
+                for item in product_within:
+                    if len(item) >= 1:
+                        in_range_list += item + '-'
+                if in_range_list:
+                    product_withinrange_field = Field.objects.create(Title = 'PostRange', Value = in_range_list)
+                    edit_product_alert.FK_Field.add(product_withinrange_field)
+                else:
+                    product_withinrange_field = Field.objects.create(Title = 'PostRange', Value = 'remove')
+                    edit_product_alert.FK_Field.add(product_withinrange_field)
+                # check product out of range
+                product_Out = out_of_range
+                out_range_list = ''
+                for item in product_Out:
+                    out_range_list += item + '-'
+                if out_range_list:
+                    product_outrange_field = Field.objects.create(Title = 'ExePostRange', Value = out_range_list)
+                    edit_product_alert.FK_Field.add(product_outrange_field)
+                else:
+                    product_outrange_field = Field.objects.create(Title = 'ExePostRange', Value = 'remove')
+                    edit_product_alert.FK_Field.add(product_outrange_field)
+                # check edit
+                if edit_product_alert.FK_Field.all().count() != 0:
+                    context['AlartMessage'] = 'تغییرات با موفقیت ثبت شد. بعد از تایید توسط نخل اعمال خواهند شد.'
+                else:
+                    edit_product_alert.delete()
+                    context['AlartMessage'] = 'تغییرات ثبت نشد. خطایی رخ داده است. لطفا با پشتیبانی تماس حاصل فرمایید.'
+                context['ShowAlart'] = True
+                return render(request, 'nakhll_market/profile/pages/editeproduct.html', context)
     else:
         return redirect("nakhll_market:AccountLogin")
         
