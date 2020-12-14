@@ -106,7 +106,7 @@ def Show_All_User_Info(request):
             # initialize fields
             context = getPostData(request, context, fields)
         else:
-            HttpResponse('this method is not allowed!', status_code=405)
+            HttpResponse('this method is not allowed!', status=405)
 
     else:
         return redirect("nakhll_market:AccountLogin")
@@ -360,7 +360,7 @@ def Add_New_Product(request, shop):
         elif request.method == 'GET':
             pass
         else:
-            HttpResponse('this method is not allowed!', status_code=405)
+            HttpResponse('this method is not allowed!', status=405)
         
     else:
 
@@ -470,7 +470,7 @@ def Show_All_Shoper_User_Info(request):
             
             return render(request, 'nakhll_market/management/content/show_all_user_info.html', context)
         else:
-            return HttpResponse('this method is not allowed!', status_code=405)
+            return HttpResponse('this method is not allowed!', status=405)
 
     else:
 
@@ -496,7 +496,7 @@ def Management_Show_User_Info(request, id):
             return render(request, 'nakhll_market/management/content/show_user_info.html', context)
 
         else:
-            HttpResponse('this method is not allowed!', status_code=405)
+            HttpResponse('this method is not allowed!', status=405)
 
     else:
 
@@ -610,7 +610,7 @@ def Show_All_Content(request):
                 context['AlartMessage'] = request.GET.get('message')
             Shops = Shop.objects.all()
         else:
-            return HttpResponse('this method is not allowed!', status_code=405)
+            return HttpResponse('this method is not allowed!', status=405)
 
         # pagination of all shops
         allShopListPaginator = Paginator (Shops, 30)
@@ -704,7 +704,7 @@ def Change_Shop_Status(request, attribute, id):
                             'message={}'.format(message)))
         
         else:
-            HttpResponse('this method is not allowed!', status_code=405)
+            HttpResponse('this method is not allowed!', status=405)
 
     else:
 
@@ -1049,7 +1049,7 @@ def Add_New_Full_Shop(request, msg = None):
         elif request.method == 'GET':
             pass
         else:
-            HttpResponse('this method is not allowed!', status_code=405)
+            HttpResponse('this method is not allowed!', status=405)
             
         # Get All Submarket
         allsubmarket = SubMarket.objects.filter(Available = True, Publish = True)
