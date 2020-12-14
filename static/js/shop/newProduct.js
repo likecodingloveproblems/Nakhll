@@ -1747,10 +1747,10 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
             {
                 myHandler();
             }
-            // if ($("#inputprod_realprice").val() !== '')
-            // {
-            //     myHandler2();
-            // }
+            if ($("#inputprod_offamount").val() !== '')
+            {
+                myHandler2();
+            }
             if ($("#input_netweight").val() !== '')
             {
                 myHandler3();
