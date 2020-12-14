@@ -1,5 +1,6 @@
 {% load jformat %}
 {% load i18n static %}
+{% load mathfilters %}
 
 {% block header %}
 {% include "nakhll_market/parents/headersite.html" %}
@@ -314,7 +315,12 @@
                                         <div class="loading-chosen-ajax submarket-loading"><img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری">
                                             در حال بارگزاری
                                         </div>
-                                        <select id="inputSubMarket" name="ProdSub" class="form-control"></select>
+                                        <select id="inputSubMarket" name="ProdSub" class="form-control">
+                                            <option value="{{Product.FK_SubMarket.ID}}" selected>{{Product.FK_SubMarket.Title}}</option>
+                                        {% for item in OtherSubMarkets %}
+                                            <option value="{{item.ID}}">{{item.Title}}</option>
+                                        {% endfor %} 
+                                        </select>
                                     </div>
                                 </div>
 
@@ -339,48 +345,32 @@
 
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
-                                        <label for="inputprod_sellprice">قیمت فروش محصول <code>*</code></label>
+                                        <label for="inputprod_sellprice">قیمت محصول <code>*</code></label>
                                         <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
                                             data-placement="left" title="قیمت را به ریال وارد نمایید."></i>
-                                        <input type="text" name="prod_Price" value="{{Product.Price}}"
+                                        <input type="text" name="prod_OldPrice" value="{{Product.OldPrice}}"
                                             pattern="[0-9]{5,}" class="form-control inputprod_sellprice"
                                             id="inputprod_sellprice" required>
                                         <p class="digit-to-persian" id="sellprice-toman"></p>
                                     </div>
 
-                                    <!-- <div class="form-group col-md-5">
-                                    <label for="inputprod_realprice">قیمت واقعی </label>
-                                    <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="در صورت در نظر گرفتن تخفیف برای محصول، قیمت اصلی محصول را اینجا وارد نمایید.
-                                        قیمت را به ریال وارد نمایید."></i>
-                                    <input type="text" name="Prodoldprice" {% if Product.OldPrice != '0' %}value="{{Product.OldPrice}}"{% endif %}
-                                        pattern="[0-9]{5,}" class="form-control inputprod_realprice" id="inputprod_realprice">
-                                        <p class="digit-to-persian" id="realprice-toman"></p>
-                                </div>
-                                <div class="form-group col-md-2 show-price-status-div">
-                                    <button class="btn btn-primary show-price-status" type="button" data-html='true' data-container="body" data-toggle="popover" data-placement="top" data-content="0">
-                                        وضعیت قیمت
-                                    </button>
-                                </div> -->
-                                    <!-- <div class="form-group col-md-6 off-question-form-group">
-                                    <p class="off-question">در صورتی که برای این محصول تخفیف در نظر گرفته اید <span id="off-yes-clk" class="off-yes">اینجا</span> را کلیک نمائید.</p>
-                                </div> -->
-                                    <div class="form-group col-lg-5 col-md-4 col-xs-4 col-9 offamount-formgroup">
+                                    <div class="form-group col-lg-6 col-md-6 col-xs-6 col-9 offamount-formgroup">
                                         <label for="inputprod_offamount">میزان تخفیف</label>
                                         <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
                                             data-placement="left" title="میزان تخفیف محصول را به ریال وارد نمائید."></i>
                                         <input type="number" name="Prodoffamount"
                                             class="form-control inputprod_offamount" pattern="[0-9]{5,}"
-                                            id="inputprod_offamount">
+                                            id="inputprod_offamount" value="{{ Product.OldPrice|sub:Product.Price }}">
                                         <p class="digit-to-persian" id="offamount-toman"></p>
                                     </div>
-                                    <div class="form-group col-lg-1 col-md-2 col-3 remove-off-formgroup">
+                                    <!-- <div class="form-group col-lg-1 col-md-2 col-3 remove-off-formgroup">
                                         <p class="off-question off-yes small-size" id="remove-off">حذف تخفیف</p>
                                     </div>
                                     <div class="form-group col-md-6 off-question-form-group">
                                         <p class="off-question"> آیا برای این محصول <span class="redcolor">تخفیف</span>
                                             در نظر گرفته اید؟<span id="off-yes-clk"
                                                 class="off-yes off-yes-yes">بله</span></p>
-                                    </div>
+                                    </div> -->
                                 </div>
 
                                 <h6>وزن محصول</h6>
@@ -447,29 +437,29 @@
 
                                 <div class="form-row">
 
-                                    <div class="form-group col-md-6">
+                                    <div class="form-group col-md-4">
                                         <label for="PostRangeType">محدوده ارسال</label>
                                         <select id="PostRangeType" name="ProdRange" class="form-control">
                                             {% if Product.PostRangeType == '1' %}
-                                            <option selected>سراسر کشور</option>
-                                            <option>استانی</option>
-                                            <option>شهرستانی</option>
-                                            <option>شهری</option>
+                                            <option value="1" selected>سراسر کشور</option>
+                                            <option value="2">استانی</option>
+                                            <option value="3">شهرستانی</option>
+                                            <option value="4">شهری</option>
                                             {% elif Product.PostRangeType == '2' %}
-                                            <option>سراسر کشور</option>
-                                            <option selected>استانی</option>
-                                            <option>شهرستانی</option>
-                                            <option>شهری</option>
+                                            <option value="1">سراسر کشور</option>
+                                            <option value="2" selected>استانی</option>
+                                            <option value="3">شهرستانی</option>
+                                            <option value="4">شهری</option>
                                             {% elif Product.PostRangeType == '3' %}
-                                            <option>سراسر کشور</option>
-                                            <option>استانی</option>
-                                            <option selected>شهرستانی</option>
-                                            <option>شهری</option>
+                                            <option value="1">سراسر کشور</option>
+                                            <option value="2">استانی</option>
+                                            <option value="3" selected>شهرستانی</option>
+                                            <option value="4">شهری</option>
                                             {% elif Product.PostRangeType == '4' %}
-                                            <option>سراسر کشور</option>
-                                            <option>استانی</option>
-                                            <option>شهرستانی</option>
-                                            <option selected>شهری</option>
+                                            <option value="1">سراسر کشور</option>
+                                            <option value="2">استانی</option>
+                                            <option value="3">شهرستانی</option>
+                                            <option value="4" selected>شهری</option>
                                             {% endif %}
                                         </select>
                                     </div>
@@ -479,29 +469,29 @@
                                         <select id="selectProdStatus" name="ProdPostType"
                                             class="form-control product-detail-now">
                                             {% if Product.Status == '1' %}
-                                            <option selected>آماده در انبار</option>
-                                            <option>تولید بعد از سفارش</option>
-                                            <option>سفارشی سازی فروش</option>
-                                            <option>موجود نیست</option>
+                                            <option value="1" selected>آماده در انبار</option>
+                                            <option value="2">تولید بعد از سفارش</option>
+                                            <option value="3">سفارشی سازی فروش</option>
+                                            <option value="4">موجود نیست</option>
                                             {% elif Product.Status == '2' %}
-                                            <option>آماده در انبار</option>
-                                            <option selected>تولید بعد از سفارش</option>
-                                            <option>سفارشی سازی فروش</option>
-                                            <option>موجود نیست</option>
+                                            <option value="1">آماده در انبار</option>
+                                            <option value="2" selected>تولید بعد از سفارش</option>
+                                            <option value="3">سفارشی سازی فروش</option>
+                                            <option value="4">موجود نیست</option>
                                             {% elif Product.Status == '3' %}
-                                            <option>آماده در انبار</option>
-                                            <option>تولید بعد از سفارش</option>
-                                            <option selected>سفارشی سازی فروش</option>
-                                            <option>موجود نیست</option>
+                                            <option value="1">آماده در انبار</option>
+                                            <option value="2">تولید بعد از سفارش</option>
+                                            <option value="3" selected>سفارشی سازی فروش</option>
+                                            <option value="4">موجود نیست</option>
                                             {% elif Product.Status == '4' %}
-                                            <option>آماده در انبار</option>
-                                            <option>تولید بعد از سفارش</option>
-                                            <option>سفارشی سازی فروش</option>
-                                            <option selected>موجود نیست</option>
+                                            <option value="1">آماده در انبار</option>
+                                            <option value="2">تولید بعد از سفارش</option>
+                                            <option value="3">سفارشی سازی فروش</option>
+                                            <option value="4" selected>موجود نیست</option>
                                             {% endif %}
                                         </select>
                                     </div>
-                                    <div class="form-group col-md-2" id="detail-num-box">
+                                    <div class="form-group col-md-4" id="detail-num-box">
                                         <label for="prod_num_in_store">تعداد موجودی<code>*</code></label>
                                         <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
                                             data-placement="left"
@@ -543,7 +533,8 @@
                                                     {% if item.Status %}selected{% endif %}>{{item.PostRange}}
                                                 </option>
                                             {% endfor %}
-                                        </select><button type="button" class="btn btn-primary send-area-guide-btn"
+                                        </select>
+                                        <button type="button" class="btn btn-primary send-area-guide-btn"
                                             data-toggle="modal" data-target="#exampleModalScrollable">
                                             راهنما <i class="fal fa-info-circle"></i>
                                         </button>
@@ -621,7 +612,7 @@
                                     </div>
                                 </div>
 
-                                <a class="btn btn-primary mr-auto edit-product-btn" id="send-left">ویرایش محصول</a>
+                                <button class="btn btn-primary mr-auto edit-product-btn" id="send-left" type="submit">ویرایش محصول</button>
 
                                 <div class="modal fade" id="myModalerror" tabindex="-1" role="dialog"
                                     aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -668,6 +659,7 @@
     </div>
 </section>
 <script src="{% static "js/cropper.js" %}"></script>
+
 <script>
     var $progress;
     var $progressBar;
@@ -750,7 +742,7 @@
     var prodSendAreasException = '';
 
     
-    editProduct = function () {
+    {% comment %} editProduct = function () {
         $(".whole-content-of-modal").remove();
         $(".whole-content-of-footer").remove();
         $(".whole-modal-body").html('<div class="please-wait"> لطفا منتظر بمانید <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری"> </div>' +
@@ -871,7 +863,7 @@
                 }
             }
         )
-    }
+    } {% endcomment %}
     var checkValidVariable = false;
     $(".edit-product-btn").on('click', function (e) {
         e.preventDefault();
@@ -881,11 +873,11 @@
         }
     })
 
-    $(".edit-and-accept").on('click', function (e) {
+    {% comment %} $(".edit-and-accept").on('click', function (e) {
         e.preventDefault();
         $(".edit-product-btn").addClass("send-button-disabled disabled");
         editProduct();
-    })
+    })  {% endcomment %}
 
     var shopid = $("#inpuShop option:selected").val();
     var productSubmarket;

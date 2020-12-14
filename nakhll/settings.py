@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'imagekit',
     'compressor',
+    'mathfilters',
 ]
 
 MIDDLEWARE = [
