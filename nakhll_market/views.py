@@ -119,7 +119,7 @@ def login_to_account(request):
         user = authenticate(request, username = this_profile.FK_User.username, password = password)
         # get next page
         next_page = settings.LOGIN
-        if 'next' in request.session:
+        if 'next' in request.session and request.session['next'] != '/account/login/':
             next_page = request.session['next']
         if user is not None:
             # login user
