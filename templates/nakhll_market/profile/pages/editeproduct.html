@@ -348,7 +348,7 @@
                                         <label for="inputprod_sellprice">قیمت فروش محصول <code>*</code></label>
                                         <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
                                             data-placement="left" title="قیمت را به ریال وارد نمایید."></i>
-                                        <input type="text" name="prod_Price" value="{{Product.OldPrice}}"
+                                        <input type="text" name="prod_Price" value="{{Product.Price}}"
                                             pattern="[0-9]{5,}" class="form-control inputprod_sellprice"
                                             id="inputprod_sellprice" required>
                                         <p class="digit-to-persian" id="sellprice-toman"></p>
@@ -360,7 +360,13 @@
                                             data-placement="left" title="میزان تخفیف محصول را به ریال وارد نمائید."></i>
                                         <input type="number" name="Prodoffamount"
                                             class="form-control inputprod_offamount" pattern="[0-9]{5,}"
-                                            id="inputprod_offamount" value="{{ Product.OldPrice|sub:Product.Price }}">
+                                            id="inputprod_offamount" 
+                                            {% if Product.OldPrice=='0' %} 
+                                            value="0"
+                                            {% else %}
+                                            value="{{ Product.OldPrice|sub:Product.Price }}"
+                                            {% endif %}
+                                            >
                                         <p class="digit-to-persian" id="offamount-toman"></p>
                                     </div>
                                     <!-- <div class="form-group col-lg-1 col-md-2 col-3 remove-off-formgroup">
