@@ -1548,12 +1548,15 @@ def edit_product(request, product_slug):
             categories = request.POST.getlist("ProdCat")
             submarket_id = request.POST.get("ProdSub")
             discount = request.POST.get("Prodoffamount", 0)
-            if discount == '':
+            if discount == '' or discount == None:
                 discount = '0'
-            oldprice = request.POST.get("prod_OldPrice", 0)
-            if oldprice == '':
+            price = request.POST.get("prod_price", 0)
+            if price == '':
+                price = '0'
+            if discount == '0':
                 oldprice = '0'
-            price = str(int(oldprice)-int(discount))
+            else:
+                oldprice = str(int(price)+int(discount))
             send_type = request.POST.get("ProdRange")
             status = request.POST.get("ProdPostType")
             net_weight = request.POST.get("product_netweight")
