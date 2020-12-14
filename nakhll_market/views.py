@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from django.core.paginator import Paginator
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.conf import settings
 from django.urls import reverse
 from django.views import generic
@@ -1638,6 +1638,8 @@ def search(request):
 
         return render(request, 'nakhll_market/pages/searche.html', context)
 
+    elif request.method == 'GET':
+        return HttpResponse('this method is not allowed!', status=405)
 
 # Searche With Filters Page
 def FilterSearch(request):

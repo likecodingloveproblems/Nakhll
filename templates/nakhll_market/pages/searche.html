@@ -75,10 +75,10 @@
             {% for item in Result_In_Product %}
                 <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12 pageinprod">
                     <div class="prod-sec whitebg">
-                        <a href="/product/{{item.FK_Shop.Slug}}/{{item.Slug}}"><img class="prodimg" src="{{item.Image_thumbnail_url}}" alt="prodname"></a>
+                        <a href="/product/{{item.FK_Shop.Slug}}/{{item.Slug}}/"><img class="prodimg" src="{{item.Image_thumbnail_url}}" alt="prodname"></a>
                         
                         <div class="bottom-product-bar">
-                            <a href="/product/{{item.FK_Shop.Slug}}/{{item.Slug}}"><h3>{{item.Title}}</h3></a>
+                            <a href="/product/{{item.FK_Shop.Slug}}/{{item.Slug}}/"><h3>{{item.Title}}</h3></a>
                             {% if item.Status != '4' %}<span class="numbersprice">{{item.Price}} ریال</span>{% else %}<span class="empty">ناموجود</span>{% endif %}
                             <span class="add-to-cart-link"><span class="add-cart"><i class="far fa-plus"><span class="hide">{{item.ID}}</span></i></span></span>
                         </div>
