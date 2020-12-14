@@ -20,23 +20,25 @@ import threading
 import json
 import os
 
-## zarin pal
-MERCHANT= os.environ.get('ZARIN_MERCHANT')
-client = Client('https://www.zarinpal.com/pg/services/WebGate/wsdl')
-email = os.environ.get('ZARIN_EMAIL')  # Optional
+try:
+    ## zarin pal
+    MERCHANT= os.environ.get('ZARIN_MERCHANT')
+    client = Client('https://www.zarinpal.com/pg/services/WebGate/wsdl')
+    email = os.environ.get('ZARIN_EMAIL')  # Optional
 
-## pec
-PIN = os.environ.get('PEC_PIN')
-saleService = Client('https://pec.shaparak.ir/NewIPGServices/Sale/SaleService.asmx?wsdl')
-confirmService = Client('https://pec.shaparak.ir/NewIPGServices/Confirm/ConfirmService.asmx?wsdl')
-reverseService = Client('https://pec.shaparak.ir/NewIPGServices/Reverse/ReversalService.asmx?wsdl')
-ClientSaleRequestData = saleService.get_type('ns0:ClientSaleRequestData')
-ClientConfirmRequestData = confirmService.get_type('ns0:ClientConfirmRequestData')
-ClientReversalRequestData = reverseService.get_type('ns0:ClientReversalRequestData')
+    ## pec
+    PIN = os.environ.get('PEC_PIN')
+    saleService = Client('https://pec.shaparak.ir/NewIPGServices/Sale/SaleService.asmx?wsdl')
+    confirmService = Client('https://pec.shaparak.ir/NewIPGServices/Confirm/ConfirmService.asmx?wsdl')
+    reverseService = Client('https://pec.shaparak.ir/NewIPGServices/Reverse/ReversalService.asmx?wsdl')
+    ClientSaleRequestData = saleService.get_type('ns0:ClientSaleRequestData')
+    ClientConfirmRequestData = confirmService.get_type('ns0:ClientConfirmRequestData')
+    ClientReversalRequestData = reverseService.get_type('ns0:ClientReversalRequestData')
 
-# GENERAL
-CallbackURL = format(os.environ.get('CALLBACKURL')) # Important: need to edit for realy server.
-
+    # GENERAL
+    CallbackURL = format(os.environ.get('CALLBACKURL')) # Important: need to edit for realy server.
+except:
+    print('PEC IS NOT CENNECTED...')
 # ------------------------------------------------------ Compaing Functions ----------------------------------------------------
 
 # check First Buy
@@ -397,7 +399,7 @@ def send_request_first(request, factor_id, bank_port):
 def send_request(request, factor, amount, mobile, bank_port): 
     if request.user.is_authenticated :
         description = 'first_name:{}, last_name:{}'.format(factor.FK_User.first_name, factor.FK_User.last_name)
-        # set factor TotalPrice and PostPrice
+        # set factor TotalPrice
         factor.TotalPrice = amount
         factor.save()
         if bank_port == 'pay_pec':
