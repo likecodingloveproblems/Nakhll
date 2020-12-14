@@ -1550,7 +1550,7 @@ def edit_product(request, product_slug):
             discount = request.POST.get("Prodoffamount", 0)
             if discount == '' or discount == None:
                 discount = '0'
-            price = request.POST.get("prod_price", 0)
+            price = request.POST.get("prod_Price", 0)
             if price == '':
                 price = '0'
             if discount == '0':
