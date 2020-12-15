@@ -313,7 +313,16 @@
         </div>
     </div>
 </section>
-
+<script type="text/javascript">
+$(document).ready(function() {
+    // check url and select associated tab
+    $(`#pills-home-tab[href="${window.location.hash}"]`).tab('show')
+    // set hash in URL on tab change
+    $('a[data-toggle="pill"]').on('shown.bs.tab', function (e) {
+        window.location.href =  e.target.href
+    })
+})
+</script>
 {% block footer-section %}
     {% include "nakhll_market/parents/footer-section.html" %}
 {% endblock %}
