@@ -21,10 +21,10 @@ import json
 import os
 
 try:
-    ## zarin pal
-    MERCHANT= os.environ.get('ZARIN_MERCHANT')
-    client = Client('https://www.zarinpal.com/pg/services/WebGate/wsdl')
-    email = os.environ.get('ZARIN_EMAIL')  # Optional
+    # ## zarin pal
+    # MERCHANT= os.environ.get('ZARIN_MERCHANT')
+    # client = Client('https://www.zarinpal.com/pg/services/WebGate/wsdl')
+    # email = os.environ.get('ZARIN_EMAIL')  # Optional
 
     ## pec
     PIN = os.environ.get('PEC_PIN')
