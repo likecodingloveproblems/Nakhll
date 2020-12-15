@@ -257,14 +257,39 @@
                                             </div>
             
                                             <h3>{{productsus.Title}}</h3>
-                                            <span class="off-slider-darsad"> {{productsus.get_discounted}}% تخفيف </span>
+
+                                            <table class="table table-sm" style="font-size:12px">
+                                            <thead class="thead-dark">
+                                                <tr>
+                                                <th scope="col">قیمت</th>
+                                                <th scope="col">وضعیت</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                <td style="text-decoration:line-through; color:#aeaeae;">{{productsus.OldPrice}}</td>
+                                                <td>{{productsus.get_status}}</td>
+                                                </tr>
+                                                <tr>
+                                                <td>{{productsus.Price}}</td>
+                                                <td>{{productsus.Inventory}} عدد</td>
+                                                </tr>
+                                            </tbody>
+                                            </table>
+
+                                            {% comment %} <div class="single-off-slide-price">
+                                                <span>قیمت</span>
+                                                <span>وضعیت</span>
+                                            </div>
+                                            <div class="single-off-slide-price">
+                                                <span class="numbersprice price-root">{{productsus.OldPrice}} ریال</span>
+                                                <span class="numbersprice off-price">{{productsus.Status}}</span>
+                                            </div>
                                             <div class="single-off-slide-price">
                                                 <span class="numbersprice price-root">{{productsus.Price}} ریال</span>
-                                                <span class="numbersprice off-price">{{productsus.OldPrice}}</span>
-                                            </div>
-                                                <span class="text-primary">موجودی: {{productsus.Inventory}}
-                                            <div>
-                                            </div>
+                                                <span class="text-primary">{{productsus.Inventory}} عدد</span>
+                                            </div> {% endcomment %}
+
                                             <div class="link-prod-profile">
                                                 <div class="container">
             
