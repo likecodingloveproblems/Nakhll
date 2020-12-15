@@ -257,9 +257,14 @@
                                             </div>
             
                                             <h3>{{productsus.Title}}</h3>
-            
-                                            <span class="numbersprice">{{productsus.Price}} ریال</span>
-            
+                                            <span class="off-slider-darsad"> {{productsus.get_discounted}}% تخفيف </span>
+                                            <div class="single-off-slide-price">
+                                                <span class="numbersprice price-root">{{productsus.Price}} ریال</span>
+                                                <span class="numbersprice off-price">{{productsus.OldPrice}}</span>
+                                            </div>
+                                                <span class="text-primary">موجودی: {{productsus.Inventory}}
+                                            <div>
+                                            </div>
                                             <div class="link-prod-profile">
                                                 <div class="container">
             
