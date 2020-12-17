@@ -942,7 +942,11 @@ def AddProductToCartWithAttrPrice(request, ID):
                             if (int(this_order.FK_Coupon.MaximumAmount) != 0) and (this_order.get_total_coupon_test(this_order.FK_Coupon.id) > int(this_order.FK_Coupon.MaximumAmount)):
                                 this_order.FK_Coupon = None
                                 this_order.save()
-                        return redirect("Payment:cartdetail")
+                        return redirect('nakhll_market:Re_ProductsDetail',
+                        shop_slug = this_product.FK_Shop.Slug,
+                        product_slug = this_product.Slug,
+                        status = True,
+                        msg ='محصول مورد نظر به سبد خرید اضافه شد.')
                     else:
                         this_item = FactorPost.objects.create(FK_Product = this_product, FK_User = request.user)
 
@@ -955,7 +959,11 @@ def AddProductToCartWithAttrPrice(request, ID):
                             if (int(this_order.FK_Coupon.MaximumAmount) != 0) and (this_order.get_total_coupon_test(this_order.FK_Coupon.id) > int(this_order.FK_Coupon.MaximumAmount)):
                                 this_order.FK_Coupon = None
                                 this_order.save()
-                        return redirect("Payment:cartdetail")
+                        return redirect('nakhll_market:Re_ProductsDetail',
+                        shop_slug = this_product.FK_Shop.Slug,
+                        product_slug = this_product.Slug,
+                        status = True,
+                        msg ='محصول مورد نظر به سبد خرید اضافه شد.')
                 else:
                     this_order = Factor.objects.create(FK_User = request.user, PaymentStatus = False)
                     this_item = FactorPost.objects.create(FK_Product = this_product, FK_User = request.user)
@@ -969,7 +977,11 @@ def AddProductToCartWithAttrPrice(request, ID):
                         if (int(this_order.FK_Coupon.MaximumAmount) != 0) and (this_order.get_total_coupon_test(this_order.FK_Coupon.id) > int(this_order.FK_Coupon.MaximumAmount)):
                             this_order.FK_Coupon = None
                             this_order.save()
-                    return redirect("Payment:cartdetail")
+                    return redirect('nakhll_market:Re_ProductsDetail',
+                        shop_slug = this_product.FK_Shop.Slug,
+                        product_slug = this_product.Slug,
+                        status = True,
+                        msg ='محصول مورد نظر به سبد خرید اضافه شد.')
             else:
                 return redirect('nakhll_market:Re_ProductsDetail',
                 shop_slug = this_product.FK_Shop.Slug,
