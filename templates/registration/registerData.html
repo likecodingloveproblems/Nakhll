@@ -1,0 +1,44 @@
+{% load i18n static %}
+
+{% block header %}
+{% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+    <title>بازار نخل | ثبت نام</title>
+</head>
+<body id="login-page">
+   <div class="container">
+      <div class="row">
+         <div class="col-xl-12">
+            <div class="login-sec register-div register-page-whole-div">
+                <div class="blue-thick-line-top"></div>
+                <div class="register-page-whole-content">
+                    <h4>ثبت نام در سایت</h4>
+                </div>
+                <div class="col-12">
+                    {% include 'registration/messages.html'%}
+                </div>
+                <div class="setform">
+                    <form method="post" class="needs-validation" novalidate oninput='newpassword.setCustomValidity(password.value != newpassword.value ? "Passwords do not match." : "")'>
+                        {% csrf_token %}
+                        <div class="get-code-form-part">
+                            <input id="password" name="password" type="password" placeholder="رمز عبور *" class="input-login" required>
+                            <br>
+                            <input id="newpassword" name="newpassword" type="password" placeholder="تکرار رمز عبور *" class="input-login" required>
+                            <br>
+                            <input class="reg-email-input input-login" id="email" name="email" type="email" placeholder="ایمیل">
+                            <br>
+                            <input id="referencecode" name="referencecode" type="text" placeholder="کد معرف" class="input-login" maxlength="6">
+                            <br>
+                            <button id="sign-up-button2" type="submit">ثبت نام</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div id="results">
+            </div>
+         </div>
+      </div>
+   </div>
+   </div>
+   </div>
+</body>

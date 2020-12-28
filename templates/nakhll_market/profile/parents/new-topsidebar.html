@@ -20,7 +20,7 @@
 </div>
 
 <div class="profile-sidebar-icon">
-    <a href="{% url 'logout' %}">
+    <a href="{% url 'auth:logout' %}">
         <div>
             <i class="fal fa-sign-out"></i>
         </div>
@@ -31,7 +31,7 @@
             <i class="far fa-bell"></i>
         </div>
     </a>
-    <a href="{% url "nakhll_market:ShowGetPhoneNumber" %}">
+    <a href="{% url "auth:forget-password-mobile" %}">
         <div>
             <i class="fal fa-lock"></i>
         </div>

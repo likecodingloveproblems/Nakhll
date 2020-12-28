@@ -42,25 +42,7 @@
             <div id="codeback"></div>
                 <form method="POST" id="register">
                     <div class="register-page-whole-content">
-                        <!-- <label>برای ثبت نام ابتدا شماره تماس خود را وارد کنید .</label> -->
                         {% csrf_token %}
-                        <!-- <li id="alert-li-mobile-empty"></li>
-                        <li id="alert-li-mobile-digits"></li>
-                        <li id="alert-li-mobile-length"></li>
-                        <li id="alert-li-mobile-valid"></li>
-                        <li id="alert-li-mobile-match"></li>
-                        <li id="alert-li-system-error"></li> -->
-                        <div class="login-alerts-section forgetpassword-alerts-section mob-alerts-section">
-                            <p>لطفا خطاهای زیر را برطرف کنید:</p>
-                            <ul>
-                                <li id="alert-li-mobile-empty"></li>
-                                <li id="alert-li-mobile-digits"></li>
-                                <li id="alert-li-mobile-length"></li>
-                                <li id="alert-li-mobile-valid"></li>
-                                <li id="alert-li-mobile-match"></li>
-                                <li id="alert-li-system-error"></li>
-                            </ul>
-                        </div>
                         <div class="input-login-modal input-mob-login login-page-main-input-login-mob">
                             <div class="before-input-icon">
                                 <i class="fal fa-phone fix-before-input-icon-place"></i>
@@ -69,15 +51,13 @@
                                 <input id="mobilenumber" name="mobilenumber" type="number" pattern="[0-9]{11}" maxlength="11" placeholder="شماره همراه خود را وارد کنید" class="input-login login-input-modal" required>
                             </div>
                         </div>
-                        <!-- <input id="mobilenumber" name="mobilenumber" type="number" pattern="[0-9]{11}" maxlength="11" placeholder="شماره موبایل" class="input-login" required> -->
-                        <!-- <br> -->
                         <div class="register-get-code-btn">
                             <button id="get-code-button" type="submit" >دریافت کد تایید</button>
                         </div>
                     </div>
                     <div class="hr-line-full"></div>
                     <div class="forgetpassword-mobilenumber-content back-to-login-a">
-                        <a href="/login">بازگشت به صفحه ورود</a>
+                        <a href="{% url "auth:login" %}">بازگشت به صفحه ورود</a>
                     </div>
                 </form>
                 <div id="loaderDiv">
@@ -534,7 +514,7 @@
                         e.preventDefault();
                         $.ajax({
                                 type:'POST',
-                                url:'{% url "Profile:AccountRegister" %}',
+                                url:'{% url "auth:register-mobile" %}',
                                 data:{
                                     mobilenumber :phonenumber,
                                     firstname:$('#firstname').val(),

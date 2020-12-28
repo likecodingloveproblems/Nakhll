@@ -51,32 +51,6 @@
         gtag('config', 'UA-156540827-1');
     </script>
     {% endcompress %}
-    <!--set session-->
-    {% if not request.user.is_authenticated %}
-        <script text="javascripts">
-            $('document').ready(function() {
-                var this_page_path = '{{request.path|safe}}';
-                $.ajax(
-                    {
-                        type: 'POST',
-                        url: '{% url "nakhll_market:set_session" %}',
-                        data :{
-                            this_path:this_page_path,
-                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
-                        },
-                        success: function (json) {
-                            if (json.status == true){
-                                console.log(json.status);
-                            }
-                        },
-                        error: function (xhr) {
-                            console.log(xhr.status + ": " + xhr.responseText);
-                        }
-                    }
-                );      
-            })
-        </script>
-    {% endif %}
 <!-- headermain -->
 
 
@@ -131,13 +105,13 @@
                                         <a class="dropdown-item" href="{% url "nakhll_market:Dashboard" %}"><i class="fad fa-user"></i> پروفایل </a>
                                         <!-- <a class="dropdown-item" href="#"><img src="{% static "images/shopping-basket.svg" %}" alt=""> فروش های اخیر</a> -->
                                         <a class="dropdown-item" href="{% url "nakhll_market:UserShops" %}"><i class="fad fa-store-alt"></i> مدیریت حجره </a>
-                                        <a class="dropdown-item" href="{% url 'logout' %}"><i class="fad fa-sign-out-alt"></i> خروج</a>
+                                        <a class="dropdown-item" href="{% url 'auth:logout' %}"><i class="fad fa-sign-out-alt"></i> خروج</a>
                                     </div>
                                 </div>
                         </div>
                     {% else %}
                             <div class="user-top dropdown">
-                                <a data-toggle="modal" data-target=".bd-example-modal-lg">
+                                <a href="{% url "auth:login" %}"">
                                     <img src="{% static "images/user.svg" %}" alt="ناحیه کاربری">
                                     <p> ورود <br> عضویت </p>
                                 </a>
@@ -191,7 +165,7 @@
     </div>
 </header>
 
-<div class="modal fade bd-example-modal-lg" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+{% comment %} <div class="modal fade bd-example-modal-lg" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content radius-10px">
           <div class="blue-thick-line-top"></div>
@@ -239,7 +213,7 @@
                                 <input type="checkbox" name="remember_me" id="f-pass" class="customCheckBox"> <label for="f-pass"> مرا به خاطر بسپار </label>
                             </div>
                             <div class="forget-password-login-modal">
-                                <a href="{% url "nakhll_market:ShowGetPhoneNumber" %}">رمز عبور خود را فراموش کرده اید؟</a>
+                                <a href="{% url "auth:forget-password-mobile" %}">رمز عبور خود را فراموش کرده اید؟</a>
                             </div>
                         </div>
                         <div class="clearfix"></div>
@@ -253,11 +227,11 @@
                 </div>
             </div>
             <div class="modal-footer login-footer-modal">
-                <span>عضو جدید هستید؟</span> <a href="{% url "nakhll_market:AccountRegister" %}">ثبت نام کنید</a>
+                <span>عضو جدید هستید؟</span> <a href="{% url "auth:register-mobile" %}">ثبت نام کنید</a>
             </div>
         </div>
     </div>
-</div>
+</div> {% endcomment %}
 
 
 {% compress js inline %}
@@ -467,7 +441,7 @@
                         $.ajax(
                             {
                                 type: 'POST',
-                                url: '{% url "nakhll_market:login_to_account" %}',
+                                url: '{% url "auth:login" %}',
                                 data: {
                                     mobilenumber : MobileNumbers,
                                     password: PasswordUser,
@@ -479,8 +453,7 @@
                                     if (json.status == true) {
                                         if (json.message == '200') {
                                             $('.errorbox').hide();
-                                            var base_url = "" + json.next;
-                                            window.location.href = base_url;
+                                            location.reload()
                                         }
                                         else if (json.message == '400') {
                                             console.log('400');
@@ -542,7 +515,7 @@
                                                 $.ajax(
                                                     {
                                                         type: 'POST',
-                                                        url: '{% url "nakhll_market:login_to_account" %}',
+                                                        url: '{% url "auth:login" %}',
                                                         data: {
                                                             mobilenumber : MobileNumbers,
                                                             password: PasswordUser,
@@ -554,8 +527,7 @@
                                                             if (json.status == true) {
                                                                 if (json.message == '200') {
                                                                     $('.errorbox').hide();
-                                                                    var base_url = "" + json.next;
-                                                                    window.location.href = base_url;
+                                                                    location.reload()
                                                                 }
                                                                 else if (json.message == '400') {
                                                                     console.log('400');
@@ -691,7 +663,7 @@
 
 
                     <div class="profile-sidebar-icon">
-                        <a href="{% url 'logout' %}">
+                        <a href="{% url 'auth:logout' %}">
                             <div>
                                 <i class="fal fa-sign-out"></i>
                             </div>
@@ -704,7 +676,7 @@
                                 <i class="far fa-bell"></i>
                             </div>
                         </a>
-                        <a href="{% url "nakhll_market:ShowGetPhoneNumber" %}">
+                        <a href="{% url "auth:forget-password-mobile" %}">
                             <div>
                                 <i class="fal fa-lock"></i>
                             </div>

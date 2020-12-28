@@ -47,13 +47,13 @@
                                         <a class="dropdown-item" href="{% url "nakhll_market:Dashboard" %}"><i class="fad fa-user"></i> پروفایل </a>
                                         <!-- <a class="dropdown-item" href="#"><img src="{% static "images/shopping-basket.svg" %}" alt=""> فروش های اخیر</a> -->
                                         <a class="dropdown-item" href="{% url "nakhll_market:UserShops" %}"><i class="fad fa-store-alt"></i> مدیریت حجره </a>
-                                        <a class="dropdown-item" href="{% url 'logout' %}"><i class="fad fa-sign-out-alt"></i> خروج</a>
+                                        <a class="dropdown-item" href="{% url 'auth:logout' %}"><i class="fad fa-sign-out-alt"></i> خروج</a>
                                     </div>
                                 </div>
                         </div>
                     {% else %}
                             <div class="user-top dropdown">
-                                <a data-toggle="modal" data-target=".bd-example-modal-lg">
+                                <a href="{% url "auth:login" %}"">
                                     <img src="{% static "images/user.svg" %}" alt="ناحیه کاربری">
                                     <p> ورود <br> عضویت </p>
                                 </a>
@@ -108,7 +108,7 @@
 </header>
 
 
-<!-- <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+{% comment %} <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -127,13 +127,13 @@
                         <div  class="form-in-form-login">
                             <input type="checkbox" name="forgetpassword" id="f-pass" class="customCheckBox"> <label for="f-pass"> مرا به خاطر بسپار </label>
                             
-                            <a href="{% url "nakhll_market:ShowGetPhoneNumber" %}">فراموشی رمز</a>
+                            <a href="{% url "auth:forget-password-mobile" %}">فراموشی رمز</a>
                 
                         </div>
                             <button id="login-button" type="submit">
                                 ورود
                             </button>
-                            <a href="{% url "nakhll_market:AccountRegister" %}" class="sign-calss">
+                            <a href="{% url "auth:register-mobile" %}" class="sign-calss">
                                 ثبت نام
                             </a>
                             <div id="loaderDiv"> لطفا منتظر بمانید <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری"></div>
@@ -143,7 +143,7 @@
 
         </div>
     </div>
-</div> -->
+</div>
 <div class="modal fade bd-example-modal-lg" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content radius-10px">
@@ -198,7 +198,7 @@
                                 <input type="checkbox" name="remember_me" id="f-pass" class="customCheckBox"> <label for="f-pass"> مرا به خاطر بسپار </label>
                             </div>
                             <div class="forget-password-login-modal">
-                                <a href="{% url "nakhll_market:ShowGetPhoneNumber" %}">رمز عبور خود را فراموش کرده اید؟</a>
+                                <a href="{% url "auth:forget-password-mobile" %}">رمز عبور خود را فراموش کرده اید؟</a>
                             </div>
                         </div>
                         <div class="clearfix"></div>
@@ -212,11 +212,11 @@
                 </div>
             </div>
             <div class="modal-footer login-footer-modal">
-                <span>عضو جدید هستید؟</span> <a href="{% url "nakhll_market:AccountRegister" %}">ثبت نام کنید</a>
+                <span>عضو جدید هستید؟</span> <a href="{% url "auth:register-mobile" %}">ثبت نام کنید</a>
             </div>
         </div>
     </div>
-</div>
+</div> {% endcomment %}
 
 
 {% compress js inline %}
@@ -426,7 +426,7 @@
                         $.ajax(
                             {
                                 type: 'POST',
-                                url: '{% url "nakhll_market:login_to_account" %}',
+                                url: '{% url "auth:login" %}',
                                 data: {
                                     mobilenumber : MobileNumbers,
                                     password: PasswordUser,
@@ -438,8 +438,7 @@
                                     if (json.status == true) {
                                         if (json.message == '200') {
                                             $('.errorbox').hide();
-                                            var base_url = "" + json.next;
-                                            window.location.href = base_url;
+                                            location.reload()
                                         }
                                         else if (json.message == '400') {
                                             $("#loaderDiv").hide();
@@ -504,7 +503,7 @@
                                                 $.ajax(
                                                     {
                                                         type: 'POST',
-                                                        url: '{% url "nakhll_market:login_to_account" %}',
+                                                        url: '{% url "auth:login" %}',
                                                         data: {
                                                             mobilenumber : MobileNumbers,
                                                             password: PasswordUser,
@@ -516,8 +515,7 @@
                                                             if (json.status == true) {
                                                                 if (json.message == '200') {
                                                                     $('.errorbox').hide();
-                                                                    var base_url = "" + json.next;
-                                                                    window.location.href = base_url;
+                                                                    location.reload()
                                                                 }
                                                                 else if (json.message == '400') {
                                                                     $("#loaderDiv").hide();
