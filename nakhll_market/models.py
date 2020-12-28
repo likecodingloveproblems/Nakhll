@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 from django.db import models
+from django.db.models.fields import CharField
 from tinymce.models import HTMLField
 from django.contrib.auth.models import User,Group 
 from django.contrib.auth.models import (AbstractUser)
@@ -1449,7 +1450,7 @@ class Profile(models.Model):
     CountrPreCode=models.CharField(verbose_name='کد کشور', max_length=6, default='098')
     MobileNumber=models.CharField(verbose_name='شماره موبایل', max_length=11, unique=True)
     ZipCode=models.CharField(verbose_name='کد پستی', max_length=10, blank=True)
-    NationalCode=models.CharField(verbose_name='کد ملی', max_length=10, unique=True, blank=True)
+    NationalCode=models.CharField(verbose_name='کد ملی', max_length=10, unique=True, blank=True, null=True)
     Address=models.TextField(verbose_name='آدرس', blank=True)
     State =models.CharField(verbose_name='استان', max_length=50, blank=True)
     BigCity=models.CharField(verbose_name='شهرستان', max_length=50, blank=True)
@@ -1949,3 +1950,21 @@ class UserPoint (models.Model):
         verbose_name_plural = "امتیاز ها"
         
 #----------------------------------------------------------------------------------------------------------------------------------
+
+class SMS(models.Model):
+    return_status = models.IntegerField()
+    return_message = models.CharField('پیام درخواست', max_length=50)
+    entries_cost = models.IntegerField("مبلغ")
+    entries_datetime = models.DateTimeField(auto_now=False, auto_now_add=False)
+    entries_receptor = models.CharField(max_length=50)
+    entries_sender = models.CharField(max_length=50)
+    entries_statustext = models.CharField(max_length=50)
+    entries_status = models.IntegerField()
+    entries_message = models.CharField(max_length=255)
+    entries_messageid = models.IntegerField()
+    datetime = models.DateTimeField(auto_now=True, auto_now_add=False)
+
+    class Meta:
+        ordering = ('-entries_datetime',)   
+        verbose_name = "پیامک"
+        verbose_name_plural = "پیامک ها"
