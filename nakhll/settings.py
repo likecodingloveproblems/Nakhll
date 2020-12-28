@@ -270,3 +270,7 @@ sentry_sdk.init(
     # django.contrib.auth) you may enable sending PII data.
     send_default_pii=True
 )
+
+MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
+
+KAVENEGAR_KEY = os.environ.get('KAVENEGAR_KEY')
