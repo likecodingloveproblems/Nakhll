@@ -186,7 +186,7 @@ def BlogLike(request, obj_id, type):
 
     else:
 
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -393,7 +393,7 @@ def AddNewPostComment(request, Post_Slug, id = None):
 
     else:
 
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Blog Story --------------------------------------------------------------------------------------------------------------------------
@@ -597,7 +597,7 @@ def AddNewStoryComment(request, Story_Slug, id = None):
 
     else:
 
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 

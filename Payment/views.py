@@ -148,7 +148,7 @@ def show_cart(request):
     else:
         # i = request.path
         # return redirect('/login/?next=' + i)
-        return ("nakhll_market:AccountLogin")
+        return ("auth:login")
 
 
 class check_product_send_status:
@@ -291,7 +291,7 @@ def Set_Send_Info(request):
 
     else:
 
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -333,7 +333,7 @@ def Pay_Detail(request):
         
         return render(request, 'payment/cart/pages/pay.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -375,7 +375,7 @@ def Final_Factor(request):
         else:
             return redirect("Payment:Pay_Detail")
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -426,7 +426,7 @@ def send_request(request, factor, amount, mobile, bank_port):
         
     else:
 
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 def reverseTransaction(PIN, Token, OrderId):
@@ -770,7 +770,7 @@ def add_to_cart(request ,ID):
                 status = True,
                 msg = 'محصول مدنظر شما در حال حاضر موجود نمی باشد!')   
     else:
-       return redirect("nakhll_market:AccountLogin")
+       return redirect("auth:login")
 
 
 
@@ -797,7 +797,7 @@ def remove_from_cart(request, ID):
         else:
             return redirect("Payment:cartdetail")
     else:
-       return redirect("nakhll_market:AccountLogin")
+       return redirect("auth:login")
 
 def remove_single_item_from_cart(request, ID):
     if request.user.is_authenticated:
@@ -833,7 +833,7 @@ def remove_single_item_from_cart(request, ID):
         else:
             return redirect("Payment:cartdetail")
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -861,7 +861,7 @@ def add_single_item_from_cart(request, ID):
         else:
             return redirect("Payment:cartdetail")
     else:
-       return redirect("nakhll_market:AccountLogin")
+       return redirect("auth:login")
 
 
 
@@ -989,7 +989,7 @@ def AddProductToCartWithAttrPrice(request, ID):
                 status = True,
                 msg = 'محصول مدنظر شما در حال حاضر موجود نمی باشد!')
     else:
-       return redirect("nakhll_market:AccountLogin")
+       return redirect("auth:login")
 
 
 
@@ -1023,7 +1023,7 @@ def accept_factor_product(request, ID):
             Alert.objects.create(Part = '20', FK_User = request.user, Slug = ID)
         return redirect("Profile:Factor")
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -1060,7 +1060,7 @@ def cansel_factor_product (request, ID):
             Alert.objects.create(Part = '13', FK_User = request.user, Slug = this_factor.ID)
         return redirect("Profile:Factor")
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Show Send Info For User
@@ -1169,7 +1169,7 @@ def send_factor(request, ID, status = None, msg = None):
 
             return render(request, 'nakhll_market/profile/pages/sendfactor.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 def delete_coupon(request,id):
@@ -1185,7 +1185,7 @@ def delete_coupon(request,id):
             factor.save()
         return redirect("Payment:Pay_Detail")
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 # ---------------------------------------------------- Sell Statistics ---------------------------------------------------------------
 
@@ -1321,7 +1321,7 @@ def send_request_wallet(request):
             else:
                 return redirect("nakhll_market:Wallet")
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
