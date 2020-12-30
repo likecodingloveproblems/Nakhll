@@ -374,19 +374,19 @@
                                 <div class="alert cropper-alert" role="alert"></div>
                                 <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
                                     <div class="modal-dialog modal-md" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
+                                    <div class="modal-content" style="width: 100%;">
+                                        <div class="modal-header" style="box-shadow: 1px 5px 8px #d0cece;">
                                         <h5 class="modal-title" id="modalLabel">برش تصویر ...</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="border: 2px solid #ffffff;border-radius: 38px;box-shadow: 1px 3px 2px #a09090;">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
                                         </div>
-                                        <div class="modal-body">
+                                        <div class="modal-body" style="padding:15px">
                                         <div class="img-container cropper-img-container">
                                             <img id="image" src="https://avatars0.githubusercontent.com/u/3456749">
                                         </div>
                                         </div>
-                                        <div class="modal-footer" id="modal-footer-err">
+                                        <div class="modal-footer" id="modal-footer-err" style="box-shadow: 1px -2px 9px #e4e4e4;">
                                             <button type="button" class="btn btn-primary right-btn-send-modal" id="crop">انتخاب تصویر</button>
                                             <button type="button" class="btn btn-secondary " data-dismiss="modal">بستن</button>
                                         </div>
@@ -660,18 +660,18 @@
                                     <div class="modal fade" id="modal2" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
                                         <div class="modal-dialog modal-md" role="document">
                                         <div class="modal-content">
-                                            <div class="modal-header">
+                                            <div class="modal-header" >
                                             <h5 class="modal-title" id="modalLabel">برش تصویر ...</h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close" >
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                             </div>
-                                            <div class="modal-body">
+                                            <div class="modal-body" >
                                             <div class="img-container cropper-img-container">
                                                 <img id="image2" src="https://avatars0.githubusercontent.com/u/3456749">
                                             </div>
                                             </div>
-                                            <div class="modal-footer" id="modal-footer-err">
+                                            <div class="modal-footer" id="modal-footer-err" >
                                                 <button type="button" class="btn btn-primary right-btn-send-modal" id="crop2">انتخاب تصویر</button>
                                                 <button type="button" class="btn btn-secondary " data-dismiss="modal">بستن</button>
                                             </div>
@@ -751,9 +751,10 @@
 
       $modal.on('shown.bs.modal', function () {
         cropper = new Cropper(image, {
-          aspectRatio: 1,
-          viewMode: 3,
+          aspectRatio: 1,   
+          viewMode: 1
         });
+        
       }).on('hidden.bs.modal', function () {
         cropper.destroy();
         cropper = null;
@@ -774,7 +775,9 @@
           $progress.show();
           $alert.removeClass('alert-success alert-warning');
           canvas.toBlob(function (blob) {
+              console.log('blob==>', blob)
           form_Data.append('shop_image', blob, 'avatar.jpg');
+          console.log('form_Data', ...form_Data)
           });
         }
       });
@@ -860,6 +863,7 @@
         //  $progress.show();
           $alert.removeClass('alert-success alert-warning');
           canvas.toBlob(function (blob) {
+              console.log('blob', blob)
           formData.append('gallery_image', blob, 'avatar.jpg');
           
         formData.append('shop_id', ShopID);
