@@ -21,13 +21,13 @@ urlpatterns = [
     # Session Path <----->
     path('set-session', views.set_session, name = 'set_session'),
     # Login Page Path
-    re_path(r'^login/$', views.accountlogin, name='AccountLogin'),
+    # path('account/login/', views.accountlogin, name='AccountLogin'),
     # Login To Account Path
     path('login-to-account/', views.login_to_account, name = 'login_to_account'), 
     # Logout Path
     re_path(r'^account/logout/$', views.logout, name='AccountLogout'),
     # Register Path
-    re_path(r'^registering/$', views.Register, name='AccountRegister'),
+    # path('account/register/<str:mobile_number>/', views.Register, name='auth:register-mobile'),
     # Show Change Password Path
     re_path(r'^change_password/$', views.ShowChangePassword, name='ShowChangePasswordPage'),
     # Show Change Password Offline Page
@@ -39,7 +39,7 @@ urlpatterns = [
     # Show Get Phone Number Page
     re_path(r'^forgetpassword/$', views.ShowGetPhoneNumber, name='ShowGetPhoneNumber'),
     
-    re_path(r'^forgetpassword/codesetvalid/$', views.codesetvalid, name='codesetvalid'),
+    path('account/codesetvalid/<str:mobileNumber>/', views.codesetvalid, name='codesetvalid'),
     # Get Registeri Code
     re_path(r'^account/register/$', views.GetRegisteriCode, name='GetRegisteriCode'),
     # Get Code Path

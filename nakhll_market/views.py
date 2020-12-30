@@ -1,3 +1,4 @@
+import re
 from django.shortcuts import render_to_response
 from django.contrib.sessions.backends.db import SessionStore
 from django.core.files.storage import FileSystemStorage
@@ -14,6 +15,7 @@ from datetime import datetime, date, timedelta
 import jdatetime
 from django.contrib import messages
 from django.utils.datastructures import MultiValueDictKeyError
+from django.utils import timezone
 from django import template
 from itertools import chain
 from operator import attrgetter
@@ -26,6 +28,7 @@ import threading
 from django.contrib.sessions.models import Session
 from django.utils import timezone
 from django.conf import settings
+from nakhll.settings import KAVENEGAR_KEY
 
 
 from django.contrib.auth.decorators import login_required
@@ -67,6 +70,7 @@ from .models import Alert
 from .models import Field, UserphoneValid
 from .models import Note
 from .models import PageViews, User_View, ShopViews, Date_View
+from .models import SMS
 
 from Payment.models import Wallet, Factor ,FactorPost, Coupon
 from blog.models import CategoryBlog, PostBlog, VendorStory
@@ -83,7 +87,7 @@ fogetpasswordcode = None
 # Rigister Code
 register = None
 
-# phonenumber Offline
+# phone_number Offline
 offphone = None
 
 # Get User IP
@@ -100,6 +104,10 @@ def visitor_ip_address(request):
 
 # Login To User Panel
 def accountlogin(request):
+    if request.method=='POST':
+        pass
+    else:
+        pass
     return render(request, 'registration/login.html')
 
 def login_to_account(request):
@@ -144,147 +152,26 @@ def login_to_account(request):
 def logout(request):
     return HttpResponseRedirect(reverse(index))
 
-# Register User
-def Register(request):
+class SiteUser:
+    def __init__(self, mobile_number, password) -> None:
+        self.mobile_number = mobile_number
+        self.password = password
 
-    response_data={}
+    def is_national_code_valid(self):
+        import re
+        if not re.search(r'^\d{10}$', input):
+            return False
 
-    if request.POST.get('action') == 'post':
+        check = int(input[9])
+        s = sum([int(input[x]) * (10 - x) for x in range(9)]) % 11
+        return (s < 2 and check == s) or (s >= 2 and check + s == 11)
 
-        try:
-            FirstName = request.POST["firstname"]
-        except MultiValueDictKeyError:
-            FirstName = ''
+    def is_email_valid(self):
+        from validate_email import validate_email
+        # verify==True check that email smtp server exists
+        is_valid = validate_email(self.email, verify=True)
+        return is_valid
 
-        try:
-            LastName = request.POST["lastname"]
-        except MultiValueDictKeyError:
-            LastName = ''
-
-        try:
-            NactionCode = request.POST["nactioncode"]
-        except MultiValueDictKeyError:
-            NactionCode = ''
-
-        try:
-            MobileNumber = request.POST["mobilenumber"]
-        except MultiValueDictKeyError:
-            MobileNumber = ''
- 
-        try:
-            Email = request.POST["email"]
-        except MultiValueDictKeyError:
-            Email = ''
-
-        try:
-            UserName = request.POST["username"]
-        except MultiValueDictKeyError:
-            UserName = ''
-         
-        try:
-            Password = request.POST["password"]
-        except MultiValueDictKeyError:
-            Password = ''
-
-        try:
-            newpassword = request.POST["newpassword"]
-        except MultiValueDictKeyError:
-            newpassword = ''
-
-
-        try:
-            referencecode = request.POST["referencecode"]
-        except MultiValueDictKeyError:
-            referencecode = ''
-
-
-        if (UserName != '') and (Password != '') and (FirstName != '') and (LastName != '') and (NactionCode != '') and (MobileNumber != '') and (Email != '') and (newpassword != ''):
-
-            if len(NactionCode) == 10 :
-                if (NactionCode == '0000000000') or (NactionCode == '1111111111') or (NactionCode == '2222222222') or (NactionCode == '3333333333') or (NactionCode == '4444444444') or (NactionCode == '5555555555') or (NactionCode == '6666666666') or (NactionCode == '7777777777') or (NactionCode == '8888888888') or (NactionCode == '9999999999') :
-                    response_data['error'] = 'کد ملی وارد شده صحیح نمی باشد'
-                    response_data['status'] = False
-                else:
-                    if (Password == newpassword) :
-
-                        user = User.objects.filter(username = UserName, email = Email)
-                        pro = Profile.objects.filter(MobileNumber = MobileNumber)
-                        thispro = Profile.objects.filter(NationalCode = NactionCode)
-
-                        if (user.count() != 0) or (pro.count() != 0) or (thispro.count() != 0):
-
-                            response_data['error'] = 'کاربری با این مشخصات موجود است!'
-                            response_data['status'] = False
-
-                            return JsonResponse(response_data)
-
-                        else:
-
-                            try:
-                                
-                                this = User.objects.create_user(UserName, Email, Password)
-                                this.last_name = LastName
-                                this.first_name = FirstName
-                                this.save()
-                                
-
-                                thispro = Profile(FK_User = this, MobileNumber = MobileNumber, NationalCode = NactionCode, IPAddress = visitor_ip_address(request), ReferenceCode =  referencecode)
-                                thispro.save()
-
-                                thiswallet = Wallet(FK_User = this)
-                                thiswallet.save()
-
-
-                                response_data['error'] = 'ثبت نام با موفقیت انجام شد'
-                                response_data['status'] = True
-                                return JsonResponse(response_data)
-
-                            except:
-
-                                response_data['error'] = 'کاربری با این مشخصات موجود است - رمز عبور شما طبق الگو های خواسته شده نمی باشد!'
-                                response_data['status'] = False
-
-                                return JsonResponse(response_data)
-                    else:       
-                        response_data['error'] = 'رمز عبور و تکرار رمز عبور برابر یکسان نیستند'
-                        response_data['status'] = False
-                        return JsonResponse(response_data)
-            else:
-                response_data['error'] = 'کد ملی بایدس ده رقم باشد'
-                response_data['status'] = False
-                return JsonResponse(response_data)
-
-            #     else:
-            # #         c = int(NactionCode[9])
-            # #         n = int(NactionCode[0]) * 10 +
-            # #             int(NactionCode[1]) * 9 +
-            # #             int(NactionCode[2]) * 8 +
-            # #             int(NactionCode[3]) * 7 +
-            # #             int(NactionCode[4]) * 6 +
-            # #             int(NactionCode[5]) * 5 +
-            # #             int(NactionCode[6]) * 4 +
-            # #             int(NactionCode[7]) * 3 +
-            # #             int(NactionCode[8]) * 2 
-            # #         r = n - int(n / 11) * 11;
-            # #         if ((r == 0) and (r == c)) or ((r == 1) and (c == 1)) or ((r > 1) and (c == 11 - r)):
-            #         ncode = true
-            # #         else:
-            # #             response_data['error'] = 'کد ملی وارد شده صحیح نمی باشد'
-            # #             response_data['status'] = False
-            # else:
-            #     response_data['error'] = 'کد ملی وارد شده صحیح نمی باشد'
-            #     response_data['status'] = False
-
-                    
-            
-        else:
-
-            response_data['error'] = 'لطفا تمامی فیلد ها را به درستی پر کنید!'
-            response_data['status'] = False
-            return JsonResponse(response_data)
-        
-    else:
-        return render (request, 'registration/register.html')
 # Show Change Password Page
 def ShowChangePassword(request):    
 
@@ -459,7 +346,7 @@ def ShowGetPhoneNumber(request):
         'AlartMessage':'',
     }
 
-    return render(request, 'registration/forgetpassword/getphonenumber.html', context)
+    return render(request, 'registration/new/getregistericode.html', context)
 
     # Show Get Phone Number Page
 def ShowChangePasswordOff(request):    
@@ -472,58 +359,93 @@ def ShowChangePasswordOff(request):
     return render(request, 'registration/forgetpassword/changepass.html', context)
 
 # Get Registeri Code
-def GetRegisteriCode(request):
-    response_data = {} 
+def GetRegisteriCode(request): 
 
-    if request.POST.get('action') == 'post':
+    if request.method == 'POST':
 
-        try: 
-            phonenumber = request.POST.get("mobilenumber")
-        except MultiValueDictKeyError:
-            phonenumber = '00'
+        phone_number = request.POST.get("mobilenumber", None)
+        # validation of phone number
+        if  (len(phone_number) == 11 and phone_number[0]== '0' and phone_number.isdigit()):
+            pass
+        else:
+            context = {
+                'AlartMessage':'شماره وارد شده صحیح نمی باشد.',
+                'ShowAlart': True,
+                }
+            return render(request, 'registration/new/getregistericode.html', context)
+        
+        if (phone_number):
 
-        if (phonenumber != '00'):
+            if not Profile.objects.filter(MobileNumber = phone_number).exists():
+                # check that user is not overloading SMS with many requests
+                ten_minutes_ago = timezone.now() + timedelta(minutes=-10)
+                num_last_10_min_sms = SMS.objects.filter(entries_receptor=phone_number, datetime__gte=ten_minutes_ago).count()
+                if num_last_10_min_sms > 5: # 5 number in 10 minutes
+                    context = {
+                        'AlartMessage':'شما بیشتر از تعداد مجاز سعی کردید. 10 دقیقه دیگر تلاش کنید.',
+                        'ShowAlart': True,
+                        }
+                else:
+                    # the user has more opportunity
+                    regcode = str(random.randint(100000, 999999))
+                    if not UserphoneValid.objects.filter(MobileNumber = phone_number).exists():
+                        userphoneValid = UserphoneValid(MobileNumber=phone_number,ValidCode=regcode,Validation=False)
+                        userphoneValid.save() 
+                    try:
+                        userphoneValid=UserphoneValid.objects.get(MobileNumber = phone_number)
+                        userphoneValid.ValidCode = regcode
+                        userphoneValid.Validation = False
+                        userphoneValid.save()
+                        url = 'https://api.kavenegar.com/v1/{}/verify/lookup.json'.format(KAVENEGAR_KEY) 
+                        params = {'receptor': phone_number, 'token' : regcode, 'template' : 'nakhl-register'}
+                        res = requests.post(url, params = params)
+                        text = json.loads(res.text)
+                        app_timezone = timezone.get_default_timezone()
 
-            if (Profile.objects.filter(MobileNumber = phonenumber).count() == 0):
-                regcode = ''.join( random.choice(string.digits) for i in range(6))
-                if (UserphoneValid.objects.filter(MobileNumber = phonenumber).count() == 0):
-                    userphoneValid = UserphoneValid(MobileNumber=phonenumber,ValidCode=regcode,Validation=False)
-                    userphoneValid.save() 
-                try:
-                    userphoneValid=UserphoneValid.objects.get(MobileNumber = phonenumber)
-                    userphoneValid.ValidCode = regcode
-                    userphoneValid.Validation = False
-                    userphoneValid.save()
-                except:
-                    response_data['error'] = 'خطای دریافت شماره تماس'
-                    response_data['status'] = False
-                    return JsonResponse(response_data)
+                        SMS.objects.create(
+                            return_status = text['return']['status'],
+                            return_message = text['return']['message'],
+                            entries_cost = text['entries'][0]['cost'],
+                            entries_datetime = datetime.fromtimestamp(text['entries'][0]['date']).astimezone(app_timezone),
+                            entries_receptor = text['entries'][0]['receptor'],
+                            entries_sender = text['entries'][0]['sender'],
+                            entries_statustext = text['entries'][0]['statustext'],
+                            entries_status = text['entries'][0]['status'],
+                            entries_message = text['entries'][0]['message'],
+                            entries_messageid = text['entries'][0]['messageid'],
+                        )
 
-                url = 'https://api.kavenegar.com/v1/4E41676D4B514A4143744C354E6135314E4F47686B33594B747938794D30426A784A692F3579596F3767773D/verify/lookup.json' 
-                params = {'receptor': phonenumber, 'token' : regcode, 'template' : 'nakhl-register'}
-                requests.post(url, params = params)
-
-                response_data['message'] = 'با موفقیت انجام شد'
-                response_data['status'] = True
-                return JsonResponse(response_data)
+                        if res.status_code == 200: # TODO check more detail flow chart of kevenegar to be sure that the message is sent
+                            # kevenegar post method is successful
+                            return redirect(reverse('Profile:codesetvalid', kwargs={'mobileNumber':text['entries'][0]['receptor']}))
+                        else:
+                            context = {
+                                'AlartMessage':'سامانه پیامکی با مشکل مواجه شه است. لطفا با پشتیبانی تماس حاصل فرمایید.',
+                                'ShowAlart': True,
+                                }
+                    except:
+                        context = {
+                            'AlartMessage':'خطای دریافت شماره تماس',
+                            'ShowAlart': True,
+                            }
             else:
-                response_data['error'] = 'این کاربر قبلا ثبت نام کرده است ! '
-                response_data['status'] = False
-                return JsonResponse(response_data)
+                context = {
+                    'AlartMessage':'این کاربر قبلا ثبت نام کرده است ! ',
+                    'ShowAlart': True,
+                    }
 
         else:
 
-            response_data['error'] = 'شماره وارد شده نامعتبر است!'
-            response_data['status'] = False
+            context = {
+                'AlartMessage':'شماره وارد شده نامعتبر است!',
+                'ShowAlart': True,
+                }
     else:
         context = {
             'ShowAlart':False,
             'AlartMessage':'',
         }
-
-        return render(request, 'registration/register.html', context)
-
-
+    return render(request, 'registration/new/getregistericode.html', context)
 
 # Get Code
 def GetCode(request):
@@ -533,20 +455,20 @@ def GetCode(request):
     if request.POST.get('action') == 'post':
 
         try:
-            phonenumber = request.POST.get("mobilenumber")
+            phone_number = request.POST.get("mobilenumber")
         except MultiValueDictKeyError:
-            phonenumber = False
+            phone_number = False
 
-        if (phonenumber != False):
+        if (phone_number != False):
 
-            if (Profile.objects.filter(MobileNumber = phonenumber).count() != 0):
+            if (Profile.objects.filter(MobileNumber = phone_number).count() != 0):
                 fogetpasswordcode = ''.join( random.choice(string.digits) for i in range(6))
-                if (UserphoneValid.objects.filter(MobileNumber = phonenumber).count() == 0):
-                    userphoneValid = UserphoneValid(MobileNumber=phonenumber,ValidCode=fogetpasswordcode,Validation=False)
+                if (UserphoneValid.objects.filter(MobileNumber = phone_number).count() == 0):
+                    userphoneValid = UserphoneValid(MobileNumber=phone_number,ValidCode=fogetpasswordcode,Validation=False)
                     userphoneValid.save()
                 else:    
                     try:
-                        userphoneValid=UserphoneValid.objects.get(MobileNumber = phonenumber)
+                        userphoneValid=UserphoneValid.objects.get(MobileNumber = phone_number)
                         userphoneValid.ValidCode = fogetpasswordcode
                         userphoneValid.Validation = False
                         userphoneValid.save()
@@ -555,8 +477,8 @@ def GetCode(request):
                         response_data['status'] = False
                         return JsonResponse(response_data)
 
-                url = 'https://api.kavenegar.com/v1/4E41676D4B514A4143744C354E6135314E4F47686B33594B747938794D30426A784A692F3579596F3767773D/verify/lookup.json' 
-                params = {'receptor': phonenumber, 'token' : fogetpasswordcode, 'template' : 'nakhl-forgetpassword'}
+                url = 'https://api.kavenegar.com/v1/{}/verify/lookup.json'.format(KAVENEGAR_KEY) 
+                params = {'receptor': phone_number, 'token' : fogetpasswordcode, 'template' : 'nakhl-forgetpassword'}
                 requests.post(url, params = params)
 
                 response_data['message'] = 'با موفقیت انجام شد'
@@ -583,33 +505,24 @@ def GetCode(request):
 
 
 
-def codesetvalid(request):
-    response_data = {} 
-    if request.POST.get('action') == 'post':
-        try:
-            phonenumber = request.POST.get("mobilenumber")
-            codeinputuser = request.POST.get("code")
-        except MultiValueDictKeyError:
-            response_data['status'] = False
-            response_data['error'] = 'خطا ! لطفا مجدد امتحان کنید!'
-            return JsonResponse(response_data)
+def codesetvalid(request, mobileNumber):
+    context = {'mobileNumber':mobileNumber}
+    if request.method == 'POST':
 
-        if (UserphoneValid.objects.get(MobileNumber = phonenumber).ValidCode == codeinputuser):
-            userphoneValid=UserphoneValid.objects.get(MobileNumber = phonenumber)
+        code = request.POST.get("code")
+        if UserphoneValid.objects.filter(MobileNumber = mobileNumber, ValidCode=code).exists():
+            # user enter the correct register code
+            userphoneValid=UserphoneValid.objects.get(MobileNumber = mobileNumber)
             userphoneValid.Validation = True
             userphoneValid.save()
-            response_data['status'] = True
-            return JsonResponse(response_data)
+            return redirect(reverse('auth:register-mobile', kwargs={'mobile_number':mobileNumber}))
         else:
-            response_data['error'] = 'کد وارد شده نا معتبر می باشد '
-            response_data['status'] = False
-        return JsonResponse(response_data)
+            context['AlartMessage'] = 'کد وارد شده نا معتبر می باشد '
+            context['ShowAlart'] =  True
     else:
-        context = {
-            'ShowAlart':False,
-            'AlartMessage':'',
-        }
-        return render(request, 'registration/forgetpassword/getphonenumber.html', context)
+        context['ShowAlart'] = False
+
+    return render(request, 'registration/new/validatecode.html', context)
 
         
         
@@ -642,8 +555,8 @@ def ChangePasswordOffline(request):
             if (password != False) and (newpassword != False) and (mobile != False):
 
                 if (password == newpassword):
-                    thispro = Profile.objects.get(MobileNumber = mobile)
-                    thisuser = User.objects.get(id = thispro.FK_User_id)
+                    profile = Profile.objects.get(MobileNumber = mobile)
+                    thisuser = User.objects.get(id = profile.FK_User_id)
 
                     if (newpassword != thisuser.username):
 
@@ -906,7 +819,7 @@ def set_session(request):
     try:
         this_path = request.POST['this_path']
         # get path other than non-account path
-        if not ((this_path == '/login/') or (this_path == '/account/logout/') or (this_path == '/account/register/')):
+        if not ((this_path == '/account/login/') or (this_path == '/account/logout/') or (this_path == '/account/register/')):
             request.session['next'] = this_path
         response_data['status'] = True
         return JsonResponse(response_data)
@@ -1254,11 +1167,11 @@ def category(request, slug, status, delta_price):
     for item in Category.objects.filter(Publish = True):
         if item.FK_SubCategory == None:
             this_sub = []
-            for this in Category.objects.filter(Publish = True, FK_SubCategory = item):
-                if str(this.id) in category_list_id:
-                    this_sub.append(Sub_Item(this, True))
+            for user in Category.objects.filter(Publish = True, FK_SubCategory = item):
+                if str(user.id) in category_list_id:
+                    this_sub.append(Sub_Item(user, True))
                 else:
-                    this_sub.append(Sub_Item(this, False))
+                    this_sub.append(Sub_Item(user, False))
 
             if str(item.id) in category_list_id:
                 this_category.append(Item(item, this_sub, True))
@@ -1639,7 +1552,7 @@ def search(request):
         return render(request, 'nakhll_market/pages/searche.html', context)
 
     elif request.method == 'GET':
-        return HttpResponse('this method is not allowed!', status=405)
+        return HttpResponse('user method is not allowed!', status=405)
 
 # Searche With Filters Page
 def FilterSearch(request):
@@ -1908,7 +1821,7 @@ def AddNewCommentInProduct(request, this_product):
 
     else:
 
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Add Replay Comment And Show Message In Product Page
@@ -1951,7 +1864,7 @@ def AddReplayCommentInProduct(request, id):
 
     else:
 
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # End ---------------------------------------------------------------------------------------------------------------------------------
@@ -2005,7 +1918,7 @@ def AddNewCommentInShop(request, this_shop):
 
     else:
 
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Add Replay Comment In Shop Page
@@ -2041,7 +1954,7 @@ def AddReplayCommentInShop(request, id):
 
     else:
 
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # End ---------------------------------------------------------------------------------------------------------------------------------
@@ -2068,11 +1981,11 @@ def AddNewReviewInProduct(request, this_product):
 
             Review_Negative = request.POST.getlist("field-down")
 
-            thisproduct = get_object_or_404(Product, Slug = this_product)
+            profileduct = get_object_or_404(Product, Slug = this_product)
 
             if (Review_Title != '') and (Review_Description != ''):
 
-                review_check = Review.objects.filter(Title = Review_Title, FK_UserAdder = request.user, FK_Product = thisproduct, Description = Review_Description)
+                review_check = Review.objects.filter(Title = Review_Title, FK_UserAdder = request.user, FK_Product = profileduct, Description = Review_Description)
                 if review_check.count() != 0:
 
                     pos_note_check = False
@@ -2090,14 +2003,14 @@ def AddNewReviewInProduct(request, this_product):
                     if (pos_note_check) and (neg_note_check):
 
                         return redirect('nakhll_market:Re_ProductsDetail',
-                        shop_slug = thisproduct.FK_Shop.Slug,
-                        product_slug = thisproduct.Slug,
+                        shop_slug = profileduct.FK_Shop.Slug,
+                        product_slug = profileduct.Slug,
                         status = True,
                         msg = 'نظر شما قبلا ثبت شده است!')
 
                 else:
 
-                    review = Review.objects.create(Title = Review_Title, FK_UserAdder = request.user, Description = Review_Description, FK_Product = thisproduct)
+                    review = Review.objects.create(Title = Review_Title, FK_UserAdder = request.user, Description = Review_Description, FK_Product = profileduct)
 
                     if len(Review_Positive) != 0:
                         for item in Review_Positive:
@@ -2115,22 +2028,22 @@ def AddNewReviewInProduct(request, this_product):
                     Alert.objects.create(Part = '15', FK_User = request.user, Slug = review.id)
                     # -----------------------------------------------------------------------------------------
                     return redirect('nakhll_market:Re_ProductsDetail',
-                    shop_slug = thisproduct.FK_Shop.Slug,
-                    product_slug = thisproduct.Slug,
+                    shop_slug = profileduct.FK_Shop.Slug,
+                    product_slug = profileduct.Slug,
                     status = True,
                     msg = 'نقد شما با موفقیت ثبت شد، و پس از بررسی کارشناسان در سایت قرار خواهد گرفت.')
 
             else:
 
                 return redirect('nakhll_market:Re_ProductsDetail',
-                shop_slug =thisproduc.FK_Shop.Slug,
-                product_slug = thisproduct.Slug,
+                shop_slug =profileduc.FK_Shop.Slug,
+                product_slug = profileduct.Slug,
                 status = True,
                 msg = 'عنوان و توضیحات برای ثیت نقد و بررسی اجباریست!')
 
     else:
 
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Product Like
@@ -2182,7 +2095,7 @@ def ContentLike(request, id, type):
 
     else:
 
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Shop Comment Like
@@ -2208,7 +2121,7 @@ def ShopCommentLike(request, id):
 
     else:
 
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # -------------------------------------------------------------------------------------------------------------------------------

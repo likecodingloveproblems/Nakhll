@@ -1,3 +1,4 @@
+from nakhll.settings import KAVENEGAR_KEY
 from django.shortcuts import render_to_response
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
@@ -103,7 +104,7 @@ class SendMessage:
         # Get User Phone Number
         PhoneNumber = Profile.objects.get(FK_User = self.user).MobileNumber
         # Send SMS
-        url = 'https://api.kavenegar.com/v1/4E41676D4B514A4143744C354E6135314E4F47686B33594B747938794D30426A784A692F3579596F3767773D/verify/lookup.json' 
+        url = 'https://api.kavenegar.com/v1/{}/verify/lookup.json'.format(KAVENEGAR_KEY) 
         params = {'receptor': PhoneNumber, 'token' : msg_count, 'template' : 'nakhll-message'}
         requests.post(url, params = params)
 
@@ -122,7 +123,7 @@ def SendAlertResponse(Title, Description, PhoneNumber):
             final_des += item + '-'
             count += 1
 
-    url = 'https://api.kavenegar.com/v1/4E41676D4B514A4143744C354E6135314E4F47686B33594B747938794D30426A784A692F3579596F3767773D/verify/lookup.json' 
+    url = 'https://api.kavenegar.com/v1/{}/verify/lookup.json'.format(KAVENEGAR_KEY) 
     params = {'receptor': PhoneNumber, 'token' : Title, 'token2' : final_des, 'template' : 'nakhll-alert'}
     requests.post(url, params = params)
 
@@ -141,7 +142,7 @@ def SendPostCode(Shop, FactorNum, PostCode, PhoneNumber):
             final_des += item + '-'
             count += 1
 
-    url = 'https://api.kavenegar.com/v1/4E41676D4B514A4143744C354E6135314E4F47686B33594B747938794D30426A784A692F3579596F3767773D/verify/lookup.json' 
+    url = 'https://api.kavenegar.com/v1/{}/verify/lookup.json'.format(KAVENEGAR_KEY) 
     params = {'receptor': PhoneNumber, 'token' : final_des, 'token2' : FactorNum, 'token3' : PostCode, 'template' : 'nakhll-sendpostcode'}
     requests.post(url, params = params)
 
@@ -211,7 +212,7 @@ def CommentAlert(request, id):
 
         return render(request, 'nakhll_market/alert/pages/commentalert.html', context)
     else:  
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
     # Comment Alert
 def ReviewAlert(request, id):
@@ -238,7 +239,7 @@ def ReviewAlert(request, id):
 
         return render(request, 'nakhll_market/alert/pages/reviewalert.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Alert Shop
@@ -266,7 +267,7 @@ def ShopAlert(request, id):
 
         return render(request, 'nakhll_market/alert/pages/shopalert.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Alert Add New Shop Banner
@@ -296,7 +297,7 @@ def ShopBannerAlert(request, id):
 
     else:
         
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 # Product Alert
 def ProductAlert(request, id):
@@ -321,7 +322,7 @@ def ProductAlert(request, id):
     
         return render(request, 'nakhll_market/alert/pages/productalert.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Product Banner Alert
@@ -347,7 +348,7 @@ def ProductBannerAlert(request, id):
             
         return render(request, 'nakhll_market/alert/pages/producbannertalert.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Attribute Alert
@@ -373,7 +374,7 @@ def AttributeAlert(request, id):
             
         return render(request, 'nakhll_market/alert/pages/attributealert.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Product Attribute Alert
@@ -399,7 +400,7 @@ def ProductAttributeAlert(request, id):
             
         return render(request, 'nakhll_market/alert/pages/attributeproductalert.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Edite Shop Banner Alert
@@ -430,7 +431,7 @@ def EditeShopBannerAlert(request, id):
             
         return render(request, 'nakhll_market/alert/pages/editeshopbanneralert.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # edit product banner alert
@@ -460,7 +461,7 @@ def EditeProductBannerAlert(request, id):
         return render(request, 'nakhll_market/alert/pages/editeproductbanner.html', context)
 
     else: 
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Edite Shop Alert
@@ -522,7 +523,7 @@ def EditeShopAlert(request, id):
         
         return render(request, 'nakhll_market/alert/pages/editeshop.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Edit Product Alert
@@ -605,7 +606,7 @@ def EditeProductAlert(request, id):
             
         return render(request, 'nakhll_market/alert/pages/editeproduct.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Ticket Alert
@@ -649,7 +650,7 @@ def TicketAlert(request, id):
         }
         return render(request, 'nakhll_market/alert/pages/ticketalert.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Attribute Price Alert
@@ -677,7 +678,7 @@ def AttributePriceAlert(request, id):
             
         return render(request, 'nakhll_market/alert/pages/attributepricealert.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -706,7 +707,7 @@ def ConnectUsAlert(request, id):
             
         return render(request, 'nakhll_market/alert/pages/connectusalert.html', context)
     else: 
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Factor Alert
@@ -734,7 +735,7 @@ def FactorAlert(request, id):
             
         return render(request, 'nakhll_market/alert/pages/factoralert.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Delete Shop Banner Alert
@@ -762,7 +763,7 @@ def DeleteShopBannerAlert(request, id):
             
         return render(request, 'nakhll_market/alert/pages/deleteshopbanneralert.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Delete Product Banner Alert
@@ -790,7 +791,7 @@ def DeleteProductBannerAlert(request, id):
             
         return render(request, 'nakhll_market/alert/pages/deleteproductbanneralert.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Delete Attribute Product Alert
@@ -818,7 +819,7 @@ def DeleteAttributeProductAlert(request, id):
             
         return render(request, 'nakhll_market/alert/pages/deleteattrproduct.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Delete Attribute Price Alert
@@ -847,7 +848,7 @@ def DeleteAttributePriceAlert(request, id):
         return render(request, 'nakhll_market/alert/pages/deleteattrprice.html', context)
 
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Order Alert
@@ -877,7 +878,7 @@ def OrderAlert(request, id):
             
         return render(request, 'nakhll_market/alert/pages/orderalert.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Send Info Alert
@@ -911,7 +912,7 @@ def SendInfoAlert(request, id):
             
         return render(request, 'nakhll_market/alert/pages/sendinfoalert.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Cansel Order Alert
@@ -942,7 +943,7 @@ def CanselOrderAlert(request, id):
             
         return render(request, 'nakhll_market/alert/pages/canselorder.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -971,7 +972,7 @@ def DeleteCouponAlert(request, id):
             
         return render(request, 'nakhll_market/alert/pages/deletecouponalert.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -1001,7 +1002,7 @@ def AddCouponAlert(request, id):
 
         return render(request, 'nakhll_market/alert/pages/couponalert.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Post Comment Alert
@@ -1081,7 +1082,7 @@ def AddPostCommentAlert(request, id):
                 
             return render(request, 'nakhll_market/alert/pages/blogcommentalert.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Record Story Comment Alert
@@ -1171,7 +1172,7 @@ def RecordStoryCommentAlert(request, id):
             
             return render(request, 'nakhll_market/alert/pages/storycommentalert.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -1252,7 +1253,7 @@ def RecordShopCommentAlert(request, id):
                 
             return render(request, 'nakhll_market/alert/pages/shopcommentalert.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Checkout By User Alert
@@ -1318,7 +1319,7 @@ def Checkout_By_User_Alert(request, id):
                 
             return render(request, 'nakhll_market/alert/pages/checkoutalert.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -1405,7 +1406,7 @@ def Add_New_Optional_Attribute(request, id):
                 
             return render(request, 'nakhll_market/alert/pages/optionalattribute.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -1470,7 +1471,7 @@ def Delete_Optional_Attribute(request, id):
                 
             return render(request, 'nakhll_market/alert/pages/deleteoptionalattribute.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -1568,7 +1569,7 @@ def RecordAddCouponAlert(request, id):
 
     else:
         
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -1595,7 +1596,7 @@ def RecordDeleteCouponAlert(request, id):
 
     else:
         
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Record Cansel Order Alert
@@ -1615,13 +1616,13 @@ def RecordCanselOrderAlert(request, id):
             # get user profile
             this_user_profile = Profile.objects.get(FK_User = this_factor.FK_User)
             # send sms
-            url = 'https://api.kavenegar.com/v1/4E41676D4B514A4143744C354E6135314E4F47686B33594B747938794D30426A784A692F3579596F3767773D/verify/lookup.json' 
+            url = 'https://api.kavenegar.com/v1/{}/verify/lookup.json'.format(KAVENEGAR_KEY) 
             params = {'receptor': this_user_profile.MobileNumber, 'token' : this_factor.FactorNumber, 'template' : 'cansel-factore'}
             requests.post(url, params = params)
           
             return redirect("nakhll_market:Alert")
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Record Send Info Alert
@@ -1730,7 +1731,7 @@ def RecordSendInfoAlert(request, id):
 
     else:
         
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Record Order Alert
@@ -1750,7 +1751,7 @@ def RecordOrderAlert(request, id):
 
     else:
         
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -1780,7 +1781,7 @@ def RecordDeleteAttributePrice(request, id):
 
     else:
         
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Record Delete Attribute Product  Alert
@@ -1810,7 +1811,7 @@ def RecordDeleteAttributeProduct(request, id):
 
     else:
         
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Record Delete Product Banner Alert
@@ -1838,7 +1839,7 @@ def RecordDeleteProductBanner(request, id):
 
     else:
         
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Record Delete Shop Banner Alert
@@ -1862,7 +1863,7 @@ def RecordDeleteShopBanner(request, id):
           
             return redirect("nakhll_market:Alert")
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 # Recor Factor Alert
 def RecorFactorAlert(request, id):
@@ -1911,7 +1912,7 @@ def RecorFactorAlert(request, id):
                     SendAlertResponse('ثبت-سفارش', Dec, profile.MobileNumber)
 
                     for item in ShopPeofileList:
-                        url = 'https://api.kavenegar.com/v1/4E41676D4B514A4143744C354E6135314E4F47686B33594B747938794D30426A784A692F3579596F3767773D/verify/lookup.json' 
+                        url = 'https://api.kavenegar.com/v1/{}/verify/lookup.json'.format(KAVENEGAR_KEY) 
                         params = {'receptor': item.MobileNumber, 'token' : factor.FactorNumber, 'template' : 'nakhll-order'}
                         requests.post(url, params = params)
                         # Send Push notification
@@ -1944,7 +1945,7 @@ def RecorFactorAlert(request, id):
 
     else:
         
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Record Connect Us Alert
@@ -1964,7 +1965,7 @@ def RecorConnectUsAlert(request, id):
 
     else:
         
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -2035,7 +2036,7 @@ def RecorAttributePriceAlert(request, id):
 
     else:
         
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Record Ticket Replay Alert
@@ -2068,7 +2069,7 @@ def RecorTicketReplayAlert(request, id):
             except Exception as e:
                 print(str(e))
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Record Product Alert
@@ -2210,7 +2211,7 @@ def RecorProductAlert(request, id):
 
     else:
         
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Record Shop Alert
@@ -2300,7 +2301,7 @@ def RecorShopAlert(request, id):
 
     else:
         
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Record Shop Banner Alert
@@ -2366,7 +2367,7 @@ def RecordShopBannerAlert(request, id):
 
     else:
         
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Record Shop Alert
@@ -2428,7 +2429,7 @@ def RecordShopAlert(request, id):
 
     else:
         
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Record Review Alert
@@ -2483,7 +2484,7 @@ def RecordReviewAlert(request, id):
 
     else:
         
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Record Comment Alert
@@ -2542,7 +2543,7 @@ def RecordCommentAlert(request, id):
 
     else:
         
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Record Edite Product Banner Alert
@@ -2618,7 +2619,7 @@ def RecordEditeProductBannerAlert(request, id):
           
             return redirect("nakhll_market:Alert")
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Record Edite Shop Banner Alert
@@ -2696,7 +2697,7 @@ def RecordEditeShopBannerAlert(request, id):
 
     else:
         
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Record Product Attribute Alert
@@ -2761,7 +2762,7 @@ def RecordProductAttributeAlert(request, id):
 
     else:
         
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Record Attribute Alert
@@ -2805,7 +2806,7 @@ def RecordAttributeAlert(request, id):
                     # SendAlertResponse('ایجاد-ویژگی-جدید', Dec, profile.MobileNumber) 
             return redirect("nakhll_market:Alert")
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Record Product Banner Alert
@@ -2871,7 +2872,7 @@ def RecordProducBannertAlert(request, id):
 
     else:
         
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Record Product Alert
@@ -2930,4 +2931,4 @@ def RecordProductAlert(request, id):
 
             return redirect("nakhll_market:Alert")
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")

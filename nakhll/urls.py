@@ -15,22 +15,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.conf.urls import url, re_path
-from django.conf.urls.static import static, serve
-from django.conf import settings
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-# from django.contrib.sitemaps.views import sitemap
+from django.conf.urls import url
 
 urlpatterns = [
     url(r'^oauth/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     path('logintowebsite/', admin.site.urls),
-    path('account/', include('django.contrib.auth.urls')),
+    path('account/', include('auth.urls', namespace='auth')),
     path('', include('nakhll_market.urls', namespace='Profile')),
     url(r'^tinymce/', include('tinymce.urls')),
     url(r'^cart/', include('Payment.urls' , namespace='Payment')),
     url(r'^blog/', include('blog.urls' , namespace='blog')),
     url(r'^app/api/', include('restapi.urls' , namespace='restapi')),
-    
 ]
-urlpatterns += static(settings.STATIC_URL,document_root =  settings.STATIC_ROOT)
-urlpatterns += static(settings.MEDIA_URL,document_root =  settings.MEDIA_ROOT)

@@ -48,30 +48,3 @@
             gtag('config', 'UA-156540827-1');
         </script>
     {% endcompress %}
-    <!--set session-->
-    {% if not request.user.is_authenticated %}
-        <script text="javascripts">
-            $('document').ready(function() {
-                var this_page_path = '{{request.path|safe}}';
-                $.ajax(
-                    {
-                        type: 'POST',
-                        url: '{% url "nakhll_market:set_session" %}',
-                        data :{
-                            this_path:this_page_path,
-                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
-                        },
-                        success: function (json) {
-                            if (json.status == true){
-                                console.log(json.status);
-                            }
-                        },
-                        error: function (xhr) {
-                            console.log(xhr.status + ": " + xhr.responseText);
-                        }
-                    }
-                );      
-            })
-        </script>
-    {% endif %}
-    

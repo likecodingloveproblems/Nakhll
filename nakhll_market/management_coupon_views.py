@@ -40,7 +40,7 @@ class SendSMS:
         # Get User Phone Number
         # PhoneNumber = Profile.objects.get(FK_User = self.user).MobileNumber
         # # Send SMS
-        # url = 'https://api.kavenegar.com/v1/4E41676D4B514A4143744C354E6135314E4F47686B33594B747938794D30426A784A692F3579596F3767773D/verify/lookup.json' 
+        # url = 'https://api.kavenegar.com/v1/{}/verify/lookup.json'.format(KAVENEGAR_KEY) 
         # params = {'receptor': PhoneNumber, 'token' : self.user.username, 'token2' : self.coupon.SerialNumber, 'template' : 'addnewcoupom-nakhll'}
         # requests.post(url, params = params)
 
@@ -127,7 +127,7 @@ def SaveEditManagementCoupon(request, id):
         else:
             return redirect("nakhll_market:EditManagementCoupon", id = copun.id)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Edite Management Coupon
@@ -395,7 +395,7 @@ def EditManagementCoupon(request, id):
 
             return render(request, 'nakhll_market/management/coupon/editmanagementcoupon.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -443,7 +443,7 @@ def DeleteManagementCoupon(request, id):
         return render(request, 'nakhll_market/management/coupon/managecuponlist.html', context)
 
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -712,7 +712,7 @@ def FilterManagementCoupon(request, id):
 
             return render(request, 'nakhll_market/management/coupon/manageaddshopincoupon.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # add object in coupon
@@ -782,7 +782,7 @@ def AddFilterManagementCoupon(request, id):
         else:
             return redirect("nakhll_market:AddManagementCoupun")
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # check coupon serial
@@ -991,7 +991,7 @@ def AddManagementCopun(request):
 
             return render(request, 'nakhll_market/management/coupon/addmanagecoupon.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -1022,7 +1022,7 @@ def ManagementCopunList(request):
 
         return render(request, 'nakhll_market/management/coupon/managecuponlist.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Check Coupon When Show Cart

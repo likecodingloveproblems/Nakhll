@@ -1,0 +1,55 @@
+{% load i18n static %}
+
+{% block header %}
+{% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+    <title>بازار نخل</title>
+</head>
+<body id="login-page">
+   <div class="alarm-section">
+   </div>
+   <div class="container">
+      <div class="row">
+         <div class="col-xl-12">
+            <div class="login-sec register-div register-page-whole-div">
+               <div class="blue-thick-line-top"></div>
+               <div class="register-page-whole-content">
+                  <h4>{{header}}</h4>
+               </div>
+               <div class="col-12">
+                  {% include 'registration/messages.html'%}
+               </div>
+               <form method="POST" id="register">
+                  <div class="register-page-whole-content">
+                     {% csrf_token %}
+                     <div class="input-login-modal input-mob-login login-page-main-input-login-mob">
+                        <div class="before-input-icon">
+                           <i class="fal fa-phone fix-before-input-icon-place"></i>
+                        </div>
+                        <div class="main-input-login">
+                           <input id="mobilenumber" name="mobilenumber" type="number" pattern="[0-9]{11}" maxlength="11" placeholder="شماره همراه خود را وارد کنید" class="input-login login-input-modal" required>
+                        </div>
+                     </div>
+                     <div class="register-get-code-btn">
+                        <button id="get-code-button" type="submit" >دریافت کد تایید</button>
+                     </div>
+                  </div>
+                  <div class="hr-line-full"></div>
+                  <div class="forgetpassword-mobilenumber-content back-to-login-a">
+                     <a href="{% url "auth:login" %}">بازگشت به صفحه ورود</a>
+                  </div>
+               </form>
+               <div id="loaderDiv">
+                  لطفا منتظر بمانید
+                  <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری">
+               </div>
+               <div class="setform"></div>
+            </div>
+            <div id="results">
+            </div>
+         </div>
+      </div>
+   </div>
+   </div>
+   </div>
+</body>

@@ -1,0 +1,81 @@
+{% load i18n static %}
+
+{% block header %}
+{% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+    <title>بازار نخل</title>
+</head>
+<body id="login-page">
+   <div class="container">
+      <div class="row">
+         <div class="col-xl-12">
+            <div class="login-sec register-div register-page-whole-div">
+               <div class="blue-thick-line-top"></div>
+               <div class="register-page-whole-content">
+                  <h4>{{header}}</h4>
+               </div>
+               <div class="col-12">
+                    {% include 'registration/messages.html'%}
+                </div>
+                <div class="setform">
+                    <div class="phonesender">
+                        <div class="get-code-form-part">
+                            <form method="POST" id="codesetvalid">
+                                {% csrf_token %}
+                                <div class="input-login-modal input-mob-forgetpassword">
+                                <div class="before-input-icon"> 
+                                    <i class="fal fa-key fix-before-input-icon-place"></i>
+                                </div>
+                                <div class="main-input-login">
+                                    <input id="code" name="code" type="number" pattern="[0-9]{11}" maxlength="6" placeholder="لطفا کد فعالسازی را وارد کنید" class="input-login login-input-modal"></div>
+                                </div>
+                                <br>
+                                <div class="login-button-modal submit-code-btn"> 
+                                    <button id="submit-authentication-code" type="submit">بررسی کد فعال سازی</button>
+                                </div>
+                                <div class="get-code-by-call">
+                                    <button type="submit" class="btn btn-primary btn-sm" 
+                                        {% if id == 'register' %}
+                                        formaction="{% url "auth:register-mobile" %}", 
+                                        {% else %}
+                                        formaction="{% url "auth:forget-password-mobile" %}", 
+                                        {% endif %}
+                                    >ارسال مجدد کد یکبار مصرف
+                                    </button>
+                                </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="hr-line-full"></div>
+                        <div class="get-code-form-part footer-of-submit-code">
+                            <span> شماره {{mobileNumber}} اشتباه است؟ 
+                                <a 
+                                {% if id == 'register' %}
+                                href="{% url "auth:register-mobile" %}", 
+                                {% else %}
+                                href="{% url "auth:forget-password-mobile" %}", 
+                                {% endif %}
+                                class="text-primary font-weight-bold">تغییر شماره همراه</a>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+        <script>
+        function resend_code(){
+            $.post(
+                {% if id == 'register' %}
+                "{% url "auth:register-mobile" %}", 
+                {% else %}
+                "{% url "auth:forget-password-mobile" %}", 
+                {% endif %}
+                {csrfmiddlewaretoken : $("input[name='csrfmiddlewaretoken']")[0].value}
+                )
+            location.reload()
+        }
+        </script>
+         </div>
+      </div>
+   </div>
+   </div>
+   </div>
+</body>

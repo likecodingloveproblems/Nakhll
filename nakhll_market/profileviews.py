@@ -64,7 +64,7 @@ from Payment.models import Wallet, Transaction, Factor, FactorPost, Coupon, Camp
 from Ticketing.models import Ticketing, TicketingMessage, Complaint
 
 from .forms import Login, CheckEmail
-
+from nakhll.settings import KAVENEGAR_KEY
 
 # Profile Page And Sub Pages
 #---------------------------------------------------------------------------------------------------------------------------------
@@ -142,7 +142,7 @@ class SendMessage:
         # Get User Phone Number
         PhoneNumber = Profile.objects.get(FK_User = self.user).MobileNumber
         # Send SMS
-        url = 'https://api.kavenegar.com/v1/4E41676D4B514A4143744C354E6135314E4F47686B33594B747938794D30426A784A692F3579596F3767773D/verify/lookup.json' 
+        url = 'https://api.kavenegar.com/v1/{}/verify/lookup.json'.format(KAVENEGAR_KEY) 
         params = {'receptor': PhoneNumber, 'token' : msg_count, 'template' : 'nakhll-message'}
         requests.post(url, params = params)
 
@@ -172,7 +172,7 @@ def ProfileDashboard(request):
 
     else:
         
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 # Get User Wallet Info And Charge It
 def ProfileWallet(request):
@@ -198,7 +198,7 @@ def ProfileWallet(request):
 
     else:
         
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 # Get User Message
 def ProfileMessage(request, status = None, start = None, end = None):
@@ -262,7 +262,7 @@ def ProfileMessage(request, status = None, start = None, end = None):
 
         return render(request, 'nakhll_market/profile/pages/message.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Get User Factors Info
@@ -280,7 +280,7 @@ def ProfileFactor(request):
      
         return render(request, 'nakhll_market/profile/pages/factor.html', context)
     else: 
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -295,7 +295,7 @@ def ProfileTransactione(request):
      
         return render(request, 'nakhll_market/profile/pages/transaction.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -344,7 +344,7 @@ def ProfileReview(request):
      
         return render(request, 'nakhll_market/profile/pages/review.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
     
@@ -392,7 +392,7 @@ def ProfileShops(request):
         }
         return render(request, 'nakhll_market/profile/pages/shops.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 # ----------------------------------------------------- End User Profile Pages ----------------------------------------------------------
 
@@ -470,7 +470,7 @@ def AddNewMessage(request, msg = None):
 
             return render(request, 'nakhll_market/profile/pages/newmessage.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Send Push
@@ -509,7 +509,7 @@ def ShowInvatePage(request):
 
     else:
         
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -552,7 +552,7 @@ def add_user_bank_account_info(request):
             except Exception as e:
                 return redirect("nakhll_market:error_500", error_text = str(e))
     else:    
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -728,7 +728,7 @@ def add_new_shop(request):
 
             return render(request, 'nakhll_market/profile/pages/newshop.html', context)
     else:    
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -1003,7 +1003,7 @@ def edit_shop_info(request, shop_slug):
 
             return render(request, 'nakhll_market/profile/pages/shopdetails.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -1035,7 +1035,7 @@ def shop_banner_list(request, shop_slug):
      
         return render(request, 'nakhll_market/profile/pages/shopbannerlist.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -1057,7 +1057,7 @@ def change_shop_banner_status(request, banner_id):
 
         return redirect("nakhll_market:Shop_Manager_ShopBannerList", shop_slug = this_banner.FK_Shop.Slug)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -1258,7 +1258,7 @@ def edit_shop_banner(request, banner_id):
         
             return render(request, 'nakhll_market/profile/pages/editeshopbanner.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -1301,7 +1301,7 @@ def delete_shop_banner(request, banner_id):
     
         return render(request, 'nakhll_market/profile/pages/shopbannerlist.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -1462,7 +1462,7 @@ def add_shop_banner(request, shop_slug):
         
             return render(request, 'nakhll_market/profile/pages/addshopbanner.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -1502,7 +1502,7 @@ def add_new_product(request):
 
         return render(request, 'nakhll_market/profile/pages/newproduct.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -1719,7 +1719,7 @@ def edit_product(request, product_slug):
                 context['ShowAlart'] = True
                 return render(request, 'nakhll_market/profile/pages/editeproduct.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
         
 
 # add to product gallery 
@@ -1841,7 +1841,7 @@ def add_to_product_gallery(request, product_slug):
         
             return render(request, 'nakhll_market/profile/pages/productimage.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # show product gallery
@@ -1872,7 +1872,7 @@ def show_product_gallery(request, product_slug):
 
         return render(request, 'nakhll_market/profile/pages/productimagelist.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # change product banner status
@@ -1891,7 +1891,7 @@ def change_product_banner_status(request, banner_id):
 
         return redirect("nakhll_market:Shop_Manager_ProductBannerList", product_slug = banner.FK_Product.Slug)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # edit product banner
@@ -2088,7 +2088,7 @@ def edit_product_banner(request, banner_id):
             return render(request, 'nakhll_market/profile/pages/editeproductbanner.html', context)
 
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # delete product banner
@@ -2125,7 +2125,7 @@ def delete_product_banner(request, banner_id):
     
         return render(request, 'nakhll_market/profile/pages/productimagelist.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -2163,7 +2163,7 @@ def product_attribute_list(request, product_slug):
      
         return render(request, 'nakhll_market/profile/pages/productattributelist.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -2297,7 +2297,7 @@ def add_product_attribute(request, product_slug):
             return render(request, 'nakhll_market/profile/pages/productattribute.html', context)
 
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # delete product attribute
@@ -2337,7 +2337,7 @@ def delete_product_attribute(request, attr_id):
      
         return render(request, 'nakhll_market/profile/pages/productattributelist.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # add new attribute
@@ -2464,7 +2464,7 @@ def add_new_attribute(request, product_slug):
         
             return render(request, 'nakhll_market/profile/pages/productattribute.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # product attribute price list
@@ -2495,7 +2495,7 @@ def product_attribute_price_list(request, product_slug):
         
         return render(request, 'nakhll_market/profile/pages/showattrpricelist.html', context)
     else:    
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # change product attribute price status
@@ -2512,7 +2512,7 @@ def change_product_attribute_price_status(request, id):
             this_attrprice.save()
         return redirect("nakhll_market:Shop_Manager_ProductPriceAttributeList", product_slug = this_attrprice.FK_Product.Slug)
     else:    
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # delete product attribute price
@@ -2529,7 +2529,7 @@ def delete_product_attribute_price(request, id):
             Alert.objects.create(Part = '25', FK_User = request.user, Slug = this_attrprice.id)
         return redirect("nakhll_market:Shop_Manager_ProductPriceAttributeList", product_slug = this_attrprice.FK_Product.Slug)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -2664,7 +2664,7 @@ def add_product_attribute_price(request, product_slug):
             
             return render(request, 'nakhll_market/profile/pages/showattrprice.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # <----------- end product section ------------->
@@ -2735,7 +2735,7 @@ def ProfileTicketing(request):
      
         return render(request, 'nakhll_market/profile/pages/ticketing.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 # Add New Ticket
 def AddNewTicket(request):
@@ -2936,7 +2936,7 @@ def RepalyTicketing(request, ticket_id):
             except Exception as e:
                 return redirect("nakhll_market:error_500", error_text = str(e))  
     else:    
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 # ---------------------- End Ticketin Section ----------------------
 
@@ -2971,7 +2971,7 @@ def ProfileAlert(request):
      
         return render(request, 'nakhll_market/profile/pages/alert.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Update Profile Values
@@ -3168,7 +3168,7 @@ def UpdateUserDashboard(request):
         except Exception as e:
             return redirect("nakhll_market:error_500", error_text = str(e))
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -3772,7 +3772,7 @@ def AddShopCopun(request):
 
             return render(request, 'nakhll_market/profile/pages/addshopcupon.html', context)    
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Shop Copun List
@@ -3800,7 +3800,7 @@ def ShopCopunList(request):
         return render(request, 'nakhll_market/profile/pages/allcuponlist.html', context)
 
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -3818,7 +3818,7 @@ def DeleteShopCopun(request, id):
         # redirect to coupon list
         return redirect("nakhll_market:Shop_Manager_ShopCopunList")
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -4137,7 +4137,7 @@ def ShowAllFactorList(request):
         }
         return render(request, 'nakhll_market/profile/pages/all_factors.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -4164,7 +4164,7 @@ def ShowFactorItem(request, ID):
         }
         return render(request, 'nakhll_market/profile/pages/show_factor.html', context)
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 # Show Factor Item For Shop
@@ -4198,7 +4198,7 @@ def ShowFactorItemForShop(request, ID, status):
             return render(request, 'nakhll_market/profile/pages/show_factor_for_shoper.html', context)
     else:
 
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 
 
@@ -4222,7 +4222,7 @@ def ChangeFactorCheckoutStatus(request, id):
 
     else:
 
-       return redirect("nakhll_market:AccountLogin")
+       return redirect("auth:login")
 
 # ------------------------------------------------------- End All Factor Sections ------------------------------------------------
 
@@ -4516,7 +4516,7 @@ def MessageFilter(request):
 
     else:
 
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 # --------------------------------------------------------------- End Sections ------------------------------------------------------
 
@@ -4621,7 +4621,7 @@ def ManageFactorFilter(request):
         else:
             return redirect("nakhll_market:ShowAllFactorList")
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 # --------------------------------------------------------------- End Sections ------------------------------------------------------
 
@@ -4712,7 +4712,7 @@ def AlertFilter(request):
         else:
             return redirect("nakhll_market:Alert")
     else:
-        return redirect("nakhll_market:AccountLogin")
+        return redirect("auth:login")
 
 # --------------------------------------------------------------- End Sections ------------------------------------------------------
 
