@@ -358,17 +358,17 @@
                                     </div>
                                 </div>
                                 <div class="form-row">                            
-                                    <label class="label cropper-label w-100">  
-                                        <div class="form-group col-md-6"> 
+                                    <div class="label cropper-label w-100" style="cursor: auto;">  
+                                        <label class="form-group col-md-6"> 
                                             <label for="inputslugshop">عکس حجره <code>*</code></label>      
                                             <br>  
                                             <a class="btn btn-primary choose-pic-btn" >انتخاب عکس</a>
                                             <input type="file" class="sr-only input-pic-file" id="input" name="image" accept="image/*">
                                             <input type="text" class="form-control choose-pic-input-name" disabled placeholder="آپلود عکس">
-                                        </div>
+                                        </label>
                                         <br>
                                             <img class="rounded cropper-rounded " id="avatar" src="{% static "images/image_upload.jpg" %}" alt="avatar"  data-toggle="tooltip" title="انتخاب عکس ">
-                                    </label>
+                                    </div>
                                 </div>
 
                                 <div class="alert cropper-alert" role="alert"></div>
@@ -709,7 +709,7 @@
     var initialAvatarURL;
     var ProductID;
 
-    var form_Data = new FormData();
+    var form_Data;
     window.addEventListener('DOMContentLoaded', function () {
       var avatar = document.getElementById('avatar');
       var image = document.getElementById('image');
@@ -723,6 +723,7 @@
       $('[data-toggle="tooltip"]').tooltip();
 
       input.addEventListener('change', function (e) {
+          form_Data = new FormData();
         var files = e.target.files;
         var done = function (url) {
           input.value = '';
@@ -766,6 +767,7 @@
         $modal.modal('hide');
 
         if (cropper) {
+            let files, file, reader, img, ctx;
           canvas = cropper.getCroppedCanvas({
             width: 900,
             height: 900,
@@ -776,13 +778,59 @@
           $alert.removeClass('alert-success alert-warning');
           canvas.toBlob(function (blob) {
               console.log('blob==>', blob)
-          form_Data.append('shop_image', blob, 'avatar.jpg');
-          console.log('form_Data', ...form_Data)
-          });
+              form_Data.append('shop_image', blob, 'avatar.jpg');
+              files = [...form_Data];
+              console.log('filessssssssssssssssssssssssssss==>', files)
+          resize('shopImageMedium',files,600,'avatarMedium');
+          resize('shopImageSmall',files,300,'avatarSmall');
+          resize('shopImageVerySmall',files,50,'avatarVerySmall');
+        });
         }
       });
     });
 
+    function resize(fileName,files, size, imageName) {
+            var resize_width = size;//without px
+
+            //get the image selected
+            var item = files[0][1];
+            //create a FileReader
+            var reader = new FileReader();
+
+            //image turned to base64-encoded Data URI.
+            reader.readAsDataURL(item);
+            reader.name = item.name;//get the image's name
+            reader.size = item.size; //get the image's size
+            reader.onload = function (event) {
+                var img = new Image();//create a image
+                img.src = event.target.result;//result is base64-encoded Data URI
+                img.name = event.target.name;//set name (optional)
+                img.size = event.target.size;//set size (optional)
+                img.onload = function (el) {
+                    var elem = document.createElement('canvas');//create a canvas
+
+                    //scale the image to 600 (width) and keep aspect ratio
+                    var scaleFactor = resize_width / el.target.width;
+                    elem.width = resize_width;
+                    elem.height = el.target.height * scaleFactor;
+                    //draw in canvas
+                    var ctx = elem.getContext('2d');
+                    ctx.drawImage(el.target, 0, 0, elem.width, elem.height);
+                    //get the base64-encoded Data URI from the resize image
+                    var srcEncoded = ctx.canvas.toDataURL(el.target, 'image/jpeg', 0);
+                    //assign it to thumb src
+                    document.querySelector('#image').src = srcEncoded;
+
+                    fetch(srcEncoded)
+                        .then(res => res.blob())
+                        .then((res2)=>{
+                            form_Data.append(fileName, res2, imageName +'.png');
+                            files = [...form_Data];
+                            console.log('ffffffffffffffffffffff==>', files)
+                        })
+                }
+            }
+        }
 
     var $progress;
     var $progressBar;
