@@ -18,8 +18,10 @@ from sentry_sdk.integrations.django import DjangoIntegration
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 LOGIN = '/profile/dashboard/'
-
+LOGIN_REDIRECT_URL = '/profile/dashboard/'
 LOGOUT_REDIRECT_URL = '/'
+REDIRECT_FIELD_NAME = 'next'
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/

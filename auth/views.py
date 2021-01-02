@@ -1,4 +1,9 @@
 from django.contrib.messages.api import success
+from django.utils.decorators import method_decorator
+from django.utils.http import is_safe_url
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.debug import sensitive_post_parameters
 from Payment.models import Wallet
 from datetime import timedelta
 from datetime import datetime
@@ -7,19 +12,20 @@ from nakhll_market.views import visitor_ip_address
 import random
 from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
-from django.http.response import HttpResponse, JsonResponse
+from django.http.response import HttpResponse, HttpResponseRedirect, JsonResponse
 
 from django.utils import timezone
 import requests
-from nakhll.settings import SESSION_COOKIE_AGE, KAVENEGAR_KEY
-from django.shortcuts import redirect, render
+from nakhll.settings import REDIRECT_FIELD_NAME, SESSION_COOKIE_AGE, KAVENEGAR_KEY
+from django.shortcuts import redirect, render, resolve_url
 from django.urls.base import reverse
 from django.views.generic.base import TemplateView
+from django.views.generic.edit import FormView
 from django.contrib.auth import authenticate, login, logout
 
 from nakhll_market.models import Profile, SMS, UserphoneValid
-
-
+from auth.forms import AuthenticationForm
+from nakhll.settings import LOGIN_REDIRECT_URL
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
@@ -343,75 +349,61 @@ class ForgetPasswordData(TemplateView):
         return render(request, self.template)
 
 
-class Login(TemplateView):
+class SuccessURLAllowedHostsMixin:
+    success_url_allowed_hosts = set()
+
+    def get_success_url_allowed_hosts(self):
+        return {self.request.get_host(), *self.success_url_allowed_hosts}
+class Login(SuccessURLAllowedHostsMixin, FormView):
     """
     Display the login form and handle the login action.
     """
     template_name = 'registration/login.html'
+    form_class = AuthenticationForm
     success_url = '/profile/dashboard/'
+    redirect_authenticated_user = True
+    redirect_field_name = REDIRECT_FIELD_NAME
 
-    def return_json(self, request):
-        return request.path != '/account/login/'
 
-    def get(self, request):
-        return render(request, self.template_name)
+    @method_decorator(sensitive_post_parameters())
+    @method_decorator(csrf_protect)
+    @method_decorator(never_cache)
+    def dispatch(self, request, *args, **kwargs):
+        if self.redirect_authenticated_user and self.request.user.is_authenticated:
+            redirect_to = self.get_success_url()
+            return HttpResponseRedirect(redirect_to)
+        return super().dispatch(request, *args, **kwargs)
 
-    def post(self, request):
-        mobile_number = request.POST.get('mobilenumber', '')
-        password = request.POST.get('password', '')
-        remember_me = bool(request.POST.get('remember_me'))
+    def form_valid(self, form):
+        '''
+        this function login user
+        '''
+        # check if remember me is set, increase session life time
+        if form.cleaned_data['remember_me']:
+            session_key = self.request.session.session_key or Session.objects.get_new_session_key()
+            Session.objects.save(session_key, self.request.session._session, timezone.now(
+            ) + timedelta(seconds=SESSION_COOKIE_AGE))
+        login(self.request, form.user_cache)
+        return HttpResponseRedirect(self.get_success_url())
 
-        if mobile_number=='' or password=='':
-            messages.warning(request, 'لطفا اطلاعات را به درستی وارد نمایید.')
-            return render(request, self.template_name)
+    def get_success_url(self):
+        url = self.get_redirect_url()
+        return url or resolve_url(LOGIN_REDIRECT_URL)
 
-        if Profile.objects.filter(MobileNumber=mobile_number).exists():
-            profile = Profile.objects.get(MobileNumber=mobile_number)
-            user = profile.FK_User
-            user = authenticate(username=user.username, password=password)
-            if user is not None:
-                # login user
-                login(request, user)
-                if remember_me:
-                    session_key = request.session.session_key or Session.objects.get_new_session_key()
-                    Session.objects.save(session_key, request.session._session, timezone.now(
-                    ) + timedelta(seconds=SESSION_COOKIE_AGE))
-
-                messages.success(request, 'شما با موفقیت وارد شدید.')
-                if self.return_json(request):
-                    response_data = {
-                        'status': True,
-                        'message': '200',
-                    }
-                    return JsonResponse(response_data)
-                else:
-                    return redirect(request.session.get('next') or self.success_url)
-
-            else:
-                # show a message with content: please enter correct username and password
-                if self.return_json(request):
-                    response_data = {
-                        'status': True,
-                        'message': '400',
-                    }
-                    return JsonResponse(response_data)
-                else:
-                    messages.warning(request, 'شماره موبایل با رمز وارد شده تطابق ندارد.')
-                    return render(request, self.template_name)
-        else:
-            # Profile by this mobile number is not exists
-            if self.return_json(request):
-                response_data = {
-                    'status': False,
-                    'message': 'کاربری با این مشخصات ثبت نشده است. ابتدا ثبت نام کنید',
-                }
-                return JsonResponse(response_data)
-            else:
-                messages.warning(request, 'کاربری با این مشخصات ثبت نشده است. ابتدا ثبت نام کنید.')
-                return redirect('auth:register-mobile')
-
+    def get_redirect_url(self):
+        """Return the user-originating redirect URL if it's safe."""
+        # redirect_to = self.request.POST.get(
+        #     self.redirect_field_name,
+        #     self.request.GET.get(self.redirect_field_name, '')
+        # )
+        redirect_to = self.request.session.get('next')
+        url_is_safe = is_safe_url(
+            url=redirect_to,
+            allowed_hosts=self.get_success_url_allowed_hosts(),
+            require_https=self.request.is_secure(),
+        )
+        return redirect_to if url_is_safe else ''
 
 def logout_(request):
     logout(request)
-    messages.success(request, 'شما با موفقیت خارج شدید.')
     return redirect(reverse('Profile:index'))
