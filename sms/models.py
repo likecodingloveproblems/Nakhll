@@ -13,6 +13,7 @@ class SMS(models.Model):
     entries_message = models.CharField(max_length=255)
     entries_messageid = models.IntegerField()
     datetime = models.DateTimeField(auto_now=True, auto_now_add=False)
+    user_ip = models.GenericIPAddressField()
 
     class Meta:
         ordering = ('-entries_datetime',)   
