@@ -70,7 +70,7 @@ from .models import Alert
 from .models import Field, UserphoneValid
 from .models import Note
 from .models import PageViews, User_View, ShopViews, Date_View
-from .models import SMS
+from sms.models import SMS
 
 from Payment.models import Wallet, Factor ,FactorPost, Coupon
 from blog.models import CategoryBlog, PostBlog, VendorStory
