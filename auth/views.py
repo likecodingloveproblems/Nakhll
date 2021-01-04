@@ -1,4 +1,6 @@
+from typing import Any, Dict
 from django.contrib.messages.api import success
+from django import forms, http
 from django.utils.decorators import method_decorator
 from django.utils.http import is_safe_url
 from django.views.decorators.cache import never_cache
@@ -18,20 +20,21 @@ from django.utils import timezone
 import requests
 from nakhll.settings import REDIRECT_FIELD_NAME, SESSION_COOKIE_AGE, KAVENEGAR_KEY
 from django.shortcuts import redirect, render, resolve_url
-from django.urls.base import reverse
+from django.urls.base import reverse, reverse_lazy
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from django.contrib.auth import authenticate, login, logout
 
-from nakhll_market.models import Profile, SMS, UserphoneValid
-from auth.forms import AuthenticationForm
+from nakhll_market.models import Profile, UserphoneValid
+from sms.sms import Kavenegar
+from auth.forms import ApproveCodeForm, AuthenticationForm, ForgetPasswordMobileForm, RegisterMobileForm
 from nakhll.settings import LOGIN_REDIRECT_URL
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
+import logging
 
-# a class that define site user
-
+logger = logging.getLogger(__name__)
 
 class SiteUser:
     def __init__(self, mobile_number, password) -> None:
@@ -56,103 +59,51 @@ class SiteUser:
 # base get mobile controller
 
 
-class GetMobile(TemplateView):
-    template = 'registration/registerMobile.html'
-    context = {}
+class GetMobile(FormView):
+    context = {
+        'header': None,
+        'id':None,
+        }
 
-    def main(self, request, mobile_number):
-        pass
+    template_name = str()
+    form_class = None
+    success_url = str()
 
-
-    def get(self, request):
-        return render(request, self.template, self.context)
-
-    def post(self, request):
-        mobile_number = request.POST.get("mobilenumber", None)
-        if not mobile_number:
-            mobile_number = request.session.get('mobile_number')
-        # validation of phone number
-        if (len(mobile_number) == 11 and mobile_number[0] == '0' and mobile_number.isdigit()):
-            pass
+    def form_valid(self, form) -> HttpResponse:
+        mobile_number = form.cleaned_data.get('mobile_number')
+        # send sms
+        kavenegar = Kavenegar()
+        code = kavenegar.generate_code()
+        kavenegar.send(self.request, mobile_number, template='nakhl-register', token=code, type='sms')
+        # set mobile number in session
+        set_mobile_number(self.request, mobile_number)
+        # set UserphoneValid
+        if not UserphoneValid.objects.filter(MobileNumber=mobile_number).exists():
+            UserphoneValid.objects.create(MobileNumber=mobile_number, ValidCode=code, Validation=False)
         else:
-            messages.warning(request, 'شماره وارد شده صحیح نمی باشد.')
-            return render(request, self.template, self.context)
+            user_phone_valid = UserphoneValid.objects.get(MobileNumber=mobile_number)
+            user_phone_valid.ValidCode = code
+            user_phone_valid.Validation = False
+            user_phone_valid.save()
+        return super().form_valid(form)
 
-        if (mobile_number):
-            result = self.main(request, mobile_number)
-            if result:
-                return result
+    def form_invalid(self, form: forms.Form) -> HttpResponse:
+        return super().form_invalid(form)
 
-        else:
-            messages.warning(request, 'شماره وارد شده نامعتبر است!')
-        return render(request, self.template, self.context)
-
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        for item in self.context:
+            kwargs[item] = self.context[item]
+        return super().get_context_data(**kwargs)
 
 class RegisterMobile(GetMobile):
     context = {
         'header': 'ثبت نام در سایت',
-        'id':'register'}
+        'id':'register',
+        }
 
-    def main(self, request, mobile_number):
-        if not Profile.objects.filter(MobileNumber=mobile_number).exists():
-            # check that user is not overloading SMS with many requests
-            ten_minutes_ago = timezone.now() + timedelta(minutes=-10)
-            num_last_10_min_sms = SMS.objects.filter(
-                entries_receptor=mobile_number, datetime__gte=ten_minutes_ago).count()
-            if num_last_10_min_sms > 5:  # 5 number in 10 minutes
-                messages.warning(request, 'شما بیشتر از تعداد مجاز سعی کردید. 10 دقیقه دیگر تلاش کنید.')
-
-            else:
-                # the user has more opportunity
-                regcode = str(random.randint(100000, 999999))
-                if not UserphoneValid.objects.filter(MobileNumber=mobile_number).exists():
-                    userphoneValid = UserphoneValid(
-                        MobileNumber=mobile_number, ValidCode=regcode, Validation=False)
-                    userphoneValid.save()
-                try:
-                    userphoneValid = UserphoneValid.objects.get(
-                        MobileNumber=mobile_number)
-                    userphoneValid.ValidCode = regcode
-                    userphoneValid.Validation = False
-                    userphoneValid.save()
-                    url = 'https://api.kavenegar.com/v1/{}/verify/lookup.json'.format(KAVENEGAR_KEY)
-                    params = {'receptor': mobile_number,
-                                'token': regcode, 'template': 'nakhl-register'}
-                    res = requests.post(url, params=params)
-                    text = json.loads(res.text)
-                    app_timezone = timezone.get_default_timezone()
-
-                    SMS.objects.create(
-                        return_status=text['return']['status'],
-                        return_message=text['return']['message'],
-                        entries_cost=text['entries'][0]['cost'],
-                        entries_datetime=datetime.fromtimestamp(
-                            text['entries'][0]['date']).astimezone(app_timezone),
-                        entries_receptor=text['entries'][0]['receptor'],
-                        entries_sender=text['entries'][0]['sender'],
-                        entries_statustext=text['entries'][0]['statustext'],
-                        entries_status=text['entries'][0]['status'],
-                        entries_message=text['entries'][0]['message'],
-                        entries_messageid=text['entries'][0]['messageid'],
-                    )
-
-                    if res.status_code == 200:  # TODO check more detail flow chart of kevenegar to be sure that the message is sent
-                        # kevenegar post method is successful
-                        request = set_mobile_number(request, mobile_number)
-                        messages.success(request, 'کد تایید با موفقیت ارسال شد.')
-                        return redirect(reverse('auth:register-code'))
-                    else:
-
-                        messages.warning(request,'سامانه پیامکی با مشکل مواجه شه است. لطفا با پشتیبانی تماس حاصل فرمایید.')
-
-                except:
-
-                    messages.warning(request,'خطای دریافت شماره تماس')
-
-        else:
-
-            messages.warning(request,'این کاربر قبلا ثبت نام کرده است ! ')
-
+    template_name = 'registration/get-mobile.html'
+    form_class = RegisterMobileForm
+    success_url = reverse_lazy('auth:register-code')
 
 class ForgetPasswordMobile(GetMobile):
     context = {
@@ -160,71 +111,16 @@ class ForgetPasswordMobile(GetMobile):
         'id':'forget-password',
         }
 
-    def main(self, request, mobile_number):
-        if Profile.objects.filter(MobileNumber=mobile_number).exists():
-            # check that user is not overloading SMS with many requests
-            ten_minutes_ago = timezone.now() + timedelta(minutes=-10)
-            num_last_10_min_sms = SMS.objects.filter(
-                entries_receptor=mobile_number, datetime__gte=ten_minutes_ago).count()
-            if num_last_10_min_sms > 5:  # 5 number in 10 minutes
-                messages.warning(request, 'شما بیشتر از تعداد مجاز سعی کردید. 10 دقیقه دیگر تلاش کنید.')
-
-            else:
-                # the user has more opportunity
-                regcode = str(random.randint(100000, 999999))
-                if not UserphoneValid.objects.filter(MobileNumber=mobile_number).exists():
-                    userphoneValid = UserphoneValid(
-                        MobileNumber=mobile_number, ValidCode=regcode, Validation=False)
-                    userphoneValid.save()
-                try:
-                    userphoneValid = UserphoneValid.objects.get(
-                        MobileNumber=mobile_number)
-                    userphoneValid.ValidCode = regcode
-                    userphoneValid.Validation = False
-                    userphoneValid.save()
-                    url = 'https://api.kavenegar.com/v1/{}/verify/lookup.json'.format(KAVENEGAR_KEY)
-                    params = {'receptor': mobile_number,
-                                'token': regcode, 'template': 'nakhl-register'}
-                    res = requests.post(url, params=params)
-                    text = json.loads(res.text)
-                    app_timezone = timezone.get_default_timezone()
-
-                    SMS.objects.create(
-                        return_status=text['return']['status'],
-                        return_message=text['return']['message'],
-                        entries_cost=text['entries'][0]['cost'],
-                        entries_datetime=datetime.fromtimestamp(
-                            text['entries'][0]['date']).astimezone(app_timezone),
-                        entries_receptor=text['entries'][0]['receptor'],
-                        entries_sender=text['entries'][0]['sender'],
-                        entries_statustext=text['entries'][0]['statustext'],
-                        entries_status=text['entries'][0]['status'],
-                        entries_message=text['entries'][0]['message'],
-                        entries_messageid=text['entries'][0]['messageid'],
-                    )
-
-                    if res.status_code == 200:  # TODO check more detail flow chart of kevenegar to be sure that the message is sent
-                        # kevenegar post method is successful
-                        request = set_mobile_number(request, mobile_number)
-                        messages.success(request, 'کد تایید با موفقیت ارسال شد.')
-                        return redirect(reverse('auth:forget-password-code'))
-                    else:
-
-                        messages.warning(request, 'سامانه پیامکی با مشکل مواجه شه است. لطفا با پشتیبانی تماس حاصل فرمایید.')
-
-                except:
-                    messages.warning(request, 'خطای دریافت شماره تماس')
-
-        else:
-            messages.warning(request, 'شماره موبایل {} در سایت ثبت نام نکرده است لطفا ابتدا ثبت نام کنید.'.format(mobile_number))
-            return redirect(reverse('auth:register-mobile'))
+    template_name = 'registration/get-mobile.html'
+    form_class = ForgetPasswordMobileForm
+    success_url = reverse_lazy('auth:forget-password-code')
 
 def set_mobile_number(request, mobile_number):
     request.session['mobile_number'] = mobile_number
     return request
 
 def get_mobile_number(request):
-    return request.session['mobile_number'] or ''
+    return request.session.get('mobile_number') or ''
 
 
 class ApproveCode(FormView):
@@ -361,13 +257,14 @@ class SuccessURLAllowedHostsMixin:
 
     def get_success_url_allowed_hosts(self):
         return {self.request.get_host(), *self.success_url_allowed_hosts}
+
 class Login(SuccessURLAllowedHostsMixin, FormView):
     """
     Display the login form and handle the login action.
     """
     template_name = 'registration/login.html'
     form_class = AuthenticationForm
-    success_url = '/profile/dashboard/'
+    success_url = LOGIN_REDIRECT_URL
     redirect_authenticated_user = True
     redirect_field_name = REDIRECT_FIELD_NAME
 
@@ -391,6 +288,7 @@ class Login(SuccessURLAllowedHostsMixin, FormView):
             Session.objects.save(session_key, self.request.session._session, timezone.now(
             ) + timedelta(seconds=SESSION_COOKIE_AGE))
         login(self.request, form.user_cache)
+        logger.info('request is in form_valid of Login class...')
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
@@ -413,4 +311,5 @@ class Login(SuccessURLAllowedHostsMixin, FormView):
 
 def logout_(request):
     logout(request)
+    logger.warning('request had logout successfully...')
     return redirect(reverse('Profile:index'))

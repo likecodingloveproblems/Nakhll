@@ -1,6 +1,7 @@
+from django.forms.fields import CharField, RegexField
 from django.forms.widgets import CheckboxInput
-from nakhll_market.models import Profile
-
+from nakhll_market.models import Profile, UserphoneValid
+from django.core.validators import RegexValidator
 
 from django import forms
 from django.contrib.auth import (
@@ -11,23 +12,51 @@ from django.contrib.auth.hashers import (
 )
 from django.utils.translation import gettext, gettext_lazy as _
 
+'''
+validators 
+'''
+mobile_number_validator = RegexValidator(
+    regex='09[0-9]{9}', 
+    message='لطفا شماره موبایل صحیح را وارد کنید.', 
+    code='invalid-mobile-number',
+    )
 
+'''
+fields 
+'''
+mobile_number_field = forms.CharField(
+    label=None,
+    required=True,
+    max_length=11,
+    min_length=11,
+    widget=forms.TextInput(attrs={
+        'placeholder': 'موبایل',
+        'class': 'input-login login-input-modal',
+        'type': 'number',
+        'pattern': '09[0-9]{9}',
+    }),
+    validators=[mobile_number_validator],
+)
+
+'''
+error messages
+'''
+error_messages = {
+    'invalid_login': _(
+        "لطفا شماره موبایل و رمز صحیح را وارد فرمایید."
+    ),
+    'not_registered': _(
+        "کاربری با این شماره تماس ثبت نشده است. لطفا ابتدا ثبت نام کنید."
+    ),
+    'inactive': _("این حساب کاربری غیر فعال است."),
+    'registered': _("این شماره قبلا ثبت شده است."),
+    'invalid_auth_code':_("کد وارد شده صحیح نمی باشد."),
+}
 class AuthenticationForm(forms.Form):
     """
     this form is used for authentication of user
     """
-    mobile_number = forms.CharField(
-        label=None,
-        required=True,
-        max_length=11,
-        min_length=11,
-        widget=forms.TextInput(attrs={
-            'placeholder': 'موبایل',
-            'class': 'input-login login-input-modal',
-            'type': 'number',
-            'pattern': '[0-9]{11}',
-        }),
-    )
+    mobile_number = mobile_number_field
     password = forms.CharField(
         required=True,
         strip=False,
@@ -38,15 +67,7 @@ class AuthenticationForm(forms.Form):
     )
     remember_me = forms.BooleanField(required=False, widget=CheckboxInput)
 
-    error_messages = {
-        'invalid_login': _(
-            "لطفا شماره موبایل و رمز صحیح را وارد فرمایید."
-        ),
-        'not_registered': _(
-            "کاربری با این شماره تماس ثبت نشده است. لطفا ابتدا ثبت نام کنید."
-        ),
-        'inactive': _("این حساب کاربری غیر فعال است."),
-    }
+    error_messages = error_messages
 
     def __init__(self, request=None, *args, **kwargs):
         """
@@ -70,12 +91,12 @@ class AuthenticationForm(forms.Form):
                     self.request, username=user.username, password=password)
                 if self.user_cache is None:
                     # password is not consistent with username
-                    raise self.get_invalid_login_error()
+                    self.get_invalid_login_error()
                 else:
                     self.confirm_login_allowed(self.user_cache)
             else:
                 # User by this mobile_number is not registered
-                raise self.get_user_not_registered_error()
+                self.get_user_not_registered_error()
 
         return self.cleaned_data
 
@@ -100,13 +121,46 @@ class AuthenticationForm(forms.Form):
             )
 
     def get_invalid_login_error(self):
-        return forms.ValidationError(
+        raise forms.ValidationError(
             self.error_messages['invalid_login'],
             code='invalid_login',
         )
 
     def get_user_not_registered_error(self):
-        return forms.ValidationError(
+        raise forms.ValidationError(
+            self.error_messages['not_registered'],
+            code='not_registered',
+        )
+class ForgetPasswordMobileForm(forms.Form):
+    '''
+    this class handle get mobile from user when forget password 
+    '''
+    mobile_number = mobile_number_field
+    
+    error_messages = error_messages
+
+    def clean(self):
+        # check user is exists
+        self.mobile_number = self.cleaned_data.get('mobile_number')
+        if self.mobile_number is not None:
+            if (Profile.objects.filter(MobileNumber=self.mobile_number).exists()):
+                profile = Profile.objects.get(MobileNumber=self.mobile_number)
+                user = profile.FK_User
+                if user:
+                    self.confirm_login_allowed(user)
+                    # send code to user
+                else:
+                    # profile is available but user not exists
+                    pass
+            else:
+                self.not_registered()
+            
+        return self.cleaned_data
+
+
+
+    def not_registered(self):
+        raise forms.ValidationError(
             self.error_messages['not_registered'],
             code='not_registered',
         )
@@ -136,8 +190,6 @@ class RegisterMobileForm(forms.Form):
                 self.registered()
 
         return self.cleaned_data
-
-
 
     def registered(self):
         raise forms.ValidationError(
