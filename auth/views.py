@@ -227,41 +227,48 @@ def get_mobile_number(request):
     return request.session['mobile_number'] or ''
 
 
-class ApproveCode(TemplateView):
-    template = 'registration/approveCode.html'
+class ApproveCode(FormView):
+    template_name = 'registration/approveCode.html'
+    form_class = ApproveCodeForm
     context = {}
-    success_redirect = None
+    empty_mobile_number_url = str()
 
-    def get(self, request):
-        mobile_number = get_mobile_number(request)
-        self.context['mobileNumber'] = mobile_number
-        return render(request, self.template, self.context)
+    def dispatch(self, request: http.HttpRequest, *args: Any, **kwargs: Any) -> http.HttpResponse:
+        if not request.session.get('mobile_number'):
+            messages.warning(request, 'ابتدا شماره موبایل خود را وارده کرده و کد احراز هویت را دریافت کنید.')
+            return HttpResponseRedirect(self.empty_mobile_number_url)
+        return super().dispatch(request, *args, **kwargs)
 
-    def post(self, request):
-        mobile_number = get_mobile_number(request)
-        code = request.POST.get("code", '')
-        if UserphoneValid.objects.filter(MobileNumber=mobile_number, ValidCode=code).exists():
-            # user enter the correct register code
-            userphoneValid = UserphoneValid.objects.get(
-                MobileNumber=mobile_number)
-            userphoneValid.Validation = True
-            userphoneValid.save()
-            request = set_mobile_number(request, mobile_number)
-            messages.success(request, 'کد وارد شده صحیح می باشد. لطفا اطلاعات مورد نظر را به دقت وارد فرمایید.')
-            return redirect(reverse(self.success_redirect))
-        else:
-            messages.warning(request, 'کد وارد شده نا معتبر می باشد ')
-            return render(request, self.template, self.context)
+    def get_initial(self) -> Dict[str, Any]:
+        self.initial['mobile_number'] = get_mobile_number(self.request)
+        return super().get_initial()
 
+    def form_valid(self, form: ApproveCodeForm) -> HttpResponse:
+        messages.success(self.request, 'کد وارد شده صحیح می باشد. لطفا اطلاعات مورد نظر را به دقت وارد فرمایید.')
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        for item in self.context:
+            kwargs[item] = self.context[item]
+        return super().get_context_data(**kwargs)
 
 class RegisterCode(ApproveCode):
-    context = {'header': 'ثبت نام در سایت'}
-    success_redirect = 'auth:register-data'
+    context = {
+        'header': 'ثبت نام در سایت',
+        'id':'register',
+        }
+    success_url = reverse_lazy('auth:register-data')
+    empty_mobile_number_url = reverse_lazy('auth:register-mobile')
 
 
 class ForgetPasswordCode(ApproveCode):
-    context = {'header': 'فراموشی رمز عبور'}
-    success_redirect = 'auth:forget-password-data'
+    context = {
+        'header': 'فراموشی رمز عبور',
+        'id':'register',
+        }
+    success_url = reverse_lazy('auth:forget-password-data')
+    empty_mobile_number_url = reverse_lazy('auth:forget-password-mobile')
+
 
 
 class RegisterData(TemplateView):

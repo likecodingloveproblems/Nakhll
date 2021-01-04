@@ -110,3 +110,89 @@ class AuthenticationForm(forms.Form):
             self.error_messages['not_registered'],
             code='not_registered',
         )
+
+    def confirm_login_allowed(self, user):
+        if not user.is_active:
+            raise forms.ValidationError(
+                self.error_messages['inactive'],
+                code='inactive',
+            )
+
+class RegisterMobileForm(forms.Form):
+    '''
+    this class handle get mobile from user for validation of mobile number for registration process
+    '''
+    mobile_number = mobile_number_field
+    
+    error_messages = error_messages
+
+    def clean(self):
+        # check user is exists
+        self.mobile_number = self.cleaned_data.get('mobile_number')
+        if self.mobile_number is not None:
+            if not (Profile.objects.filter(MobileNumber=self.mobile_number).exists()):
+                pass
+            else:
+                self.registered()
+
+        return self.cleaned_data
+
+
+
+    def registered(self):
+        raise forms.ValidationError(
+            self.error_messages['registered'],
+            code='registered',
+        )
+
+    def confirm_login_allowed(self, user):
+        if not user.is_active:
+            raise forms.ValidationError(
+                self.error_messages['inactive'],
+                code='inactive',
+            )
+
+class ApproveCodeForm(forms.Form):
+    code = forms.CharField(
+        label=None, 
+        max_length=6, 
+        min_length=6,
+        required=True,
+        widget=forms.TextInput(attrs={
+        'placeholder': 'کد احراز هویت',
+        'class': 'input-login login-input-modal',
+        'type': 'number',
+        'pattern': '[0-9]{6}',
+         }),
+        )
+
+    mobile_number = forms.CharField(
+        label = None, 
+        max_length=11, 
+        required=False,
+        widget=forms.HiddenInput(),
+    )
+
+    error_messages = error_messages
+
+    def clean(self):
+        mobile_number = self.cleaned_data.get('mobile_number')
+        code = self.cleaned_data.get('code')
+        if code is not None and mobile_number:
+            if UserphoneValid.objects.filter(MobileNumber=mobile_number, ValidCode=code).exists():
+                # user enter the correct register code
+                userphoneValid = UserphoneValid.objects.get(
+                    MobileNumber=mobile_number)
+                userphoneValid.Validation = True
+                userphoneValid.save()
+            else:
+                self.invalid_auth_code()
+
+        return self.cleaned_data
+
+
+    def invalid_auth_code(self):
+        raise forms.ValidationError(
+            self.error_messages['invalid_auth_code'],
+            code='invalid_auth_code'
+            )

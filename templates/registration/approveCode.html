@@ -22,13 +22,26 @@
                         <div class="get-code-form-part">
                             <form method="POST" id="codesetvalid">
                                 {% csrf_token %}
+                                {{form.mobile_number}}
                                 <div class="input-login-modal input-mob-forgetpassword">
+                                {% if form.non_field_errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ form.non_field_errors }}
+                                </div>
+                               {% endif %}    
                                 <div class="before-input-icon"> 
                                     <i class="fal fa-key fix-before-input-icon-place"></i>
                                 </div>
                                 <div class="main-input-login">
-                                    <input id="code" name="code" type="number" pattern="[0-9]{11}" maxlength="6" placeholder="لطفا کد فعالسازی را وارد کنید" class="input-login login-input-modal"></div>
+                                    {{ form.code }}
                                 </div>
+                                {% if form.code.errors %}
+                                    <ul>
+                                    {% for error in form.code.errors %}
+                                    <li><strong class='text-danger text-sm'>{{ error|escape }}</strong></li>
+                                    {% endfor %}
+                                    </ul>
+                                {% endif %}
                                 <br>
                                 <div class="login-button-modal submit-code-btn"> 
                                     <button id="submit-authentication-code" type="submit">بررسی کد فعال سازی</button>
