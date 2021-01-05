@@ -777,13 +777,13 @@
           $progress.show();
           $alert.removeClass('alert-success alert-warning');
           canvas.toBlob(function (blob) {
-              console.log('blob==>', blob)
+            //   console.log('blob==>', blob)
               form_Data.append('shop_image', blob, 'avatar.jpg');
               files = [...form_Data];
-              console.log('filessssssssssssssssssssssssssss==>', files)
-          resize('shopImageMedium',files,600,'avatarMedium');
-          resize('shopImageSmall',files,300,'avatarSmall');
-          resize('shopImageVerySmall',files,50,'avatarVerySmall');
+            //   console.log('filessssssssssssssssssssssssssss==>', files)
+        //   resize('shopImageMedium',files,600,'avatarMedium');
+        //   resize('shopImageSmall',files,300,'avatarSmall');
+        //   resize('shopImageVerySmall',files,50,'avatarVerySmall');
         });
         }
       });
@@ -826,7 +826,7 @@
                         .then((res2)=>{
                             form_Data.append(fileName, res2, imageName +'.png');
                             files = [...form_Data];
-                            console.log('ffffffffffffffffffffff==>', files)
+                            // console.log('ffffffffffffffffffffff==>', files)
                         })
                 }
             }
@@ -911,7 +911,7 @@
         //  $progress.show();
           $alert.removeClass('alert-success alert-warning');
           canvas.toBlob(function (blob) {
-              console.log('blob', blob)
+            //   console.log('blob', blob)
           formData.append('gallery_image', blob, 'avatar.jpg');
           
         formData.append('shop_id', ShopID);
