@@ -27,7 +27,7 @@ from django.contrib.auth import authenticate, login, logout
 
 from nakhll_market.models import Profile, UserphoneValid
 from sms.sms import Kavenegar
-from auth.forms import ApproveCodeForm, AuthenticationForm, ForgetPasswordMobileForm, RegisterMobileForm
+from my_auth.forms import ApproveCodeForm, AuthenticationForm, ForgetPasswordDataForm, ForgetPasswordMobileForm, RegisterDataForm, RegisterMobileForm
 from nakhll.settings import LOGIN_REDIRECT_URL
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
@@ -74,7 +74,10 @@ class GetMobile(FormView):
         # send sms
         kavenegar = Kavenegar()
         code = kavenegar.generate_code()
-        kavenegar.send(self.request, mobile_number, template='nakhl-register', token=code, type='sms')
+        res = kavenegar.send(self.request, mobile_number, template='nakhl-register', token=code, type='sms')
+        if res:
+            messages.warning(self.request, res)
+            return self.form_invalid(form)
         # set mobile number in session
         set_mobile_number(self.request, mobile_number)
         # set UserphoneValid
@@ -122,6 +125,13 @@ def set_mobile_number(request, mobile_number):
 def get_mobile_number(request):
     return request.session.get('mobile_number') or ''
 
+def user_exists(request):
+    mobile_number = get_mobile_number(request)
+    if (User.objects.filter(username=mobile_number).exists() or\
+        Profile.objects.filter(MobileNumber=mobile_number).exists()):
+        return True
+    else:
+        False
 
 class ApproveCode(FormView):
     template_name = 'registration/approveCode.html'
@@ -160,97 +170,63 @@ class RegisterCode(ApproveCode):
 class ForgetPasswordCode(ApproveCode):
     context = {
         'header': 'فراموشی رمز عبور',
-        'id':'register',
+        'id':'forget-password',
         }
     success_url = reverse_lazy('auth:forget-password-data')
     empty_mobile_number_url = reverse_lazy('auth:forget-password-mobile')
 
 
 
-class RegisterData(TemplateView):
+class RegisterData(FormView):
     """
     this function do all registration related tasks
     """
+    template_name = 'registration/register-data.html'
+    form_class = RegisterDataForm
+    success_url = reverse_lazy('auth:login')
 
-    def get(self, request):
-        return render(request, 'registration/registerData.html')
+    def get_initial(self) -> Dict[str, Any]:
+        self.initial['mobile_number'] = get_mobile_number(self.request)
+        return super().get_initial()
 
-    def post(self, request):
-        # check mobile number of user
-        # now he/she can change mobile number and it work!
-        # the user can come to this page straightly and register without
-        # confirming mobile number
-        mobile_number = get_mobile_number(request)
+    def form_valid(self, form: RegisterDataForm) -> HttpResponse:
+        mobile_number = get_mobile_number(self.request)
+        password = form.cleaned_data.get('password')
+        email = form.cleaned_data.get('email')
+        reference_code = form.cleaned_data.get('reference_code')
+        user = User.objects.create_user(username=mobile_number, email=email, password=password)
+        Profile.objects.create(
+            FK_User=user,
+            MobileNumber=mobile_number,
+            IPAddress=visitor_ip_address(self.request),
+            ReferenceCode=reference_code
+        )
+        Wallet.objects.create(FK_User=user)
+        messages.success(self.request, 'ثبت نام با موفقیت انجام شد.')
+        return super().form_valid(form)
 
-        Email = request.POST.get("email", '')
-        password = request.POST.get("password", '')
-        newpassword = request.POST.get("newpassword", '')
-        reference_code = request.POST.get("referencecode")
-        # check password values
-        if (password == '') or (newpassword == ''):
-            messages.warning(request, 'لطفا تمامی فیلد ها را به درستی پر کنید!')
-            return render(request, 'registration/registerData.html')
+class ForgetPasswordData(FormView):
+    '''
+    this class handle all actions about setting password
+    '''
+    template_name = 'registration/forget-password-data.html'
+    form_class = ForgetPasswordDataForm
+    success_url = reverse_lazy('auth:login')
 
-        else:
-            if (password == newpassword):
-                site_user = SiteUser(
-                    mobile_number=mobile_number, password=password)
+    def get_initial(self) -> Dict[str, Any]:
+        self.initial['mobile_number'] = get_mobile_number(self.request)
+        return super().get_initial()
 
-                if (User.objects.filter(username=mobile_number).exists()) or \
-                        (Profile.objects.filter(MobileNumber=mobile_number).exists()):
-                    messages.warning(request, 'کاربری با این مشخصات موجود است!')
-                else:
-
-                    try:
-                        user = User.objects.create_user(
-                            username=mobile_number, email=Email, password=password)
-                        profile = Profile.objects.create(
-                            FK_User=user,
-                            MobileNumber=mobile_number,
-                            IPAddress=visitor_ip_address(request),
-                            ReferenceCode=reference_code
-                        )
-                        wallet = Wallet.objects.create(FK_User=user)
-                        messages.success(request, 'ثبت نام با موفقیت انجام شد')
-                        return redirect('auth:login')
-
-                    except:
-                        messages.warning(request, 'هنگام ثبت مشخصات خطایی رخ داده است. لطفا با پشتیبانی تماس حاصل فرمایید.')
-            else:
-                messages.warning(request, 'رمز عبور و تکرار رمز عبور برابر یکسان نیستند')
-        return render(request, 'registration/registerData.html')
-
-
-class ForgetPasswordData(TemplateView):
-    template = 'registration/forget-password.html'
-
-    def get(self, request):
-        return render(request, self.template)
-
-    def post(self, request):
-        mobile_number = get_mobile_number(request)
-        password = request.POST.get('password')
-        new_password = request.POST.get('newpassword')
-        if len(password) > 4:
-            if (password == new_password):
-                if Profile.objects.filter(MobileNumber=mobile_number).exists():
-                    profile = Profile.objects.get(MobileNumber=mobile_number)
-                    user = profile.FK_User
-                    user.set_password(password)
-                    user.save()
-                    update_session_auth_hash(request, user)  # Important!
-                    messages.success(request, 'رمز شما با موفقیت تغییر کرد.')
-                    return redirect('auth:login')
-                else:
-                    # profile for this mobile number not exists()
-                    messages.info(request, 'کاربری با این مشخصات ثبت نشده است. لطفا ابتدا ثبت نام فرمایید.')
-                    return redirect('auth:register-mobile')
-            else:
-                messages.warning(request,'رمز و تایید رمز وارده شده یکسان نمی باشند.')
-        else:
-            messages.warning(request, 'رمز عبور باید حداقل 5 حرفی باشد.')
-        return render(request, self.template)
-
+    def form_valid(self, form: RegisterDataForm) -> HttpResponse:
+        mobile_number = get_mobile_number(self.request)
+        password = form.cleaned_data.get('password')
+        profile = Profile.objects.get(MobileNumber=mobile_number)
+        user = profile.FK_User
+        user.set_password(password)
+        user.save()
+        update_session_auth_hash(self.request, user)  # Important!
+        messages.success(self.request, 'رمز شما با موفقیت تغییر کرد.')
+        return super().form_valid(form)
 
 class SuccessURLAllowedHostsMixin:
     success_url_allowed_hosts = set()

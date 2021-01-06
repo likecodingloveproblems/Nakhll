@@ -1,5 +1,6 @@
+from django.contrib.auth.models import User
 from django.forms.fields import CharField, RegexField
-from django.forms.widgets import CheckboxInput
+from django.forms.widgets import CheckboxInput, Widget
 from nakhll_market.models import Profile, UserphoneValid
 from django.core.validators import RegexValidator
 
@@ -31,7 +32,7 @@ mobile_number_field = forms.CharField(
     min_length=11,
     widget=forms.TextInput(attrs={
         'placeholder': 'موبایل',
-        'class': 'input-login login-input-modal',
+        'class': 'input-login',
         'type': 'number',
         'pattern': '09[0-9]{9}',
     }),
@@ -51,6 +52,8 @@ error_messages = {
     'inactive': _("این حساب کاربری غیر فعال است."),
     'registered': _("این شماره قبلا ثبت شده است."),
     'invalid_auth_code':_("کد وارد شده صحیح نمی باشد."),
+    'password_inconsistency':_("رمز و تکرار رمز عبور باید یکسان باشند."),
+    'validated_auth_code':_('لطفا ابتدا شماره موبایل خود را صحت سنجی نمایید.')
 }
 class AuthenticationForm(forms.Form):
     """
@@ -62,7 +65,7 @@ class AuthenticationForm(forms.Form):
         strip=False,
         widget=forms.PasswordInput(attrs={
             'placeholder': 'رمز عبور',
-            'class': 'input-login login-input-modal'
+            'class': 'input-login'
         })
     )
     remember_me = forms.BooleanField(required=False, widget=CheckboxInput)
@@ -131,6 +134,7 @@ class AuthenticationForm(forms.Form):
             self.error_messages['not_registered'],
             code='not_registered',
         )
+
 class ForgetPasswordMobileForm(forms.Form):
     '''
     this class handle get mobile from user when forget password 
@@ -207,22 +211,20 @@ class RegisterMobileForm(forms.Form):
 class ApproveCodeForm(forms.Form):
     code = forms.CharField(
         label=None, 
-        max_length=6, 
-        min_length=6,
         required=True,
         widget=forms.TextInput(attrs={
         'placeholder': 'کد احراز هویت',
-        'class': 'input-login login-input-modal',
+        'class': 'input-login',
         'type': 'number',
-        'pattern': '[0-9]{6}',
-         }),
-        )
+        }),
+    )
 
     mobile_number = forms.CharField(
         label = None, 
         max_length=11, 
         required=False,
         widget=forms.HiddenInput(),
+        validators=[mobile_number_validator],
     )
 
     error_messages = error_messages
@@ -248,3 +250,118 @@ class ApproveCodeForm(forms.Form):
             self.error_messages['invalid_auth_code'],
             code='invalid_auth_code'
             )
+
+class PasswordForm(forms.Form):
+    
+    mobile_number = forms.CharField(
+        label = None, 
+        max_length=11, 
+        required=False,
+        widget=forms.HiddenInput(),
+    )
+    password = forms.CharField(
+        required=True,
+        strip=False,
+        min_length=5,
+        max_length=12,
+        widget=forms.PasswordInput(attrs={
+            'placeholder': 'رمز عبور',
+            'class': 'input-login'
+        })
+    )
+    confirm_password = forms.CharField(
+        required=True,
+        strip=False,
+        min_length=5,
+        max_length=12,
+        widget=forms.PasswordInput(attrs={
+            'placeholder': 'تکرار رمز عبور',
+            'class': 'input-login'
+        })
+    )
+
+    def password_inconsistency(self):
+        password = self.cleaned_data.get('password')
+        confirm_password = self.cleaned_data.get('confirm_password')
+        if password and confirm_password:
+            if password != confirm_password:
+                raise forms.ValidationError(
+                    error_messages['password_inconsistency'],
+                    code='password_inconsistency'
+                )
+
+    def registered(self, mobile_number):
+        if self.user_exists(mobile_number):
+            forms.ValidationError(
+                error_messages['registered'],
+                code='registered',
+            )
+
+    def not_registered(self, mobile_number):
+        if not self.user_exists(mobile_number):
+            forms.ValidationError(
+                error_messages['not_registered'],
+                code='not_registered',
+            )
+
+    def user_exists(self, mobile_number):
+        if (User.objects.filter(username=mobile_number).exists() or\
+            Profile.objects.filter(MobileNumber=mobile_number).exists()):
+            return True
+        else:
+            return False
+
+    def validated_auth_code(self, mobile_number):
+        try:
+            user_phone_valid = UserphoneValid.objects.get(MobileNumber=mobile_number)
+            if not user_phone_valid.Valid:
+                forms.ValidationError(
+                    error_messages['validated_auth_code'],
+                    code='validated_auth_code'
+                )
+        except:
+            forms.ValidationError(
+                error_messages['validated_auth_code'],
+                code='validated_auth_code'
+            )
+
+
+class ForgetPasswordDataForm(PasswordForm):
+    '''
+    this is the same as parent class PasswordForm
+    '''
+
+    def clean(self):
+        mobile_number = self.cleaned_data.get('mobile_number')
+        self.password_inconsistency()
+        self.not_registered(mobile_number)
+        self.validated_auth_code(mobile_number)
+        return self.cleaned_data
+
+class RegisterDataForm(PasswordForm):
+
+    email = forms.EmailField(
+        required=False,
+        widget=forms.EmailInput(attrs={
+            'placeholder':'ایمیل',
+            'class':'input-login',
+            'type':'email',
+        }),
+        )
+
+    reference_code = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+        'placeholder': 'کد معرف',
+        'class': 'input-login',
+        'type': 'text',
+        'pattern': '[0-9]{6}',
+        }),
+        )
+
+    def clean(self):
+        mobile_number = self.cleaned_data.get('mobile_number')
+        self.password_inconsistency()
+        self.registered(mobile_number)
+        self.validated_auth_code(mobile_number)
+        return self.cleaned_data
