@@ -46,6 +46,11 @@
                                 <div class="login-button-modal submit-code-btn"> 
                                     <button id="submit-authentication-code" type="submit">بررسی کد فعال سازی</button>
                                 </div>
+                                </div>
+                            </form>
+                            <form method="POST">
+                            {% csrf_token %}
+                            {{form.mobile_number}}
                                 <div class="get-code-by-call">
                                     <button type="submit" class="btn btn-primary btn-sm" 
                                         {% if id == 'register' %}
@@ -55,7 +60,6 @@
                                         {% endif %}
                                     >ارسال مجدد کد یکبار مصرف
                                     </button>
-                                </div>
                                 </div>
                             </form>
                         </div>
