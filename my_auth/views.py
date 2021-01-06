@@ -73,7 +73,7 @@ class GetMobile(FormView):
         mobile_number = form.cleaned_data.get('mobile_number')
         # send sms
         kavenegar = Kavenegar()
-        code = kavenegar.generate_code()
+        code = kavenegar.generate_code(mobile_number)
         res = kavenegar.send(self.request, mobile_number, template='nakhl-register', token=code, type='sms')
         if res:
             messages.warning(self.request, res)
