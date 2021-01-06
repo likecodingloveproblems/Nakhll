@@ -28,18 +28,23 @@ class SMS:
         # get user ip from request
         ip = self._get_client_ip(request)
         # confirm sending SMS
-        self._confirm_allowed(mobile_number, ip)
-        # send code
-        res = self._send(mobile_number, **kwargs)
-        # log it
-        self._log(res)
+        block_message = self._confirm_allowed(mobile_number, ip)
+        if not block_message:
+            # send code
+            res = self._send(mobile_number, **kwargs)
+            # log it
+            self._log(res, ip)
+            return None
+        else:
+            return block_message
+
 
     def _send(self, mobile_number, **kwargs):
         '''
         this method handle actions about sending SMS
         '''
 
-    def _log(self, res):
+    def _log(self, res, ip):
         '''
         this method log sent sms in database
         '''
@@ -66,11 +71,14 @@ class SMS:
         one_day_ago = timezone.now() + timedelta(hours=-24)
         count_10min = self._get_try_count(mobile_number, ip, ten_minutes_ago)
         count_day = self._get_try_count(mobile_number, ip, one_day_ago)
-        if count_day < MAX_NUMBER_SMS_IN_A_DAY and\
-            count_10min < MAX_NUMBER_SMS_IN_10_MIN:
-            return True
+        if count_day < MAX_NUMBER_SMS_IN_A_DAY:
+            if count_10min < MAX_NUMBER_SMS_IN_10_MIN:
+                return None
+            else:
+                return 'شما بیشتر از تعداد مجاز درخواست کردید. لطفا 10 دقیقه دیگر امتحان کنید.'
+
         else: 
-            return False
+            return 'شما بیشتر از تعداد مجاز درخواست کردید. لطفا فردا دوباره امتحان کنید.'
 
     def _get_client_ip(self, request):
         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -109,29 +117,24 @@ class Kavenegar(SMS):
         except HTTPException as e:
             return e
 
-    def _log(self, res):
+    def _log(self, res, ip):
         if isinstance(res, Exception):
             return logger.error(res)
         if isinstance(res, list):
             res = res[0]
         app_timezone = timezone.get_default_timezone()
-        try:
-            return SMSModel.objects.create(
-                return_status=res['status'],
-                return_message=res['message'],
-                entries_cost=res['cost'],
-                entries_datetime=datetime.fromtimestamp(
-                    res['date']).astimezone(app_timezone),
-                entries_receptor=res['receptor'],
-                entries_sender=res['sender'],
-                entries_statustext=res['statustext'],
-                entries_status=res['status'],
-                entries_message=res['message'],
-                entries_messageid=res['messageid'],
-                user_ip = self.ip,
-            )
-        except:
-            return None
+        return SMSModel.objects.create(
+            cost=res['cost'],
+            datetime=datetime.fromtimestamp(
+                res['date']).astimezone(app_timezone),
+            receptor=res['receptor'],
+            sender=res['sender'],
+            statustext=res['statustext'],
+            status=res['status'],
+            message=res['message'],
+            messageid=res['messageid'],
+            user_ip = ip,
+        )
 
     def generate_code(self):
         return str(random.randint(100000, 999999))

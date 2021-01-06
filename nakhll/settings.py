@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.sitemaps',
     'sms',
+    'my_auth',
     'tinymce',
     'django_jalali',
     'admin_reorder',
