@@ -379,7 +379,7 @@ def GetRegisteriCode(request):
             if not Profile.objects.filter(MobileNumber = phone_number).exists():
                 # check that user is not overloading SMS with many requests
                 ten_minutes_ago = timezone.now() + timedelta(minutes=-10)
-                num_last_10_min_sms = SMS.objects.filter(entries_receptor=phone_number, datetime__gte=ten_minutes_ago).count()
+                num_last_10_min_sms = SMS.objects.filter(receptor=phone_number, datetime__gte=ten_minutes_ago).count()
                 if num_last_10_min_sms > 5: # 5 number in 10 minutes
                     context = {
                         'AlartMessage':'شما بیشتر از تعداد مجاز سعی کردید. 10 دقیقه دیگر تلاش کنید.',
@@ -403,16 +403,14 @@ def GetRegisteriCode(request):
                         app_timezone = timezone.get_default_timezone()
 
                         SMS.objects.create(
-                            return_status = text['return']['status'],
-                            return_message = text['return']['message'],
-                            entries_cost = text['entries'][0]['cost'],
-                            entries_datetime = datetime.fromtimestamp(text['entries'][0]['date']).astimezone(app_timezone),
-                            entries_receptor = text['entries'][0]['receptor'],
-                            entries_sender = text['entries'][0]['sender'],
-                            entries_statustext = text['entries'][0]['statustext'],
-                            entries_status = text['entries'][0]['status'],
-                            entries_message = text['entries'][0]['message'],
-                            entries_messageid = text['entries'][0]['messageid'],
+                            cost = text['entries'][0]['cost'],
+                            datetime = datetime.fromtimestamp(text['entries'][0]['date']).astimezone(app_timezone),
+                            receptor = text['entries'][0]['receptor'],
+                            sender = text['entries'][0]['sender'],
+                            statustext = text['entries'][0]['statustext'],
+                            status = text['entries'][0]['status'],
+                            message = text['entries'][0]['message'],
+                            messageid = text['entries'][0]['messageid'],
                         )
 
                         if res.status_code == 200: # TODO check more detail flow chart of kevenegar to be sure that the message is sent
