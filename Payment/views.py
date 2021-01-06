@@ -184,6 +184,18 @@ def Set_Send_Info(request):
         if request.method == 'POST':
             Factor_FirstName = request.POST["Factor_FirstName"]
             Factor_LastName = request.POST["Factor_LastName"]
+            Factor_NationalCode = request.POST.get('Factor_NationalCode')
+            # check if first_name, last_name and national_code are empty set them
+            this_profile = Profile.objects.get(FK_User=request.user)
+            if request.user.first_name == None or request.user.first_name == '':
+                request.user.first_name = Factor_FirstName
+                request.user.save()
+            if request.user.last_name == None or request.user.last_name == '':
+                request.user.last_name = Factor_LastName
+                request.user.save()
+            if this_profile.NationalCode == None or this_profile.NationalCode == '':
+                this_profile.NationalCode = Factor_NationalCode
+                this_profile.save()
             Factor_MobileNumber = request.POST["Factor_MobileNumber"]
             # User Location Info
             Factor_State = request.POST["Factor_State"]
@@ -195,8 +207,7 @@ def Set_Send_Info(request):
             Factor_PhoneNumber = request.POST["Factor_PhoneNumber"]
             Factor_CityPerCode = request.POST["Factor_CityPerCode"]
             # -----------------------------------------------------------------------------
-             # Get User Info
-            this_profile = Profile.objects.get(FK_User=request.user)
+             # Get User Inventory
             this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
             options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
@@ -237,7 +248,7 @@ def Set_Send_Info(request):
             factor.Address = Factor_Address
             factor.ZipCode = Factor_ZipCode
             factor.Description = ' دریافت کننده : ' + Factor_FirstName + ' ' + Factor_LastName
-            factor.OrderDate = datetime.datetime.today()
+            factor.OrderDate = datetime.datetime.today().astimezone(timezone.get_default_timezone())
             factor.save()
             # -------------------------------------------------------------------------------
             cart_products = check_product_send_status().run(factor)
@@ -274,10 +285,13 @@ def Set_Send_Info(request):
             # Get Nav Bar Menu Item
             navbar = Option_Meta.objects.filter(Title = 'nav_menu_items') 
             # ----------------------------------------------------------------------
-            factor = Factor.objects.filter(FK_User_id = request.user, PaymentStatus = False)[0]
-            # Check Cart
-            if not factor_not_null(factor):
-                return redirect("Payment:cartdetail")
+            try:
+                factor = Factor.objects.filter(FK_User_id = request.user, PaymentStatus = False)[0]
+                # Check Cart
+                if not factor_not_null(factor):
+                    return redirect("Payment:cartdetail")
+            except:
+                factor = None
 
             context = {
                 'This_User_Profile':this_profile,
