@@ -78,6 +78,9 @@
                         <div id="alert-div-inputCityPerCode-empty"></div>
                         <div id="alert-div-inputAddress-empty"></div>
                         <div id="alert-div-inputZipCode-empty"></div>
+                        <div id="alert-div-inputNationalCode-Persian"></div>
+                        <div id="alert-div-inputNationalCodeError-Persian"></div>
+                        <div id="alert-div-inputNationalCodeFormat-Persian"></div>
 
                         <!-- Char Alerts-->
                         <div id="alert-div-inputFirstName-Persian"></div>
@@ -107,13 +110,19 @@
                         <small>به صورت پیش فرض ما از <span class="Riyal">اطلاعات پروفایل</span> شما استفاده می کنیم - تکمیل تمامی فیلد های این فرم <span class="Riyal">الزامی</span> می باشد.</small>
                         <br>
                         <div class="form-row form-group">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="inputFirstName">نام <code>*</code></label>
                                 <input value="{{request.user.first_name}}" type="text" placeholder="نام خود را وارد نمایید..." name="Factor_FirstName" class="form-control" id="inputFirstName" required>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="inputLastName">نام خانوادگی <code>*</code></label>
                                 <input value="{{request.user.last_name}}" type="text" placeholder="نام خانوادگی خود را وارد نمایید..." name="Factor_LastName" class="form-control" id="inputLastName" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="inputNationalCode">کد ملی <code></code></label>
+                                <input value="{{request.user.national_code}}" type="number" placeholder="کدملی خود را وارد نمایید..."
+                                    name="Factor_NationalCode" class="form-control" id="inputNationalCode">
+                            
                             </div>
                         </div>
                         <label><h6>محدوده جغرافیایی</h6></label>
@@ -394,6 +403,7 @@
 function ajaxCallsend(){
     $("#loaderDiv").show();
     var checkscheck = checkFieldsSendInfo();
+    console.log('checkscheck====>', checkscheck)
     if(checkscheck) {
         $("#next-step-factor").addClass("send-button-disabled disabled");
         $.ajax({
