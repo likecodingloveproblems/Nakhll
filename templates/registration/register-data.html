@@ -18,23 +18,34 @@
                     {% include 'registration/messages.html'%}
                 </div>
                 <div class="setform">
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}  
                     <form method="post" class="needs-validation" novalidate oninput='newpassword.setCustomValidity(password.value != newpassword.value ? "Passwords do not match." : "")'>
                         {% csrf_token %}
                         <div class="get-code-form-part">
-                            <input id="password" name="password" type="password" placeholder="رمز عبور *" class="input-login" required>
-                            <br>
-                            <input id="newpassword" name="newpassword" type="password" placeholder="تکرار رمز عبور *" class="input-login" required>
-                            <br>
-                            <input class="reg-email-input input-login" id="email" name="email" type="email" placeholder="ایمیل">
-                            <br>
-                            <input id="referencecode" name="referencecode" type="text" placeholder="کد معرف" class="input-login" maxlength="6">
-                            <br>
+                            {% for field in form %}
+                                <div class="before-input-icon"> 
+                                    <i class="{{form.label_tag}}"></i>
+                                </div>
+                                <div class="main-input-login">
+                                    {{ field }}
+                                </div>
+                                {% if form.code.errors %}
+                                    <ul>
+                                    {% for error in field.errors %}
+                                    <li><strong class='text-danger text-sm'>{{ error|escape }}</strong></li>
+                                    {% endfor %}
+                                    </ul>
+                                {% endif %}
+                                <br>
+                            {% endfor %}
                             <button id="sign-up-button2" type="submit">ثبت نام</button>
                         </div>
                     </form>
                 </div>
-            </div>
-            <div id="results">
             </div>
          </div>
       </div>
