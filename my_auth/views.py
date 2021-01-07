@@ -77,7 +77,7 @@ class GetMobile(FormView):
         res = kavenegar.send(self.request, mobile_number, template='nakhl-register', token=code, type='sms')
         if res:
             messages.warning(self.request, res)
-            return self.form_invalid(form)
+            return redirect(self.request.path)
         # set mobile number in session
         set_mobile_number(self.request, mobile_number)
         # set UserphoneValid
