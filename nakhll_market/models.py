@@ -440,7 +440,7 @@ class Shop(models.Model):
                 day_past = datetime.timedelta(days = 6)
                 first_end_day_in_week = first_start_day_in_week + day_past
                 # Get View In Range
-                for item in this_shop.FK_Date.filter(Date__range = [first_start_day_in_week, first_first_end_day_in_week]):
+                for item in this_shop.FK_Date.filter(Date__range = [first_start_day_in_week, first_end_day_in_week]):
                     sum_view_in_this_week += int(item.Count)
                 week_list.append(str(sum_view_in_this_week))
             elif to_day.weekday() == 1:
