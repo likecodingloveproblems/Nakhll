@@ -37,8 +37,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 # base get mobile controller
-
-
 class GetMobile(FormView):
     context = {
         'header': None,
@@ -50,11 +48,11 @@ class GetMobile(FormView):
     success_url = str()
 
     def form_valid(self, form) -> HttpResponse:
-        mobile_number = form.cleaned_data.get('mobile_number')
+        mobile_number: str = form.cleaned_data.get('mobile_number')
         # send sms
         kavenegar = Kavenegar()
-        code = kavenegar.generate_code(mobile_number)
-        res = kavenegar.send(self.request, mobile_number, template='nakhl-register', token=code, type='sms')
+        code: str = kavenegar.generate_code(mobile_number)
+        res: str = kavenegar.send(self.request, mobile_number, template='nakhl-register', token=code, type='sms')
         if res:
             messages.warning(self.request, res)
             return redirect(self.request.path)
