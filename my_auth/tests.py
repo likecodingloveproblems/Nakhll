@@ -66,7 +66,7 @@ class Authentication(TestCase):
 
     def test_not_registered_login(self):
         data = {
-            'mobile_number':'09137146466',
+            'mobile_number':'09133422469',
             'password':'12345',
             'remember_me':''
         }
@@ -194,7 +194,7 @@ class Authentication(TestCase):
         
         self.assertEqual(count_sms(), 5)
         response = self.client.post(self.forget_password_mobile_url, data, follow=True)
-        self.assertEqual(response.redirect_chain, [])
+        self.assertEqual(response.redirect_chain, [(self.forget_password_mobile_url, 302)])
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(len(messages), 1)
         self.assertEqual(str(messages[0]), 'شما بیشتر از تعداد مجاز درخواست کردید. لطفا 10 دقیقه دیگر امتحان کنید.')
