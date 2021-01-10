@@ -1,3 +1,4 @@
+from my_auth.services import create_user, get_user_by_mobile_number, set_mobile_number_auth_code, set_session_expiration_time, set_user_password_by_mobile_number
 from typing import Any, Dict
 from django.contrib.messages.api import success
 from django import forms, http
@@ -10,7 +11,7 @@ from Payment.models import Wallet
 from datetime import timedelta
 from datetime import datetime
 import json
-from nakhll_market.views import visitor_ip_address
+from nakhll_market.views import set_session, visitor_ip_address
 import random
 from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
@@ -59,13 +60,7 @@ class GetMobile(FormView):
         # set mobile number in session
         set_mobile_number(self.request, mobile_number)
         # set UserphoneValid
-        if not UserphoneValid.objects.filter(MobileNumber=mobile_number).exists():
-            UserphoneValid.objects.create(MobileNumber=mobile_number, ValidCode=code, Validation=False)
-        else:
-            user_phone_valid = UserphoneValid.objects.get(MobileNumber=mobile_number)
-            user_phone_valid.ValidCode = code
-            user_phone_valid.Validation = False
-            user_phone_valid.save()
+        set_mobile_number_auth_code(mobile_number, code)
         return super().form_valid(form)
 
     def form_invalid(self, form: forms.Form) -> HttpResponse:
@@ -102,14 +97,6 @@ def set_mobile_number(request, mobile_number):
 
 def get_mobile_number(request):
     return request.session.get('mobile_number') or ''
-
-def user_exists(request):
-    mobile_number = get_mobile_number(request)
-    if (User.objects.filter(username=mobile_number).exists() or\
-        Profile.objects.filter(MobileNumber=mobile_number).exists()):
-        return True
-    else:
-        False
 
 class ApproveCode(FormView):
     template_name = 'registration/approveCode.html'
@@ -172,15 +159,11 @@ class RegisterData(FormView):
         password = form.cleaned_data.get('password')
         email = form.cleaned_data.get('email')
         reference_code = form.cleaned_data.get('reference_code')
-        user = User.objects.create_user(username=mobile_number, email=email, password=password)
-        Profile.objects.create(
-            FK_User=user,
-            MobileNumber=mobile_number,
-            IPAddress=visitor_ip_address(self.request),
-            ReferenceCode=reference_code
-        )
-        Wallet.objects.create(FK_User=user)
-        messages.success(self.request, 'ثبت نام با موفقیت انجام شد.')
+        user, profile, wallet = create_user(self.request, mobile_number, email, password, reference_code)
+        if user and profile and wallet:
+            messages.success(self.request, 'ثبت نام با موفقیت انجام شد.')
+        else:
+            messages.error(self.request, 'خطایی رخ داده است. لطفا با پشتیبانی تماس حاصل فرمایید.')
         return super().form_valid(form)
 
 class ForgetPasswordData(FormView):
@@ -198,13 +181,14 @@ class ForgetPasswordData(FormView):
     def form_valid(self, form: RegisterDataForm) -> HttpResponse:
         mobile_number = get_mobile_number(self.request)
         password = form.cleaned_data.get('password')
-        profile = Profile.objects.get(MobileNumber=mobile_number)
-        user = profile.FK_User
-        user.set_password(password)
-        user.save()
-        update_session_auth_hash(self.request, user)  # Important!
-        messages.success(self.request, 'رمز شما با موفقیت تغییر کرد.')
-        return super().form_valid(form)
+        user = set_user_password_by_mobile_number(mobile_number, password)
+        if user:
+            update_session_auth_hash(self.request, user)  # Important!
+            messages.success(self.request, 'رمز شما با موفقیت تغییر کرد.')
+            return super().form_valid(form)
+        else:
+            messages.error(self.request, 'خطایی رخ داده است لطفا با پشتیبانی تماس حاصل فرمایید.')
+            return self.form_invalid(form)
 
 class SuccessURLAllowedHostsMixin:
     success_url_allowed_hosts = set()
@@ -238,9 +222,10 @@ class Login(SuccessURLAllowedHostsMixin, FormView):
         '''
         # check if remember me is set, increase session life time
         if form.cleaned_data['remember_me']:
-            session_key = self.request.session.session_key or Session.objects.get_new_session_key()
-            Session.objects.save(session_key, self.request.session._session, timezone.now(
-            ) + timedelta(seconds=SESSION_COOKIE_AGE))
+            set_session_expiration_time(
+                self.request,
+                timezone.now() + timedelta(seconds=SESSION_COOKIE_AGE)
+                )
         login(self.request, form.user_cache)
         logger.info('request is in form_valid of Login class...')
         return HttpResponseRedirect(self.get_success_url())

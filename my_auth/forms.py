@@ -1,3 +1,4 @@
+from my_auth.services import get_user_by_mobile_number, get_user_by_username, mobile_number_is_validated, user_exists_by_mobile_number, validate_mobile_number
 from django.contrib.auth.models import User
 from django.forms.fields import CharField, RegexField
 from django.forms.widgets import CheckboxInput, Widget
@@ -6,7 +7,7 @@ from django.core.validators import RegexValidator
 
 from django import forms
 from django.contrib.auth import (
-    authenticate,
+    authenticate, get_user,
 )
 from django.contrib.auth.hashers import (
     UNUSABLE_PASSWORD_PREFIX,
@@ -87,9 +88,8 @@ class AuthenticationForm(forms.Form):
         self.remember_me = self.cleaned_data.get('remember_me')
 
         if self.mobile_number is not None and password:
-            if Profile.objects.filter(MobileNumber=self.mobile_number).exists():
-                profile = Profile.objects.get(MobileNumber=self.mobile_number)
-                user = profile.FK_User
+            user = get_user_by_mobile_number(self.mobile_number)
+            if user:
                 self.user_cache = authenticate(
                     self.request, username=user.username, password=password)
                 if self.user_cache is None:
@@ -147,9 +147,8 @@ class ForgetPasswordMobileForm(forms.Form):
         # check user is exists
         self.mobile_number = self.cleaned_data.get('mobile_number')
         if self.mobile_number is not None:
-            if (Profile.objects.filter(MobileNumber=self.mobile_number).exists()):
-                profile = Profile.objects.get(MobileNumber=self.mobile_number)
-                user = profile.FK_User
+            user = get_user_by_mobile_number(self.mobile_number)
+            if user:
                 if user:
                     self.confirm_login_allowed(user)
                     # send code to user
@@ -188,7 +187,7 @@ class RegisterMobileForm(forms.Form):
         # check user is exists
         self.mobile_number = self.cleaned_data.get('mobile_number')
         if self.mobile_number is not None:
-            if not (Profile.objects.filter(MobileNumber=self.mobile_number).exists()):
+            if not get_user_by_mobile_number(self.mobile_number):
                 pass
             else:
                 self.registered()
@@ -233,13 +232,7 @@ class ApproveCodeForm(forms.Form):
         mobile_number = self.cleaned_data.get('mobile_number')
         code = self.cleaned_data.get('code')
         if code is not None and mobile_number:
-            if UserphoneValid.objects.filter(MobileNumber=mobile_number, ValidCode=code).exists():
-                # user enter the correct register code
-                userphoneValid = UserphoneValid.objects.get(
-                    MobileNumber=mobile_number)
-                userphoneValid.Validation = True
-                userphoneValid.save()
-            else:
+            if not validate_mobile_number(mobile_number, code):
                 self.invalid_auth_code()
 
         return self.cleaned_data
@@ -291,30 +284,23 @@ class PasswordForm(forms.Form):
                 )
 
     def registered(self, mobile_number):
-        if self.user_exists(mobile_number):
+        if user_exists_by_mobile_number(mobile_number):
             forms.ValidationError(
                 error_messages['registered'],
                 code='registered',
             )
 
     def not_registered(self, mobile_number):
-        if not self.user_exists(mobile_number):
+        if not user_exists_by_mobile_number(mobile_number):
             forms.ValidationError(
                 error_messages['not_registered'],
                 code='not_registered',
             )
 
-    def user_exists(self, mobile_number):
-        if (User.objects.filter(username=mobile_number).exists() or\
-            Profile.objects.filter(MobileNumber=mobile_number).exists()):
-            return True
-        else:
-            return False
 
     def validated_auth_code(self, mobile_number):
         try:
-            user_phone_valid = UserphoneValid.objects.get(MobileNumber=mobile_number)
-            if not user_phone_valid.Valid:
+            if not mobile_number_is_validated(mobile_number):
                 forms.ValidationError(
                     error_messages['validated_auth_code'],
                     code='validated_auth_code'

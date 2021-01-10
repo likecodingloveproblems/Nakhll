@@ -1,8 +1,11 @@
+from sms.services import count_sms, create_sms
+from Payment.services import get_wallet_by_mobile_number
 from logging import error
+from my_auth.services import create_user, get_mobile_number_auth_code, get_user_by_mobile_number, get_user_by_username
 from django.core.checks import messages
 from django.http import request, response
 from django.urls.base import reverse
-from my_auth.views import Login
+from my_auth.views import Login, get_mobile_number
 from django.test import TestCase, RequestFactory, Client
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.messages import get_messages
@@ -20,18 +23,19 @@ def get_form_errors(response):
     if response.context_data['form'].errors != {}:
         return response.context_data['form'].errors['__all__']
 
-def count_sms():
-    return SMS.objects.all().count()
-
 class Authentication(TestCase):
 
     def setUp(self):
         self.client = Client()
         self.mobile_number = '09135833920'
         self.password = '12345'
-        self.user = User.objects.create_user(username=self.mobile_number, password=self.password)
-        self.profile = Profile.objects.create(MobileNumber=self.mobile_number, FK_User=self.user)
-        self.wallet = Wallet.objects.create(FK_User=self.user, Inverntory=0)
+        self.user, self.profile, self.wallet = create_user(
+            RequestFactory().get('/'), 
+            mobile_number='09135833920',
+            email='',
+            password='12345',
+            reference_code='',
+            )
         self.login_url = reverse('auth:login')
         self.forget_password_mobile_url = reverse('auth:forget-password-mobile')
         self.forget_password_code_url = reverse('auth:forget-password-code')
@@ -58,11 +62,14 @@ class Authentication(TestCase):
             self.login_url, 
             data,
         )
-        profile = Profile.objects.get(MobileNumber=data['mobile_number'])
-        user = User.objects.get(username=data['mobile_number'])
-        self.assertEqual(profile.FK_User, user)
+        self.assertEqual(
+            get_user_by_mobile_number(data['mobile_number']),
+            get_user_by_username(data['mobile_number'])
+            )
         # check user is logged in 
-        self.assertEqual(response.wsgi_request.user, user)
+        self.assertEqual(
+            response.wsgi_request.user, 
+            get_user_by_mobile_number(data['mobile_number']))
 
     def test_not_registered_login(self):
         data = {
@@ -101,7 +108,7 @@ class Authentication(TestCase):
         self.assertEqual(response.redirect_chain, [(reverse('auth:forget-password-code'), 302)])
         self.assertEqual(response.wsgi_request.session.get('mobile_number'), data['mobile_number'])
         # get authentication code
-        code = UserphoneValid.objects.get(MobileNumber=data['mobile_number']).ValidCode
+        code = get_mobile_number_auth_code(data['mobile_number'])
         response = self.client.post(
             self.forget_password_code_url, 
             {'code':code, 'mobile_number':data['mobile_number']}, 
@@ -180,7 +187,7 @@ class Authentication(TestCase):
             'cost':166,
         }
         for _ in range(5):
-            SMS.objects.create(
+            create_sms(
                             cost=res['cost'],
                 datetime=datetime.now().astimezone(app_timezone),
                 receptor=res['receptor'],
@@ -209,7 +216,7 @@ class Authentication(TestCase):
         )
         self.assertEqual(response.redirect_chain, [(self.register_code_url,302)])
         self.assertEqual(response.wsgi_request.session.get('mobile_number'), mobile_number)
-        code = UserphoneValid.objects.get(MobileNumber=mobile_number).ValidCode
+        code = get_mobile_number_auth_code(mobile_number)
         # validate mobile number by auth code
         response = self.client.post(
             self.register_code_url,
@@ -231,10 +238,10 @@ class Authentication(TestCase):
         )
         self.assertEqual(response.redirect_chain, [(self.login_url, 302)])
         # check user has created
-        user = User.objects.get(username=mobile_number)
-        profile = Profile.objects.get(MobileNumber=mobile_number)
-        Wallet.objects.get(FK_User=user)
-        self.assertEqual(profile.FK_User, user)
+        profile_user = get_user_by_mobile_number(mobile_number)
+        user = get_user_by_username(mobile_number)
+        self.assertEqual(profile_user, user)
+        self.assertNotEqual(get_wallet_by_mobile_number(mobile_number), None)
 
         # login
         response = self.client.post(
