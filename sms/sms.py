@@ -12,7 +12,7 @@ from nakhll_market.models import Profile, UserphoneValid
 
 from django.utils import timezone
 from django.utils.timezone import make_aware
-from sms.models import SMS as SMSModel
+from sms.models import SMS as SMSModel, SMSRequest
 import json
 from kavenegar import KavenegarAPI, APIException, HTTPException
 
@@ -31,6 +31,15 @@ class SMS(ABC):
         ip = self._get_client_ip(request)
         # confirm sending SMS
         block_message = self._confirm_allowed(mobile_number, ip)
+        # track sms request
+        SMSRequest.objects.create(
+            mobile_number=mobile_number, 
+            client_ip=ip,
+            template=kwargs['template'],
+            token=kwargs['token'],
+            type=kwargs['type'],
+            block_message=block_message,
+            )
         if not block_message:
             # send code
             res = self._send(mobile_number, **kwargs)

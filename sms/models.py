@@ -1,4 +1,7 @@
+from typing import TYPE_CHECKING
 from django.db import models
+from django.db.models.fields import DateTimeField
+from django.utils.translation import gettext, gettext_lazy as _
 
 # Create your models here.
 class SMS(models.Model):
@@ -17,3 +20,17 @@ class SMS(models.Model):
         ordering = ('-datetime',)   
         verbose_name = "پیامک"
         verbose_name_plural = "پیامک ها"
+
+
+class SMSRequest(models.Model):
+    mobile_number = models.CharField(_(""), max_length=15)
+    client_ip = models.GenericIPAddressField(_(""), protocol="both", unpack_ipv4=False)
+    template = models.CharField(_(""), max_length=50)
+    token = models.CharField(_(""), max_length=10)
+    TYPE_CHOICE = (
+        ('sms', 'sms'),
+        ('sms', 'call'),
+    )
+    type = models.CharField(_(""), choices=TYPE_CHOICE, default='sms', max_length=4)
+    block_message = models.CharField(_(""), max_length=127, null=True, blank=True)
+    datetime = models.DateTimeField(auto_now_add=True)
