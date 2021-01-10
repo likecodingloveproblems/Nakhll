@@ -1,3 +1,5 @@
+from abc import ABC, abstractclassmethod, abstractmethod, abstractproperty
+
 from jdatetime import datetime, timedelta
 import logging
 
@@ -16,12 +18,11 @@ from kavenegar import KavenegarAPI, APIException, HTTPException
 
 logger = logging.getLogger(__name__)
 
-class SMS:
+class SMS(ABC):
     '''
     this class handle actions about sending sms
     '''
-
-    def send(self, request, mobile_number, **kwargs) -> bool:
+    def send(self, request, mobile_number, **kwargs) -> str:
         '''
         this method handle all action actions about checking the restrictions
         and then send SMS and log the results
@@ -35,51 +36,21 @@ class SMS:
             res = self._send(mobile_number, **kwargs)
             # log it
             self._log(res, ip)
-            return None
+            return ''
         else:
             return block_message
 
-
+    @abstractclassmethod
     def _send(self, mobile_number, **kwargs):
         '''
         this method handle actions about sending SMS
         '''
 
+    @abstractmethod
     def _log(self, res, ip):
         '''
         this method log sent sms in database
         '''
-
-    def _get_try_count(self,mobile_number, ip, deltatime):
-        return SMSModel.objects.filter(
-            (Q(receptor=mobile_number) or Q(user_ip=ip)) 
-            and Q(datetime__gte=deltatime)
-            ).count()
-
-    def _confirm_allowed(self, mobile_number, ip):
-        '''
-        this method check this user is allowed to receive SMS 
-        now the only policy is checking maximux allowed number of sms
-
-        return :
-            confirm -> True
-            not confirm -> False
-        '''
-        MAX_NUMBER_SMS_IN_10_MIN = 5
-        MAX_NUMBER_SMS_IN_A_DAY = 10
-        # check that user is not overloading SMS with many requests
-        ten_minutes_ago = timezone.now() + timedelta(minutes=-10)
-        one_day_ago = timezone.now() + timedelta(hours=-24)
-        count_10min = self._get_try_count(mobile_number, ip, ten_minutes_ago)
-        count_day = self._get_try_count(mobile_number, ip, one_day_ago)
-        if count_day < MAX_NUMBER_SMS_IN_A_DAY:
-            if count_10min < MAX_NUMBER_SMS_IN_10_MIN:
-                return None
-            else:
-                return 'شما بیشتر از تعداد مجاز درخواست کردید. لطفا 10 دقیقه دیگر امتحان کنید.'
-
-        else: 
-            return 'شما بیشتر از تعداد مجاز درخواست کردید. لطفا فردا دوباره امتحان کنید.'
 
     def _get_client_ip(self, request):
         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -145,4 +116,33 @@ class Kavenegar(SMS):
         else:
             return str(random.randint(100000, 999999))
 
+    def _get_try_count(self,mobile_number, ip, deltatime):
+        return SMSModel.objects.filter(
+            (Q(receptor=mobile_number) | Q(user_ip=ip)) 
+            ,datetime__gte=deltatime
+            ).count()
 
+    def _confirm_allowed(self, mobile_number, ip):
+        '''
+        this method check this user is allowed to receive SMS 
+        now the only policy is checking maximux allowed number of sms
+
+        return :
+            confirm -> True
+            not confirm -> False
+        '''
+        MAX_NUMBER_SMS_IN_10_MIN = 5
+        MAX_NUMBER_SMS_IN_A_DAY = 10
+        # check that user is not overloading SMS with many requests
+        ten_minutes_ago = timezone.now() + timedelta(minutes=-10)
+        one_day_ago = timezone.now() + timedelta(hours=-24)
+        count_10min = self._get_try_count(mobile_number, ip, ten_minutes_ago)
+        count_day = self._get_try_count(mobile_number, ip, one_day_ago)
+        if count_day < MAX_NUMBER_SMS_IN_A_DAY:
+            if count_10min < MAX_NUMBER_SMS_IN_10_MIN:
+                return None
+            else:
+                return 'شما بیشتر از تعداد مجاز درخواست کردید. لطفا 10 دقیقه دیگر امتحان کنید.'
+
+        else: 
+            return 'شما بیشتر از تعداد مجاز درخواست کردید. لطفا فردا دوباره امتحان کنید.'
