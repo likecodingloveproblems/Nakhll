@@ -41,7 +41,7 @@ urlpatterns = [
     
     path('account/codesetvalid/<str:mobileNumber>/', views.codesetvalid, name='codesetvalid'),
     # Get Registeri Code
-    re_path(r'^account/register/$', views.GetRegisteriCode, name='GetRegisteriCode'),
+    # re_path(r'^account/register/$', views.GetRegisteriCode, name='GetRegisteriCode'),
     # Get Code Path
     re_path(r'^get_phonenumber/get_user_code/$', views.GetCode, name='GetCode'),
     # Get Code Path

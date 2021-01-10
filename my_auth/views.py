@@ -265,5 +265,4 @@ class Login(SuccessURLAllowedHostsMixin, FormView):
 
 def logout_(request):
     logout(request)
-    logger.warning('request had logout successfully...')
     return redirect(reverse('Profile:index'))
