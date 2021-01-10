@@ -359,91 +359,91 @@ def ShowChangePasswordOff(request):
     return render(request, 'registration/forgetpassword/changepass.html', context)
 
 # Get Registeri Code
-def GetRegisteriCode(request): 
+# def GetRegisteriCode(request): 
 
-    if request.method == 'POST':
+#     if request.method == 'POST':
 
-        phone_number = request.POST.get("mobilenumber", None)
-        # validation of phone number
-        if  (len(phone_number) == 11 and phone_number[0]== '0' and phone_number.isdigit()):
-            pass
-        else:
-            context = {
-                'AlartMessage':'شماره وارد شده صحیح نمی باشد.',
-                'ShowAlart': True,
-                }
-            return render(request, 'registration/new/getregistericode.html', context)
+#         phone_number = request.POST.get("mobilenumber", None)
+#         # validation of phone number
+#         if  (len(phone_number) == 11 and phone_number[0]== '0' and phone_number.isdigit()):
+#             pass
+#         else:
+#             context = {
+#                 'AlartMessage':'شماره وارد شده صحیح نمی باشد.',
+#                 'ShowAlart': True,
+#                 }
+#             return render(request, 'registration/new/getregistericode.html', context)
         
-        if (phone_number):
+#         if (phone_number):
 
-            if not Profile.objects.filter(MobileNumber = phone_number).exists():
-                # check that user is not overloading SMS with many requests
-                ten_minutes_ago = timezone.now() + timedelta(minutes=-10)
-                num_last_10_min_sms = SMS.objects.filter(receptor=phone_number, datetime__gte=ten_minutes_ago).count()
-                if num_last_10_min_sms > 5: # 5 number in 10 minutes
-                    context = {
-                        'AlartMessage':'شما بیشتر از تعداد مجاز سعی کردید. 10 دقیقه دیگر تلاش کنید.',
-                        'ShowAlart': True,
-                        }
-                else:
-                    # the user has more opportunity
-                    regcode = str(random.randint(100000, 999999))
-                    if not UserphoneValid.objects.filter(MobileNumber = phone_number).exists():
-                        userphoneValid = UserphoneValid(MobileNumber=phone_number,ValidCode=regcode,Validation=False)
-                        userphoneValid.save() 
-                    try:
-                        userphoneValid=UserphoneValid.objects.get(MobileNumber = phone_number)
-                        userphoneValid.ValidCode = regcode
-                        userphoneValid.Validation = False
-                        userphoneValid.save()
-                        url = 'https://api.kavenegar.com/v1/{}/verify/lookup.json'.format(KAVENEGAR_KEY) 
-                        params = {'receptor': phone_number, 'token' : regcode, 'template' : 'nakhl-register'}
-                        res = requests.post(url, params = params)
-                        text = json.loads(res.text)
-                        app_timezone = timezone.get_default_timezone()
+#             if not Profile.objects.filter(MobileNumber = phone_number).exists():
+#                 # check that user is not overloading SMS with many requests
+#                 ten_minutes_ago = timezone.now() + timedelta(minutes=-10)
+#                 num_last_10_min_sms = SMS.objects.filter(receptor=phone_number, datetime__gte=ten_minutes_ago).count()
+#                 if num_last_10_min_sms > 5: # 5 number in 10 minutes
+#                     context = {
+#                         'AlartMessage':'شما بیشتر از تعداد مجاز سعی کردید. 10 دقیقه دیگر تلاش کنید.',
+#                         'ShowAlart': True,
+#                         }
+#                 else:
+#                     # the user has more opportunity
+#                     regcode = str(random.randint(100000, 999999))
+#                     if not UserphoneValid.objects.filter(MobileNumber = phone_number).exists():
+#                         userphoneValid = UserphoneValid(MobileNumber=phone_number,ValidCode=regcode,Validation=False)
+#                         userphoneValid.save() 
+#                     try:
+#                         userphoneValid=UserphoneValid.objects.get(MobileNumber = phone_number)
+#                         userphoneValid.ValidCode = regcode
+#                         userphoneValid.Validation = False
+#                         userphoneValid.save()
+#                         url = 'https://api.kavenegar.com/v1/{}/verify/lookup.json'.format(KAVENEGAR_KEY) 
+#                         params = {'receptor': phone_number, 'token' : regcode, 'template' : 'nakhl-register'}
+#                         res = requests.post(url, params = params)
+#                         text = json.loads(res.text)
+#                         app_timezone = timezone.get_default_timezone()
 
-                        SMS.objects.create(
-                            cost = text['entries'][0]['cost'],
-                            datetime = datetime.fromtimestamp(text['entries'][0]['date']).astimezone(app_timezone),
-                            receptor = text['entries'][0]['receptor'],
-                            sender = text['entries'][0]['sender'],
-                            statustext = text['entries'][0]['statustext'],
-                            status = text['entries'][0]['status'],
-                            message = text['entries'][0]['message'],
-                            messageid = text['entries'][0]['messageid'],
-                        )
+#                         SMS.objects.create(
+#                             cost = text['entries'][0]['cost'],
+#                             datetime = datetime.fromtimestamp(text['entries'][0]['date']).astimezone(app_timezone),
+#                             receptor = text['entries'][0]['receptor'],
+#                             sender = text['entries'][0]['sender'],
+#                             statustext = text['entries'][0]['statustext'],
+#                             status = text['entries'][0]['status'],
+#                             message = text['entries'][0]['message'],
+#                             messageid = text['entries'][0]['messageid'],
+#                         )
 
-                        if res.status_code == 200: # TODO check more detail flow chart of kevenegar to be sure that the message is sent
-                            # kevenegar post method is successful
-                            return redirect(reverse('Profile:codesetvalid', kwargs={'mobileNumber':text['entries'][0]['receptor']}))
-                        else:
-                            context = {
-                                'AlartMessage':'سامانه پیامکی با مشکل مواجه شه است. لطفا با پشتیبانی تماس حاصل فرمایید.',
-                                'ShowAlart': True,
-                                }
-                    except:
-                        context = {
-                            'AlartMessage':'خطای دریافت شماره تماس',
-                            'ShowAlart': True,
-                            }
-            else:
-                context = {
-                    'AlartMessage':'این کاربر قبلا ثبت نام کرده است ! ',
-                    'ShowAlart': True,
-                    }
+#                         if res.status_code == 200: # TODO check more detail flow chart of kevenegar to be sure that the message is sent
+#                             # kevenegar post method is successful
+#                             return redirect(reverse('Profile:codesetvalid', kwargs={'mobileNumber':text['entries'][0]['receptor']}))
+#                         else:
+#                             context = {
+#                                 'AlartMessage':'سامانه پیامکی با مشکل مواجه شه است. لطفا با پشتیبانی تماس حاصل فرمایید.',
+#                                 'ShowAlart': True,
+#                                 }
+#                     except:
+#                         context = {
+#                             'AlartMessage':'خطای دریافت شماره تماس',
+#                             'ShowAlart': True,
+#                             }
+#             else:
+#                 context = {
+#                     'AlartMessage':'این کاربر قبلا ثبت نام کرده است ! ',
+#                     'ShowAlart': True,
+#                     }
 
-        else:
+#         else:
 
-            context = {
-                'AlartMessage':'شماره وارد شده نامعتبر است!',
-                'ShowAlart': True,
-                }
-    else:
-        context = {
-            'ShowAlart':False,
-            'AlartMessage':'',
-        }
-    return render(request, 'registration/new/getregistericode.html', context)
+#             context = {
+#                 'AlartMessage':'شماره وارد شده نامعتبر است!',
+#                 'ShowAlart': True,
+#                 }
+#     else:
+#         context = {
+#             'ShowAlart':False,
+#             'AlartMessage':'',
+#         }
+#     return render(request, 'registration/new/getregistericode.html', context)
 
 # Get Code
 def GetCode(request):
