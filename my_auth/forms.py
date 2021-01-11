@@ -83,12 +83,12 @@ class AuthenticationForm(forms.Form):
         super().__init__(*args, **kwargs)
 
     def clean(self):
-        self.mobile_number = self.cleaned_data.get('mobile_number')
+        mobile_number = self.cleaned_data.get('mobile_number')
         password = self.cleaned_data.get('password')
         self.remember_me = self.cleaned_data.get('remember_me')
 
-        if self.mobile_number is not None and password:
-            user = get_user_by_mobile_number(self.mobile_number)
+        if mobile_number is not None and password:
+            user = get_user_by_mobile_number(mobile_number)
             if user:
                 self.user_cache = authenticate(
                     self.request, username=user.username, password=password)
@@ -145,9 +145,9 @@ class ForgetPasswordMobileForm(forms.Form):
 
     def clean(self):
         # check user is exists
-        self.mobile_number = self.cleaned_data.get('mobile_number')
-        if self.mobile_number is not None:
-            user = get_user_by_mobile_number(self.mobile_number)
+        mobile_number = self.cleaned_data.get('mobile_number')
+        if mobile_number is not None:
+            user = get_user_by_mobile_number(mobile_number)
             if user:
                 if user:
                     self.confirm_login_allowed(user)
@@ -185,9 +185,9 @@ class RegisterMobileForm(forms.Form):
 
     def clean(self):
         # check user is exists
-        self.mobile_number = self.cleaned_data.get('mobile_number')
-        if self.mobile_number is not None:
-            if not get_user_by_mobile_number(self.mobile_number):
+        mobile_number = self.cleaned_data.get('mobile_number')
+        if mobile_number is not None:
+            if not get_user_by_mobile_number(mobile_number):
                 pass
             else:
                 self.registered()
