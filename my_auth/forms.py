@@ -2,7 +2,6 @@ from my_auth.services import get_user_by_mobile_number, get_user_by_username, mo
 from django.contrib.auth.models import User
 from django.forms.fields import CharField, RegexField
 from django.forms.widgets import CheckboxInput, Widget
-from nakhll_market.models import Profile, UserphoneValid
 from django.core.validators import RegexValidator
 
 from django import forms

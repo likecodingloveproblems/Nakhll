@@ -8,7 +8,8 @@ from nakhll.settings import KAVENEGAR_KEY
 import random
 
 from django.db.models.query_utils import Q
-from nakhll_market.models import Profile, UserphoneValid
+from nakhll_market.models import Profile
+from my_auth.models import UserphoneValid
 
 from django.utils import timezone
 from django.utils.timezone import make_aware

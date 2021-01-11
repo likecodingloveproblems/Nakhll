@@ -1420,19 +1420,19 @@ class Review(models.Model):
 #----------------------------------------------------------------------------------------------------------------------------------
 
 # UserphoneValid (فعالسازی شماره) Model   
-class UserphoneValid(models.Model):
-    MobileNumber=models.CharField(verbose_name='شماره موبایل', max_length=11, unique=True)
-    ValidCode=models.CharField(verbose_name='کد فعال سازی', max_length=8, blank=True,default='80')
-    Validation=models.BooleanField(verbose_name='تایید شماره تماس', default=False)
-    Date=jmodels.jDateField(verbose_name='تاریخ', null=True, auto_now=True)
+# class UserphoneValid(models.Model):
+#     MobileNumber=models.CharField(verbose_name='شماره موبایل', max_length=11, unique=True)
+#     ValidCode=models.CharField(verbose_name='کد فعال سازی', max_length=8, blank=True,default='80')
+#     Validation=models.BooleanField(verbose_name='تایید شماره تماس', default=False)
+#     Date=jmodels.jDateField(verbose_name='تاریخ', null=True, auto_now=True)
     
-    def __str__(self):
-       return "{}".format(self.MobileNumber)
+#     def __str__(self):
+#        return "{}".format(self.MobileNumber)
 
-    class Meta:
-        ordering = ('Date',)   
-        verbose_name = "فعالسازی شماره"
-        verbose_name_plural = "فعالسازی شماره"
+#     class Meta:
+#         ordering = ('Date',)   
+#         verbose_name = "فعالسازی شماره"
+#         verbose_name_plural = "فعالسازی شماره"
 
 #----------------------------------------------------------------------------------------------------------------------------------
 

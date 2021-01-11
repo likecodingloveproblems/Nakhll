@@ -26,7 +26,7 @@ from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from django.contrib.auth import authenticate, login, logout
 
-from nakhll_market.models import Profile, UserphoneValid
+from nakhll_market.models import Profile
 from sms.sms import Kavenegar
 from my_auth.forms import ApproveCodeForm, AuthenticationForm, ForgetPasswordDataForm, ForgetPasswordMobileForm, RegisterDataForm, RegisterMobileForm
 from nakhll.settings import LOGIN_REDIRECT_URL
@@ -59,7 +59,6 @@ class GetMobile(FormView):
             return redirect(self.request.path)
         # set mobile number in session
         set_mobile_number(self.request, mobile_number)
-        # set UserphoneValid
         set_mobile_number_auth_code(mobile_number, code)
         return super().form_valid(form)
 

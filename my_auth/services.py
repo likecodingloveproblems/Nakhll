@@ -5,7 +5,8 @@ from django.contrib.sessions.models import Session
 from django.utils import timezone
 from Payment.models import Wallet
 from django.contrib.auth.models import User
-from nakhll_market.models import Profile, UserphoneValid
+from nakhll_market.models import Profile
+from my_auth.models import UserphoneValid
 
 ### mobile number validation
 def validate_mobile_number(mobile_number, code) -> bool:

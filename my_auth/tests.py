@@ -13,7 +13,8 @@ from django.utils import timezone
 
 from datetime import datetime, timedelta
 
-from nakhll_market.models import Profile, UserPoint, UserphoneValid
+from nakhll_market.models import Profile, UserPoint
+
 from Payment.models import Wallet
 from my_auth.forms import error_messages
 from sms.models import SMS
