@@ -25,7 +25,7 @@ mobile_number_validator = RegexValidator(
 '''
 fields 
 '''
-mobile_number_field = forms.CharField(
+mobile_number_field = lambda:forms.CharField(
     label=None,
     required=True,
     max_length=11,
@@ -59,7 +59,7 @@ class AuthenticationForm(forms.Form):
     """
     this form is used for authentication of user
     """
-    mobile_number = mobile_number_field
+    mobile_number = mobile_number_field()
     password = forms.CharField(
         required=True,
         strip=False,
@@ -138,7 +138,7 @@ class ForgetPasswordMobileForm(forms.Form):
     '''
     this class handle get mobile from user when forget password 
     '''
-    mobile_number = mobile_number_field
+    mobile_number = mobile_number_field()
     
     error_messages = error_messages
 
@@ -178,7 +178,7 @@ class RegisterMobileForm(forms.Form):
     '''
     this class handle get mobile from user for validation of mobile number for registration process
     '''
-    mobile_number = mobile_number_field
+    mobile_number = mobile_number_field()
     
     error_messages = error_messages
 
