@@ -1,5 +1,4 @@
 from nakhll.settings import KAVENEGAR_KEY
-from django.shortcuts import render_to_response
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect

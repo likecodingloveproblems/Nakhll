@@ -1,5 +1,4 @@
 import re
-from django.shortcuts import render_to_response
 from django.contrib.sessions.backends.db import SessionStore
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render, redirect
