@@ -136,7 +136,7 @@ class Authentication(TestCase):
 
     def test_not_registered_forget_password_mobile(self):
         data = {
-            'mobile_number':'09137146466'
+            'mobile_number':'09133422469'
         }
         response = self.client.post(self.forget_password_mobile_url, data, follow=True)
         errors = get_form_errors(response)
@@ -208,7 +208,7 @@ class Authentication(TestCase):
         self.assertEqual(str(messages[0]), 'شما بیشتر از تعداد مجاز درخواست کردید. لطفا 10 دقیقه دیگر امتحان کنید.')
     
     def test_register_successfully(self):
-        mobile_number = '09137146466'
+        mobile_number = '09133422469'
         # get mobile number of the user to validate
         response = self.client.post(
             self.register_mobile_url, 
@@ -249,7 +249,7 @@ class Authentication(TestCase):
             self.login_url,
             {
                 'password':'mam12345',
-                'mobile_number':'09137146466',
+                'mobile_number':'09133422469',
                 'remember_me':True,
             },
             follow=True,
