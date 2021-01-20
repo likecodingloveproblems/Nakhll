@@ -564,6 +564,7 @@ def add_to_cart_without_price_attribute(request):
 
 # Add To Cart With Price Attribute With Ajax
 def add_to_cart_with_price_attribute(request):
+    response_data = {}
     if request.user.is_authenticated:
         response_data = {}
         try:
