@@ -566,7 +566,6 @@ def add_to_cart_without_price_attribute(request):
 def add_to_cart_with_price_attribute(request):
     response_data = {}
     if request.user.is_authenticated:
-        response_data = {}
         try:
             if Product.objects.filter(ID = request.POST.get("product_id")).exists():
                 # Get This Product
