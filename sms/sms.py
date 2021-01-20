@@ -62,6 +62,12 @@ class SMS(ABC):
         this method log sent sms in database
         '''
 
+    @abstractmethod
+    def _confirm_allowed(self, mobile_number, ip):
+        '''
+        this method check this user is allowed to receive SMS 
+        '''
+
     def _get_client_ip(self, request):
         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
         if x_forwarded_for:
