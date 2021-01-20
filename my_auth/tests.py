@@ -1,23 +1,16 @@
 from sms.services import count_sms, create_sms
 from Payment.services import get_wallet_by_mobile_number
-from logging import error
 from my_auth.services import create_user, get_mobile_number_auth_code, get_user_by_mobile_number, get_user_by_username
-from django.core.checks import messages
-from django.http import request, response
 from django.urls.base import reverse
-from my_auth.views import Login, get_mobile_number
 from django.test import TestCase, RequestFactory, Client
-from django.contrib.auth.models import User, AnonymousUser
+from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages import get_messages
 from django.utils import timezone
 
-from datetime import datetime, timedelta
+from datetime import datetime
 
-from nakhll_market.models import Profile, UserPoint
 
-from Payment.models import Wallet
 from my_auth.forms import error_messages
-from sms.models import SMS
 
 # Create your tests here.
 def get_form_errors(response):

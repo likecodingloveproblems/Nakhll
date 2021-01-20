@@ -1,17 +1,12 @@
-from my_auth.services import get_user_by_mobile_number, get_user_by_username, mobile_number_is_validated, user_exists_by_mobile_number, validate_mobile_number
-from django.contrib.auth.models import User
-from django.forms.fields import CharField, RegexField
-from django.forms.widgets import CheckboxInput, Widget
+from my_auth.services import get_user_by_mobile_number, mobile_number_is_validated, user_exists_by_mobile_number, validate_mobile_number
+from django.forms.widgets import CheckboxInput
 from django.core.validators import RegexValidator
 
 from django import forms
 from django.contrib.auth import (
-    authenticate, get_user,
+    authenticate,
 )
-from django.contrib.auth.hashers import (
-    UNUSABLE_PASSWORD_PREFIX,
-)
-from django.utils.translation import gettext, gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 '''
 validators 

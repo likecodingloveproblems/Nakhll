@@ -1,48 +1,38 @@
-from my_auth.services import create_user, get_user_by_mobile_number, set_mobile_number_auth_code, set_session_expiration_time, set_user_password_by_mobile_number
+from my_auth.services import create_user, set_mobile_number_auth_code, set_session_expiration_time, set_user_password_by_mobile_number
 from typing import Any, Dict
-from django.contrib.messages.api import success
 from django import forms, http
 from django.utils.decorators import method_decorator
 from django.utils.http import is_safe_url
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
-from Payment.models import Wallet
 from datetime import timedelta
-from datetime import datetime
-import json
-from nakhll_market.views import set_session, visitor_ip_address
-import random
-from django.contrib.auth.models import User
-from django.contrib.sessions.models import Session
-from django.http.response import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http.response import HttpResponse, HttpResponseRedirect
 
 from django.utils import timezone
-import requests
-from nakhll.settings import REDIRECT_FIELD_NAME, SESSION_COOKIE_AGE, KAVENEGAR_KEY
-from django.shortcuts import redirect, render, resolve_url
+from nakhll.settings import REDIRECT_FIELD_NAME, SESSION_COOKIE_AGE
+from django.shortcuts import redirect, resolve_url
 from django.urls.base import reverse, reverse_lazy
-from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import login, logout
 
-from nakhll_market.models import Profile
 from sms.sms import Kavenegar
 from my_auth.forms import ApproveCodeForm, AuthenticationForm, ForgetPasswordDataForm, ForgetPasswordMobileForm, RegisterDataForm, RegisterMobileForm
 from nakhll.settings import LOGIN_REDIRECT_URL
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
-from django.contrib.auth.forms import PasswordChangeForm
 import logging
 
 logger = logging.getLogger(__name__)
 
 # base get mobile controller
+
+
 class GetMobile(FormView):
     context = {
         'header': None,
-        'id':None,
-        }
+        'id': None,
+    }
 
     template_name = str()
     form_class = None
@@ -53,7 +43,8 @@ class GetMobile(FormView):
         # send sms
         kavenegar = Kavenegar()
         code: str = kavenegar.generate_code(mobile_number)
-        res: str = kavenegar.send(self.request, mobile_number, template='nakhl-register', token=code, type='sms')
+        res: str = kavenegar.send(
+            self.request, mobile_number, template='nakhl-register', token=code, type='sms')
         if res:
             messages.warning(self.request, res)
             return redirect(self.request.path)
@@ -70,32 +61,37 @@ class GetMobile(FormView):
             kwargs[item] = self.context[item]
         return super().get_context_data(**kwargs)
 
+
 class RegisterMobile(GetMobile):
     context = {
         'header': 'ثبت نام در سایت',
-        'id':'register',
-        }
+        'id': 'register',
+    }
 
     template_name = 'registration/get-mobile.html'
     form_class = RegisterMobileForm
     success_url = reverse_lazy('auth:register-code')
 
+
 class ForgetPasswordMobile(GetMobile):
     context = {
         'header': 'فراموشی رمز عبور',
-        'id':'forget-password',
-        }
+        'id': 'forget-password',
+    }
 
     template_name = 'registration/get-mobile.html'
     form_class = ForgetPasswordMobileForm
     success_url = reverse_lazy('auth:forget-password-code')
 
+
 def set_mobile_number(request, mobile_number):
     request.session['mobile_number'] = mobile_number
     return request
 
+
 def get_mobile_number(request):
     return request.session.get('mobile_number') or ''
+
 
 class ApproveCode(FormView):
     template_name = 'registration/approveCode.html'
@@ -105,7 +101,8 @@ class ApproveCode(FormView):
 
     def dispatch(self, request: http.HttpRequest, *args: Any, **kwargs: Any) -> http.HttpResponse:
         if not request.session.get('mobile_number'):
-            messages.warning(request, 'ابتدا شماره موبایل خود را وارده کرده و کد احراز هویت را دریافت کنید.')
+            messages.warning(
+                request, 'ابتدا شماره موبایل خود را وارده کرده و کد احراز هویت را دریافت کنید.')
             return HttpResponseRedirect(self.empty_mobile_number_url)
         return super().dispatch(request, *args, **kwargs)
 
@@ -114,7 +111,8 @@ class ApproveCode(FormView):
         return super().get_initial()
 
     def form_valid(self, form: ApproveCodeForm) -> HttpResponse:
-        messages.success(self.request, 'کد وارد شده صحیح می باشد. لطفا اطلاعات مورد نظر را به دقت وارد فرمایید.')
+        messages.success(
+            self.request, 'کد وارد شده صحیح می باشد. لطفا اطلاعات مورد نظر را به دقت وارد فرمایید.')
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
@@ -122,11 +120,12 @@ class ApproveCode(FormView):
             kwargs[item] = self.context[item]
         return super().get_context_data(**kwargs)
 
+
 class RegisterCode(ApproveCode):
     context = {
         'header': 'ثبت نام در سایت',
-        'id':'register',
-        }
+        'id': 'register',
+    }
     success_url = reverse_lazy('auth:register-data')
     empty_mobile_number_url = reverse_lazy('auth:register-mobile')
 
@@ -134,11 +133,10 @@ class RegisterCode(ApproveCode):
 class ForgetPasswordCode(ApproveCode):
     context = {
         'header': 'فراموشی رمز عبور',
-        'id':'forget-password',
-        }
+        'id': 'forget-password',
+    }
     success_url = reverse_lazy('auth:forget-password-data')
     empty_mobile_number_url = reverse_lazy('auth:forget-password-mobile')
-
 
 
 class RegisterData(FormView):
@@ -158,12 +156,15 @@ class RegisterData(FormView):
         password = form.cleaned_data.get('password')
         email = form.cleaned_data.get('email')
         reference_code = form.cleaned_data.get('reference_code')
-        user, profile, wallet = create_user(self.request, mobile_number, email, password, reference_code)
+        user, profile, wallet = create_user(
+            self.request, mobile_number, email, password, reference_code)
         if user and profile and wallet:
             messages.success(self.request, 'ثبت نام با موفقیت انجام شد.')
         else:
-            messages.error(self.request, 'خطایی رخ داده است. لطفا با پشتیبانی تماس حاصل فرمایید.')
+            messages.error(
+                self.request, 'خطایی رخ داده است. لطفا با پشتیبانی تماس حاصل فرمایید.')
         return super().form_valid(form)
+
 
 class ForgetPasswordData(FormView):
     '''
@@ -186,14 +187,17 @@ class ForgetPasswordData(FormView):
             messages.success(self.request, 'رمز شما با موفقیت تغییر کرد.')
             return super().form_valid(form)
         else:
-            messages.error(self.request, 'خطایی رخ داده است لطفا با پشتیبانی تماس حاصل فرمایید.')
+            messages.error(
+                self.request, 'خطایی رخ داده است لطفا با پشتیبانی تماس حاصل فرمایید.')
             return self.form_invalid(form)
+
 
 class SuccessURLAllowedHostsMixin:
     success_url_allowed_hosts = set()
 
     def get_success_url_allowed_hosts(self):
         return {self.request.get_host(), *self.success_url_allowed_hosts}
+
 
 class Login(SuccessURLAllowedHostsMixin, FormView):
     """
@@ -204,7 +208,6 @@ class Login(SuccessURLAllowedHostsMixin, FormView):
     success_url = LOGIN_REDIRECT_URL
     redirect_authenticated_user = True
     redirect_field_name = REDIRECT_FIELD_NAME
-
 
     @method_decorator(sensitive_post_parameters())
     @method_decorator(csrf_protect)
@@ -224,7 +227,7 @@ class Login(SuccessURLAllowedHostsMixin, FormView):
             set_session_expiration_time(
                 self.request,
                 timezone.now() + timedelta(seconds=SESSION_COOKIE_AGE)
-                )
+            )
         login(self.request, form.user_cache)
         logger.info('request is in form_valid of Login class...')
         return HttpResponseRedirect(self.get_success_url())
@@ -246,6 +249,7 @@ class Login(SuccessURLAllowedHostsMixin, FormView):
             require_https=self.request.is_secure(),
         )
         return redirect_to if url_is_safe else ''
+
 
 def logout_(request):
     logout(request)

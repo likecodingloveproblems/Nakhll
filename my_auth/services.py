@@ -1,8 +1,6 @@
 from nakhll.services import get_client_ip, get_or_none
 from typing import Any
-from nakhll.settings import SESSION_COOKIE_AGE
 from django.contrib.sessions.models import Session
-from django.utils import timezone
 from Payment.models import Wallet
 from django.contrib.auth.models import User
 from nakhll_market.models import Profile
