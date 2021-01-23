@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'imagekit',
     'compressor',
     'mathfilters',
+    'instagram',
 ]
 
 MIDDLEWARE = [
