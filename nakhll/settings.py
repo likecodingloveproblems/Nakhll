@@ -277,4 +277,4 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 
 KAVENEGAR_KEY = os.environ.get('KAVENEGAR_KEY')
 
-SESSION_SAVE_EVERY_REQUEST=True
+SESSION_SAVE_EVERY_REQUEST: bool=True

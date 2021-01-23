@@ -11,15 +11,15 @@ class UserphoneValidQuerySet(models.QuerySet):
     '''
     this implement the data access object for UserphoneValid table
     '''
-    def get_valid_code(self, mobile_number:str) -> str:
+    def get_valid_code(self, mobile_number: str) -> str:
         """This method get mobile_number from user and return validation code
 
         Returns:
-            user phone valid {UserphoneValid}: user phone valid record by mobile number       
+            user phone valid {UserphoneValid}: user phone valid record by mobile number
         """
         return self.get(MobileNumber=mobile_number).ValidCode
     
-    def validate_mobile_number(self, mobile_number:str, code:str) -> Optional['UserphoneValid']:
+    def validate_mobile_number(self, mobile_number: str, code:str) -> Optional['UserphoneValid']:
         """this function validate phone number, auth code
 
         Returns:
@@ -44,6 +44,7 @@ class UserphoneValidQuerySet(models.QuerySet):
 
     def is_validated(self, mobile_number: str) -> bool:
         return self.filter(MobileNumber=mobile_number, Validation=True).exists()
+
 
 class UserphoneValidManager(models.Manager):
     def get_queryset(self):

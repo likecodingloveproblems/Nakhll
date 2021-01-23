@@ -2,7 +2,7 @@ from django.urls import path, re_path
 from django.conf.urls import url
 from . import views
 from django.contrib.sitemaps.views import sitemap
-from .sitemaps import PostBlogSitemap , VendorStorySitemap
+from .sitemaps import PostBlogSitemap, VendorStorySitemap
 
 sitemaps = {
     'PostsBlog': PostBlogSitemap,
@@ -12,7 +12,7 @@ sitemaps = {
 app_name = 'blog'
 
 urlpatterns = [
-    url(r'^sitemap\.xml/$', sitemap, {'sitemaps' : sitemaps } , name='sitemap'),
+    url(r'^sitemap\.xml/$', sitemap, {'sitemaps': sitemaps}, name='sitemap'),
     path('index/', views.Blog, name='BlogSec'),
     path('post/<slug:Post_Slug>/', views.SinglePost, name='BlogPost'),
     path('vendorstory/<slug:Story_Slug>/', views.SingleVendorStory, name='vendorstory'),
