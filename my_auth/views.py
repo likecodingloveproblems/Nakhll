@@ -178,6 +178,7 @@ class RegisterData(FormView):
             self.request, mobile_number, email, password, reference_code)
         if user and profile and wallet:
             messages.success(self.request, 'ثبت نام با موفقیت انجام شد.')
+            self.request.session.pop('auth')
         else:
             messages.error(
                 self.request, 'خطایی رخ داده است. لطفا با پشتیبانی تماس حاصل فرمایید.')
@@ -206,6 +207,7 @@ class ForgetPasswordData(FormView):
         if user:
             update_session_auth_hash(self.request, user)  # Important!
             messages.success(self.request, 'رمز شما با موفقیت تغییر کرد.')
+            self.request.session.pop('auth')
             return super().form_valid(form)
         else:
             messages.error(

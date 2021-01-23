@@ -123,8 +123,8 @@ class Authentication(TestCase):
             )
         self.assertEqual(response.redirect_chain, [(reverse('auth:login'), 302)])
         self.assertEqual(
-            response.wsgi_request.session.get('auth'), 
-            {'mobile_number':data['mobile_number'], 'verify':True}
+            response.wsgi_request.session.get('auth', None), 
+            None
             )
         # now login by new password
         response = self.client.post(
