@@ -113,7 +113,7 @@ def get_mobile_number_session(request):
 
 
 class ApproveCode(FormView):
-    template_name = 'registration/approveCode.html'
+    template_name = 'registration/approve-code.html'
     form_class = ApproveCodeForm
     context = {}
     empty_mobile_number_url = str()
