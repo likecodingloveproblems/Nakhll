@@ -54,7 +54,19 @@ class AuthenticationForm(forms.Form):
     """
     this form is used for authentication of user
     """
-    mobile_number = mobile_number_field()
+    mobile_number = forms.CharField(
+    label=None,
+    required=True,
+    max_length=11,
+    min_length=11,
+    widget=forms.TextInput(attrs={
+            'placeholder': 'موبایل',
+            'class': 'input-login',
+            'type': 'number',
+            'pattern': '09[0-9]{9}',
+        }),
+        validators=[mobile_number_validator],
+    )
     password = forms.CharField(
         required=True,
         strip=False,
@@ -66,6 +78,9 @@ class AuthenticationForm(forms.Form):
     remember_me = forms.BooleanField(required=False, widget=CheckboxInput)
 
     error_messages = error_messages
+
+    def get_initial_for_field(self, field, field_name: str):
+        return super().get_initial_for_field(field, field_name)
 
     def __init__(self, request=None, *args, **kwargs):
         """
@@ -133,7 +148,19 @@ class ForgetPasswordMobileForm(forms.Form):
     '''
     this class handle get mobile from user when forget password 
     '''
-    mobile_number = mobile_number_field()
+    mobile_number = forms.CharField(
+    label=None,
+    required=True,
+    max_length=11,
+    min_length=11,
+    widget=forms.TextInput(attrs={
+            'placeholder': 'موبایل',
+            'class': 'input-login',
+            'type': 'number',
+            'pattern': '09[0-9]{9}',
+        }),
+        validators=[mobile_number_validator],
+    )
     
     error_messages = error_messages
 
@@ -173,7 +200,19 @@ class RegisterMobileForm(forms.Form):
     '''
     this class handle get mobile from user for validation of mobile number for registration process
     '''
-    mobile_number = mobile_number_field()
+    mobile_number = forms.CharField(
+    label=None,
+    required=True,
+    max_length=11,
+    min_length=11,
+    widget=forms.TextInput(attrs={
+            'placeholder': 'موبایل',
+            'class': 'input-login',
+            'type': 'number',
+            'pattern': '09[0-9]{9}',
+        }),
+        validators=[mobile_number_validator],
+    )
     
     error_messages = error_messages
 
@@ -212,14 +251,6 @@ class ApproveCodeForm(forms.Form):
         }),
     )
 
-    mobile_number = forms.CharField(
-        label = None, 
-        max_length=11, 
-        required=False,
-        widget=forms.HiddenInput(),
-        validators=[mobile_number_validator],
-    )
-
     error_messages = error_messages
 
     def clean(self):
@@ -240,12 +271,6 @@ class ApproveCodeForm(forms.Form):
 
 class PasswordForm(forms.Form):
     
-    mobile_number = forms.CharField(
-        label = None, 
-        max_length=11, 
-        required=False,
-        widget=forms.HiddenInput(),
-    )
     password = forms.CharField(
         required=True,
         strip=False,

@@ -100,7 +100,10 @@ class Authentication(TestCase):
         self.assertEqual(errors, None)
         self.assertEqual(count_sms(), 1)
         self.assertEqual(response.redirect_chain, [(reverse('auth:forget-password-code'), 302)])
-        self.assertEqual(response.wsgi_request.session.get('mobile_number'), data['mobile_number'])
+        self.assertEqual(
+            response.wsgi_request.session.get('auth'), 
+            {'mobile_number':data['mobile_number'], 'verify':False}
+            )
         # get authentication code
         code = get_mobile_number_auth_code(data['mobile_number'])
         response = self.client.post(
@@ -109,7 +112,9 @@ class Authentication(TestCase):
             follow=True
             )
         self.assertEqual(response.redirect_chain, [(reverse('auth:forget-password-data'), 302)])
-        self.assertEqual(response.wsgi_request.session.get('mobile_number'), data['mobile_number'])
+        self.assertEqual(
+            response.wsgi_request.session.get('auth'), 
+            {'mobile_number':data['mobile_number'], 'verify':True})
         # set new password
         response = self.client.post(
             self.forget_password_data_url, 
@@ -117,7 +122,10 @@ class Authentication(TestCase):
             follow=True,
             )
         self.assertEqual(response.redirect_chain, [(reverse('auth:login'), 302)])
-        self.assertEqual(response.wsgi_request.session.get('mobile_number'), data['mobile_number'])
+        self.assertEqual(
+            response.wsgi_request.session.get('auth'), 
+            {'mobile_number':data['mobile_number'], 'verify':True}
+            )
         # now login by new password
         response = self.client.post(
             self.login_url,
@@ -136,7 +144,7 @@ class Authentication(TestCase):
         self.assertEqual(errors, [error_messages['not_registered']])
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.redirect_chain, [])
-        self.assertEqual(response.wsgi_request.session.get('mobile_number'), None)
+        self.assertEqual(response.wsgi_request.session.get('auth'), None)
 
     # this method is very costy
     def _test_exceed_sms_limit(self):
@@ -209,7 +217,10 @@ class Authentication(TestCase):
             follow=True,
         )
         self.assertEqual(response.redirect_chain, [(self.register_code_url,302)])
-        self.assertEqual(response.wsgi_request.session.get('mobile_number'), mobile_number)
+        self.assertEqual(
+            response.wsgi_request.session.get('auth'), 
+            {'mobile_number':mobile_number, 'verify':False}
+            )
         code = get_mobile_number_auth_code(mobile_number)
         # validate mobile number by auth code
         response = self.client.post(
@@ -218,7 +229,9 @@ class Authentication(TestCase):
             follow=True,
         )
         self.assertEqual(response.redirect_chain, [(self.register_data_url, 302)])
-        self.assertEqual(response.wsgi_request.session.get('mobile_number'), mobile_number)
+        self.assertEqual(
+            response.wsgi_request.session.get('auth'), 
+            {'mobile_number':mobile_number, 'verify':True})
         # set registration data
         response = self.client.post(
             self.register_data_url,

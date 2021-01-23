@@ -1,3 +1,4 @@
+from ast import get_docstring
 from my_auth.services import create_user, set_mobile_number_auth_code, set_session_expiration_time, set_user_password_by_mobile_number
 from typing import Any, Dict
 from django import forms, http
@@ -49,12 +50,10 @@ class GetMobile(FormView):
             messages.warning(self.request, res)
             return redirect(self.request.path)
         # set mobile number in session
-        set_mobile_number(self.request, mobile_number)
+        # set_mobile_number(self.request, mobile_number)
         set_mobile_number_auth_code(mobile_number, code)
+        set_mobile_number_session(self.request, mobile_number)
         return super().form_valid(form)
-
-    def form_invalid(self, form: forms.Form) -> HttpResponse:
-        return super().form_invalid(form)
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         for item in self.context:
@@ -84,13 +83,33 @@ class ForgetPasswordMobile(GetMobile):
     success_url = reverse_lazy('auth:forget-password-code')
 
 
-def set_mobile_number(request, mobile_number):
-    request.session['mobile_number'] = mobile_number
+def set_mobile_number_session(request, mobile_number):
+    request.session['auth'] = {
+        'mobile_number':mobile_number,
+        'verify':False,
+        }
     return request
 
+def is_mobile_number_verify_session(request, mobile_number: str) -> bool:
+    if get_mobile_number_session(request) == mobile_number:
+        if request.session['auth']['verify'] == True:
+            return True
+    return False
 
-def get_mobile_number(request):
-    return request.session.get('mobile_number') or ''
+def verify_mobile_number_session(request):
+    if request.session.get('auth')['mobile_number'] == get_mobile_number_session(request):
+        request.session['auth']['verify'] = True
+
+def get_mobile_number_session(request):
+    """get mobile number of user from its session
+
+    Args:
+        request ([type]): user wsgi request
+
+    Returns:
+        str: user mobile_number or str()
+    """
+    return request.session.get('auth')['mobile_number'] or ''
 
 
 class ApproveCode(FormView):
@@ -100,19 +119,16 @@ class ApproveCode(FormView):
     empty_mobile_number_url = str()
 
     def dispatch(self, request: http.HttpRequest, *args: Any, **kwargs: Any) -> http.HttpResponse:
-        if not request.session.get('mobile_number'):
+        if not get_mobile_number_session(request):
             messages.warning(
                 request, 'ابتدا شماره موبایل خود را وارده کرده و کد احراز هویت را دریافت کنید.')
             return HttpResponseRedirect(self.empty_mobile_number_url)
         return super().dispatch(request, *args, **kwargs)
 
-    def get_initial(self) -> Dict[str, Any]:
-        self.initial['mobile_number'] = get_mobile_number(self.request)
-        return super().get_initial()
-
     def form_valid(self, form: ApproveCodeForm) -> HttpResponse:
         messages.success(
             self.request, 'کد وارد شده صحیح می باشد. لطفا اطلاعات مورد نظر را به دقت وارد فرمایید.')
+        verify_mobile_number_session(self.request)
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
@@ -147,12 +163,14 @@ class RegisterData(FormView):
     form_class = RegisterDataForm
     success_url = reverse_lazy('auth:login')
 
-    def get_initial(self) -> Dict[str, Any]:
-        self.initial['mobile_number'] = get_mobile_number(self.request)
-        return super().get_initial()
+    def dispatch(self, request: http.HttpRequest, *args: Any, **kwargs: Any) -> http.HttpResponse:
+        if not is_mobile_number_verify_session(request, get_mobile_number_session(request)):
+            messages.warning(request, 'لطفا ابتدا شماره موبایل خود را تایید کنید.')
+            return HttpResponseRedirect(reverse('auth:register-mobile'))
+        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form: RegisterDataForm) -> HttpResponse:
-        mobile_number = get_mobile_number(self.request)
+        mobile_number = get_mobile_number_session(self.request)
         password = form.cleaned_data.get('password')
         email = form.cleaned_data.get('email')
         reference_code = form.cleaned_data.get('reference_code')
@@ -174,12 +192,15 @@ class ForgetPasswordData(FormView):
     form_class = ForgetPasswordDataForm
     success_url = reverse_lazy('auth:login')
 
-    def get_initial(self) -> Dict[str, Any]:
-        self.initial['mobile_number'] = get_mobile_number(self.request)
-        return super().get_initial()
+    def dispatch(self, request: http.HttpRequest, *args: Any, **kwargs: Any) -> http.HttpResponse:
+        if not is_mobile_number_verify_session(request, get_mobile_number_session(request)):
+            messages.warning(request, 'لطفا ابتدا شماره موبایل خود را تایید کنید.')
+            return HttpResponseRedirect(reverse('auth:forget-password-mobile'))
+        return super().dispatch(request, *args, **kwargs)
+
 
     def form_valid(self, form: RegisterDataForm) -> HttpResponse:
-        mobile_number = get_mobile_number(self.request)
+        mobile_number = get_mobile_number_session(self.request)
         password = form.cleaned_data.get('password')
         user = set_user_password_by_mobile_number(mobile_number, password)
         if user:
@@ -249,7 +270,6 @@ class Login(SuccessURLAllowedHostsMixin, FormView):
             require_https=self.request.is_secure(),
         )
         return redirect_to if url_is_safe else ''
-
 
 def logout_(request):
     logout(request)
