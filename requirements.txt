@@ -11,7 +11,7 @@ django_ipware==2.1.0
 django-modeladmin-reorder==0.3.1
 django-oauth-toolkit==1.2.0
 djangorestframework==3.11.0
-Markdown==3.1.1
+Markdown==3.3.3
 django-filter==2.4.0
 djangorestframework_jwt==1.11.0
 gunicorn==20.0.4
