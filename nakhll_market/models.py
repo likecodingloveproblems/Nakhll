@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from my_auth.models import ProfileManager
 from django.db import models
 from django.db.models.fields import CharField
 from tinymce.models import HTMLField
@@ -1482,6 +1483,7 @@ class Profile(models.Model):
     TutorialWebsite=models.CharField(verbose_name='نحوه آشنایی با سایت', max_length=1, choices=TUTORIALWEB_TYPE, blank=True, default='8')
     ReferenceCode=models.CharField(verbose_name='کد معرف', max_length=6, blank=True)
     IPAddress=models.CharField(verbose_name='آدرس ای پی', max_length=15, blank=True)
+    objects = ProfileManager()
 
     # Output Customization Based On UserName (ID)
     def __str__(self):
