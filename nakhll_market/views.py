@@ -21,9 +21,7 @@ from operator import attrgetter
 import random, string, os
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
-from unidecode import unidecode
 from kavenegar import *
-import threading
 from django.contrib.sessions.models import Session
 from django.utils import timezone
 from django.conf import settings
@@ -150,26 +148,6 @@ def login_to_account(request):
 # Logout To User Panel
 def logout(request):
     return HttpResponseRedirect(reverse(index))
-
-class SiteUser:
-    def __init__(self, mobile_number, password) -> None:
-        self.mobile_number = mobile_number
-        self.password = password
-
-    def is_national_code_valid(self):
-        import re
-        if not re.search(r'^\d{10}$', input):
-            return False
-
-        check = int(input[9])
-        s = sum([int(input[x]) * (10 - x) for x in range(9)]) % 11
-        return (s < 2 and check == s) or (s >= 2 and check + s == 11)
-
-    def is_email_valid(self):
-        from validate_email import validate_email
-        # verify==True check that email smtp server exists
-        is_valid = validate_email(self.email, verify=True)
-        return is_valid
 
 # Show Change Password Page
 def ShowChangePassword(request):    
