@@ -132,7 +132,7 @@ class Authentication(TestCase):
             {'mobile_number':'09135833920', 'password':'mam123','remember_me':'True'},
             follow=True,
         )
-        assert not response.redirect_chain[0][0].startswith('/account/')
+        assert not response.redirect_chain[0][0].startswith('/accounts/')
         self.assertEqual(response.wsgi_request.user, self.user)
 
     def test_not_registered_forget_password_mobile(self):
@@ -261,4 +261,4 @@ class Authentication(TestCase):
             follow=True,
         )
         self.assertEqual(response.wsgi_request.user, user)
-        assert not response.redirect_chain[0][0].startswith('/account/')
+        assert not response.redirect_chain[0][0].startswith('/accounts/')

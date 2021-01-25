@@ -185,7 +185,7 @@
 
                                     }else{
                                         $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات <br> "+json.error+
-                                        "<br><a href='/account/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                                        "<br><a href='/accounts/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
                                         setTimeout(function() {
                                             location.reload();
                                         }, 8000);
@@ -194,7 +194,7 @@
                                 },
                                 error : function(xhr,errmsg,err) {
                                     $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات <br> "+json.error+
-                                    "<br><a href='/account/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                                    "<br><a href='/accounts/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
                                     setTimeout(function() {
                                         location.reload();
                                     }, 8000);
@@ -307,7 +307,7 @@
 
                                     }else{
                                         $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات <br> "+json.error+
-                                        "<br><a href='/account/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                                        "<br><a href='/accounts/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
                                         setTimeout(function() {
                                             location.reload();
                                         }, 8000);
@@ -316,7 +316,7 @@
                                 },
                                 error : function(xhr,errmsg,err) {
                                     $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات <br> "+json.error+
-                                    "<br><a href='/account/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                                    "<br><a href='/accounts/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
                                     setTimeout(function() {
                                         location.reload();
                                     }, 8000);
@@ -382,7 +382,7 @@
                                 //     '<div id="alert-div-newpassword-english"></div>' +
                                 //     '<div class="textright"><small>رمز عبور باید شامل حروف بزرگ و کوچک انگلیسی همراه با عدد باشد.<br>رمز عبور شما نمی‌تواند شبیه سایر اطلاعات شخصی شما باشد.<br>رمز عبور شما می‌بایست حداقل از 8 حرف تشکیل شده باشد.<br>رمز شما نمی تواند از عبارات معروف باشد.<br></small></div>' +
                                 //     '<input id="referencecode" name="referencecode" type="text" placeholder="کد معرف" class="input-login" maxlength="6" >' +
-                                //     '<button id="sign-up-button2" type="submit">ثبت نام</button><a href="/account/login/" class="sign-calss">ورود </a>' +
+                                //     '<button id="sign-up-button2" type="submit">ثبت نام</button><a href="/accounts/login/" class="sign-calss">ورود </a>' +
                                 //     '</form>')
                                 //     initAlerts();
                                 //     initUsernameAlert();
@@ -469,7 +469,7 @@
                                     // '<div id="alert-div-newpassword-english"></div>' +
                                     // '<div class="textright"><small>رمز عبور باید شامل حروف بزرگ و کوچک انگلیسی همراه با عدد باشد.<br>رمز عبور شما نمی‌تواند شبیه سایر اطلاعات شخصی شما باشد.<br>رمز عبور شما می‌بایست حداقل از 8 حرف تشکیل شده باشد.<br>رمز شما نمی تواند از عبارات معروف باشد.<br></small></div>' +
                                     '<input id="referencecode" name="referencecode" type="text" placeholder="کد معرف" class="input-login" maxlength="6" >' +
-                                    '<button id="sign-up-button2" type="submit">ثبت نام</button><a href="/account/login/" class="sign-calss">ورود </a>' +
+                                    '<button id="sign-up-button2" type="submit">ثبت نام</button><a href="/accounts/login/" class="sign-calss">ورود </a>' +
                                     '</div></form>')
                                     initAlerts();
                                     initUsernameAlert();
@@ -487,7 +487,7 @@
                                     $("#sign-up-button2").removeClass('login-button-disabled');
                             }else{
                             $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات <br> کد وارد شده صحبح نمی باشد."+
-                            "<br><a href='/account/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                            "<br><a href='/accounts/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
                             setTimeout(function() {
                                 location.reload();
                             }, 8000);
@@ -495,7 +495,7 @@
                     },
                     error : function(xhr,errmsg,err) {
                         $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات <br> کد وارد شده صحبح نمی باشد."+
-                        "<br><a href='/account/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                        "<br><a href='/accounts/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
                         setTimeout(function() {
                             location.reload();
                         }, 8000);
@@ -532,9 +532,9 @@
                                     if (json.status == true){
                                         $("#loaderDiv").remove(); 
                                         $('#registerend').html("<div class='alert-box alert radius' data-alert> عضویت شما با موفقیت انجام شد"+
-                                        "<br><a href='/account/login/' class='btn btn-outline-primary'>ورود به سایت </a></div>");
+                                        "<br><a href='/accounts/login/' class='btn btn-outline-primary'>ورود به سایت </a></div>");
                                         setTimeout(function() {
-                                            window.location.replace("/account/login/");
+                                            window.location.replace("/accounts/login/");
                                         }, 8000);
                                     }else{
                                         $("#loaderDiv").remove(); 
@@ -573,7 +573,7 @@
                                         //     '<div id="alert-div-newpassword-english"></div>' +
                                         //     '<div class="textright"><small>رمز عبور باید شامل حروف بزرگ و کوچک انگلیسی همراه با عدد باشد.<br>رمز عبور شما نمی‌تواند شبیه سایر اطلاعات شخصی شما باشد.<br>رمز عبور شما می‌بایست حداقل از 8 حرف تشکیل شده باشد.<br>رمز شما نمی تواند از عبارات معروف باشد.<br></small></div>' +
                                         //     '<input id="referencecode" name="referencecode" type="text" placeholder="کد معرف" class="input-login" maxlength="6" >' +
-                                        //     '<button id="sign-up-button2" type="submit">ثبت نام</button><a href="/account/login/" class="sign-calss">ورود </a>' +
+                                        //     '<button id="sign-up-button2" type="submit">ثبت نام</button><a href="/accounts/login/" class="sign-calss">ورود </a>' +
                                         //     '</form>');
                                         // initAlerts();
                                         // initUsernameAlert();
@@ -660,7 +660,7 @@
                                     // '<div id="alert-div-newpassword-english"></div>' +
                                     // '<div class="textright"><small>رمز عبور باید شامل حروف بزرگ و کوچک انگلیسی همراه با عدد باشد.<br>رمز عبور شما نمی‌تواند شبیه سایر اطلاعات شخصی شما باشد.<br>رمز عبور شما می‌بایست حداقل از 8 حرف تشکیل شده باشد.<br>رمز شما نمی تواند از عبارات معروف باشد.<br></small></div>' +
                                     '<input id="referencecode" name="referencecode" type="text" placeholder="کد معرف" class="input-login" maxlength="6" >' +
-                                    '<button id="sign-up-button2" type="submit">ثبت نام</button><a href="/account/login/" class="sign-calss">ورود </a>' +
+                                    '<button id="sign-up-button2" type="submit">ثبت نام</button><a href="/accounts/login/" class="sign-calss">ورود </a>' +
                                     '</div></form>')
                                     initAlerts();
                                     initUsernameAlert();
@@ -716,7 +716,7 @@
                                     // '<div id="alert-div-newpassword-english"></div>' +
                                     // '<div class="textright"><small>رمز عبور باید شامل حروف بزرگ و کوچک انگلیسی همراه با عدد باشد.<br>رمز عبور شما نمی‌تواند شبیه سایر اطلاعات شخصی شما باشد.<br>رمز عبور شما می‌بایست حداقل از 8 حرف تشکیل شده باشد.<br>رمز شما نمی تواند از عبارات معروف باشد.<br></small></div>' +
                                     // '<input id="referencecode" name="referencecode" type="text" placeholder="کد معرف" class="input-login" maxlength="6">' +
-                                    // '<button id="sign-up-button2" type="submit">ثبت نام</button><a href="/account/login/" class="sign-calss">ورود </a>' +
+                                    // '<button id="sign-up-button2" type="submit">ثبت نام</button><a href="/accounts/login/" class="sign-calss">ورود </a>' +
                                     // '</form>')
                                     // initAlerts();
                                     // initUsernameAlert();
@@ -803,7 +803,7 @@
                                     // '<div id="alert-div-newpassword-english"></div>' +
                                     // '<div class="textright"><small>رمز عبور باید شامل حروف بزرگ و کوچک انگلیسی همراه با عدد باشد.<br>رمز عبور شما نمی‌تواند شبیه سایر اطلاعات شخصی شما باشد.<br>رمز عبور شما می‌بایست حداقل از 8 حرف تشکیل شده باشد.<br>رمز شما نمی تواند از عبارات معروف باشد.<br></small></div>' +
                                     '<input id="referencecode" name="referencecode" type="text" placeholder="کد معرف" class="input-login" maxlength="6" >' +
-                                    '<button id="sign-up-button2" type="submit">ثبت نام</button><a href="/account/login/" class="sign-calss">ورود </a>' +
+                                    '<button id="sign-up-button2" type="submit">ثبت نام</button><a href="/accounts/login/" class="sign-calss">ورود </a>' +
                                     '</div></form>')
                                     initAlerts();
                                     initUsernameAlert();
@@ -979,7 +979,7 @@
                         $("#alert-li-system-error").show();
                         booleans[5] = true;
                         $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات <br> " + xhr.responseText +
-                            "<br><a href='/account/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                            "<br><a href='/accounts/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
                         $("#loaderDiv").hide();
                         console.log(xhr.status + ": " + xhr.responseText);
                         checkIsThereAlert();
@@ -1041,7 +1041,7 @@
                     },
                     error: function (xhr) {
                         $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات <br> " + xhr.responseText +
-                            "<br><a href='/account/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                            "<br><a href='/accounts/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
                         $("#loaderDiv").hide();
                         console.log(xhr.status + ": " + xhr.responseText);
                     }
@@ -1096,7 +1096,7 @@
                         },
                         error: function (xhr) {
                             $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات <br> " + json.error +
-                                "<br><a href='/account/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                                "<br><a href='/accounts/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
                             $("#loaderDiv").hide();
                             console.log(xhr.status + ": " + xhr.responseText);
                         }

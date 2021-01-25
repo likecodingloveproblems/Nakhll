@@ -5,11 +5,11 @@ def TrackUrlHistory(get_response):
 
     def middleware(request):
         '''
-        track history url if user is not in /account/* pages, and if it is in /account/*
+        track history url if user is not in /accounts/* pages, and if it is in /accounts/*
         ignore it
         '''
         if (
-            not request.path.startswith('/account/') and\
+            not request.path.startswith('/accounts/') and\
             # check request is not ajax
             not request.is_ajax() and\
             not request.path.startswith('/ajax/') and\

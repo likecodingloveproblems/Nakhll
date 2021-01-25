@@ -282,7 +282,7 @@
                 },
                 error: function (xhr, errmsg, err) {
                     $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات <br> " + json.error +
-                        "<br><a href='/account/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
+                        "<br><a href='/accounts/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
                     location.reload()
                     $("#loaderDiv").hide();
                     console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console

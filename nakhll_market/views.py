@@ -1,4 +1,5 @@
 import re
+from typing import Any, Dict
 from django.contrib.sessions.backends.db import SessionStore
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render, redirect
@@ -124,7 +125,7 @@ def login_to_account(request):
         user = authenticate(request, username = this_profile.FK_User.username, password = password)
         # get next page
         next_page = settings.LOGIN
-        if 'next' in request.session and request.session['next'] != '/account/login/':
+        if 'next' in request.session and request.session['next'] != '/accounts/login/':
             next_page = request.session['next']
         if user is not None:
             # login user
@@ -794,7 +795,7 @@ def set_session(request):
     try:
         this_path = request.POST['this_path']
         # get path other than non-account path
-        if not ((this_path == '/account/login/') or (this_path == '/account/logout/') or (this_path == '/account/register/')):
+        if not ((this_path == '/accounts/login/') or (this_path == '/accounts/logout/') or (this_path == '/accounts/register/')):
             request.session['next'] = this_path
         response_data['status'] = True
         return JsonResponse(response_data)

@@ -20,7 +20,7 @@ from django.conf.urls import url
 urlpatterns = [
     url(r'^oauth/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     path('logintowebsite/', admin.site.urls),
-    path('account/', include('my_auth.urls', namespace='my_auth')),
+    path('accounts/', include('my_auth.urls', namespace='my_auth')),
     path('', include('nakhll_market.urls', namespace='Profile')),
     url(r'^tinymce/', include('tinymce.urls')),
     url(r'^cart/', include('Payment.urls' , namespace='Payment')),

@@ -350,9 +350,9 @@
                         if (json.status == true){
                             $("#passwordinput" ).remove();
                             $('#results').html("<div class='alert-box alert radius' data-alert> رمز شما با موفقیت تغییر کرد"+
-                            "<br><a href='/account/login/' class='btn btn-outline-primary'>ورود به سایت </a></div>");
+                            "<br><a href='/accounts/login/' class='btn btn-outline-primary'>ورود به سایت </a></div>");
                             setTimeout(function() {
-                                window.location.replace("/account/login/");
+                                window.location.replace("/accounts/login/");
                             }, 8000);
                         }else{
                             $("#loaderDiv").remove(); 
