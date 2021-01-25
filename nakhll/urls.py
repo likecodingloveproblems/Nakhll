@@ -26,4 +26,5 @@ urlpatterns = [
     url(r'^cart/', include('Payment.urls' , namespace='Payment')),
     url(r'^blog/', include('blog.urls' , namespace='blog')),
     url(r'^app/api/', include('restapi.urls' , namespace='restapi')),
+    path('accounting/', include('accounting.urls', namespace='accounting')),
 ]
