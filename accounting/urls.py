@@ -5,5 +5,5 @@ from accounting import views
 app_name = 'accounting'
 
 urlpatterns = [
-    path('shop-managers-info/', views.shop_managers_information, name='shop_managers_information'),
+    path('shop-managers-info/', views.ShopManagersInformation.as_view(), name='shop_managers_information'),
 ]
