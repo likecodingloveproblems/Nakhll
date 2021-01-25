@@ -297,8 +297,24 @@ class PostRange (models.Model):
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
+class ShopManager(models.Manager):
+
+    def shop_managers_info(self):
+        queryset = self.get_queryset()
+        return queryset.values(
+            'FK_ShopManager__first_name',
+            'FK_ShopManager__last_name',
+            'FK_ShopManager__User_Profile__NationalCode',
+            'State',
+            'BigCity',
+            'City',
+            'Location',
+            )
+
+
 # Shop (حجره) Model
 class Shop(models.Model):
+    objects = ShopManager()
     ID=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     FK_ShopManager=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='حجره دار', related_name='ShopManager', null=True)
     Title=models.CharField(max_length=100, verbose_name='عنوان حجره', db_index=True)
