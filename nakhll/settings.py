@@ -88,6 +88,7 @@ ADMIN_REORDER = (
         'nakhll_market.SubMarket',
         'nakhll_market.Shop',
         'nakhll_market.Product',
+        'nakhll_market.ProductBanner',
         'nakhll_market.Category',
         'nakhll_market.Tag',
         'nakhll_market.Attribute',

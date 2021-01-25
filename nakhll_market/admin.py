@@ -187,3 +187,7 @@ class AlertAdmin(admin.ModelAdmin):
     list_filter=('Seen','Status','DateCreate','DateCreate','DateUpdate')
     search_fields=('FK_Field','Description','Content',)
     ordering=['id','DateCreate',]
+
+@admin.register(ProductBanner)
+class ProductBanner(admin.ModelAdmin):
+    pass
