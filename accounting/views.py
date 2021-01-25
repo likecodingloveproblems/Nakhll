@@ -1,4 +1,5 @@
 from io import BytesIO
+from tokenize import group
 from nakhll_market.models import Profile, Shop
 from django.http import HttpResponse
 from xlsxwriter.workbook import Workbook
@@ -8,7 +9,7 @@ from braces.views import GroupRequiredMixin
 
 
 class ShopManagersInformation(GroupRequiredMixin, View):
-    group_required = u"acounting"
+    group_required = u"accounting"
 
     def get(self, request):
         filename = 'shop_managers_info.xlsx'
@@ -79,3 +80,6 @@ class ShopManagersInformation(GroupRequiredMixin, View):
 
         return response
         
+
+class ShopManagersInformationV2(GroupRequiredMixin, View):
+    group_required = u"accounting"
