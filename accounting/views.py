@@ -1,10 +1,11 @@
+from dataclasses import field
 from io import BytesIO
-from tokenize import group
 from nakhll_market.models import Profile, Shop
 from django.http import HttpResponse
 from xlsxwriter.workbook import Workbook
 from django.views import View
 from braces.views import GroupRequiredMixin
+from djqscsv import render_to_csv_response
 # Create your views here.
 
 
@@ -83,3 +84,22 @@ class ShopManagersInformation(GroupRequiredMixin, View):
 
 class ShopManagersInformationV2(GroupRequiredMixin, View):
     group_required = u"accounting"
+
+    def get(self, request, *args, **kwargs):
+        filename = 'shop_managers_info.csv'
+        field_header_map = {
+            'FK_ShopManager__first_name':'نام',
+            'FK_ShopManager__last_name':'نام خانوادگی',
+            'FK_ShopManager__User_Profile__NationalCode':'کد ملی',
+            'State':'استان',
+            'BigCity':'شهرستان',
+            'City':'شهر',
+            'Location':'نشانی',
+        }
+        queryset = Shop.objects.shop_managers_info()
+        return render_to_csv_response(
+            queryset=queryset,
+            filename=filename,
+            field_header_map=field_header_map
+            )
+            
