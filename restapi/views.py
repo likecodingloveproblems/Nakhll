@@ -67,7 +67,7 @@ def get_login_user(request):
 @api_view(["GET"])
 @permission_classes([AllowAny,])
 def get_version(request):
-    return JsonResponse({'v':[{'version' : '1.0.0', 'isActive': True }, {'version' : '1.0.1', 'isActive': True },{'version' : '1.1.0', 'isActive': True }]}, status = HTTP_200_OK)
+    return JsonResponse({'v':[{'version' : '1.0.0', 'isActive': False }, {'version' : '1.0.1', 'isActive': False },{'version' : '1.1.0', 'isActive': False }]}, status = HTTP_200_OK)
 
 
 
