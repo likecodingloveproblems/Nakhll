@@ -5,8 +5,7 @@ from django.http import HttpResponse
 from xlsxwriter.workbook import Workbook
 from django.views import View
 from braces.views import GroupRequiredMixin
-from djqscsv import render_to_csv_response
-# Create your views here.
+from excel_response import ExcelResponse
 
 
 class ShopManagersInformation(GroupRequiredMixin, View):
@@ -97,9 +96,7 @@ class ShopManagersInformationV2(GroupRequiredMixin, View):
             'Location':'نشانی',
         }
         queryset = Shop.objects.shop_managers_info()
-        return render_to_csv_response(
-            queryset=queryset,
-            filename=filename,
-            field_header_map=field_header_map
+        return ExcelResponse(
+            data=queryset,
+            output_filename=filename,
             )
-            
