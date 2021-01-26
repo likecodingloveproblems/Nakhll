@@ -190,4 +190,6 @@ class AlertAdmin(admin.ModelAdmin):
 
 @admin.register(ProductBanner)
 class ProductBanner(admin.ModelAdmin):
-    pass
+    list_filter=('FK_Product','Title','DateCreate','DateUpdate')
+    search_fields=('Title','FK_Product__Title')
+    ordering=('DateCreate',)
