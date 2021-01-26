@@ -75,8 +75,8 @@ class UserphoneValid(models.Model):
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-class ProfileManager(models.Manager):
 
+class ProfileManager(models.Manager):
 
     def get_user_by_mobile_number(self, mobile_number: str) -> User:
         queryset = self.get_queryset()
@@ -108,5 +108,6 @@ class ProfileManager(models.Manager):
             IPAddress=user_ip,
             ReferenceCode=reference_code
         )
+
 
 # ----------------------------------------------------------------------------------------------------------------------------------
