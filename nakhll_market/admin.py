@@ -1,4 +1,6 @@
+from typing import Dict, Optional
 from django.contrib import admin
+from django.http import HttpRequest, HttpResponse
 from .models import  Tag, Market, MarketBanner, SubMarket, SubMarketBanner,BankAccount, Category ,PostRange, Shop, ShopBanner, ShopMovie, Attribute, AttrPrice, AttrProduct, Product, ProductBanner, ProductMovie, Comment, Profile, Review, Survey, Slider, Option_Meta, Message, Newsletters, Pages ,Alert ,Field, User_Message_Status, UserPoint
 from django.contrib import admin
 
@@ -105,6 +107,11 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields=('Title','Slug','Description','Bio','Story')
     ordering=['ID','DateCreate','DateUpdate']
     inlines=[AttrProductInline, ProductBannerInline, ProductMovieInline]
+
+    def change_view(self, request: HttpRequest, object_id: str, form_url: str, extra_context: Optional[Dict[str, bool]]) -> HttpResponse:
+        if request.user.groups.objects.filter(name='Photo-compress').exists():
+            self.fields = ('Image','Image_thumbnail','Image_medium','NewImage')
+        return super().change_view(request, object_id, form_url=form_url, extra_context=extra_context)
 #-------------------------------------------------
 #Comment admin panel
 @admin.register(Comment)
