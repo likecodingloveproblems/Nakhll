@@ -110,7 +110,9 @@ class ProductAdmin(admin.ModelAdmin):
 
     def change_view(self, request: HttpRequest, object_id: str, form_url: str='', extra_context: Optional[Dict[str, bool]]=None) -> HttpResponse:
         if request.user.groups.filter(name='Photo-compress').exists():
-            self.fields = ('Image','Image_thumbnail','Image_medium','NewImage')
+            self.fields = ('Image','NewImage')
+        else:
+            self.fields = None
         return super().change_view(request, object_id, form_url=form_url, extra_context=extra_context)
 #-------------------------------------------------
 #Comment admin panel
