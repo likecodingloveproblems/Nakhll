@@ -1,4 +1,3 @@
-from dataclasses import field
 from io import BytesIO
 from nakhll_market.models import Profile, Shop
 from django.http import HttpResponse
