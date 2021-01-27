@@ -108,8 +108,8 @@ class ProductAdmin(admin.ModelAdmin):
     ordering=['ID','DateCreate','DateUpdate']
     inlines=[AttrProductInline, ProductBannerInline, ProductMovieInline]
 
-    def change_view(self, request: HttpRequest, object_id: str, form_url: str, extra_context: Optional[Dict[str, bool]]) -> HttpResponse:
-        if request.user.groups.objects.filter(name='Photo-compress').exists():
+    def change_view(self, request: HttpRequest, object_id: str, form_url: str='', extra_context: Optional[Dict[str, bool]]=None) -> HttpResponse:
+        if request.user.groups.filter(name='Photo-compress').exists():
             self.fields = ('Image','Image_thumbnail','Image_medium','NewImage')
         return super().change_view(request, object_id, form_url=form_url, extra_context=extra_context)
 #-------------------------------------------------
