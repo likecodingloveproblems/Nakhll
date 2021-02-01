@@ -38,7 +38,7 @@ from rest_framework.status import (
     HTTP_500_INTERNAL_SERVER_ERROR
 )
 from rest_framework.response import Response
-
+from Iran import data
 
 
 # create new shop //req : shop information // res: ({title : 'shop_title' }) OR err
@@ -1248,8 +1248,6 @@ def get_shop_submarkets(request):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_all_state(request):
-    with open('Iran.json', encoding = 'utf8') as f:
-        users = json.load(f)
     # Build Class
     class Items:
         def __init__(self, id, name):
@@ -1259,7 +1257,7 @@ def get_all_state(request):
             return json.dumps(self, default = lambda o: o.__dict__)
     # Set List
     result = []
-    for i in users:
+    for i in data:
         if i['divisionType'] == 1:
             new = Items(i['id'], i['name'])
             result.append(json.loads(new.toJSON()))
@@ -1274,8 +1272,6 @@ def get_all_state(request):
 def get_state_bigcity(request):
         
     this_id = request.POST.get('id')
-    with open('Iran.json', encoding = 'utf8') as f:
-        users = json.load(f)
     # Build Class
     class Items:
         def __init__(self, id, name):
@@ -1285,7 +1281,7 @@ def get_state_bigcity(request):
             return json.dumps(self, default = lambda o: o.__dict__)
     # Set List
     result = []
-    for i in users:
+    for i in data:
         if (i['divisionType'] == 2) and (i['parentCountryDivisionId'] == int(this_id)):
             new = Items(i['id'], i['name'])
             result.append(json.loads(new.toJSON()))
@@ -1300,8 +1296,6 @@ def get_state_bigcity(request):
 def get_bigcity_city(request):
 
     this_id = request.POST.get('id')
-    with open('Iran.json', encoding = 'utf8') as f:
-        users = json.load(f)
     # Build Class
     class Items:
         def __init__(self, id, name):
@@ -1311,7 +1305,7 @@ def get_bigcity_city(request):
             return json.dumps(self, default = lambda o: o.__dict__)
     # Set List
     result = []
-    for i in users:
+    for i in data:
         if (i['divisionType'] == 2) and (i['id'] == int(this_id)):
             name = i['name']
         if (i['divisionType'] == 3) and (i['parentCountryDivisionId'] == int(this_id)):

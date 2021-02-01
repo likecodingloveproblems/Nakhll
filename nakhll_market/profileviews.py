@@ -65,6 +65,7 @@ from Ticketing.models import Ticketing, TicketingMessage, Complaint
 from .forms import Login, CheckEmail
 from nakhll.settings import KAVENEGAR_KEY
 
+from Iran import data
 # Profile Page And Sub Pages
 #---------------------------------------------------------------------------------------------------------------------------------
 
@@ -3095,16 +3096,14 @@ def UpdateUserDashboard(request):
             state = ''
             bigcity = ''
             city = ''
-            with open('Iran.json', encoding = 'utf8') as f:
-                users = json.load(f)
-            for i in users:
+            for i in data:
                 if (i['divisionType'] == 1) and (i['id'] == int(State)):
                     state = i['name']
                 if (i['divisionType'] == 2) and (i['id'] == int(BigCity)):
                     bigcity = i['name']
                 if (i['divisionType'] == 3) and (i['id'] == int(City)):
                     if i['name'] == 'مرکزی':
-                        for j in users:
+                        for j in data:
                             if (j['divisionType'] == 2) and (j['id'] == i['parentCountryDivisionId']):
                                 city = j['name']
                     else:

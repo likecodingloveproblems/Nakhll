@@ -19,6 +19,7 @@ from zeep import Client
 import threading
 import json
 import os
+from Iran import data
 
 try:
     # ## zarin pal
@@ -223,17 +224,14 @@ def Set_Send_Info(request):
             state = ''
             bigcity = ''
             city = ''
-            object = None
-            with open('Iran.json', encoding = 'utf8') as f:
-                object = json.load(f)
-            for i in object:
+            for i in data:
                 if (i['divisionType'] == 1) and (i['id'] == int(Factor_State)):
                     state = i['name']
                 if (i['divisionType'] == 2) and (i['id'] == int(Factor_BigCity)):
                     bigcity = i['name']
                 if (i['divisionType'] == 3) and (i['id'] == int(Factor_City)):
                     if i['name'] == 'مرکزی':
-                        for j in object:
+                        for j in data:
                             if (j['divisionType'] == 2) and (j['id'] == i['parentCountryDivisionId']):
                                 city = j['name']
                     else:
