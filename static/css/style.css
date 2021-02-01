@@ -874,7 +874,7 @@ header {
 .list-footer ul {
     color: #373737;
     list-style: disc;
-    line-height: 1.8;
+    /* line-height: 1.8; */
     font-size: 13px;
     padding-right: 27px;
 }
