@@ -4,7 +4,7 @@ from django.contrib.sessions.backends.db import SessionStore
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
-from django.db.models import Q
+from django.db.models import Q, F
 from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect, HttpResponse
 from django.conf import settings
@@ -1305,6 +1305,14 @@ def ProductsDetail(request, shop_slug, product_slug, status = None, msg = None):
         show = True
         massege = msg
 
+    # most discount
+    most_discount = Product.objects.get_most_discount_precentage_product()
+
+    # other products bought by other user
+    factors = Factor.objects.filter(FK_FactorPost__FK_Product=this_product)
+    other_products = Product.objects.filter(Factor_Product__Factor_Products__in=factors)
+
+
     context = {
         'This_User_Profile':this_profile,
         'This_User_Inverntory': this_inverntory,
@@ -1322,6 +1330,8 @@ def ProductsDetail(request, shop_slug, product_slug, status = None, msg = None):
         'RelatedProduct':this_product_related,
         'ShowAlart':show,
         'AlartMessage':massege,
+        'MostDiscount':most_discount,
+        'OtherProducts':other_products,
     }
 
     return render(request, 'nakhll_market/pages/productpage.html', context)

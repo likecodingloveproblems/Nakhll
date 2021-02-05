@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 from my_auth.models import ProfileManager
 from django.db import models
+from django.db.models import F, Q
 from django.db.models.fields import CharField
 from tinymce.models import HTMLField
 from django.contrib.auth.models import User,Group 
@@ -756,9 +757,21 @@ class Attribute(models.Model):
         verbose_name_plural = "ویژگی ها"
 
 #----------------------------------------------------------------------------------------------------------------------------------
+class ProductManager(models.Manager):
+
+    def get_most_discount_precentage_product(self):
+        queryset = self.get_queryset()
+        return queryset\
+            .filter(Publish=True, Available = True)\
+            .exclude(OldPrice='0')\
+            .annotate(discount_amount=F('OldPrice') - F('Price'))\
+            .annotate(discount_ratio=F('discount_amount')/F('OldPrice'))\
+            .order_by('-discount_ratio')\
+            .first()
 
 # Product (محصول) Model
 class Product (models.Model):
+    objects = ProductManager()
     ID=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     Title=models.CharField(max_length=200, verbose_name='نام محصول', db_index=True)
     Slug=models.SlugField(verbose_name='شناسه محصول', unique=True, db_index=True)

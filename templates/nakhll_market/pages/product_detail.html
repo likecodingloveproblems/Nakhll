@@ -167,19 +167,7 @@
                                         </div>
                                     </div>
                                     <ul class="list-prod-det margin-top-15px">
-                                        <li>
-                                            <div class="shop-of-product-info-container">
-                                                فروشنده : 
-                                                <a href="{% url "nakhll_market:ShopsDetail" Shop.Slug %}">{{Shop.Title}}</a>
-                                                {% if Product.FK_Points.all.count != 0 %}
-                                                    <div class="shop-rate">
-                                                        <i class="fas fa-star"></i>
-                                                        <span>{{ Product.get_point }}</span>
-                                                        <span class="people-count-rate">({{ Product.get_point_count }} نفر)</span>
-                                                    </div>
-                                                {% endif %}
-                                            </div>
-                                        </li>
+                                       
                                         <li>بازارچه : 
                                             <a href="{% url "nakhll_market:Markets" %}">{{Product.FK_SubMarket.FK_Market.Title}}</a>
                                         </li>
@@ -289,7 +277,18 @@
                                         </li>
                                     </ul>
                                 </div>
-                                <div class="col-xl-5">
+                                <div class="col-xl-5 pricecard">
+                                <div class="shop-of-product-info-container">
+                                                فروشنده : 
+                                                <a href="{% url "nakhll_market:ShopsDetail" Shop.Slug %}">{{Shop.Title}}</a>
+                                                {% if Product.FK_Points.all.count != 0 %}
+                                                    <div class="shop-rate">
+                                                        <i class="fas fa-star"></i>
+                                                        <span>{{ Product.get_point }}</span>
+                                                        <span class="people-count-rate">({{ Product.get_point_count }} نفر)</span>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
                                     <div class="det-prod">
                                         <!-- <div class="view-count">
                                             <p><i class="fad fa-eye"></i> : {{View_Count}}</p>
@@ -365,9 +364,28 @@
 {% if RelatedProduct %}
     <section>
         <div class="container">
-            <div class="slider-hialf-sec">
-                <div class="slider-full-width border-boxshadow">
-                    <h5><a href="#"></a>محصولات مرتبط</h5>
+           <div class="row">
+
+            <div class="col-xl-3 col-lg-3 col-md-4 col-sm-12 col-12 one-slider-col">
+                <div class="oneslide">
+                    <h3  class="title-borderbt">تخفیفات ویژه</h3>
+
+                    <img src="{{MostDiscount.Image_thumbnail_url}}" alt="عکس تخفیفات ویژه" width="175px" height="175px">
+                    
+                    <a href="MostDiscount.get_absolute_url()">
+                        <h4 class="longtitle">{{MostDiscount.Title}}</h4>
+                    </a>
+                        {% if MostDiscount.OldPrice != '0' %}
+                            <span class="strikeprice numbersprice takhfif">{{MostDiscount.OldPrice}} ریال</span>
+                        {% endif %}
+                    <br>
+                    <span class="priceline numbersprice takhfif">{{MostDiscount.Price}} ریال</span>
+                </div>
+            </div>
+
+             <div class="col-xl-9 col-lg-9 col-md-8 col-sm-12 col-12 slider-hialf-sec">
+                <div class="slider-full-width">
+                    <h5><a href="#"></a>شاید به کارت بیاد</h5>
                     <div class="clearfix"></div>
                     <div class="slider-full-seller slider-full-cat">
                         <div class="postslidebt">
@@ -479,6 +497,38 @@
         </div>
     </div>
 </section>
+
+<section>
+        {% if OtherProducts %}
+        <div class="container">
+            <div class="slider-hialf-sec">
+                <div class="slider-full-width border-boxshadow">
+                    <h5><a href="#"></a>خریداران این محصول را خریده اند</h5>
+                    <div class="clearfix"></div>
+                    <div class="slider-full-seller slider-full-cat">
+                        <div class="postslidebt">
+                            <section class="autoplay slider sliderfull">
+                                {% for item in OtherProducts %}
+                                    <div class="boxslider-slick products-new">
+                                        <a href="{{ item.get_url }}" target="_blank">
+                                            <img src="{{ item.Image_thumbnail_url }}" alt="{{item.Title}}" width="175px" height="175px" >
+                                            <h4 class="titbox">{{item.Title}}</h4>
+                                            <span><span class="numbersprice">{{item.Price}}</span> ریال</span>
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </section>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        <div class="clearfix"></div>
+    </section>
+
+
 <script>
     $("#tcopy").click(function () {
         var dummy = document.createElement('input'),
