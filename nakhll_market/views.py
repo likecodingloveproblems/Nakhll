@@ -2,9 +2,10 @@ import re
 from typing import Any, Dict
 from django.contrib.sessions.backends.db import SessionStore
 from django.core.files.storage import FileSystemStorage
+from django.db.models.aggregates import Sum
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
-from django.db.models import Q, F
+from django.db.models import Q, F, Count
 from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect, HttpResponse
 from django.conf import settings
@@ -765,6 +766,9 @@ def index(request):
     except:
         discounted_product = False
 
+    # shop 
+    most_sale_shop = Shop.objects.most_sale_shop()
+
     context = {
         'This_User_Profile':this_profile,
         'This_User_Inverntory': this_inverntory,
@@ -782,6 +786,7 @@ def index(request):
         'Vendorstory':vendorstory,
         'Catblog':catblog,
         'AllDisProduct':dis_product,
+        'MostSaleShop':most_sale_shop,
     }
 
     return render(request, 'nakhll_market/pages/index.html', context)

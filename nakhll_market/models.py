@@ -1,4 +1,6 @@
 from __future__ import unicode_literals
+
+from django.db.models.aggregates import Sum
 from my_auth.models import ProfileManager
 from django.db import models
 from django.db.models import F, Q
@@ -311,6 +313,13 @@ class ShopManager(models.Manager):
             'City',
             'Location',
             )
+        
+    def most_sale_shop(self):
+        queryset = self.get_queryset()
+        return queryset\
+            .filter(Publish=True, Available=True)\
+            .annotate(number_sale=Sum('ShopProduct__Factor_Product__ProductCount'))\
+            .order_by('-number_sale')[:3]
 
 
 # Shop (حجره) Model

@@ -8,9 +8,10 @@
 
 <title>بازار نخل | به وسعت یک سرزمین</title>
 
+   
 </head>
 <body>
-
+    
 <script>
 
     setTimeout(function(){
@@ -36,48 +37,81 @@
     {% include "nakhll_market/parents/menuheader-section.html" %}
 {% endblock %}
 <!-- --------------------------------header slider section----------------------------- -->
-<div id="slider-index-top">
-    <div class="slidertop">
-        <div class="bd-example">
-            <div id="carouselExampleCaptions" class="carousel slide" data-ride="carousel">
+<!-- <div id="slider-index-top"> -->
+    <!-- <div class="slidertop"> -->
+        <!-- <div class="bd-example"> -->
+            <!-- <div id="carouselExampleCaptions" class="carousel slide" data-ride="carousel"> -->
 
-                    <div class="carousel-inner">
-                        {% for slidr in Sliders %}
-                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                                <a href="{{slidr.URL}}"><img src="{{slidr.Image.url}}" class="d-block w-100" alt="{{slidr.Title}}">
-                                    {% if slidr.ShowInfo %}
-                                    <div class="carousel-caption">
-                                        <h3>{{slidr.Title}}</h3>
-                                        <p>{{slidr.Description}}</p>
-                                    </div>
-                                    {% endif %}
-                                </a>
-                            </div>
+                    <div class="slidercontanerr">
+                        <div style="width: 40%;height: 70%;">
+                        <div style="margin: 5px;" >
+                            <a
+                                href="#">
+                                <div ><img
+                                    class="imgslidercontainer"
+                                    src="{% static "images/حجره ها.jpg" %}"
+                                    alt="slider1" loading="lazy"></div>
+                            </a>
+                        </div>
+                        <div style="display: flex;width: 100%;">
+
+                            <a
+                            href="#">
+                            <div style="margin: 5px;"><img
+                                class="imgslidercontainer"
+                                src="{% static "images/بازارچه پوشاک.jpg" %}"
+                                alt="slider2" loading="lazy"></div>
+                            </a>
+                        </a><a
+                              href="#">
+                            <div style="margin: 5px;"><img
+                                class="imgslidercontainer"
+                                src="{% static "images/بازارچه پوشاک.jpg" %}"
+                                alt="slider3" loading="lazy"></div>
+                            </a>
+                           </div>
+                        </div>
+                        <div style="width: 60%;height: 90%;">
+
+                            {% for slidr in Sliders %}
+                            <div class="{% if forloop.first %}active{% endif %}">
+                            <a href="https://nakhll.com/profile/shop-manager/add/shop"><img src="https://nakhll.com/media/Pictures/Sliders/axCYdN.jpg" class=" sliderAsli " alt="{{slidr.Title}}">
+                                {% if slidr.ShowInfo %}
+                                <div class="carousel-caption">
+                                    <h3>{{slidr.Title}}</h3>
+                                    <p>{{slidr.Description}}</p>
+                                </div>
+                                {% endif %}
+                            </a>
+                        </div>   
                         {% endfor %} 
+                      
+                    </div>
+                        
+                        
                     </div>   
-
-                <a class="carousel-control-prev" href="#carouselExampleCaptions" role="button" data-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="sr-only">قبلی</span>
+                <!-- <a class="carousel-control-prev " href="#carouselExampleCaptions" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon " aria-hidden="true"></span>
+                    <span class="sr-only ">قبلی</span>
                 </a>
-                <a class="carousel-control-next" href="#carouselExampleCaptions" role="button" data-slide="next">
+                <a class="carousel-control-next sliderAsli" href="#carouselExampleCaptions" role="button" data-slide="next">
                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                     <span class="sr-only">بعدی</span>
-                </a>
+                </a> -->
 
-            </div>
-        </div>
-    </div>
-</div>
+            <!-- </div> -->
+        <!-- </div> -->
+    <!-- </div> -->
+<!-- </div> -->
 
 <!-- --------------------------------slider-prod-cat----------------------------- -->
 <div class="slider-prod-cat">
     <div class="container-fluid">        
-        <h4><span>دسته بندی محصولات</span></h4>
+        <!-- <h4><span>دسته بندی محصولات</span></h4> -->
         <div class="postslidebt">
             <section class="autoplay slider sliderbox">
                 {% for category in Categories %}
-                    <div>
+                    <div class="sliderRaste">
                         <a href="/category/{{category.Slug}}/newest/none/">
                             <img src="{{category.Image_thumbnail_url}}" alt="{{category.Title}}">
                             <h2 class="titbox">{{category.Title}}</h2>
@@ -112,7 +146,7 @@
                                         <a href="/{{shop.Slug}}/">
                                             <img src="{{shop.Image_thumbnail_url}}"  alt="{{shop.Title}}" class="seller-img">
                                             <h3 class="titbox">{{category.Title}}</h3>
-                                            <div class="ratecode">{{shop.Point}}</div>
+                                           
                                             <div class="nameseller">
                                                 <h3>{{shop.Title}}</h3>
                                             </div>
@@ -166,9 +200,9 @@
                     <img src="{{DisProduct.UserProduct.Image_thumbnail_url}}" alt="عکس تخفیفات ویژه" width="175px" height="175px">
                     
                     <a href="/product/{{DisProduct.UserShop.Slug}}/{{DisProduct.UserProduct.Slug}}/"><h4 class="longtitle">{{DisProduct.UserProduct.Title}}</h4></a>
-                    {% if DisProduct.UserProduct.OldPrice != '0' %}<span class="strikeprice numbersprice">{{DisProduct.UserProduct.OldPrice}} ریال</span>{% else %}{% endif %}
+                    {% if DisProduct.UserProduct.OldPrice != '0' %}<span class="strikeprice numbersprice takhfif">{{DisProduct.UserProduct.OldPrice}} ریال</span>{% else %}{% endif %}
                     <br>
-                    <span class="priceline numbersprice">{{DisProduct.UserProduct.Price}} ریال</span>
+                    <span class="priceline numbersprice takhfif">{{DisProduct.UserProduct.Price}} ریال</span>
 
                 </div>
             </div>
@@ -233,9 +267,23 @@
 
 <!-- ------------------------------campain----------------------------- -->
 
+<!-- <section id="three-box-slider">
+    <div class="container">
+        <div class="">
+            <div class="card-carousel">
+                {% for shop in MostSaleShop %}
+                <div class="my-card"><img
+                    src="{{shop.Image_thumbnail_url}}"
+                    alt="{{shop.Title}}" loading="lazy">
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>   
+</section> -->
 
 
-<!-- --------------------------------محصولات تخفیف دار--------------------------- -->
+<!-- --------------------------------جدید ترین تخفیفات--------------------------- -->
 
 <section id="three-box-slider">
     <div class="container">
@@ -277,19 +325,21 @@
 
         </div>
     </div>
+    
 </section>
 
 <!-- -------------------------------------پایان---------------------------------- -->
 
-<!-- 
-<section id="campain">
 
-</section> -->
+<!--<section id="campain">
+  
+</section>-->
 
 
+    
 <!-- -------------------------------banner-img-top----------------------------- -->
 
-<section id="banner-img-top">
+<!-- <section id="banner-img-top">
         <div class="container">
             <div class="row">
                 {% for adv in ButtomAdvertisings %}
@@ -304,10 +354,10 @@
             </div>
 
         </div>
-</section>
+</section> -->
 
 <!-- ------------------------------- blog ----------------------------- -->
-                <section id="blog-section">
+      <!--          <section id="blog-section">
                     <div class="container">
                         <div class="row">
                             <div class="col-xl-12 col-12">
@@ -363,10 +413,10 @@
                         </div>
                     </div>
                 </section>
-
+ -->
 
 <!-- ------------------------------- vendor story ----------------------------- -->
-                <section id="vendorstory">
+                <!-- <section id="vendorstory">
                      <div class="container">
                         <div class="row">
                             <div class="col-xl-12 col-12">
@@ -406,7 +456,7 @@
                             </div>
                         </div>
                     </div>
-                </section>
+                </section> -->
     </main>
 
     <script type="application/ld+json">
@@ -449,6 +499,49 @@
             "https://www.instagram.com/nakhll1"
             ]
             }
+    </script>
+     <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT"
+            crossorigin="anonymous">
+    </script>
+     <script >
+     $num = $('.my-card').length;
+$even = $num / 2;
+$odd = ($num + 1) / 2;
+if ($num % 2 == 0) {
+  $('.my-card:nth-child(' + $even +')').addClass('active');
+  $('.my-card:nth-child(' + $even +')').prev().addClass('prev');
+  $('.my-card:nth-child(' + $even +')').next().addClass('next');
+}else {
+  $('.my-card:nth-child(' + $odd +')').addClass('active');
+  $('.my-card:nth-child(' + $odd +')').prev().addClass('prev');
+  $('.my-card:nth-child(' + $odd +')').next().addClass('next');
+}
+$('.my-card').click(function() {
+  $slide = $('.active').width();
+  console.log($('.active').position().left);
+  if ($(this).hasClass('next')) {
+    $('.card-carousel').stop(false,true).animate({left:'-=' + $slide});
+  }else if ($(this).hasClass('prev')) {
+    $('.card-carousel').stop(false,true).animate({left:'+=' + $slide});
+  }
+  $(this).removeClass('prev next');
+  $(this).siblings().removeClass('prev active next');
+  $(this).addClass('active');
+  $(this).prev().addClass('prev');
+  $(this).next().addClass('next');
+});
+// Keyboard nav
+$('html body').keydown(function(e) {
+  if (e.keyCode == 37) {// left
+ $('.active').prev().trigger('click');
+  }
+  else if (e.keyCode == 39) {// right
+    $('.active').next().trigger('click');
+  }
+
+});
+
     </script>
 
 {% block footer-section %}
