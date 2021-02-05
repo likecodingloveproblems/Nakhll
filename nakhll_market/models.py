@@ -766,8 +766,7 @@ class ProductManager(models.Manager):
             .exclude(OldPrice='0')\
             .annotate(discount_amount=F('OldPrice') - F('Price'))\
             .annotate(discount_ratio=F('discount_amount')/F('OldPrice'))\
-            .order_by('-discount_ratio')\
-            .first()
+            .order_by('-discount_ratio')
 
 # Product (محصول) Model
 class Product (models.Model):

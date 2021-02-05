@@ -1306,7 +1306,8 @@ def ProductsDetail(request, shop_slug, product_slug, status = None, msg = None):
         massege = msg
 
     # most discount
-    most_discount = Product.objects.get_most_discount_precentage_product()
+    most_discounts = Product.objects.get_most_discount_precentage_product()
+    most_discount = most_discounts.first()
 
     # other products bought by other user
     factors = Factor.objects.filter(FK_FactorPost__FK_Product=this_product)
@@ -1331,6 +1332,7 @@ def ProductsDetail(request, shop_slug, product_slug, status = None, msg = None):
         'ShowAlart':show,
         'AlartMessage':massege,
         'MostDiscount':most_discount,
+        'MostDiscounts':most_discounts,
         'OtherProducts':other_products,
     }
 
