@@ -43,39 +43,12 @@
             <!-- <div id="carouselExampleCaptions" class="carousel slide" data-ride="carousel"> -->
 
                     <div class="slidercontanerr">
-                        <div style="width: 40%;height: 70%;">
-                        <div style="margin: 5px;" >
-                            <a
-                                href="#">
-                                <div ><img
-                                    class="imgslidercontainer"
-                                    src="{% static "images/حجره ها.jpg" %}"
-                                    alt="slider1" loading="lazy"></div>
-                            </a>
-                        </div>
-                        <div style="display: flex;width: 100%;">
-
-                            <a
-                            href="#">
-                            <div style="margin: 5px;"><img
-                                class="imgslidercontainer"
-                                src="{% static "images/بازارچه پوشاک.jpg" %}"
-                                alt="slider2" loading="lazy"></div>
-                            </a>
-                        </a><a
-                              href="#">
-                            <div style="margin: 5px;"><img
-                                class="imgslidercontainer"
-                                src="{% static "images/بازارچه پوشاک.jpg" %}"
-                                alt="slider3" loading="lazy"></div>
-                            </a>
-                           </div>
-                        </div>
-                        <div style="width: 60%;height: 90%;">
+                        <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-12">
 
                             {% for slidr in Sliders %}
-                            <div class="{% if forloop.first %}active{% endif %}">
-                            <a href="https://nakhll.com/profile/shop-manager/add/shop"><img src="https://nakhll.com/media/Pictures/Sliders/axCYdN.jpg" class=" sliderAsli " alt="{{slidr.Title}}">
+                            <div>
+                             <!-- class="{% if forloop.first %}active{% endif %} "> -->
+                            <a href="https://nakhll.com/profile/shop-manager/add/shop"><img src="https://nakhll.com/media/Pictures/Sliders/axCYdN.jpg" class="sliderAsli " alt="{{slidr.Title}}">
                                 {% if slidr.ShowInfo %}
                                 <div class="carousel-caption">
                                     <h3>{{slidr.Title}}</h3>
@@ -87,6 +60,34 @@
                         {% endfor %} 
                       
                     </div>
+                        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12">
+                            <aside style="margin: 5px;" ><a
+                                href="#">
+                                <div ><img
+                                    class="imgslidercontainer"
+                                    src="{% static "images/حجره ها.jpg" %}"
+                                    alt="برای فرزند دلبند شما!" loading="lazy"></div>
+                            </a>
+                        </aside>
+                        <div style="display: flex;width: 100%;">
+
+                            <a
+                            href="#">
+                            <div style="margin: 5px;"><img
+                                class="imgslidercontainer"
+                                src="{% static "images/بازارچه پوشاک.jpg" %}"
+                                alt="برای فرزند دلبند شما!" loading="lazy"></div>
+                            </a>
+                        </a><a
+                              href="#">
+                            <div style="margin: 5px;"><img
+                                class="imgslidercontainer"
+                                src="{% static "images/بازارچه پوشاک.jpg" %}"
+                                alt="برای فرزند دلبند شما!" loading="lazy"></div>
+                            </a>
+                           </div>
+                        </div>
+                      
                         
                         
                     </div>   
@@ -266,18 +267,21 @@
 </section>
 
 <!-- ------------------------------campain----------------------------- -->
-
-<!-- <section id="three-box-slider">
+<!-- 
+<section id="three-box-slider">
     <div class="container">
         <div class="">
-            <div class="card-carousel">
-                {% for shop in MostSaleShop %}
-                <div class="my-card"><img
-                    src="{{shop.Image_thumbnail_url}}"
-                    alt="{{shop.Title}}" loading="lazy">
-                </div>
-                {% endfor %}
-            </div>
+    <div class="card-carousel">
+      <div class="my-card"><img
+        src="https://nakhll.com/media/Pictures/Sliders/sWckgi.jpg"
+        alt="برای فرزند دلبند شما!" loading="lazy"></div>
+      <div class="my-card"><img
+        src="https://nakhll.com/media/Pictures/Sliders/GgEIZv.jpg"
+        alt="برای فرزند دلبند شما!" loading="lazy"></div>
+      <div class="my-card"><img
+        src="https://nakhll.com/media/Pictures/Sliders/KyyzQk.jpg"
+        alt="برای فرزند دلبند شما!" loading="lazy"></div>
+     </div>
         </div>
     </div>   
 </section> -->
