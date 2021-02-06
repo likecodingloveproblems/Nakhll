@@ -542,7 +542,7 @@ header {
     font-size: 12px;
 }
 .takhfif{
-    color:black !important;
+    color:white !important;
 }
 
 .priceline {
@@ -5812,7 +5812,7 @@ ul.optional-attr-question-list li{
     height: auto;
     margin-top: 10px;
 	 flex-direction: row;
-	flex-wrap: nowrap;
+	flex-wrap: wrap;
     justify-content: center;
 	align-items: center;
 	align-content: stretch; 
@@ -5827,8 +5827,8 @@ height: auto;
     display: flex;
     border-radius: 10px;
     margin-right: 5px;
-    max-width: 95% !important;
-    height:410px;
+    max-width: 100% !important;
+    height:auto;
 }
 
 .card-carousel {
