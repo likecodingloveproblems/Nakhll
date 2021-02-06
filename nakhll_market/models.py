@@ -1476,6 +1476,7 @@ class Review(models.Model):
 
 # Profile (پروفایل) Model
 class Profile(models.Model):
+    objects = ProfileManager()
     ID=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     FK_User=models.OneToOneField(User, on_delete=models.SET_NULL, verbose_name='کاربر', related_name='User_Profile', null=True)
     SEX_STATUS =(
@@ -1504,6 +1505,7 @@ class Profile(models.Model):
                                 processors=[ResizeToFill(175, 175)],
                                 format='JPEG',
                                 options={'quality': 60} )
+    ImageNationalCard = models.ImageField(verbose_name="عکس کارت ملی", upload_to=PathAndRename('media/Pictures/NationalCard/'), null=True, blank=True)
     UserReferenceCode=models.CharField(verbose_name='کد شما', max_length=6, unique=True, default=BuildReferenceCode(6))
     Point=models.PositiveIntegerField(verbose_name='امتیاز کاربر', default=0)
     TUTORIALWEB_TYPE =(
@@ -1520,7 +1522,6 @@ class Profile(models.Model):
     TutorialWebsite=models.CharField(verbose_name='نحوه آشنایی با سایت', max_length=1, choices=TUTORIALWEB_TYPE, blank=True, default='8')
     ReferenceCode=models.CharField(verbose_name='کد معرف', max_length=6, blank=True)
     IPAddress=models.CharField(verbose_name='آدرس ای پی', max_length=15, blank=True)
-    objects = ProfileManager()
 
     # Output Customization Based On UserName (ID)
     def __str__(self):
@@ -1533,6 +1534,15 @@ class Profile(models.Model):
             return url
         except:
             url = "https://nakhll.com/media/Pictures/avatar.png"
+            return url
+
+    def image_national_card_url(self):
+        try:
+            i = self.ImageNationalCard.url
+            url = self.ImageNationalCard.url
+            return url
+        except:
+            url = "https://nakhll.com/static/images/image_upload.jpg"
             return url
 
     # Get User Bank Account Info
