@@ -800,8 +800,8 @@ class Product (models.Model):
     Catalog=models.FileField(verbose_name='کاتالوگ محصول', upload_to=PathAndRename('media/Catalogs/Markets/SubMarkets/Shops/Products/'), help_text='کاتالوگ محصول خود را اینجا وارد کنید', null=True, blank=True)
     FK_Shop=models.ForeignKey(Shop, null=True, on_delete=models.SET_NULL, verbose_name='حجره',related_name='ShopProduct')
     FK_Category=models.ManyToManyField(Category, verbose_name='دسته بندی های محصول', related_name='ProductCategory', blank=True)
-    Price=models.CharField(verbose_name='قیمت محصول', max_length=15)
-    OldPrice=models.CharField(verbose_name='قیمت حذف محصول', max_length=15, default='0')
+    Price=models.BigIntegerField(verbose_name='قیمت محصول')
+    OldPrice=models.BigIntegerField(verbose_name='قیمت حذف محصول', default=0)
     # Product Weight Info
     Net_Weight=models.CharField(verbose_name='وزن خالص محصول (گرم)', max_length=6, default='0')
     Weight_With_Packing=models.CharField(verbose_name='وزن محصول با بسته بندی (گرم)', max_length=6, default='0')
