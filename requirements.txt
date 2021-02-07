@@ -23,3 +23,4 @@ django-mathfilters==1.0.0
 mysqlclient==2.0.1
 django-braces==1.14.0
 django-excel-response==2.0.5
+psycopg2-binary==2.8.6
