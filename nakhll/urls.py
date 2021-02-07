@@ -16,8 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls import url
+from django.urls.conf import re_path
+from nakhll import site_updating
 
 urlpatterns = [
+    re_path(r'.*', site_updating.update, name='update'),
     url(r'^oauth/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     path('logintowebsite/', admin.site.urls),
     path('accounts/', include('my_auth.urls', namespace='my_auth')),
