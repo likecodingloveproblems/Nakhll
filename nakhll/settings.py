@@ -173,7 +173,7 @@ IMAGEKIT_CACHEFILE_DIR = 'media/CACHE/images'
 PERSISTENT_STORAGE = "/mnt/shared-volume"
 
 DATABASES = {
-    "default": {
+    "mysql": {
         "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.mysql"),
         "NAME": os.environ.get("SQL_DATABASE", os.path.join(BASE_DIR, "db.sqlite3")),
         "USER": os.environ.get("SQL_USER", "user"),
@@ -186,7 +186,7 @@ DATABASES = {
         },
         'CONN_MAX_AGE': None,
     },
-    'postgres':{
+    'default':{
         'ENGINE':'django.db.backends.postgresql',
         'NAME': os.environ.get('POSTGRES_DB', 'nakhlldb'),
         'USER': os.environ.get('POSTGRES_USER', 'nakhll'),

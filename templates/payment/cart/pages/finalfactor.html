@@ -229,7 +229,7 @@
                             <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری">
                         </div>
                         {% if Factor.PaymentType == '1' %}
-                            <button class="btn btn-success" id ="target" disabled><i class="fal fa-shopping-bag"></i> پرداخت </button>
+                            <button class="btn btn-success" id ="target"><i class="fal fa-shopping-bag"></i> پرداخت </button>
                         {% elif Factor.PaymentType == '2' %}
                             <button class="btn btn-success" id ="target-wallet"><i class="fal fa-shopping-bag"></i> پرداخت از کیف پول </button>
                         {% endif %}

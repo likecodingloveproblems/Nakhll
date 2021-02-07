@@ -20,7 +20,7 @@ from django.urls.conf import re_path
 from nakhll import site_updating
 
 urlpatterns = [
-    re_path(r'.*', site_updating.update, name='update'),
+    # re_path(r'.*', site_updating.update, name='update'), # only for update conditions
     url(r'^oauth/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     path('logintowebsite/', admin.site.urls),
     path('accounts/', include('my_auth.urls', namespace='my_auth')),
