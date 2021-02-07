@@ -180,7 +180,20 @@ DATABASES = {
         "PASSWORD": os.environ.get("SQL_PASSWORD", "password"),
         "HOST": os.environ.get("SQL_HOST", "localhost"),
         "PORT": os.environ.get("SQL_PORT", "3306"),
-    }
+        'OPTIONS': {
+            # Tell MySQLdb to connect with 'utf8mb4' character set
+            'charset': 'utf8mb4',
+        },
+        'CONN_MAX_AGE': None,
+    },
+    'postgres':{
+        'ENGINE':'django.db.backends.postgresql',
+        'NAME': os.environ.get('POSTGRES_DB', 'nakhlldb'),
+        'USER': os.environ.get('POSTGRES_USER', 'nakhll'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'HOST':'postgres',
+        'PORT':'5432',
+    },
 }
 
 # Password validation
