@@ -313,6 +313,20 @@ class ShopManager(models.Manager):
             'City',
             'Location',
             )
+    
+    def shop_managers_info_marketing(self):
+        queryset = self.get_queryset()
+        return queryset.values(
+            'FK_ShopManager__first_name',
+            'FK_ShopManager__last_name',
+            'FK_ShopManager__User_Profile__MobileNumber',
+            'FK_SubMarket__Title',
+            'FK_SubMarket__FK_Market__Title',
+            'State',
+            'BigCity',
+            'City',
+            'Location',
+            )
         
     def most_sale_shop(self):
         queryset = self.get_queryset()

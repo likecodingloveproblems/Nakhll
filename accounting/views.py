@@ -99,3 +99,12 @@ class ShopManagersInformationV2(GroupRequiredMixin, View):
             data=queryset,
             output_filename=filename,
             )
+
+class UserMobile(View):
+    # group_required = u"marketing"
+
+    def get(self, request, *args, **kwargs):
+        queryset = Shop.objects.shop_managers_info_marketing()
+        return ExcelResponse(
+            data=queryset,
+            )
