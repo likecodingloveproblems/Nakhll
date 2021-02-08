@@ -4235,10 +4235,7 @@ def CheckUserMessage(request):
     count = 0
     # Check
     if Message.objects.all().exists():
-        for item in Message.objects.all():
-            for It in item.FK_Users.all():
-                if (It.FK_User == request.user) and (It.SeenStatus == False):
-                    count += 1
+        count = Message.objects.filter(FK_Users__SeenStatus=False, FK_Users__FK_User=request.user).count()
         if count != 0:
             response_data['status'] = True
             response_data['count'] = count
