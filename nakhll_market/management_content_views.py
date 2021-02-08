@@ -30,7 +30,7 @@ from .models import (
                     AttrProduct, 
                     AttrPrice
                     )
-from Payment.models import Coupon, Wallet, Factor, FactorPost
+from Payment.models import Coupon, Wallet, Factor, FactorPost, Transaction
 from django.urls import reverse
 from nakhll.settings import KAVENEGAR_KEY
 '''

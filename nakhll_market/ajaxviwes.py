@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 
 from .models import Shop, Profile, Product, AttrPrice, Alert, BankAccount
 from Payment.models import Factor, FactorPost, Wallet, Transaction, Coupon
-
+from nakhll_market.models import Newsletters
 import io
 
 from django.http.response import HttpResponse

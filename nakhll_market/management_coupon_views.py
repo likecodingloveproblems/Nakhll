@@ -54,6 +54,8 @@ class SendSMS:
 def SaveEditManagementCoupon(request, id):
     # Check User Status
     if request.user.is_authenticated :
+        # Get Coupon
+        copun = Coupon.objects.get(id = id)
         if request.method == 'POST':
             Filter_Shops = request.POST.getlist("copun_shops")
 
@@ -63,8 +65,6 @@ def SaveEditManagementCoupon(request, id):
             
             Filter_Categories = request.POST.getlist("copun_categories")
             # ---------------------------------------------------------------------
-            # Get Coupon
-            copun = Coupon.objects.get(id = id)
             # Set Log
             shop_log = ''
             product_log = ''
