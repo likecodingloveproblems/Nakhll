@@ -84,7 +84,7 @@ class ShopManagersInformationV2(GroupRequiredMixin, View):
     group_required = u"accounting"
 
     def get(self, request, *args, **kwargs):
-        filename = 'shop_managers_info.csv'
+        filename = 'shop_managers_info'
         field_header_map = {
             'FK_ShopManager__first_name':'نام',
             'FK_ShopManager__last_name':'نام خانوادگی',
