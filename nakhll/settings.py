@@ -56,7 +56,6 @@ INSTALLED_APPS = [
     'admin_reorder',
     'nakhll_market',
     'Payment',
-    'blog',
     'Ticketing',
     'restapi',
     'oauth2_provider',
