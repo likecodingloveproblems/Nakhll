@@ -180,8 +180,8 @@
                                             <select class="form-control alert-profile-custom-select" name="customer_name" id="inputGroupSelect01" aria-label="Username"
                                             aria-describedby="basic-addon1">
                                                 <option value="000" {% if Customer == '000' %}selected{% endif %}>همه</option>
-                                                {% for item in User %}
-                                                    <option value="{{item.id}}" {% if Customer == item.username %}selected{% endif %}>{{item.first_name}} {{item.last_name}}</option>
+                                                {% for item in Alert %}
+                                                    <option value="{{item.FK_User.id}}" {% if Customer == item.FK_User.username %}selected{% endif %}>{{item.FK_User.first_name}} {{item.FK_User.last_name}}</option>
                                                 {% endfor %}
                                             </select>
                                         </div>

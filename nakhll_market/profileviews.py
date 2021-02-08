@@ -2954,11 +2954,6 @@ def ProfileAlert(request):
         # --------------------------------------------------------------------
         # get all new alert
         alert = Alert.objects.filter(Seen = False).order_by('DateCreate')
-        # get user list
-        user_list = []
-        for item in alert:
-            user_list.append(item.FK_User)
-        user_list = list(dict.fromkeys(user_list))
 
         context = {
             'This_User_Profile':this_profile,
@@ -2966,7 +2961,6 @@ def ProfileAlert(request):
             'Options': options,
             'MenuList':navbar,
             'Alert':alert,
-            'User':user_list,
         }
      
         return render(request, 'nakhll_market/profile/pages/alert.html', context)
