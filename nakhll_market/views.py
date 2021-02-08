@@ -734,8 +734,11 @@ def index(request):
     # Get Index Sliders
     pubsliders = Slider.objects.filter(Location = 1, Publish = True)
     # Get All Categories
-    numcategories = Category.objects.filter(Publish = True, Available = True, FK_SubCategory = None).count()
-    categories = Category.objects.filter(pk__in=random.sample(range(0,numcategories), 12), Publish = True, Available = True, FK_SubCategory = None)
+    categories_id = list(Category.objects.filter(Publish = True, Available = True, FK_SubCategory = None)\
+        .values_list('id', flat=True))
+    categories = Category.objects\
+        .filter(Publish = True, Available = True, FK_SubCategory = None)\
+        .filter(pk__in=random.sample(categories_id, 12))
     # Get All Index Advertising - Buttom
     pubbuttomadvsliders = Slider.objects.filter(Location = 2, Publish = True)
     # Get All Index Advertising - Center
