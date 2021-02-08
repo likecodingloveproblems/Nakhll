@@ -27,7 +27,6 @@ urlpatterns = [
     path('', include('nakhll_market.urls', namespace='Profile')),
     url(r'^tinymce/', include('tinymce.urls')),
     url(r'^cart/', include('Payment.urls' , namespace='Payment')),
-    url(r'^blog/', include('blog.urls' , namespace='blog')),
     url(r'^app/api/', include('restapi.urls' , namespace='restapi')),
     path('accounting/', include('accounting.urls', namespace='accounting')),
 ]

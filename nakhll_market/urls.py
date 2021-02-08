@@ -498,10 +498,6 @@ urlpatterns = [
     path('profile/alert/deletecoupon/<int:id>', alertviews.DeleteCouponAlert, name='DeleteCouponAlert'),
     # Add Coupon Alert
     path('profile/alert/addcoupon/<int:id>', alertviews.AddCouponAlert, name='AddCouponAlert'),
-    # Add New Post Comment Alert
-    path('profile/alert/postcomment/<int:id>', alertviews.AddPostCommentAlert, name='AddPostCommentAlert'),
-    # Add New Story Comment Alert
-    path('profile/alert/storycomment/<int:id>', alertviews.RecordStoryCommentAlert, name='RecordStoryCommentAlert'),
     # Add New Shop Comment Alert
     path('profile/alert/shopcomment/<int:id>', alertviews.RecordShopCommentAlert, name='RecordShopCommentAlert'),
     # Set Check Out Alert

@@ -119,13 +119,6 @@ ADMIN_REORDER = (
         'Payment.PecReverse',        
     )},
     
-    {'app': 'blog', 'label': 'وبلاگ','models':(
-        'blog.CategoryBlog',
-        'blog.PostBlog',
-        'blog.VendorStory',
-        'blog.CommentPost',  
-    )},
-
     {'app': 'Ticketing', 'label': 'بخش پشتیبانی و گزارشات','models':(
         'Ticketing.Ticketing',
     )},

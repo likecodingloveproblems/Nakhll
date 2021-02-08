@@ -72,7 +72,6 @@ from .models import PageViews, User_View, ShopViews, Date_View
 from sms.models import SMS
 from my_auth.models import UserphoneValid
 from Payment.models import Wallet, Factor ,FactorPost, Coupon
-from blog.models import CategoryBlog, PostBlog, VendorStory
 
 from .forms import Login, CheckEmail
 from .profileviews import ProfileDashboard
@@ -741,9 +740,6 @@ def index(request):
     pubbuttomadvsliders = Slider.objects.filter(Location = 2, Publish = True)
     # Get All Index Advertising - Center
     pubcenteradvsliders = Slider.objects.filter(Location = 3, Publish = True)
-    postblog = PostBlog.objects.filter(Publish = True).order_by('-DateCreate')[:4]
-    vendorstory = VendorStory.objects.filter(Publish = True).order_by('-DateCreate')[:2]
-    catblog = CategoryBlog.objects.filter(Publish = True)
     # Get All Shops
     pubshopsquery = Shop.objects.filter(Publish = True, Available = True)
     numpubshops = pubshopsquery.count()
@@ -782,9 +778,6 @@ def index(request):
         'CenterAdvertisings':pubcenteradvsliders,
         'Shops':pubshops,
         'DisProduct':discounted_product,
-        'Postblog':postblog,
-        'Vendorstory':vendorstory,
-        'Catblog':catblog,
         'AllDisProduct':dis_product,
         'MostSaleShop':most_sale_shop,
     }
@@ -824,11 +817,6 @@ class get_shop_other_info:
             this_shop_subMarket = None
             # Get Shop First SubMarket Market
             this_shop_market = None
-        # --------------------------------------------------------------------------------
-        if VendorStory.objects.filter(FK_Shop = shop, Publish = True).exists():
-            this_shop_story =  VendorStory.objects.filter(FK_Shop = shop, Publish = True)[0]
-        else:
-            this_shop_story =  None
         # ---------------------------------------------------------------------------------
         # Total Sell
         # total_sell = 0
@@ -842,8 +830,6 @@ class get_shop_other_info:
         result = {
             "this_shop_subMarket": this_shop_subMarket,
             "this_shop_market":this_shop_market,
-            "this_shop_story":this_shop_story,
-            # "total_sell":total_sell,
             "view":shop_view,
         }
         return result
@@ -949,8 +935,6 @@ def ShopsDetail(request, shop_slug, msg = None):
     this_shop_publish_comments = shop.get_comments()
     # get other info
     other_info = get_shop_other_info().run(request, shop)
-    # Get This Shop Story
-    this_shop_story = other_info["this_shop_story"]
     # Get Total Sell
     # sell_total = other_info["total_sell"]
     # Get Page View
@@ -979,7 +963,6 @@ def ShopsDetail(request, shop_slug, msg = None):
         'This_Shop_First_SubMarket_Market': this_shop_market,
         'This_Shop_First_SubMarket': this_shop_subMarket,
         'Comments':this_shop_publish_comments,
-        'This_Shop_Story':this_shop_story,
         'Shop':shop,
         'DateNow':delta.days,
         'Products':this_shop_product,
@@ -2029,7 +2012,7 @@ def AddNewReviewInProduct(request, this_product):
             else:
 
                 return redirect('nakhll_market:Re_ProductsDetail',
-                shop_slug =profileduc.FK_Shop.Slug,
+                shop_slug =profileduct.FK_Shop.Slug,
                 product_slug = profileduct.Slug,
                 status = True,
                 msg = 'عنوان و توضیحات برای ثیت نقد و بررسی اجباریست!')

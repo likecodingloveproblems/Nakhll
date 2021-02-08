@@ -151,22 +151,6 @@
                     </div>
                 </div>
 
-                {% if This_Shop_Story %}
-                    <div class="sidebar-shop">
-                        <a href="{% url "blog:vendorstory" This_Shop_Story.Slug %}" target="_blank">
-                            <div class="user-shop-info user-shop-story">
-                                <h2>{{This_Shop_Story.Title}}</h2>
-                            </div>
-                            <div class="user-des shop-story-des">
-                                {% autoescape off %}
-                                    <p>
-                                        {{This_Shop_Story.Summary}}
-                                    </p>
-                                {% endautoescape %}
-                            </div>
-                        </a>
-                    </div>
-                {% endif %}
                 <!-- new-->
                 <div class="sidebar-shop sidebar-shop-space">
                     <div class="filter-items available-products-switch-div">
