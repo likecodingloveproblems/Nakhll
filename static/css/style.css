@@ -5819,15 +5819,24 @@ ul.optional-attr-question-list li{
 }
 .imgslidercontainer{
     display: flex;
-border-radius: 10px;
- max-width: 100%;
-height: auto;
+    border-radius: 10px;
+    max-width: 100%;
+    height: auto;
+    margin-left: auto;
+}
+.imgCard{
+    display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+	align-items: stretch;
+	align-content: stretch;
 }
 .sliderAsli{
     display: flex;
     border-radius: 10px;
-    margin-right: 5px;
-    max-width: 100% !important;
+    margin-right: auto;
+    max-width: 95% !important;
     height:auto;
 }
 

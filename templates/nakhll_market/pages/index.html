@@ -44,63 +44,71 @@
 
                     <div class="slidercontanerr">
                         <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-12">
-
+                       
+                                <a  class="carousel-control-prev " href="#carouselExampleCaptions" role="button" data-slide="prev">
+                                    <span class="carousel-control-prev-icon " aria-hidden="true"></span>
+                                    <span class="sr-only ">قبلی</span>
+                                </a>
                             {% for slidr in Sliders %}
-                            <div>
-                             <!-- class="{% if forloop.first %}active{% endif %} "> -->
-                            <a href="https://nakhll.com/profile/shop-manager/add/shop"><img src="https://nakhll.com/media/Pictures/Sliders/axCYdN.jpg" class="sliderAsli " alt="{{slidr.Title}}">
-                                {% if slidr.ShowInfo %}
-                                <div class="carousel-caption">
-                                    <h3>{{slidr.Title}}</h3>
-                                    <p>{{slidr.Description}}</p>
-                                </div>
-                                {% endif %}
-                            </a>
-                        </div>   
+                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                <a href="{{slidr.URL}}"><img src="{{slidr.Image.url}}" class="sliderAsli" alt="{{slidr.Title}}">
+                                    {% if slidr.ShowInfo %}
+                                    <div class="carousel-caption">
+                                        <h3>{{slidr.Title}}</h3>
+                                        <p>{{slidr.Description}}</p>
+                                    </div>
+                                    {% endif %}
+                                </a>
+                            </div>
                         {% endfor %} 
-                      
+                        <a class="carousel-control-next " href="#carouselExampleCaptions" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">بعدی</span>
+                        </a>
+                        <!-- https://nakhll.com/media/Pictures/Sliders/axCYdN.jpg -->
+                        <!-- {{slidr.Image.url}} -->
+                        <!-- class="sliderAsli " -->
                     </div>
-                        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12">
-                            <aside style="margin: 5px;" ><a
+                        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12"class="imgCard">
+                            <aside  ><a
                                 href="#">
-                                <div ><img
+                                <div style="display: flex;margin: 5px;" ><img
                                     class="imgslidercontainer"
                                     src="{% static "images/حجره ها.jpg" %}"
-                                    alt="برای فرزند دلبند شما!" loading="lazy"></div>
+                                    alt="حجره ها" loading="lazy"></div>
                             </a>
                         </aside>
-                        <div style="display: flex;width: 100%;">
+                        <div style="display: flex;margin: 5px;">
 
                             <a
                             href="#">
-                            <div style="margin: 5px;"><img
+                            <div style="display: flex;margin: 5px;"><img
                                 class="imgslidercontainer"
                                 src="{% static "images/بازارچه پوشاک.jpg" %}"
-                                alt="برای فرزند دلبند شما!" loading="lazy"></div>
+                                alt="بازارچه" loading="lazy"></div>
                             </a>
                         </a><a
                               href="#">
-                            <div style="margin: 5px;"><img
+                            <div style="display: flex;margin: 5px;" ><img
                                 class="imgslidercontainer"
                                 src="{% static "images/بازارچه پوشاک.jpg" %}"
-                                alt="برای فرزند دلبند شما!" loading="lazy"></div>
+                                alt="بازارچه" loading="lazy"></div>
                             </a>
                            </div>
                         </div>
                       
                         
                         
-                    </div>   
-                <!-- <a class="carousel-control-prev " href="#carouselExampleCaptions" role="button" data-slide="prev">
-                    <span class="carousel-control-prev-icon " aria-hidden="true"></span>
-                    <span class="sr-only ">قبلی</span>
-                </a>
-                <a class="carousel-control-next sliderAsli" href="#carouselExampleCaptions" role="button" data-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="sr-only">بعدی</span>
-                </a> -->
 
-            <!-- </div> -->
+
+       
+   
+
+       
+
+    
+
+                    </div>   
         <!-- </div> -->
     <!-- </div> -->
 <!-- </div> -->
