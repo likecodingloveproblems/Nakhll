@@ -27,7 +27,10 @@ def mobile_number_is_validated(mobile_number) -> bool:
         return False
 
 def get_mobile_number_auth_code(mobile_number):
-    return UserphoneValid.objects.get(MobileNumber=mobile_number).ValidCode
+    try:
+        return UserphoneValid.objects.get(MobileNumber=mobile_number).ValidCode
+    except:
+        return 
 
 def set_mobile_number_auth_code(mobile_number, code, validation=False) -> UserphoneValid:
     '''

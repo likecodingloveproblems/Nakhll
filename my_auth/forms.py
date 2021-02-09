@@ -253,8 +253,12 @@ class ApproveCodeForm(forms.Form):
 
     error_messages = error_messages
 
+    def __init__(self, *args, mobile_number, **kwargs) -> None:
+        super(ApproveCodeForm, self).__init__(*args, **kwargs)
+        self.mobile_number_value = mobile_number
+
     def clean(self):
-        mobile_number = self.cleaned_data.get('mobile_number')
+        mobile_number = self.mobile_number_value
         code = self.cleaned_data.get('code')
         if code is not None and mobile_number:
             if not validate_mobile_number(mobile_number, code):

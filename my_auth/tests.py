@@ -262,3 +262,25 @@ class Authentication(TestCase):
         )
         self.assertEqual(response.wsgi_request.user, user)
         assert not response.redirect_chain[0][0].startswith('/accounts/')
+
+
+    def test_wrong_code(self):
+        mobile_number = '09135833920'
+        # get mobile number of the user to validate
+        response = self.client.post(
+            self.forget_password_mobile_url, 
+            {'mobile_number':mobile_number}, 
+            follow=True,
+        )
+        invalid_code = '123456'
+        valid_code = get_mobile_number_auth_code(mobile_number)
+        if invalid_code == valid_code:
+            invalid_code = '654321'
+        
+        # validate mobile number by invalid auth code
+        response = self.client.post(
+            self.register_code_url,
+            {'code':invalid_code},
+            follow=True,
+        )
+        self.assertNotEqual(response.redirect_chain, [(self.forget_password_code_url, 302)])

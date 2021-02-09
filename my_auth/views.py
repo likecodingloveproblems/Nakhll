@@ -125,6 +125,11 @@ class ApproveCode(FormView):
             return HttpResponseRedirect(self.empty_mobile_number_url)
         return super().dispatch(request, *args, **kwargs)
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['mobile_number'] = get_mobile_number_session(self.request)
+        return kwargs
+
     def form_valid(self, form: ApproveCodeForm) -> HttpResponse:
         messages.success(
             self.request, 'کد وارد شده صحیح می باشد. لطفا اطلاعات مورد نظر را به دقت وارد فرمایید.')
