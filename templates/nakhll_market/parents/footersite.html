@@ -1,5 +1,7 @@
 {% load i18n static %}
+{% load analytical %}
 {% load compress %}
+{% load analytical %}
 
 {% compress js file base %}
     <script type="text/javascript" charset="utf-8" src="{% static "js/jquery-3.2.1.slim.min.js" %}"></script>
@@ -141,6 +143,6 @@
     </script>
 {% endcompress %}
 
-</body>
+{% analytical_body_bottom %}</body>
 
 </html>

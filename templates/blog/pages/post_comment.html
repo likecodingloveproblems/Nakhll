@@ -1,5 +1,8 @@
 {% load i18n static %}
+{% load analytical %}
 {% load jformat %}
+{% load analytical %}
+
 
 <form method="POST" action="{% url "blog:AddNewPostComment" Post.Slug %}">
     {% csrf_token %}

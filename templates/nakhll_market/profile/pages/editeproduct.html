@@ -1,5 +1,7 @@
 {% load jformat %}
+{% load analytical %}
 {% load i18n static %}
+{% load analytical %}
 {% load mathfilters %}
 
 {% block header %}
@@ -8,7 +10,7 @@
 
 <title>بازار نخل | ویرایش محصول {{Product.Title}}</title>
 <link rel="stylesheet" href="{% static "css/cropper.css" %}">
-</head>
+{% analytical_head_bottom %}</head>
 
 {% block headertag %}
 {% include "nakhll_market/parents/new-headertag-section.html" %}

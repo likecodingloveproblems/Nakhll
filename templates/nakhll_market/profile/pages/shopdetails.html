@@ -1,5 +1,7 @@
 {% load jformat %}
+{% load analytical %}
 {% load i18n static %}
+{% load analytical %}
 
 {% block header %}
     {% include "nakhll_market/parents/headermain.html" %}
@@ -7,7 +9,7 @@
 
     <title>بازار نخل | ویرایش حجره "{{UserShop.Title}}"</title>
     <link rel="stylesheet" href="{% static "css/cropper.css" %}">
-</head>
+{% analytical_head_bottom %}</head>
 
 {% block headertag %}
     {% include "nakhll_market/parents/new-headertag-section.html" %}
@@ -43,6 +45,7 @@
                 <div id="alert-div-inputCityPerCode-empty"></div>
                 <div id="alert-div-inputAddress-empty"></div>
                 <div id="alert-div-inputZipCode-empty"></div>
+                <div id="alert-div-image-newShop"></div>
 
                 <!-- Char Alerts-->
                 <div id="alert-div-inputState-Persian"></div>
@@ -269,7 +272,7 @@
 
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
-                        <div class="dashboard"> 
+                        <div class="dashboard">
                             <h4>ویرایش حجره "{{UserShop.Title}}"</h4> 
                             <form id="edit-shop-form" method="POST" enctype="multipart/form-data" action="{% url "nakhll_market:Shop_Manager_EditShop" UserShop.Slug %}">
                                 {% csrf_token %}
@@ -289,67 +292,66 @@
                                     </div>
                                 </div>
 
-                                <!-- <div class="form-row">
-                                    <div class="form-group col-md-6">
-                                        <div id="msg"></div>
-                                        <label for="file">عکس حجره</label>
-                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left"
-                                        title="برای بالا رفتن کیفیت کار ما و عکس ها در سایت لطفا عکس های به صورت مربع بارگذاری شود. با تشکر"></i>
-                                        <input type="file" name="Shop_Image" class="file" accept="image/*">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control input" disabled placeholder="آپلود عکس" id="file">
-                                            <div class="input-group-append">
-                                                <button type="button" class="browse btn btn-primary">بارگذاری</button>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group col-md-6 preview-shop-pic-mine">
-                                        <img src="{{ UserShop.Image_thumbnail_url }}" id="avatar" class="img-thumbnail">
-                                    </div>
-                                </div> -->
-
-                                <div class="form-row">                            
-                                    <!-- <br> -->
-                                    <!-- <div class="w-100"> -->
-                                    <label class="label cropper-label w-100">  
-                                        <div class="form-group col-md-6"> 
-                                            <label for="inputslugshop">عکس حجره <code>*</code></label>      
-                                            <br>  
-                                            <a class="btn btn-primary choose-pic-btn" >انتخاب عکس</a>
+                                <div class="form-row">
+                                    <div class="label cropper-label w-50" style="cursor: auto;">
+                                        <label class="form-group col-md-12">
+                                            <label for="inputslugshop">عکس حجره <code>*</code></label>
+                                            <br>
+                                            <a class="btn btn-primary choose-pic-btn">انتخاب عکس</a>
                                             <input type="file" class="sr-only input-pic-file" id="input" name="image" accept="image/*">
-                                            <input type="text" class="form-control choose-pic-input-name" disabled placeholder="آپلود عکس">
-                                        </div>
+                                            <input type="text" class="form-control choose-pic-input-name choose-pic-input-hojre " disabled placeholder="آپلود عکس">
+                                        </label>
                                         <br>
-                                        
-                                            <img class="rounded cropper-rounded " id="avatar" src="{{ UserShop.Image_thumbnail_url }}" alt="avatar"  data-toggle="tooltip" title="انتخاب عکس ">
-                                       
-                                    </label>
-                                    <!-- </div> -->
+                                        {% if UserShop.Image_thumbnail_url %}
+                                            <img class="rounded cropper-rounded " id="avatar" style="float:right;margin-right:3%" src="{{ UserShop.Image_thumbnail_url }}" alt="avatar" data-toggle="tooltip" title="انتخاب عکس ">
+
+                                        {% else %}
+                                             <img class="rounded cropper-rounded " id="avatar" style="float:left;margin-left:3%" src="{% static "images/image_upload.jpg" %}" alt="avatar" data-toggle="tooltip" title="انتخاب عکس ">
+
+                                        {% endif %}
+                                    </div>
+                                    <div class="label cropper-label w-50" style="cursor: auto;">
+                                        <label class="form-group col-md-12">
+                                            <label for="inputslugshop">عکس کارت ملی <code>*</code></label>
+                                            <br>
+                                            <a class="btn btn-primary choose-pic-btn">انتخاب عکس</a>
+                                            <input type="file" class="sr-only input-pic-file2" id="inputMeli" name="image" accept="image/*">
+                                            <input type="text" class="form-control choose-pic-input-name choose-pic-input" disabled
+                                                placeholder="آپلود عکس">
+                                        </label>
+                                        <br>
+                                        {% if UserShop.Image_thumbnailMeli_url %}
+                                        <img class="rounded cropper-rounded " id="avatarMeli" style="float:left;margin-left:3%" src="{{ UserShop.Image_thumbnailMeli_url }}" alt="avatar" data-toggle="tooltip" title="انتخاب عکس ">
+                                        {% else %}
+                                        <img class="rounded cropper-rounded " id="avatarMeli" style="float:left;margin-left:3%" src="{% static "images/image_upload.jpg" %}" alt="avatar" data-toggle="tooltip" title="انتخاب عکس ">
+                                        {% endif %}
+                                    </div>
                                 </div>
-                                        <div class="alert cropper-alert" role="alert"></div>
-                                        <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
-                                            <div class="modal-dialog modal-md" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
+                                <div class="alert cropper-alert" role="alert"></div>
+                                <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true"
+                                    data-keyboard="false" data-backdrop="static">
+                                    <div class="modal-dialog modal-md" role="document">
+                                        <div class="modal-content" style="width: 100%;">
+                                            <div class="modal-header" style="box-shadow: 1px 5px 8px #d0cece;">
                                                 <h5 class="modal-title" id="modalLabel">برش تصویر ...</h5>
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                                                    style="border: 2px solid #ffffff;border-radius: 38px;box-shadow: 1px 3px 2px #a09090;">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
-                                                </div>
-                                                <div class="modal-body">
+                                            </div>
+                                            <div class="modal-body" style="padding:15px">
                                                 <div class="img-container cropper-img-container">
                                                     <img id="image" src="https://avatars0.githubusercontent.com/u/3456749">
                                                 </div>
-                                                </div>
-                                                <div class="modal-footer" id="modal-footer-err">
-                                                    <button type="button" class="btn btn-primary right-btn-send-modal" id="crop">انتخاب تصویر</button>
-                                                    <button type="button" class="btn btn-secondary " data-dismiss="modal">بستن</button>
-                                                </div>
                                             </div>
+                                            <div class="modal-footer" id="modal-footer-err" style="box-shadow: 1px -2px 9px #e4e4e4;">
+                                                <button type="button" class="btn btn-primary right-btn-send-modal" id="crop">انتخاب تصویر</button>
+                                                <button type="button" class="btn btn-secondary " data-dismiss="modal">بستن</button>
                                             </div>
                                         </div>
-                                        
+                                    </div>
+                                </div>
+                                       
                                 <div class="form-row">
                                     <div class="form-group col-md-12">
                                         <label for="inputshopdes">درباره حجره</label>
@@ -358,6 +360,71 @@
                                     </div>  
                                 </div>
                                 <br>
+                                <form id="gallery-product-form">
+                                    <h6>بارگذاری مدارک</h6>
+                                
+                                    <div class="row product-gallery-pics">
+                                        <div class="plz-wait-gallery-pic">
+                                            <div class="progress-hide-parent progress-hide">
+                                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                                                    aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                                            </div>
+                                            <br>
+                                            <div id="loaderDiv3">
+                                                <div> لطفا منتظر بمانید </div> <img src="{% static "/images/loading.svg" %}" alt="در حال بارگذاری">
+                                            </div>
+                                        </div>
+                                        {% if multiCropper.length > 0 %}
+                                        {% for item in multiCropper %}
+                                        <div class="col-xl-3 prod-gallery-pic-box">
+                                            <div class="box-gallery-img-section">
+                                                <label id="label-of-gallery" class="label cropper-label w-100">
+                                                    <input type="file" class="sr-only" id="input3" name="image" accept="image/*">
+                                                    <img class="rounded cropper-rounded gallery-newShop" style="float: none !important;" id="avatar3"
+                                                        src="{% static "/images/loading.svg" %}" alt="avatar" data-toggle="tooltip"
+                                                        title="انتخاب عکس ">
+                                                </label>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                        {% else %}
+                                        <div class="col-xl-3 prod-gallery-pic-box">
+                                            <div class="box-gallery-img-section">
+                                                <label id="label-of-gallery" class="label cropper-label w-100">
+                                                    <input type="file" class="sr-only" id="input3" name="image" accept="image/*">
+                                                    <img class="rounded cropper-rounded gallery-newShop" style="float: none !important;" id="avatar3"
+                                                        src="{% static "/images/image_upload.jpg" %}" alt="avatar" data-toggle="tooltip" title="انتخاب عکس ">
+                                                </label>
+                                            </div>
+                                        {% endif %}
+                                        </div>
+                                        <div class="alert cropper-alert" role="alert"></div>
+                                        <div class="modal fade" id="modal2" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true"
+                                            data-keyboard="false" data-backdrop="static">
+                                            <div class="modal-dialog modal-md" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="modalLabel">برش تصویر ...</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="img-container cropper-img-container">
+                                                            <img id="image3" src="https://avatars0.githubusercontent.com/u/3456749">
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer" id="modal-footer-err">
+                                                        <button type="button" class="btn btn-primary right-btn-send-modal" id="crop3">انتخاب
+                                                            تصویر</button>
+                                                        <button type="button" class="btn btn-secondary " data-dismiss="modal">بستن</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                                
                                 <div class="form-row shop-place-title">
                                     <h6>اطلاعات محل استقرار حجره</h6>
                                     <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="اطلاعات دقیق محل استقرار حجره را وارد کنید."></i>
@@ -620,77 +687,362 @@
 
 <script src="{% static "js/cropper.js" %}"></script>
 <script>
-    var form_Data = new FormData();
-    window.addEventListener('DOMContentLoaded', function () {
-      var avatar = document.getElementById('avatar');
-      var image = document.getElementById('image');
-      var input = document.getElementById('input');
-      var $progress = $('.progress');
-      var $progressBar = $('.progress-bar');
-      var $alert = $('.alert');
-      var $modal = $('#modal');
-      var cropper;
 
-      $('[data-toggle="tooltip"]').tooltip();
+        var $progress;
+            var $progressBar;
+            var $alert;
+            var initialAvatarURL;
 
-      input.addEventListener('change', function (e) {
-        var files = e.target.files;
-        var done = function (url) {
-          input.value = '';
-          image.src = url;
-          $alert.hide();
-          $modal.modal('show');
-        };
-        var reader;
-        var file;
-        var url;
+            var form_Data = new FormData();;
+            window.addEventListener('DOMContentLoaded', function () {
 
-        if (files && files.length > 0) {
-          file = files[0];
+                var avatar = document.getElementById('avatar');
+                var avatarMeli = document.getElementById('avatarMeli');
+                var image = document.getElementById('image');
+                var input = document.getElementById('input');
+                var checkActiveCrop = null;
+                var nameImage = '';
+                var inputMeli = document.getElementById('inputMeli');
+                $progress = $('.progress');
+                $progressBar = $('.progress-bar');
+                $alert = $('.cropper-alert');
+                var $modal = $('#modal');
+                var cropper;
+                
+                $('[data-toggle="tooltip"]').tooltip();
 
-          if (URL) {
-            done(URL.createObjectURL(file));
-          } else if (FileReader) {
-            reader = new FileReader();
-            reader.onload = function (e) {
-              done(reader.result);
-            };
-            reader.readAsDataURL(file);
-          }
-        }
-      });
+                input.onchange = (e) => {
+                    // console.log('e.target.value===========>', e.target.files[0])
+                    // debugger
+                    checkActiveCrop = avatar;
+                    nameImage = 'shop_image';
+                    //   form_Data = new FormData();
+                    form_Data.delete(nameImage);
+                    var files = e.target.files;
+                    var done = function (url) {
+                          input.value = '';
+                        image.src = url;
+                        $alert.hide();
+                        $modal.modal('show');
+                    };
+                    var reader, file, url;
 
-      $modal.on('shown.bs.modal', function () {
-        cropper = new Cropper(image, {
-          aspectRatio: 1,
-          viewMode: 3,
-        });
-      }).on('hidden.bs.modal', function () {
-        cropper.destroy();
-        cropper = null;
-      });
+                     if (files && files.length > 0) {
+                        file = files[0];
+                        if (URL) {
+                            // console.log('URL==>', URL.createObjectURL(file))
+                            done(URL.createObjectURL(file));
+                        } else if (FileReader) {
+                            reader = new FileReader();
+                            reader.onload = function (e) {
+                                done(reader.result);
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    }
+                };
 
-      document.getElementById('crop').addEventListener('click', function () {
-        var initialAvatarURL;
-        var canvas;
+                inputMeli.onchange = (e)=> {
+                    // debugger
+                    checkActiveCrop = avatarMeli;
+                    nameImage = 'shop_imageNation';
+                    // form_Data = new FormData();
+                    form_Data.delete(nameImage);
+                    var files = e.target.files;
+                    var done = function (url) {
+                        inputMeli.value = '';
+                        image.src = url;
+                        $alert.hide();
+                        $modal.modal('show');
+                    };
+                    var reader;
+                    var file = '';
+                    var url;
 
-        $modal.modal('hide');
+                    if (files && files.length > 0) {
+                        file = files[0];
 
-        if (cropper) {
-          canvas = cropper.getCroppedCanvas({
-            width: 1200,
-            height: 1200,
-          });
-          initialAvatarURL = avatar.src;
-          avatar.src = canvas.toDataURL();
-          $progress.show();
-          $alert.removeClass('alert-success alert-warning');
-          canvas.toBlob(function (blob) {
-          form_Data.append('shop_image', blob, 'avatar.jpg');
-        });
-        }
-      });
-    });
+                        if (URL) {
+                            done(URL.createObjectURL(file));
+                        } else if (FileReader) {
+                            reader = new FileReader();
+                            reader.onload = function (e) {
+                                done(reader.result);
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    }
+                };
+
+                $modal.on('shown.bs.modal', function () {
+                    cropper = new Cropper(image, {
+                        aspectRatio: 1,
+                        viewMode: 1
+                    });
+
+                }).on('hidden.bs.modal', function () {
+                    cropper.destroy();
+                    cropper = null;
+                });
+                document.getElementById('crop').addEventListener('click', function () {
+
+                    var canvas;
+
+                    $modal.modal('hide');
+
+                    if (cropper) {
+                        let files, file, reader, img, ctx;
+                        canvas = cropper.getCroppedCanvas({
+                            width: 900,
+                            height: 900,
+                        });
+                        initialAvatarURL = checkActiveCrop.src;
+                        checkActiveCrop.src = canvas.toDataURL();
+                        $progress.show();
+                        $alert.removeClass('alert-success alert-warning');
+
+                        canvas.toBlob(function (blob) {
+                            //   console.log('blob==>', blob)
+                            // form_Data.append(nameImage, blob, 'avatar.jpg');
+                            files = [...form_Data];
+                            
+                             new Compressor(blob, {
+                                quality: 0.6,
+                                maxWidth: 900,
+                                maxHeight: 900,
+                                convertSize: 5000,
+                                success(result) {
+                                    //   // console.log('result=====>', result)
+                                    var reader = new FileReader();
+                                    reader.readAsDataURL(result);
+                                    reader.onloadend = function () {
+                                        var base64data = reader.result;
+                                        //   // console.log('base64data=====>', base64data)
+                                        checkActiveCrop.src = base64data;
+                                        // $('#avatar').val(base64data);
+                                        form_Data.append(nameImage, result, 'avatar.jpg');
+                                        files = [...form_Data];
+                                    }
+                                },
+                            });
+                            //   console.log('filessssssssssssssssssssssssssss==>', files)
+                            //   resize('shopImageMedium',files,600,'avatarMedium');
+                            //   resize('shopImageSmall',files,300,'avatarSmall');
+                            //   resize('shopImageVerySmall',files,50,'avatarVerySmall');
+                        });
+                    }
+                });
+            });
+
+            function resize(fileName, files, size, imageName) {
+                var resize_width = size;//without px
+
+                //get the image selected
+                var item = files[0][1];
+                //create a FileReader
+                var reader = new FileReader();
+
+                //image turned to base64-encoded Data URI.
+                reader.readAsDataURL(item);
+                reader.name = item.name;//get the image's name
+                reader.size = item.size; //get the image's size
+                reader.onload = function (event) {
+                    var img = new Image();//create a image
+                    img.src = event.target.result;//result is base64-encoded Data URI
+                    img.name = event.target.name;//set name (optional)
+                    img.size = event.target.size;//set size (optional)
+                    img.onload = function (el) {
+                        var elem = document.createElement('canvas');//create a canvas
+
+                        //scale the image to 600 (width) and keep aspect ratio
+                        var scaleFactor = resize_width / el.target.width;
+                        elem.width = resize_width;
+                        elem.height = el.target.height * scaleFactor;
+                        //draw in canvas
+                        var ctx = elem.getContext('2d');
+                        ctx.drawImage(el.target, 0, 0, elem.width, elem.height);
+                        //get the base64-encoded Data URI from the resize image
+                        var srcEncoded = ctx.canvas.toDataURL(el.target, 'image/jpeg', 0);
+                        //assign it to thumb src
+                        document.querySelector('#image').src = srcEncoded;
+
+                        fetch(srcEncoded)
+                            .then(res => res.blob())
+                            .then((res2) => {
+                                form_Data.append(fileName, res2, imageName + '.png');
+                                files = [...form_Data];
+                                // console.log('ffffffffffffffffffffff==>', files)
+                            })
+                    }
+                }
+            }
+
+    var $progress;
+            var $progressBar;
+            var $alert;
+            var initialAvatarURL;
+            var formData = new FormData();
+            window.addEventListener('DOMContentLoaded', function () {
+                var avatar = document.getElementById('avatar2');
+                var image = document.getElementById('image2');
+                var input = document.getElementById('input2');
+                //   $progress = $('.progress');
+                //   $progressBar = $('.progress-bar');
+                $alert = $('.cropper-alert');
+                var $modal = $('#modal2');
+                var cropper;
+
+                $('[data-toggle="tooltip"]').tooltip();
+
+                input.addEventListener('change', function (e) {
+                    var files = e.target.files;
+                    var done = function (url) {
+                        input.value = '';
+                        image.src = url;
+                        $alert.hide();
+                        $modal.modal('show');
+                    };
+                    var reader;
+                    var file;
+                    var url;
+
+                    if (files && files.length > 0) {
+                        file = files[0];
+
+                        if (URL) {
+                            done(URL.createObjectURL(file));
+                        } else if (FileReader) {
+                            reader = new FileReader();
+                            reader.onload = function (e) {
+                                done(reader.result);
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    }
+                });
+
+                $modal.on('shown.bs.modal', function () {
+                    cropper = new Cropper(image, {
+                        aspectRatio: 129 / 40,
+                        viewMode: 3,
+                    });
+                }).on('hidden.bs.modal', function () {
+                    cropper.destroy();
+                    cropper = null;
+                });
+                document.getElementById('crop2').addEventListener('click', function (e) {
+                    e.preventDefault();
+                    var initialAvatarURL;
+                    var canvas = document.createElement('canvas');
+
+
+                    $("#loaderDiv3").show();
+                    $("#input2").prop('disabled', true);
+                    $("#avatar2").fadeTo('fast', 0.3);
+                    $("#label-of-gallery").css('cursor', 'default');
+
+                    if (cropper) {
+                        canvas = cropper.getCroppedCanvas({
+                            width: 1032,
+                            height: 320,
+                        });
+                        $modal.modal('hide');
+
+
+
+
+                        initialAvatarURL = avatar.src;
+                        //   avatar.src = canvas.toDataURL();
+                        //  $progress.show();
+                        $alert.removeClass('alert-success alert-warning');
+                        canvas.toBlob(function (blob) {
+                            //   console.log('blob', blob)
+                            new Compressor(blob, {
+                                quality: 0.6,
+                                maxWidth: 900,
+                                maxHeight: 900,
+                                convertSize: 5000,
+                                success(result) {
+                                    // console.log('result=====>', result)
+                                    var reader = new FileReader();
+                                    reader.readAsDataURL(result);
+                                    reader.onloadend = function () {
+                                        var base64data = reader.result;
+                                        // console.log('base64data=====>', base64data)
+                                        // checkActiveCrop.src = base64data;
+                                        // $('#avatar').val(base64data);
+                                        formData.append('gallery_image', result, 'avatar.jpg');
+                                        formData.append('shop_id', ShopID);
+                                    }
+                                },
+                            });
+                            // formData.append('gallery_image', blob, 'avatar.jpg');
+
+                            // formData.append('shop_id', ShopID);
+                            var crf_token = $('input[name=csrfmiddlewaretoken]').val();
+                            $(".progress-hide").show();
+                            $.ajax(
+                                {
+                                    url: '{% url "restapi:web_shop_add_imagetogallery" %}',
+                                    method: "post",
+                                    data: formData,
+                                    contentType: false,
+                                    processData: false,
+                                    headers: { "X-CSRFToken": crf_token },
+                                    xhr: function () {
+                                        var xhr = new XMLHttpRequest();
+                                        xhr.upload.onprogress = function (e) {
+                                            var percent = '0';
+                                            var percentage = '0%';
+
+                                            if (e.lengthComputable) {
+                                                percent = Math.round((e.loaded / e.total) * 100);
+                                                percentage = percent + '%';
+                                                $(".progress-bar").width(percentage).attr('aria-valuenow', percent).text(percentage);
+                                            }
+                                        };
+
+                                        return xhr;
+                                    },
+                                    success: function (json, status) {
+                                        $("#input2").prop('disabled', false);
+                                        $("#label-of-gallery").css('cursor', 'pointer');
+                                        $("#avatar2").fadeTo('fast', 1);
+                                        $(".progress-hide").hide();
+                                        $(".progress-bar").width('0%').attr('aria-valuenow', 0).text('0%');
+                                        $("#loaderDiv3").hide();
+                                        if (json.status) {
+                                            $(".product-gallery-pics").prepend('<div val="' + json.id + '" class="col-xl-6 prod-gallery-pic-box">' +
+                                                '<div class="box-gallery-img-section gallery-img-show">' +
+                                                '<img src="' + canvas.toDataURL() + '" alt="بنر حجره">' +
+                                                '<div class="item-gallery-option">' +
+                                                '<a href="' + json.image + '" id="show-image-gallery-product" title="مشاهده" target="_blank"><i class="fas fa-eye"></i></a>' +
+                                                '<button val="' + json.id + '" class="delete-prod-pic" href="#" id="delete-image-gallery-product"  title="حذف"><i class="fas fa-minus-circle"></i></button>' +
+                                                '</div>' +
+                                                '</div>' +
+                                                '</div>');
+                                        }
+                                        else {
+                                            console.log(json.message);
+                                        }
+                                    },
+                                    error: function (xhr, erstatus) {
+                                        $(".progress-bar").width('0%').attr('aria-valuenow', 0).text('0%');
+                                        $("#loaderDiv3").hide();
+                                        $(".progress-hide").hide();
+                                        $("#label-of-gallery").css('cursor', 'pointer');
+                                        console.log(xhr);
+                                        console.log(xhr.responseJSON);
+                                        console.log(xhr.responseJSON.status);
+                                        console.log(xhr.responseJSON.message);
+                                        console.log(erstatus);
+                                    }
+                                }
+                            )
+                        });
+                    }
+                });
+            });
     var profInfoajax = false;
     var submitResult = false;
     var submarkets_List = '';
@@ -976,6 +1328,266 @@
         }
     })
 </script>
+<!-- multi image uploader :  -->
+<script>
+
+    var $progress;
+    var $progressBar;
+    var $alert;
+    var initialAvatarURL;
+    var form_Data = new FormData();
+    window.addEventListener('DOMContentLoaded', function () {
+        var avatar = document.getElementById('avatar');
+        var image = document.getElementById('image');
+        var input = document.getElementById('input');
+        $progress = $('.progress');
+        $progressBar = $('.progress-bar');
+        $alert = $('.cropper-alert');
+        var $modal = $('#modal');
+        var cropper;
+
+        $('[data-toggle="tooltip"]').tooltip();
+
+        input.addEventListener('change', function (e) {
+            var files = e.target.files;
+            var done = function (url) {
+                input.value = '';
+                image.src = url;
+                $alert.hide();
+                $modal.modal('show');
+            };
+            var reader;
+            var file;
+            var url;
+
+            if (files && files.length > 0) {
+                file = files[0];
+
+                if (URL) {
+                    done(URL.createObjectURL(file));
+                } else if (FileReader) {
+                    reader = new FileReader();
+                    reader.onload = function (e) {
+                        done(reader.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+
+        $modal.on('shown.bs.modal', function () {
+            cropper = new Cropper(image, {
+                aspectRatio: 1,
+                viewMode: 3,
+            });
+        }).on('hidden.bs.modal', function () {
+            cropper.destroy();
+            cropper = null;
+        });
+        document.getElementById('crop').addEventListener('click', function () {
+            // var initialAvatarURL;
+            var canvas;
+
+            $modal.modal('hide');
+            if (cropper) {
+                canvas = cropper.getCroppedCanvas({
+                    width: 900,
+                    height: 900,
+                });
+                initialAvatarURL = avatar.src;
+                avatar.src = canvas.toDataURL();
+                $progress.show();
+                $alert.removeClass('alert-success alert-warning');
+                canvas.toBlob(function (blob) {
+                    form_Data.append('product_image', blob, 'avatar.jpg');
+                });
+            }
+        });
+    });
+
+    var $progress;
+    var $progressBar;
+    var $alert;
+    var initialAvatarURL;
+    var formData;
+    window.addEventListener('DOMContentLoaded', function () {
+
+        var avatar = document.getElementById('avatar3');
+        var image = document.getElementById('image3');
+        var input = document.getElementById('input3');
+        //   $progress = $('.progress');
+        //   $progressBar = $('.progress-bar');
+        $alert = $('.cropper-alert');
+        var $modal = $('#modal2');
+        var cropper;
+
+        $('[data-toggle="tooltip"]').tooltip();
+
+        input.addEventListener('change', function (e) {
+            var files = e.target.files;
+            var done = function (url) {
+                input.value = '';
+                image.src = url;
+                $alert.hide();
+                $modal.modal('show');
+            };
+            var reader;
+            var file;
+            var url;
+
+            if (files && files.length > 0) {
+                file = files[0];
+
+                if (URL) {
+                    done(URL.createObjectURL(file));
+                } else if (FileReader) {
+                    reader = new FileReader();
+                    reader.onload = function (e) {
+                        done(reader.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+
+        $modal.on('shown.bs.modal', function () {
+            cropper = new Cropper(image, {
+                aspectRatio: 1,
+                viewMode: 3,
+            });
+        }).on('hidden.bs.modal', function () {
+            cropper.destroy();
+            cropper = null;
+        });
+        document.getElementById('crop3').addEventListener('click', function (e) {
+            e.preventDefault();
+            formData = new FormData();
+            $modal.modal('hide');
+            var initialAvatarURL;
+            var canvas;
+            // crop2
+            // console.log('#label-of-gallery', $("#label-of-gallery"))
+            // debugger;
+            $("#loaderDiv3").show();
+            $("#input3").prop('disabled', true);
+            $("#avatar3").fadeTo('fast', 0.3);
+            $("#label-of-gallery").css('cursor', 'default');
+
+            if (cropper) {
+                canvas = cropper.getCroppedCanvas({
+                    width: 900,
+                    height: 900,
+                });
+
+                function uuidv4() {
+                    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                        return v.toString(16);
+                    });
+                }
+
+                initialAvatarURL = avatar.src;
+                //   avatar.src = canvas.toDataURL();
+                //  $progress.show();
+                $alert.removeClass('alert-success alert-warning');
+                canvas.toBlob(function (blob) {
+                    // console.log('blob-criop2==>', blob);
+                    new Compressor(blob, {
+                        quality: 0.6,
+                        maxWidth: 900,
+                        maxHeight: 900,
+                        convertSize: 5000,
+                        success(result) {
+                            // console.log('result=====>', result)
+                            var reader = new FileReader();
+                            reader.readAsDataURL(result);
+                            reader.onloadend = () => {
+                                var base64data = reader.result;
+                                // console.log('base64data=====>', base64data)
+                                // checkActiveCrop.src = base64data;
+                                // $('#avatar').val(base64data);
+                                formData.append('gallery_image', result, 'avatar.jpg');
+                                formData.append('product_id', uuidv4());
+                            }
+                        },
+                    });
+                    
+                    // formData.append('gallery_image', blob, 'avatar.jpg');
+
+                    // formData.append('product_id', uuidv4());
+                    var crf_token = $('input[name=csrfmiddlewaretoken]').val();
+                    $(".progress-hide").show();
+                    // progress=> hide
+                    // debugger;
+                    // console.log('formData==>', [...formData]);
+                    $.ajax(
+                        {
+                            url: '{% url "restapi:web_product_add_imagetogallery" %}',
+                            method: "post",
+                            data: formData,
+                            contentType: false,
+                            processData: false,
+                            headers: { "X-CSRFToken": crf_token },
+                            xhr: function () {
+                                var xhr = new XMLHttpRequest();
+                                xhr.upload.onprogress = function (e) {
+                                    var percent = '0';
+                                    var percentage = '0%';
+
+                                    if (e.lengthComputable) {
+                                        percent = Math.round((e.loaded / e.total) * 100);
+                                        percentage = percent + '%';
+                                        $(".progress-bar").width(percentage).attr('aria-valuenow', percent).text(percentage);
+                                    }
+                                };
+
+                                return xhr;
+                            },
+                            success: function (json, status) {
+                                //success
+                                console.log('json.message', json);
+                                $("#input3").prop('disabled', false);
+                                $("#label-of-gallery").css('cursor', 'pointer');
+                                $("#avatar3").fadeTo('fast', 1);
+                                $(".progress-hide").hide();
+                                $(".progress-bar").width('0%').attr('aria-valuenow', 0).text('0%');
+                                $("#loaderDiv3").hide();
+                                if (json.status) {
+                                    $(".product-gallery-pics").prepend('<div val="' + json.id + '" class="col-xl-3 prod-gallery-pic-box">' +
+                                        '<div class="box-gallery-img-section gallery-img-show">' +
+                                        '<img src="' + canvas.toDataURL() + '" alt="عکس محصول">' +
+                                        '<div class="item-gallery-option">' +
+                                        '<a href="' + json.image + '" id="show-image-gallery-product" title="مشاهده" target="_blank"><i class="fas fa-eye"></i></a>' +
+                                        '<button val="' + json.id + '" class="delete-prod-pic" href="#" id="delete-image-gallery-product"  title="حذف"><i class="fas fa-minus-circle"></i></button>' +
+                                        '</div>' +
+                                        '</div>' +
+                                        '</div>');
+                                }
+                                else {
+                                    console.log('json.message', json.message);
+                                }
+                            },
+                            error: function (xhr, erstatus) {
+                                // formData = '';
+                                $("#input3").prop('disabled', false);
+                                $(".progress-bar").width('0%').attr('aria-valuenow', 0).text('0%');
+                                $("#loaderDiv3").hide();
+                                $(".progress-hide").hide();
+                                $("#label-of-gallery").css('cursor', 'pointer');
+                                console.log(xhr);
+                                console.log(xhr.responseJSON);
+                                console.log(xhr.responseJSON.status);
+                                console.log(xhr.responseJSON.message);
+                                console.log(erstatus);
+                            }
+                        }
+                    )
+                });
+            }
+        });
+    });
+
+</script>
 
 {% block footer-section %}
     {% include "nakhll_market/parents/footer-section.html" %}
@@ -983,4 +1595,4 @@
 
 {% block footer %}
     {% include "nakhll_market/parents/footersite.html" %}
-{% endblock %}
+{% endblock %}      

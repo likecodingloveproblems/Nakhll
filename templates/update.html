@@ -1,9 +1,10 @@
 {% load i18n static %}
+{% load analytical %}
 {% load compress %}
 
-<!DOCTYPE html>
+{% load analytical %}<!DOCTYPE html>
 <html lang="en">
-<head>
+<head>{% analytical_head_top %}
 
 {% compress css %}
     <link rel="stylesheet" href="{% static "css/bootstrap-rtl.min.css" %}" />
@@ -17,7 +18,7 @@
 <link rel="manifest" href="{% static "images/favicon/site.webmanifest" %}">
 
     <title>بازار نخل | بروز رسانی </title>
-</head>
+{% analytical_head_bottom %}</head>
 
 <body class="error-500-container">
     <div class="container">
@@ -29,6 +30,6 @@
             </div>
         </div>
     </div>
-</body>
+{% analytical_body_bottom %}</body>
 
 </html>

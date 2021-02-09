@@ -1,5 +1,7 @@
 {% load jformat %}
+{% load analytical %}
 {% load i18n static %}
+{% load analytical %}
 
 {% block header %}
     {% include "nakhll_market/parents/headersite.html" %}
@@ -7,7 +9,7 @@
 
 
     <title>بازار نخل | کمپین روز دختر</title>
-</head>
+{% analytical_head_bottom %}</head>
 
 
 {% block headertag %}
@@ -121,6 +123,6 @@
     {% include "nakhll_market/parents/footersite.html" %}
 {% endblock %}
 
-</body>
+{% analytical_body_bottom %}</body>
 
 </html>

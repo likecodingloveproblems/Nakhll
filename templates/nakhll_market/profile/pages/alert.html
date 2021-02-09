@@ -1,4 +1,6 @@
 {% load jformat %}
+{% load analytical %}
+
 
 {% block header %}
 {% include "nakhll_market/parents/headermain.html" %}
@@ -6,7 +8,7 @@
 
 
     <title>بازار نخل | لیست هشدار ها</title>
-</head>
+{% analytical_head_bottom %}</head>
 
 
 {% block headertag %}

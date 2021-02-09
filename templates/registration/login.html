@@ -1,10 +1,12 @@
 {% load i18n static %}
+{% load analytical %}
+{% load analytical %}
 
 {% block header %}
 {% include "nakhll_market/parents/headermain.html" %}
 {% endblock %}
     <title>بازار نخل | ورود</title>
-</head>
+{% analytical_head_bottom %}</head>
 <body id="login-page">
 
 <div class="login-sec login-page-whole-div">
@@ -49,7 +51,7 @@
                     <p><i class="fas fa-repeat" id="refresh" onclick="Captcha();"></i></p>
                 </div>
                 <input type="text" id="txtInput" maxlength="7" />    
-            </body>
+            {% analytical_body_bottom %}</body>
         </div>
         <div class="under-inputs">
             <div class="remember-checkbox">
@@ -190,4 +192,4 @@ padding:10px
 
     
 </div>
-</body>
+{% analytical_body_bottom %}</body>

@@ -1,13 +1,17 @@
 {% load jformat %}
+{% load analytical %}
 {% load i18n static %}
 
+
 {% block header %}
-    {% include "nakhll_market/parents/headermain.html" %}
+{% include "nakhll_market/parents/headermain.html" %}
 {% endblock %}
 
     <title>بازار نخل | ثبت حجره جدید</title>
     <link rel="stylesheet" href="{% static "css/cropper.css" %}">
 </head>
+
+{% analytical_head_bottom %}</head>
 
 {% block headertag %}
     {% include "nakhll_market/parents/new-headertag-section.html" %}

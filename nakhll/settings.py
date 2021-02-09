@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.sitemaps',
+    'analytical',
     'sms',
     'my_auth',
     'tinymce',
@@ -285,3 +286,5 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 KAVENEGAR_KEY = os.environ.get('KAVENEGAR_KEY')
 
 SESSION_SAVE_EVERY_REQUEST: bool=True
+
+GOOGLE_ANALYTICS_PROPERTY_ID = '261669236'

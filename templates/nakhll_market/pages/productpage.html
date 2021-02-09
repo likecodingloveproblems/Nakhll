@@ -1,5 +1,8 @@
 {% load i18n static %}
+{% load analytical %}
 {% load jformat %}
+{% load analytical %}
+
 
 {% block header %}
     {% include "nakhll_market/parents/headersite.html" %}
@@ -8,7 +11,7 @@
 
     <meta name="product_id" content="{{Product.ID}}">
     <title>بازار نخل | {{Product.Title}}</title>
-</head>
+{% analytical_head_bottom %}</head>
 
 <script type="application/ld+json">
     {

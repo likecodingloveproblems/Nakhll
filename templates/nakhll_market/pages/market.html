@@ -1,5 +1,8 @@
 {% load i18n static %}
+{% load analytical %}
 {% load jformat %}
+{% load analytical %}
+
 
 {% block header %}
  {% include "nakhll_market/parents/headermain.html" %}
@@ -9,7 +12,7 @@
     <meta name="keywords" content="بازارچه ها , بازارچه های بازار نخل , راسته های بازار نخل , بازارچه بازار نخل , {% for item in MarketList %} {{item.Market.Title}} , {% endfor %} ">
     <meta name="description" content="همه حجره ها ( فروشگاه های آنلاین ) بازار اجتماعی نخل">
     <title>بازار نخل | بازارچه ها</title>
-</head>
+{% analytical_head_bottom %}</head>
 
 
 {% block headertag %}

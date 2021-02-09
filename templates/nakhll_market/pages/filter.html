@@ -1,5 +1,8 @@
 {% load i18n static %}
+{% load analytical %}
 {% load jformat %}
+{% load analytical %}
+
 
 {% block header %}
 {% include "nakhll_market/parents/headermain.html" %}
@@ -10,7 +13,7 @@
     <meta name="description" content="مشاهده همه محصولات بازار اجتماعی نخل .">
     <title>بازار نخل | همه محصولات</title>
     
-</head>
+{% analytical_head_bottom %}</head>
 
 
 {% block headertag %}

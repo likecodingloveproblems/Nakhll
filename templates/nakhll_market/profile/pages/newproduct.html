@@ -1,5 +1,7 @@
 {% load jformat %}
+{% load analytical %}
 {% load i18n static %}
+{% load analytical %}
 
 {% block header %}
 {% include "nakhll_market/parents/headersite.html" %}
@@ -8,7 +10,7 @@
 
     <title>بازار نخل | ثبت محصول جدید</title>
     <link rel="stylesheet" href="{% static "css/cropper.css" %}">
-</head>
+{% analytical_head_bottom %}</head>
 
 
 {% block headertag %}

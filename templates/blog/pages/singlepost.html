@@ -1,12 +1,16 @@
 {% load i18n static %}
+{% load analytical %}
 {% load jformat %}
+{% load analytical %}
+
+{% load analytical %}
 
 {% block header %}
     {% include "nakhll_market/parents/headermain.html" %}
 {% endblock %}
 
 <title>وبلاگ بازار نخل | {{Post.Title}}</title>
-</head>
+{% analytical_head_bottom %}</head>
 
 {% block headertag %}
     {% include "nakhll_market/parents/new-headertag-section.html" %}

@@ -1,10 +1,12 @@
 {% load i18n static %}
+{% load analytical %}
+{% load analytical %}
 
 {% block header %}
 {% include "nakhll_market/parents/headermain.html" %}
 {% endblock %}
     <title>بازار نخل</title>
-</head>
+{% analytical_head_bottom %}</head>
 <body id="login-page">
 
 <div class="container">
@@ -603,4 +605,4 @@
     }
 </script>
 
-</body>
+{% analytical_body_bottom %}</body>

@@ -1,10 +1,12 @@
 {% load jformat %}
+{% load analytical %}
 {% load i18n static %}
+{% load analytical %}
 {% load compress %}
 <!-- headermain -->
-<!DOCTYPE html>
+{% load analytical %}<!DOCTYPE html>
 <html lang="en">
-<head> 
+<head>{% analytical_head_top %} 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -55,7 +57,7 @@
 
 
 <title>بازار نخل | کاربران</title>
-</head>
+{% analytical_head_bottom %}</head>
 
 <!-- headertag-section -->
 <header>
@@ -962,7 +964,7 @@
 
 <script type="text/javascript">!function(){function t(){var t=document.createElement("script");t.type="text/javascript",t.async=!0,localStorage.getItem("rayToken")?t.src="https://app.raychat.io/scripts/js/"+o+"?rid="+localStorage.getItem("rayToken")+"&href="+window.location.href:t.src="https://app.raychat.io/scripts/js/"+o;var e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(t,e)}var e=document,a=window,o="1b3710ed-495e-4794-bbc7-842af6728c48";"complete"==e.readyState?t():a.attachEvent?a.attachEvent("onload",t):a.addEventListener("load",t,!1)}();</script>
 
-    <body>
+    <body>{% analytical_body_top %}
 <!-- footer-section -->
 
 
@@ -1108,7 +1110,7 @@
     </script>
 {% endcompress %}
 
-</body>
+{% analytical_body_bottom %}</body>
 
 </html>
 <!-- footersite -->

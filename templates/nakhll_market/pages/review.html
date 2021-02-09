@@ -1,5 +1,8 @@
 {% load i18n static %}
+{% load analytical %}
 {% load jformat %}
+{% load analytical %}
+
 
 <form class="new-comment" method="POST" action="{% url "nakhll_market:AddNewProductReview" Product.Slug %}">
     {% csrf_token %}

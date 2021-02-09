@@ -1,5 +1,7 @@
 {% load jformat %}
+{% load analytical %}
 {% load i18n static %}
+{% load analytical %}
 
 {% block header %}
 {% include "nakhll_market/parents/headermain.html" %}
@@ -7,7 +9,7 @@
 
 
     <title>بازار نخل | سبد خرید</title>
-</head>
+{% analytical_head_bottom %}</head>
 
 
 {% block headertag %}

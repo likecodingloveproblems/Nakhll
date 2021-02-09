@@ -1,11 +1,12 @@
 {% load jformat %}
+{% load analytical %}
 
 {% block header %}
     {% include "nakhll_market/parents/headermain.html" %}
 {% endblock %}
 
     <title>بازار نخل |  هشدار ها - ویرایش بنر حجره</title>
-</head>
+{% analytical_head_bottom %}</head>
 
 {% block headertag %}
     {% include "nakhll_market/parents/new-headertag-section.html" %}
