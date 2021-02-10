@@ -328,10 +328,14 @@ class ShopManager(models.Manager):
             'Location',
             )
         
-    def most_sale_shop(self):
+    def most_last_week_sale_shops(self):
         queryset = self.get_queryset()
+        number_of_days = 7
+        now = timezone.now()
+        one_week_ago = now.replace(day = now.day-7)
         return queryset\
             .filter(Publish=True, Available=True)\
+            .filter(ShopProduct__Factor_Product__Factor_Products__OrderDate__gte=one_week_ago)\
             .annotate(number_sale=Sum('ShopProduct__Factor_Product__ProductCount'))\
             .order_by('-number_sale')[:3]
 
