@@ -2017,8 +2017,17 @@ class UserPoint (models.Model):
         verbose_name_plural = "امتیاز ها"
         
 #----------------------------------------------------------------------------------------------------------------------------------
+class AmazingProductManager(models.Manager):
+    def get_amazing_products(self):
+        queryset = self.get_queryset()
+        now = timezone.now()
+        return queryset.filter(
+            start_date__lte=now,
+            end_date__gte=now
+            )
 
 class AmazingProduct(models.Model):
+    objects = AmazingProductManager()
     product = models.ForeignKey(
         Product,
         verbose_name='محصول شگفت انگیز',
