@@ -39,7 +39,7 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group 
 
-from .models import Tag
+from .models import AmazingProduct, Tag
 from .models import Market
 from .models import MarketBanner
 from .models import SubMarket
@@ -766,7 +766,10 @@ def index(request):
         discounted_product = False
 
     # shop 
-    most_sale_shop = Shop.objects.most_sale_shop()
+    most_sale_shops = Shop.objects.most_last_week_sale_shops()
+
+    # amazing products
+    amazing_products = AmazingProduct.objects.get_amazing_products()
 
     context = {
         'This_User_Profile':this_profile,
@@ -782,7 +785,8 @@ def index(request):
         'Shops':pubshops,
         'DisProduct':discounted_product,
         'AllDisProduct':dis_product,
-        'MostSaleShop':most_sale_shop,
+        'MostSaleShop':most_sale_shops,
+        'AmazingProducts':amazing_products,
     }
 
     return render(request, 'nakhll_market/pages/index.html', context)
