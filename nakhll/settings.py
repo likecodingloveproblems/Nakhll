@@ -101,6 +101,7 @@ ADMIN_REORDER = (
         'nakhll_market.Option_Meta',
         'nakhll_market.Alert',
         'nakhll_market.Newsletters',
+        'nakhll_market.AmazingProduct'
     )},
 
     {'app': 'Payment', 'label': 'بخش مالی','models':(

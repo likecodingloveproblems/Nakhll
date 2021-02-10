@@ -2013,3 +2013,22 @@ class UserPoint (models.Model):
         verbose_name_plural = "امتیاز ها"
         
 #----------------------------------------------------------------------------------------------------------------------------------
+
+class AmazingProduct(models.Model):
+    product = models.ForeignKey(
+        Product,
+        verbose_name='محصول شگفت انگیز',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='amazing_product',
+        )
+    start_date = models.DateTimeField(verbose_name='تاریخ شروع')
+    end_date = models.DateTimeField(verbose_name='تاریخ پایان')
+
+    class Meta:
+        ordering = ('id',)   
+        verbose_name = "شگفت انگیز"
+        verbose_name_plural = "شگفت انگیزان"
+
+    def __str__(self):
+        return self.product.Title

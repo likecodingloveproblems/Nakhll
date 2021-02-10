@@ -1,7 +1,7 @@
 from typing import Dict, Optional
 from django.contrib import admin
 from django.http import HttpRequest, HttpResponse
-from .models import  Tag, Market, MarketBanner, SubMarket, SubMarketBanner,BankAccount, Category ,PostRange, Shop, ShopBanner, ShopMovie, Attribute, AttrPrice, AttrProduct, Product, ProductBanner, ProductMovie, Comment, Profile, Review, Survey, Slider, Option_Meta, Message, Newsletters, Pages ,Alert ,Field, User_Message_Status, UserPoint
+from .models import  AmazingProduct, Tag, Market, MarketBanner, SubMarket, SubMarketBanner,BankAccount, Category ,PostRange, Shop, ShopBanner, ShopMovie, Attribute, AttrPrice, AttrProduct, Product, ProductBanner, ProductMovie, Comment, Profile, Review, Survey, Slider, Option_Meta, Message, Newsletters, Pages ,Alert ,Field, User_Message_Status, UserPoint
 from django.contrib import admin
 
 admin.site.site_header = 'مدیریت بازار نخل '
@@ -203,3 +203,8 @@ class ProductBanner(admin.ModelAdmin):
     list_filter=('FK_Product','Title','DateCreate','DateUpdate')
     search_fields=('FK_Product__Title',)
     ordering=('DateCreate',)
+
+@admin.register(AmazingProduct)
+class AmazingProduct(admin.ModelAdmin):
+    list_display=('product', 'start_date', 'end_date')
+    list_filter=('product', 'start_date', 'end_date')
