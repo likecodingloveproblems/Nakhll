@@ -69,12 +69,42 @@ def create_new_shop(request):
             shop_profile = request.FILES["shop_image"]
         except MultiValueDictKeyError:
             shop_profile = None
+        try:
+            shop_manager_national_card = request.FILES["shop_image_national_card"]
+        except MultiValueDictKeyError:
+            shop_manager_national_card = None
+        try:
+            shop_manager_documents = request.FILES.getlist("shop_manager_documents")
+        except MultiValueDictKeyError:
+            shop_manager_documents = None
+
         # Set Data
-        # Chech Shop Image
+        # set national card image
+        if shop_manager_national_card:
+            request.user.User_Profile.ImageNationalCard = shop_manager_national_card
+            request.user.User_Profile.save()
+        # Check Shop Image
         if (shop_profile != '') and (shop_profile != None):
-            this_shop = Shop.objects.create(FK_ShopManager = request.user, Title = shop_title, Slug = shop_slug, State = shop_state, BigCity = shop_bigcity, City = shop_city, Image = shop_profile)
+            this_shop = Shop.objects.create(
+                FK_ShopManager = request.user,
+                Title = shop_title,
+                Slug = shop_slug,
+                State = shop_state,
+                BigCity = shop_bigcity,
+                City = shop_city,
+                Image = shop_profile,
+                documents = shop_manager_documents,
+                )
         else:
-            this_shop = Shop.objects.create(FK_ShopManager = request.user, Title = shop_title, Slug = shop_slug, State = shop_state, BigCity = shop_bigcity, City = shop_city)
+            this_shop = Shop.objects.create(
+                FK_ShopManager = request.user,
+                Title = shop_title,
+                Slug = shop_slug,
+                State = shop_state,
+                BigCity = shop_bigcity,
+                City = shop_city,
+                documents = shop_manager_documents,
+                )
         # Set Shop Bio
         if (shop_bio != '') and (shop_bio != None):
             this_shop.Bio = shop_bio
