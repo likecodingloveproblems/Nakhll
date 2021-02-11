@@ -105,7 +105,7 @@
                                 <div class="col-xl-3">
                                     <div class="price-prod-cart">
 
-                                        {% if item.FK_Product.OldPrice != '0' %}
+                                        {% if item.FK_Product.OldPrice != 0 %}
                                             <h6 class="pricenumberdel"><span class="numbersprice del-price"> {{item.get_total_old_item_price}} </span>ریال</h6>
                                         {% endif%}
                                         
