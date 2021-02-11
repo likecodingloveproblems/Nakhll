@@ -44,73 +44,61 @@
         <!-- <div class="bd-example"> -->
             <!-- <div id="carouselExampleCaptions" class="carousel slide" data-ride="carousel"> -->
 
-                    <div class="slidercontanerr">
-                        <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-12">
-                       
-                                <a  class="carousel-control-prev " href="#carouselExampleCaptions" role="button" data-slide="prev">
-                                    <span class="carousel-control-prev-icon " aria-hidden="true"></span>
-                                    <span class="sr-only ">قبلی</span>
-                                </a>
-                            {% for slidr in Sliders %}
-                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                                <a href="{{slidr.URL}}"><img src="{{slidr.Image.url}}" class="sliderAsli" alt="{{slidr.Title}}">
-                                    {% if slidr.ShowInfo %}
-                                    <div class="carousel-caption">
-                                        <h3>{{slidr.Title}}</h3>
-                                        <p>{{slidr.Description}}</p>
-                                    </div>
-                                    {% endif %}
-                                </a>
-                            </div>
-                        {% endfor %} 
-                        <a class="carousel-control-next " href="#carouselExampleCaptions" role="button" data-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="sr-only">بعدی</span>
-                        </a>
-                        <!-- https://nakhll.com/media/Pictures/Sliders/axCYdN.jpg -->
-                        <!-- {{slidr.Image.url}} -->
-                        <!-- class="sliderAsli " -->
-                    </div>
-                        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12"class="imgCard">
-                            <aside  ><a
-                                href="#">
-                                <div style="display: flex;margin: 5px;" ><img
-                                    class="imgslidercontainer"
-                                    src="{% static "images/حجره ها.jpg" %}"
-                                    alt="حجره ها" loading="lazy"></div>
+                <div class="slidercontanerr">
+                    <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-12">
+                   
+                            <a  class="carousel-control-prev " href="#carouselExampleCaptions" role="button" data-slide="prev">
+                                <span class="carousel-control-prev-icon " aria-hidden="true"></span>
+                                <span class="sr-only ">قبلی</span>
+                            </a>
+                        {% for slidr in Sliders %}
+                        <aside class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <a href="{{slidr.URL}}"><img src="{{slidr.Image.url}}" class="sliderAsli" alt="{{slidr.Title}}">
+                                {% if slidr.ShowInfo %}
+                                <div class="carousel-caption">
+                                    <h3>{{slidr.Title}}</h3>
+                                    <p>{{slidr.Description}}</p>
+                                </div>
+                                {% endif %}
                             </a>
                         </aside>
-                        <div style="display: flex;margin: 5px;">
-
-                            <a
+                    {% endfor %} 
+                    <a class="carousel-control-next " href="#carouselExampleCaptions" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="sr-only">بعدی</span>
+                    </a>
+                    <!-- https://nakhll.com/media/Pictures/Sliders/axCYdN.jpg -->
+                    <!-- {{slidr.Image.url}} -->
+                    <!-- class="sliderAsli " -->
+                </div>
+                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12"class="imgCard">
+                        <aside  ><a
                             href="#">
-                            <div style="display: flex;margin: 5px;"><img
-                                class="imgslidercontainer"
-                                src="{% static "images/بازارچه پوشاک.jpg" %}"
-                                alt="بازارچه" loading="lazy"></div>
-                            </a>
-                        </a><a
-                              href="#">
                             <div style="display: flex;margin: 5px;" ><img
                                 class="imgslidercontainer"
-                                src="{% static "images/بازارچه پوشاک.jpg" %}"
-                                alt="بازارچه" loading="lazy"></div>
-                            </a>
-                           </div>
-                        </div>
-                      
-                        
-                        
+                                src="{% static "images/حجره ها.jpg" %}"
+                                alt="حجره ها" loading="lazy"></div>
+                        </a>
+                    </aside>
+                    <div style="display: flex;margin: 5px;">
 
-
-       
-   
-
-       
-
-    
-
-                    </div>   
+                        <a
+                        href="#">
+                        <div style="display: flex;margin: 5px;"><img
+                            class="imgslidercontainer"
+                            src="{% static "images/بازارچه پوشاک.jpg" %}"
+                            alt="بازارچه" loading="lazy"></div>
+                        </a>
+                    </a><a
+                          href="#">
+                        <div style="display: flex;margin: 5px;" ><img
+                            class="imgslidercontainer"
+                            src="{% static "images/بازارچه-صنایع-دستی.jpg" %}"
+                            alt="بازارچه" loading="lazy"></div>
+                        </a>
+                       </div>
+                    </div>
+                </div>   
         <!-- </div> -->
     <!-- </div> -->
 <!-- </div> -->
@@ -245,7 +233,42 @@
         </div>
     </div>
 </section>
+<!-- -------------------------شگفتانه-------------------------------------- -->
 
+<div class="c-swiper-specials--incredible">
+    <section class="icontainer">
+        <a href="#" class="specials__title">
+            <img src="assets/images/d9b15d68.png" alt="پیشنهاد شگفت‌انگیز">
+  
+        </a>
+    <div class="swiper--specials">
+        <div  class="swiper-container">
+            <div class="product-box swiper-wrapper" style="display: flex;overflow: hidden;">
+                {% for product in AmazingProducts %}
+                    <div class="product-item swiper-slide">
+                        <a href="{{product.product.get_url}}"><img src="{{product.product.get_image}}" alt="{{product.product.get_image_alt}}"></a>
+                        <a class="title" href="{{product.product.get_url}}">{{product.product.Title}}</a>
+                        <div class="inc-product-price">
+                        {% if product.product.OldPrice %}
+                            <del>{{product.product.OldPrice}}</del>
+                            <div class="c-price__discount-oval"><span>{{product.product.get_discounted}}٪</span></div>
+                            <span class="price">{{product.product.Price}} </span>تومان
+                        {% else %}
+                            <span class="price">{{product.product.Price}} </span>تومان
+                        {% endif %}
+                        </div>
+                        <div class="c-product-box__amazing">
+                            <div class="c-product-box__timer">۱۲:۵۲:۳۹</div>
+                        </div>
+                    </div><!--item-->
+                {% endfor %}
+        </div>
+    </div>
+    </section>
+</div>
+
+
+<!-- ---------------------------------- -->
 <section id="three-box-slider">
     <div class="container">
         <div class="row">
@@ -277,24 +300,20 @@
 </section>
 
 <!-- ------------------------------campain----------------------------- -->
-<!-- 
+
 <section id="three-box-slider">
     <div class="container">
         <div class="">
     <div class="card-carousel">
+        {% for shop in MostSaleShop %}
       <div class="my-card"><img
-        src="https://nakhll.com/media/Pictures/Sliders/sWckgi.jpg"
-        alt="برای فرزند دلبند شما!" loading="lazy"></div>
-      <div class="my-card"><img
-        src="https://nakhll.com/media/Pictures/Sliders/GgEIZv.jpg"
-        alt="برای فرزند دلبند شما!" loading="lazy"></div>
-      <div class="my-card"><img
-        src="https://nakhll.com/media/Pictures/Sliders/KyyzQk.jpg"
-        alt="برای فرزند دلبند شما!" loading="lazy"></div>
+        src="{{ shop.Image.url }}"
+        alt="{{ shop.Title }}" loading="lazy"></div>
+        {% endfor %}
      </div>
         </div>
     </div>   
-</section> -->
+</section>
 
 
 <!-- --------------------------------جدید ترین تخفیفات--------------------------- -->
