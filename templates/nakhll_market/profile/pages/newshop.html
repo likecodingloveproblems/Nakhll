@@ -1,4 +1,5 @@
-﻿﻿{% load jformat %}
+{% load jformat %}
+{% load analytical %}
 {% load i18n static %}
 
 {% block header %}
@@ -8,6 +9,7 @@
 <title>بازار نخل | ثبت حجره جدید</title>
 <link rel="stylesheet" href="{% static "css/cropper.css" %}">
 <link rel="stylesheet" href="{% static "css/newshop.css" %}">
+{% analytical_head_bottom %}
 </head>
 
 {% block headertag %}
