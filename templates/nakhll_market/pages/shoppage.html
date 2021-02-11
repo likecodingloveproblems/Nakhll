@@ -258,7 +258,7 @@
                                         <a href="{% url "nakhll_market:ProductsDetail" Shop.Slug item.Slug %}"><h3>{{item.Title |truncatechars:47}}</h3></a>
                                         
                                         {% if item.Status != '4' %}
-                                         <span>{% if item.OldPrice != '0' %}<span class="numbersprice off-price">{{item.OldPrice}}</span>{% endif %}<span class="numbersprice">{{item.Price}}</span> ریال </span>
+                                         <span>{% if item.OldPrice != 0 %}<span class="numbersprice off-price">{{item.OldPrice}}</span>{% endif %}<span class="numbersprice">{{item.Price}}</span> ریال </span>
                                         {% else %}
                                             <span class="empty">ناموجود</span>
                                         {% endif %}

@@ -112,7 +112,7 @@
 
             <div class="form-group col-md-6">
                 <label for="inputslugProd">قیمت واقعی</label>
-                <input type="text" name="Prodoldprice" {% if Product.OldPrice != '0' %}value="{{Product.OldPrice}}"{% endif %}
+                <input type="text" name="Prodoldprice" {% if Product.OldPrice != 0 %}value="{{Product.OldPrice}}"{% endif %}
                     pattern="[0-9]{5,}" class="form-control" id="inputslugProd">
                 <small>در صورت در نظر گرفتن تخفیف برای محصول، قیمت اصلی محصول را اینجا وارد
                     نمایید.</small>

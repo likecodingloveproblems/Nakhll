@@ -69,7 +69,7 @@
                                     <div class="product-prices">
                                         {% if products.Status != '4' %}
                                             <span class="real-price numbersprice">{{products.Price}} ریال</span>
-                                            {% if products.OldPrice != '0' %}
+                                            {% if products.OldPrice != 0 %}
                                                 <span class="after-off-price numbersprice">{{products.OldPrice}} ریال</span>
                                             {% else %}{% endif %}
                                         {% else %}

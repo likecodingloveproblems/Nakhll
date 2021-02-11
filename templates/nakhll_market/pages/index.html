@@ -62,7 +62,7 @@
                                 {% endif %}
                             </a>
                         </aside>
-                    {% endfor %} 
+                        {% endfor %} 
                     <a class="carousel-control-next " href="#carouselExampleCaptions" role="button" data-slide="next">
                         <span class="carousel-control-next-icon" aria-hidden="true"></span>
                         <span class="sr-only">بعدی</span>
@@ -199,7 +199,10 @@
                     <img src="{{DisProduct.UserProduct.Image_thumbnail_url}}" alt="عکس تخفیفات ویژه" width="175px" height="175px">
                     
                     <a href="/product/{{DisProduct.UserShop.Slug}}/{{DisProduct.UserProduct.Slug}}/"><h4 class="longtitle">{{DisProduct.UserProduct.Title}}</h4></a>
-                    {% if DisProduct.UserProduct.OldPrice != '0' %}<span class="strikeprice numbersprice takhfif">{{DisProduct.UserProduct.OldPrice}} ریال</span>{% else %}{% endif %}
+                    {% if DisProduct.UserProduct.OldPrice != 0 %}
+                    <span class="strikeprice numbersprice takhfif">{{DisProduct.UserProduct.OldPrice}} ریال</span>
+                    {% else %}
+                    {% endif %}
                     <br>
                     <span class="priceline numbersprice takhfif">{{DisProduct.UserProduct.Price}} ریال</span>
 
