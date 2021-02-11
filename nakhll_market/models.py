@@ -8,6 +8,7 @@ from django.db.models.fields import CharField
 from tinymce.models import HTMLField
 from django.contrib.auth.models import User,Group 
 from django.contrib.auth.models import (AbstractUser)
+from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from django.utils.deconstruct import deconstructible
 from django.utils import timezone
@@ -386,6 +387,16 @@ class Shop(models.Model):
     CanselCount=models.PositiveIntegerField(verbose_name='تعداد لغو سفارشات حجره', default = 0)
     CanselFirstDate=models.DateField(verbose_name='تاریخ اولین لغو سفارش', null = True, blank = True)
     LimitCancellationDate=models.DateField(verbose_name='تاریخ محدودیت لغو سفارشات', null = True, blank = True)
+    documents=ArrayField(
+        base_field=models.ImageField(
+            verbose_name='عکس جدید حجره', 
+            upload_to=PathAndRename('media/Pictures/Shop/Document/'), 
+            null=True,
+            blank=True
+            ),
+        default=list,
+        blank=True,
+        )
 
     def __str__(self):
         return "{}".format(self.Title)
@@ -972,9 +983,21 @@ class Product (models.Model):
         else:
             return False
 
+    def default_image_url(self):
+        return 'https://nakhll.com/media/Pictures/default.jpg'
+
+    def get_image(self):
+        try:
+            return self.Image.url
+        except:
+            return self.defautl_image_url()
+
+    def get_image_alt(self):
+        return self.Title
+        
+
     def Image_thumbnail_url(self):
         try:
-            i = self.Image_thumbnail.url
             url = self.Image_thumbnail.url
             return url
         except:
