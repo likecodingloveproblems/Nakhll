@@ -749,21 +749,10 @@ def index(request):
     pubshops = []
     for i in random.sample(range(0, numpubshops), 12):
         pubshops.append(pubshopsquery[i])
-    # Build Discounted Product Class
-    class DisPro:
-        def __init__(self, Product, Shop):
-            self.UserShop = Shop
-            self.UserProduct = Product
-    # Discounted Product
-    disprods = Product.objects.filter(Publish = True, Available = True, Status__in = ['1', '2', '3'])
-    disprods = disprods[random.randint(0,disprods.count())]
-    try:   
-        disprod = Product.objects.get(Slug = disprods.Slug)
-        disprod_shop = Shop.objects.get(ID = disprod.FK_Shop.ID)
 
-        discounted_product = DisPro(disprod, disprod_shop)
-    except:
-        discounted_product = False
+    # Discounted Product
+    discounted_product = Product.objects\
+        .get_one_most_discount_precenetage_available_product_random()
 
     # shop 
     most_sale_shops = Shop.objects.most_last_week_sale_shops()
@@ -1301,7 +1290,7 @@ def ProductsDetail(request, shop_slug, product_slug, status = None, msg = None):
         massege = msg
 
     # most discount
-    most_discounts = Product.objects.get_most_discount_precentage_product()
+    most_discounts = Product.objects.get_most_discount_precentage_available_product()
     most_discount = most_discounts.first()
 
     # other products bought by other user
@@ -1329,6 +1318,7 @@ def ProductsDetail(request, shop_slug, product_slug, status = None, msg = None):
         'MostDiscount':most_discount,
         'MostDiscounts':most_discounts,
         'OtherProducts':other_products,
+        'google_analytics_var1':('gender', 'female'),
     }
 
     return render(request, 'nakhll_market/pages/productpage.html', context)

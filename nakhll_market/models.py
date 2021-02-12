@@ -338,7 +338,7 @@ class ShopManager(models.Manager):
             .filter(Publish=True, Available=True)\
             .filter(ShopProduct__Factor_Product__Factor_Products__OrderDate__gte=one_week_ago)\
             .annotate(number_sale=Sum('ShopProduct__Factor_Product__ProductCount'))\
-            .order_by('-number_sale')[:3]
+            .order_by('-number_sale')[:5]
 
 
 # Shop (حجره) Model
@@ -450,6 +450,9 @@ class Shop(models.Model):
 
     def get_managment_image(self):
         return Profile.objects.get(FK_User = self.FK_ShopManager).Image_thumbnail_url()
+
+    def get_shop_manager_full_name(self):
+        return '{} {}'.format(self.FK_ShopManager.first_name, self.FK_ShopManager.last_name)
 
     def get_view_in_seven_day(self):
         # View In Seven Day
@@ -797,14 +800,24 @@ class Attribute(models.Model):
 #----------------------------------------------------------------------------------------------------------------------------------
 class ProductManager(models.Manager):
 
-    def get_most_discount_precentage_product(self):
+    def get_most_discount_precentage_available_product(self):
         queryset = self.get_queryset()
         return queryset\
-            .filter(Publish=True, Available = True)\
+            .filter(Publish=True, Available = True, Status__in=['1','2','3'])\
             .exclude(OldPrice='0')\
             .annotate(discount_amount=F('OldPrice') - F('Price'))\
             .annotate(discount_ratio=F('discount_amount')/F('OldPrice'))\
             .order_by('-discount_ratio')
+
+    def get_one_most_discount_precenetage_available_product_random(self):
+        queryset = self.get_queryset()
+        random_id = random.randint(0, 10)
+        return queryset\
+            .filter(Publish=True, Available = True, Status__in=['1','2','3'])\
+            .exclude(OldPrice='0')\
+            .annotate(discount_amount=F('OldPrice') - F('Price'))\
+            .annotate(discount_ratio=F('discount_amount')/F('OldPrice'))\
+            .order_by('-discount_ratio')[random_id]
 
 # Product (محصول) Model
 class Product (models.Model):

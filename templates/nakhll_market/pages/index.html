@@ -7,7 +7,7 @@
 
 <meta name="keywords" content="فروشگاه آنلاین نخل ,فروشگاه آنلاین ,خریدوفروش محصول ,خریدوفروش ,داستان حجره داران ,سرزمین نخل ,فروشگاه اینترنتی رایگان ,بازار نخل ,ساخت فروشگاه آنلاین ,پاساژآنلاین ,کسب وکار آنلاین ,سوغات ,بوش بیستون پژو mpn 405 ,مواد شوینده ,سوغات کرمان ,فروشگاه اینترنتی کرمان ,لوازم خانگی">
 <meta name="description" content="بازار نخل، بازاری اجتماعی است که برای رفع نیاز خرید و فروش محصولات با مشارکت فروشنده ها و خریدار ها پدید آمده است">
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>بازار نخل | به وسعت یک سرزمین</title>
 
    
@@ -42,17 +42,17 @@
 <!-- <div id="slider-index-top"> -->
     <!-- <div class="slidertop"> -->
         <!-- <div class="bd-example"> -->
-            <!-- <div id="carouselExampleCaptions" class="carousel slide" data-ride="carousel"> -->
-
-                <div class="slidercontanerr">
-                    <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-12">
-                   
-                            <a  class="carousel-control-prev " href="#carouselExampleCaptions" role="button" data-slide="prev">
-                                <span class="carousel-control-prev-icon " aria-hidden="true"></span>
-                                <span class="sr-only ">قبلی</span>
-                            </a>
+            
+            <div class="slidercontanerr">
+                <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-12">
+                    <!-- <div class="slider-full-width off-slick-slider"> -->
+                        <a  class="carousel-control-prev " href="#carouselExampleCaptions" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon " aria-hidden="true"></span>
+                            <span class="sr-only ">قبلی</span>
+                        </a>
                         {% for slidr in Sliders %}
-                        <aside class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <div id="carouselExampleCaptions" class="carousel slide carousel-item {% if forloop.first %}active{% endif %}" data-ride="carousel">
+                        <!-- <aside class="carousel-item {% if forloop.first %}active{% endif %}"> -->
                             <a href="{{slidr.URL}}"><img src="{{slidr.Image.url}}" class="sliderAsli" alt="{{slidr.Title}}">
                                 {% if slidr.ShowInfo %}
                                 <div class="carousel-caption">
@@ -61,7 +61,8 @@
                                 </div>
                                 {% endif %}
                             </a>
-                        </aside>
+                        <!-- </aside> -->
+                    </div>
                         {% endfor %} 
                     <a class="carousel-control-next " href="#carouselExampleCaptions" role="button" data-slide="next">
                         <span class="carousel-control-next-icon" aria-hidden="true"></span>
@@ -71,6 +72,7 @@
                     <!-- {{slidr.Image.url}} -->
                     <!-- class="sliderAsli " -->
                 </div>
+                <!-- </div> -->
                     <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12"class="imgCard">
                         <aside  ><a
                             href="#">
@@ -196,15 +198,15 @@
                 <div class="oneslide">
                     <h3  class="title-borderbt">تخفیفات ویژه</h3>
 
-                    <img src="{{DisProduct.UserProduct.Image_thumbnail_url}}" alt="عکس تخفیفات ویژه" width="175px" height="175px">
+                    <img src="{{DisProduct.Image_thumbnail_url}}" alt="عکس تخفیفات ویژه" width="175px" height="175px">
                     
-                    <a href="/product/{{DisProduct.UserShop.Slug}}/{{DisProduct.UserProduct.Slug}}/"><h4 class="longtitle">{{DisProduct.UserProduct.Title}}</h4></a>
-                    {% if DisProduct.UserProduct.OldPrice != 0 %}
-                    <span class="strikeprice numbersprice takhfif">{{DisProduct.UserProduct.OldPrice}} ریال</span>
+                    <a href="{{DisProduct.get_url}}"><h4 class="longtitle">{{DisProduct.Title}}</h4></a>
+                    {% if DisProduct.OldPrice != 0 %}
+                    <span class="strikeprice numbersprice takhfif">{{DisProduct.OldPrice}} ریال</span>
                     {% else %}
                     {% endif %}
                     <br>
-                    <span class="priceline numbersprice takhfif">{{DisProduct.UserProduct.Price}} ریال</span>
+                    <span class="priceline numbersprice takhfif">{{DisProduct.Price}} ریال</span>
 
                 </div>
             </div>
@@ -237,7 +239,7 @@
     </div>
 </section>
 <!-- -------------------------شگفتانه-------------------------------------- -->
-
+{% if AmazingProducts %}
 <div class="c-swiper-specials--incredible">
     <section class="icontainer">
         <a href="#" class="specials__title">
@@ -261,7 +263,9 @@
                         {% endif %}
                         </div>
                         <div class="c-product-box__amazing">
-                            <div class="c-product-box__timer">۱۲:۵۲:۳۹</div>
+                            <div class="c-product-box__timer">
+                                <p class="timerstyle" id="demo"></p>
+                            </div>
                         </div>
                     </div><!--item-->
                 {% endfor %}
@@ -269,7 +273,7 @@
     </div>
     </section>
 </div>
-
+{% endif %}
 
 <!-- ---------------------------------- -->
 <section id="three-box-slider">
@@ -304,19 +308,24 @@
 
 <!-- ------------------------------campain----------------------------- -->
 
-<!-- <section id="three-box-slider">
-    <div class="container">
-        <div class="">
-    <div class="card-carousel">
+<section id="cardWitdh">
+ 
+    <div class="card-carouselcontainer">
+<div class="card-carousel">
         {% for shop in MostSaleShop %}
-      <div class="my-card"><img
-        src="{{ shop.Image.url }}"
-        alt="{{ shop.Title }}" loading="lazy"></div>
-        {% endfor %}
-     </div>
+        <div class="my-card" style="background-image:url('{{shop.Image_thumbnail_url}}')">
+            <img
+                src="{{shop.get_managment_image}}"
+                alt="برای فرزند دلبند شما!" loading="lazy" class="imageCardCarousel">
+                <h6>حجره دار:{{shop.get_shop_manager_full_name}}</h6>
+                <h6 class="textMycardCArousel">
+                    {{shop.Bio}}
+                </h6>
+            <a href="{{shop.get_url}}">مشاهده حجره</a>
         </div>
-    </div>   
-</section> -->
+        {% endfor %}
+    </div>
+</section>
 
 
 <!-- --------------------------------جدید ترین تخفیفات--------------------------- -->
@@ -540,6 +549,40 @@
             integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT"
             crossorigin="anonymous">
     </script>
+    <script>
+        // Set the date we're counting down to
+        var Dates = [];
+        {% for product in AmazingProducts %}
+            Dates.push("{{product.end_date|safe}}")
+        {% endfor %}
+        var countDownDate = new Date("{{AmazingProducts.first.end_date|safe}}").getTime();
+        {% comment %} var countDownDate = new Date("Jan 5, 2021 15:37:25").getTime(); {% endcomment %}
+        
+        // Update the count down every 1 second
+        var x = setInterval(function() {
+        
+          // Get today's date and time
+          var now = new Date().getTime();
+            
+          // Find the distance between now and the count down date
+          var distance = countDownDate - now;
+            
+          // Time calculations for days, hours, minutes and seconds
+          var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+          var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+          var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            
+          // Output the result in an element with id="demo"
+          document.getElementById("demo").innerHTML = `${hours}:${minutes}:${seconds}`;
+            
+          // If the count down is over, write some text 
+          if (distance < 0) {
+            clearInterval(x);
+            document.getElementById("demo").innerHTML = "اتمام تخفیف";
+          }
+        }, 1000);
+        </script>
      <script >
      $num = $('.my-card').length;
 $even = $num / 2;
