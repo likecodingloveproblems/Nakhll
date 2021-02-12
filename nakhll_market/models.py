@@ -4,7 +4,8 @@ from django.db.models.aggregates import Sum
 from my_auth.models import ProfileManager
 from django.db import models
 from django.db.models import F, Q
-from django.db.models.fields import CharField
+from django.db.models.functions import Cast
+from django.db.models.fields import CharField, FloatField
 from tinymce.models import HTMLField
 from django.contrib.auth.models import User,Group 
 from django.contrib.auth.models import (AbstractUser)
@@ -804,20 +805,16 @@ class ProductManager(models.Manager):
         queryset = self.get_queryset()
         return queryset\
             .filter(Publish=True, Available = True, Status__in=['1','2','3'])\
-            .exclude(OldPrice='0')\
-            .annotate(discount_amount=F('OldPrice') - F('Price'))\
-            .annotate(discount_ratio=F('discount_amount')/F('OldPrice'))\
+            .exclude(OldPrice=0)\
+            .annotate(OldPrice_float=Cast(F('OldPrice'), FloatField()))\
+            .annotate(Price_float=Cast(F('Price'), FloatField()))\
+            .annotate(discount_ratio=(F('OldPrice_float')-F('Price_float'))/F('OldPrice_float'))\
             .order_by('-discount_ratio')
 
     def get_one_most_discount_precenetage_available_product_random(self):
-        queryset = self.get_queryset()
-        random_id = random.randint(0, 10)
-        return queryset\
-            .filter(Publish=True, Available = True, Status__in=['1','2','3'])\
-            .exclude(OldPrice='0')\
-            .annotate(discount_amount=F('OldPrice') - F('Price'))\
-            .annotate(discount_ratio=F('discount_amount')/F('OldPrice'))\
-            .order_by('-discount_ratio')[random_id]
+        result = self.get_most_discount_precentage_available_product()
+        random_id = random.randint(0, int(result.count()/10))
+        return result[random_id]
 
 # Product (محصول) Model
 class Product (models.Model):

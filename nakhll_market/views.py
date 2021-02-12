@@ -1291,7 +1291,7 @@ def ProductsDetail(request, shop_slug, product_slug, status = None, msg = None):
 
     # most discount
     most_discounts = Product.objects.get_most_discount_precentage_available_product()
-    most_discount = most_discounts.first()
+    most_discount = Product.objects.get_one_most_discount_precenetage_available_product_random()
 
     # other products bought by other user
     factors = Factor.objects.filter(FK_FactorPost__FK_Product=this_product)
@@ -1318,7 +1318,6 @@ def ProductsDetail(request, shop_slug, product_slug, status = None, msg = None):
         'MostDiscount':most_discount,
         'MostDiscounts':most_discounts,
         'OtherProducts':other_products,
-        'google_analytics_var1':('gender', 'female'),
     }
 
     return render(request, 'nakhll_market/pages/productpage.html', context)
