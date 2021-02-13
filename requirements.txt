@@ -1,6 +1,6 @@
 XlsxWriter==1.2.9
 django_jalali==4.1.2
-Django==3.1.5
+Django==3.1.6
 sentry_sdk==0.19.4
 kavenegar==1.1.2
 zeep==3.4.0
