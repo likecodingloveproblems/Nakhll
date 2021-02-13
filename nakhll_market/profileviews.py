@@ -1122,10 +1122,10 @@ def edit_shop_banner(request, banner_id):
                         shop_banner_description_field = Field(Title = 'Description', Value = Description)
                         edit_shop_banner_alert.FK_Field.add(shop_banner_description_field)
                     if (URL != this_banner.URL):
-                        shop_banner_url_field = FieldField.objects.create(Title = 'URL',Value = URL)
+                        shop_banner_url_field = Field.objects.create(Title = 'URL',Value = URL)
                         edit_shop_banner_alert.FK_Field.add(shop_banner_url_field)
                     if Builder_Name != this_banner.BannerBuilder:
-                        shop_banner_builder_name_field = FieldField.objects.create(Title = 'BannerBuilder', Value = Builder_Name)
+                        shop_banner_builder_name_field = Field.objects.create(Title = 'BannerBuilder', Value = Builder_Name)
                         edit_shop_banner_alert.FK_Field.add(shop_banner_builder_name_field)
                     if Builder_URL != this_banner.BannerURL:
                         shop_banner_builder_name_field = Field(Title = 'BannerURL',Value = Builder_URL)
@@ -3630,7 +3630,7 @@ def AddShopCopun(request):
                     if Copun_Serial != '':
                         copun = Coupon.objects.create(Title = Copun_Title, SerialNumber = Copun_Serial, FK_Creator = request.user, StartDate = Copun_SatrtDay, EndDate = Copun_EndDay, DiscountRate = Copun_DiscountRate, DiscountStatus = '1', NumberOfUse = Copun_NumberOfUse, DiscountType = DT)
                     else:
-                        copun = CouponCoupon.objects.create(Title = Copun_Title, FK_Creator = request.user, StartDate = Copun_SatrtDay, EndDate = Copun_EndDay, DiscountRate = Copun_DiscountRate, DiscountStatus = '1', NumberOfUse = Copun_NumberOfUse, DiscountType = DT)
+                        copun = Coupon.objects.create(Title = Copun_Title, FK_Creator = request.user, StartDate = Copun_SatrtDay, EndDate = Copun_EndDay, DiscountRate = Copun_DiscountRate, DiscountStatus = '1', NumberOfUse = Copun_NumberOfUse, DiscountType = DT)
                     # Minimum Amount Cheking
                     if Copun_MinimumAmount != '':
                         copun.MinimumAmount = Copun_MinimumAmount
@@ -4295,9 +4295,10 @@ def CartView(request):
             self.Shop_Slug = shop_slug
             self.Image = image
             self.Price = price
+    
+    Product_Count = 0 # Get Product In Cart Count
+    Order_List = [] # Get Orders List
     if request.user.is_authenticated :
-        Order_List = [] # Get Orders List
-        Product_Count = 0 # Get Product In Cart Count
         user_factor = Factor.objects.filter(FK_User = request.user, PaymentStatus = False) # Get Users Factor
         if user_factor.exists():
             last_factor = user_factor[0] # Get Last Factor
@@ -4368,7 +4369,7 @@ def ManageCampaignList(request):
             'Wallet': wallets,
             'Options': options,
             'MenuList':navbar,
-            'AllUserCupons':allusercopun,
+            'AllUserCupons':allusercampaign,
             'ShowAlart':False,
         }
 

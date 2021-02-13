@@ -564,7 +564,19 @@ def update_user_profile(request):
 
             
 
-            if (thisprofile.ZipCode != Profile_ZipCode) or (thisprofile.Address != Profile_Address) or (thisprofile.State != Profile_State) or(thisprofile.BigCity != Profile_BigCity) or(thisprofile.City != Profile_City) or (thisprofile.Location != Profile_Location) or (thisprofile.BrithDay != Profile_BrithDay) or (thisprofile.FaxNumber != Profile_FaxNumber) or (thisprofile.CityPerCode != Profile_CityPerCode) or(thisprofile.PhoneNumber != Profiel_PhoneNumber) or(thisprofile.Bio != Profile_Bio) or(thisprofile.Sex != ProfileSex) or(thisprofile.TutorialWebsite != ProfileToWeb):
+            if (thisprofile.ZipCode != Profile_ZipCode) or\
+                (thisprofile.Address != Profile_Address) or\
+                (thisprofile.State != Profile_State) or\
+                (thisprofile.BigCity != Profile_BigCity) or\
+                (thisprofile.City != Profile_City) or\
+                (thisprofile.Location != Profile_Location) or\
+                (thisprofile.BrithDay != Profile_BrithDay) or\
+                (thisprofile.FaxNumber != Profile_FaxNumber) or\
+                (thisprofile.CityPerCode != Profile_CityPerCode) or\
+                (thisprofile.PhoneNumber != Profiel_PhoneNumber) or\
+                (thisprofile.Bio != Profile_Bio) or\
+                (thisprofile.Sex != Profile_SexState) or\
+                (thisprofile.TutorialWebsite != Profile_TutorialWebsite):
                 
                 # if thisprofile.MobileNumber != Profile_MobileNumber:
                 #     if Newsletters.objects.filter(MobileNumber = Profile_MobileNumber).count() == 0:
@@ -645,7 +657,13 @@ def update_user_profile(request):
 
         else:
 
-            if (thisprofile.ZipCode != Profile_ZipCode) or (thisprofile.Address != Profile_Address) or (thisprofile.State != Profile_State) or(thisprofile.BigCity != Profile_BigCity) or(thisprofile.City != Profile_City) or(thisprofile.Location != Profile_Location) or(thisprofile.BrithDay != Profile_BrithDay) or(thisprofile.FaxNumber != Profile_FaxNumber) or(thisprofile.CityPerCode != Profile_CityPerCode) or (thisprofile.PhoneNumber != Profiel_PhoneNumber) or (thisprofile.Bio != Profile_Bio) or (thisprofile.Sex != ProfileSex) or (thisprofile.TutorialWebsite != ProfileToWeb):
+            if (thisprofile.ZipCode != Profile_ZipCode) or\
+                (thisprofile.Address != Profile_Address) or\
+                (thisprofile.State != Profile_State) or(thisprofile.BigCity != Profile_BigCity) or(thisprofile.City != Profile_City) or(thisprofile.Location != Profile_Location) or(thisprofile.BrithDay != Profile_BrithDay) or(thisprofile.FaxNumber != Profile_FaxNumber) or(thisprofile.CityPerCode != Profile_CityPerCode) or\
+                (thisprofile.PhoneNumber != Profiel_PhoneNumber) or\
+                (thisprofile.Bio != Profile_Bio) or\
+                (thisprofile.Sex != Profile_SexState) or\
+                (thisprofile.TutorialWebsite != Profile_TutorialWebsite):
                 
                 # if thisprofile.MobileNumber != Profile_MobileNumber:
                 #     if Newsletters.objects.filter(MobileNumber = Profile_MobileNumber).count() == 0:
@@ -2074,10 +2092,10 @@ def accept_factor_product(request):
             factor.OrderStatus = '2'
             factor.save()
         # Set Alert
-        if Alert.objects.filter(Part = '20', FK_User = request.user, Slug = ID).exists():
+        if Alert.objects.filter(Part = '20', FK_User = request.user, Slug = Factor_id).exists():
             return JsonResponse({'res' : 'شما قبلا این فاکتور را ثبت کرده اید'} , status = HTTP_400_BAD_REQUEST)
         else:
-            Alert.objects.create(Part = '20', FK_User = request.user, Slug = ID)
+            Alert.objects.create(Part = '20', FK_User = request.user, Slug = Factor_id)
             return JsonResponse({'res' : 'فاکتور با موفقیت، تایید شد.'} , status = HTTP_200_OK)
     
     except Exception as e:
@@ -2374,7 +2392,7 @@ class get_shop_view_in_seven_week:
                 day_past = datetime.timedelta(days = 6)
                 first_end_day_in_week = first_start_day_in_week + day_past
                 # Get View In Range
-                for item in this_shop.FK_Date.filter(Date__range = [first_start_day_in_week, first_first_end_day_in_week]):
+                for item in this_shop.FK_Date.filter(Date__range = [first_start_day_in_week, first_end_day_in_week]):
                     sum_view_in_this_week += int(item.Count)
                 week_list.append(str(sum_view_in_this_week))
             elif to_day.weekday() == 1:
