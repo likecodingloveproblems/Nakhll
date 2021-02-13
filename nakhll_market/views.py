@@ -1319,6 +1319,24 @@ def ProductsDetail(request, shop_slug, product_slug, status = None, msg = None):
         'MostDiscounts':most_discounts,
         'OtherProducts':other_products,
     }
+    context['google_analytics_event1'] = (
+        'view_item', 
+        {
+            "items": [
+                {
+                "id": this_product.ID,
+                "name": this_product.Title,
+                "list_name": this_product.FK_SubMarket,
+                "brand": this_shop.Title,
+                "category": this_product.FK_SubMarket,
+                "variant": "",
+                "list_position": 1,
+                "quantity": this_product.Inventory,
+                "price": this_product.Price
+                }
+            ]
+        }
+    )
 
     return render(request, 'nakhll_market/pages/productpage.html', context)
 
