@@ -1295,7 +1295,7 @@ def ProductsDetail(request, shop_slug, product_slug, status = None, msg = None):
 
     # other products bought by other user
     factors = Factor.objects.filter(FK_FactorPost__FK_Product=this_product)
-    other_products = Product.objects.filter(Factor_Product__Factor_Products__in=factors)
+    other_products = Product.objects.filter(Factor_Product__Factor_Products__in=factors).exclude(ID = this_product.ID).distinct()
 
 
     context = {
