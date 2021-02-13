@@ -904,80 +904,62 @@ def unsuccessful(request):
 
 
 # Add Product To Cart With Attribute Price Page
+@login_required
 def AddProductToCartWithAttrPrice(request, ID):
     # Check User Status
-    if request.user.is_authenticated :
-        if request.method == 'POST':
-            # Get This Product
-            this_product = get_object_or_404(Product, ID = ID)
-            if (this_product.Status != '4') and (this_product.Inventory != 0):
-                # Get All Attribute Price
-                attrpricelist = request.POST.getlist("attrpriceitem")
-                price_attribute_list = []
-                # Add To List
-                for item in attrpricelist:
-                    if AttrPrice.objects.filter(id = item).exists():
-                        price_attribute_list.append(AttrPrice.objects.get(id = item))
-                
-                if Factor.objects.filter(FK_User = request.user, PaymentStatus = False).exists():
-                    this_order = Factor.objects.filter(FK_User = request.user, PaymentStatus = False)[0]
-                    # Check Order Item
-                    if this_order.FK_FactorPost.filter(FK_Product = this_product, FK_User = request.user).exists():
-                        this_order_items = this_order.FK_FactorPost.filter(FK_Product = this_product, FK_User = request.user)
-                        # Check Price Attribute
-                        if len(price_attribute_list) == 0:
-                            if this_order_items.filter(FK_AttrPrice = None).exists():
-                                this_item = this_order_items.get(FK_AttrPrice = None)
-                                this_item.ProductCount += 1
-                                this_item.save() 
-                            else:
-                                this_item = FactorPost.objects.create(FK_Product = this_product, FK_User = request.user)
-                                this_order.FK_FactorPost.add(this_item)
+    if request.method == 'POST':
+        # Get This Product
+        this_product = get_object_or_404(Product, ID = ID)
+        if (this_product.Status != '4') and (this_product.Inventory != 0):
+            # Get All Attribute Price
+            attrpricelist = request.POST.getlist("attrpriceitem")
+            price_attribute_list = []
+            # Add To List
+            for item in attrpricelist:
+                if AttrPrice.objects.filter(id = item).exists():
+                    price_attribute_list.append(AttrPrice.objects.get(id = item))
+            
+            if Factor.objects.filter(FK_User = request.user, PaymentStatus = False).exists():
+                this_order = Factor.objects.filter(FK_User = request.user, PaymentStatus = False)[0]
+                # Check Order Item
+                if this_order.FK_FactorPost.filter(FK_Product = this_product, FK_User = request.user).exists():
+                    this_order_items = this_order.FK_FactorPost.filter(FK_Product = this_product, FK_User = request.user)
+                    # Check Price Attribute
+                    if len(price_attribute_list) == 0:
+                        if this_order_items.filter(FK_AttrPrice = None).exists():
+                            this_item = this_order_items.get(FK_AttrPrice = None)
+                            this_item.ProductCount += 1
+                            this_item.save() 
                         else:
-                            for item in price_attribute_list:
-                                this_order_items = this_order_items.filter(FK_AttrPrice__id = item.id)
-                            this_item = None
-                            for item in this_order_items:
-                                if item.FK_AttrPrice.all().count() == len(attrpricelist):
-                                    this_item = item
-                            if (len(this_order_items) != 0) and (this_item != None):
-                                this_item.ProductCount += 1
-                                this_item.save()
-                            else:
-                                this_item = FactorPost.objects.create(FK_Product = this_product, FK_User = request.user)
-                                for item in attrpricelist:
-                                    if AttrPrice.objects.filter(id = item).exists():
-                                        this_item.FK_AttrPrice.add(item)
-                                this_order.FK_FactorPost.add(this_item)
-                        # Chech Coupon
-                        if this_order.FK_Coupon != None:
-                            if (int(this_order.FK_Coupon.MaximumAmount) != 0) and (this_order.get_total_coupon_test(this_order.FK_Coupon.id) > int(this_order.FK_Coupon.MaximumAmount)):
-                                this_order.FK_Coupon = None
-                                this_order.save()
-                        return redirect('nakhll_market:Re_ProductsDetail',
-                        shop_slug = this_product.FK_Shop.Slug,
-                        product_slug = this_product.Slug,
-                        status = True,
-                        msg ='محصول مورد نظر به سبد خرید اضافه شد.')
+                            this_item = FactorPost.objects.create(FK_Product = this_product, FK_User = request.user)
+                            this_order.FK_FactorPost.add(this_item)
                     else:
-                        this_item = FactorPost.objects.create(FK_Product = this_product, FK_User = request.user)
-
-                        for item in attrpricelist:
-                            if AttrPrice.objects.filter(id = item).exists():
-                                this_item.FK_AttrPrice.add(item)
-                        this_order.FK_FactorPost.add(this_item)
-                        # Chech Coupon
-                        if this_order.FK_Coupon != None:
-                            if (int(this_order.FK_Coupon.MaximumAmount) != 0) and (this_order.get_total_coupon_test(this_order.FK_Coupon.id) > int(this_order.FK_Coupon.MaximumAmount)):
-                                this_order.FK_Coupon = None
-                                this_order.save()
-                        return redirect('nakhll_market:Re_ProductsDetail',
-                        shop_slug = this_product.FK_Shop.Slug,
-                        product_slug = this_product.Slug,
-                        status = True,
-                        msg ='محصول مورد نظر به سبد خرید اضافه شد.')
+                        for item in price_attribute_list:
+                            this_order_items = this_order_items.filter(FK_AttrPrice__id = item.id)
+                        this_item = None
+                        for item in this_order_items:
+                            if item.FK_AttrPrice.all().count() == len(attrpricelist):
+                                this_item = item
+                        if (len(this_order_items) != 0) and (this_item != None):
+                            this_item.ProductCount += 1
+                            this_item.save()
+                        else:
+                            this_item = FactorPost.objects.create(FK_Product = this_product, FK_User = request.user)
+                            for item in attrpricelist:
+                                if AttrPrice.objects.filter(id = item).exists():
+                                    this_item.FK_AttrPrice.add(item)
+                            this_order.FK_FactorPost.add(this_item)
+                    # Chech Coupon
+                    if this_order.FK_Coupon != None:
+                        if (int(this_order.FK_Coupon.MaximumAmount) != 0) and (this_order.get_total_coupon_test(this_order.FK_Coupon.id) > int(this_order.FK_Coupon.MaximumAmount)):
+                            this_order.FK_Coupon = None
+                            this_order.save()
+                    return redirect('nakhll_market:Re_ProductsDetail',
+                    shop_slug = this_product.FK_Shop.Slug,
+                    product_slug = this_product.Slug,
+                    status = True,
+                    msg ='محصول مورد نظر به سبد خرید اضافه شد.')
                 else:
-                    this_order = Factor.objects.create(FK_User = request.user, PaymentStatus = False)
                     this_item = FactorPost.objects.create(FK_Product = this_product, FK_User = request.user)
 
                     for item in attrpricelist:
@@ -990,19 +972,34 @@ def AddProductToCartWithAttrPrice(request, ID):
                             this_order.FK_Coupon = None
                             this_order.save()
                     return redirect('nakhll_market:Re_ProductsDetail',
-                        shop_slug = this_product.FK_Shop.Slug,
-                        product_slug = this_product.Slug,
-                        status = True,
-                        msg ='محصول مورد نظر به سبد خرید اضافه شد.')
+                    shop_slug = this_product.FK_Shop.Slug,
+                    product_slug = this_product.Slug,
+                    status = True,
+                    msg ='محصول مورد نظر به سبد خرید اضافه شد.')
             else:
-                return redirect('nakhll_market:Re_ProductsDetail',
-                shop_slug = this_product.FK_Shop.Slug,
-                product_slug = this_product.Slug,
-                status = True,
-                msg = 'محصول مدنظر شما در حال حاضر موجود نمی باشد!')
-    else:
-       return redirect("auth:login")
+                this_order = Factor.objects.create(FK_User = request.user, PaymentStatus = False)
+                this_item = FactorPost.objects.create(FK_Product = this_product, FK_User = request.user)
 
+                for item in attrpricelist:
+                    if AttrPrice.objects.filter(id = item).exists():
+                        this_item.FK_AttrPrice.add(item)
+                this_order.FK_FactorPost.add(this_item)
+                # Chech Coupon
+                if this_order.FK_Coupon != None:
+                    if (int(this_order.FK_Coupon.MaximumAmount) != 0) and (this_order.get_total_coupon_test(this_order.FK_Coupon.id) > int(this_order.FK_Coupon.MaximumAmount)):
+                        this_order.FK_Coupon = None
+                        this_order.save()
+                return redirect('nakhll_market:Re_ProductsDetail',
+                    shop_slug = this_product.FK_Shop.Slug,
+                    product_slug = this_product.Slug,
+                    status = True,
+                    msg ='محصول مورد نظر به سبد خرید اضافه شد.')
+        else:
+            return redirect('nakhll_market:Re_ProductsDetail',
+            shop_slug = this_product.FK_Shop.Slug,
+            product_slug = this_product.Slug,
+            status = True,
+            msg = 'محصول مدنظر شما در حال حاضر موجود نمی باشد!')
 
 
 def accept_factor_product(request, ID):
