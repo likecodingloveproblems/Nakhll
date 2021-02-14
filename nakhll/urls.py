@@ -18,6 +18,9 @@ from django.urls import path, include
 from django.conf.urls import url
 from django.urls.conf import re_path
 from nakhll import site_updating
+from nakhll import settings
+from django.conf.urls.static import static
+
 
 urlpatterns = [
     # re_path(r'.*', site_updating.update, name='update'), # only for update conditions
@@ -30,3 +33,7 @@ urlpatterns = [
     url(r'^app/api/', include('restapi.urls' , namespace='restapi')),
     path('accounting/', include('accounting.urls', namespace='accounting')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)\
+    + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
