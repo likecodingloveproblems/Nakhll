@@ -1,9 +1,8 @@
 {% load i18n static %}
-{% load analytical %}
 {% load compress %}
-{% load analytical %}<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
-<head>{% analytical_head_top %}
+<head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -12,16 +11,9 @@
     <meta name="theme-color" content="#f1fbff" />
     <meta name="msapplication-navbutton-color" content="#f1fbff">
     <meta name="apple-mobile-web-app-status-bar-style" content="#f1fbff">
-    
-    <script async src="https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.0.7/compressor.min.js"></script>
-    <script async src="https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.0.7/compressor.common.js"></script>
-    <script async src="https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.0.7/compressor.common.min.js"></script>
-    <script async src="https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.0.7/compressor.esm.js"></script>
-    <script async src="https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.0.7/compressor.esm.min.js"></script>
-    <script async src="https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.0.7/compressor.js"></script>
-      
-
-    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     {% compress css %}
         <link rel="stylesheet" href="{% static "css/fontiran.css" %}" />
         <link rel="stylesheet" href="{% static "css/all.min.css" %}" />
@@ -33,7 +25,7 @@
         <link rel="stylesheet" href="{% static "css/chosen.css" %}" />
         <link rel="stylesheet" href="{% static "css/style.css" %}" />
     {% endcompress %}
-
+    
     <!-- faveicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="{% static "images/favicon/apple-touch-icon.pn" %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static "images/favicon/favicon-32x32.png" %}">
@@ -57,4 +49,5 @@
             gtag('js', new Date());
             gtag('config', 'UA-156540827-1');
         </script>
+
     {% endcompress %}
