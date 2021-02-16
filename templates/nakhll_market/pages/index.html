@@ -1,4 +1,6 @@
 {% block header %}
+           <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
 {% include "nakhll_market/parents/headersite.html" %}
 {% endblock %}
 {% load i18n static %}
@@ -10,7 +12,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>بازار نخل | به وسعت یک سرزمین</title>
 
-   
+
 {% analytical_head_bottom %}</head>
 <body>{% analytical_body_top %}
     
@@ -366,9 +368,11 @@ class="sliderAsli" alt="{{slider.Title}}">
                 src="{{shop.get_managment_image}}"
                 alt="برای فرزند دلبند شما!" loading="lazy" class="imageCardCarousel">
                 <h6>حجره دار:{{shop.get_shop_manager_full_name}}</h6>
+                {% if shop.Bio %}
                 <h6 class="textMycardCArousel">
                     {{shop.Bio}}
                 </h6>
+                {% endif %}
             <a href="{{shop.get_url}}">مشاهده حجره</a>
         </div>
         {% endfor %}

@@ -371,6 +371,7 @@ header {
 
 .slick-slide {
     margin: 0px 20px;
+    height: auto
 }
 
 .boxslider-slick {
@@ -928,6 +929,8 @@ header {
     padding: 2px;
     border-radius: 20px;
     width: 75px;
+    height: 30% !important;
+    font-size: 1vw
 }
 
 .logo-comp {
