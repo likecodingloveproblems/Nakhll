@@ -64,7 +64,7 @@
 
 {% for slider in Sliders %}
 <aside data-target="#mycarousel" class="carousel-item {% if forloop.first %} active {% endif %}">
-<a href="{{slider.URL}}"><img src="https://nakhll.com/media/Pictures/Sliders/MIRPEh.jpg"
+<a href="{{slider.URL}}"><img src="{{slider.Image.url}}"
 class="sliderAsli" alt="{{slider.Title}}">
 <!-- https://nakhll.com/media/Pictures/Sliders/MIRPEh.jpg" -->
 {% if slider.ShowInfo %}
