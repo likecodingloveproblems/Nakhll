@@ -1,5 +1,4 @@
 {% load jformat %}
-{% load analytical %}
 {% load i18n static %}
 
 {% block header %}
@@ -9,7 +8,7 @@
 
     <title>بازار نخل | ثبت محصول جدید</title>
     <link rel="stylesheet" href="{% static "css/cropper.css" %}">
-{% analytical_head_bottom %}</head>
+</head>
 
 
 {% block headertag %}
@@ -1239,25 +1238,6 @@
           $progress.show();
           $alert.removeClass('alert-success alert-warning');
           canvas.toBlob(function (blob) {
-            //   new Compressor(blob, {
-            //       quality: 0.6,
-            //       maxWidth: 900,
-            //       maxHeight: 900,
-            //       convertSize: 5000,
-            //       success(result) {
-            //           console.log('result=====>', result)
-            //           var reader = new FileReader();
-            //           reader.readAsDataURL(result);
-            //           reader.onloadend = ()=> {
-            //               var base64data = reader.result;
-            //               //   // console.log('base64data=====>', base64data)
-            //               checkActiveCrop.src = base64data;
-            //               // $('#avatar').val(base64data);
-            //               form_Data.append('product_image', result, 'avatar.jpg');
-            //               //   files = [...form_Data];
-            //           }
-            //       },
-            //   });
           form_Data.append('product_image', blob, 'avatar.jpg');
         });
         }
@@ -1321,6 +1301,7 @@
           e.preventDefault();
         var initialAvatarURL;
         var canvas;
+
         
         $("#loaderDiv3").show();
         $("#input2").prop('disabled', true);
@@ -1334,6 +1315,9 @@
           });
             $modal.modal('hide');
           
+
+
+
           initialAvatarURL = avatar.src;
         //   avatar.src = canvas.toDataURL();
         //  $progress.show();
@@ -1342,27 +1326,6 @@
           formData.append('gallery_image', blob, 'avatar.jpg');
           
         formData.append('product_id', ProductID);
-        // new Compressor(blob, {
-        //           quality: 0.6,
-        //           maxWidth: 900,
-        //           maxHeight: 900,
-        //           convertSize: 5000,
-        //           success(result) {
-        //               // console.log('result=====>', result)
-        //               var reader = new FileReader();
-        //               reader.readAsDataURL(result);
-        //               reader.onloadend = function () {
-        //                   var base64data = reader.result;
-        //                   // console.log('base64data=====>', base64data)
-        //                   // checkActiveCrop.src = base64data;
-        //                   // $('#avatar').val(base64data);
-        //                   formData.append('gallery_image', result, 'avatar.jpg');
-        //                   formData.append('product_id', ProductID);
-        //               } 
-        //           },
-        //       });
-        
-        
         var crf_token = $('input[name=csrfmiddlewaretoken]').val();
         $(".progress-hide").show();
         $.ajax (
