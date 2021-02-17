@@ -185,8 +185,8 @@ DATABASES = {
         'NAME': os.environ.get('POSTGRES_DB', 'nakhlldb'),
         'USER': os.environ.get('POSTGRES_USER', 'nakhll'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD', '12345'),
-        'HOST':'postgres',
-        'PORT':'5432',
+        'HOST': os.environ.get('POSTGRES_HOST', 'postgres'),
+        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
     },
 }
 
