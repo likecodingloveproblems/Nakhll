@@ -35,6 +35,13 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-156540827-1"></script>
 
+  <script type="text/javascript" charset="utf-8" src="{% static "js/compressor/compressor.min.js" %}"></script>
+    <script type="text/javascript" charset="utf-8" src="{% static "js/compressor/compressor.common.js" %}"></script>
+    <script type="text/javascript" charset="utf-8" src="{% static "js/compressor/compressor.common.min.js" %}"></script>
+    <script type="text/javascript" charset="utf-8" src="{% static "js/compressor/compressor.esm.js" %}"></script>
+    <script type="text/javascript" charset="utf-8" src="{% static "js/compressor/compressor.esm.min.js" %}"></script>
+    <script type="text/javascript" charset="utf-8" src="{% static "js/compressor/compressor.js" %}"></script>
+     
     <!--JavaScript-->
     {% compress js file base %}
         <script type="text/javascript" charset="utf-8" src="{% static "js/jquery4.min.js" %}"></script>

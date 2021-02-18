@@ -830,6 +830,10 @@ header {
     margin: 0;
 }
 
+.footer-top > div > p {
+    font-size: 1vw
+}
+
 .text-top-footer p {
     padding: 25px 12px;
     margin: 0px;
@@ -929,7 +933,19 @@ header {
     padding: 2px;
     border-radius: 20px;
     width: 75px;
-    height: 30% !important;
+    height: 30% ;
+    font-size: 1vw
+}
+.submit-search-account {
+    position: absolute;
+    margin: 3px -78px 2px 2px;
+    border: none;
+    background: #00A7E6;
+    color: #fff;
+    padding: 2px;
+    border-radius: 20px;
+    width: 75px;
+    height: 19% ;
     font-size: 1vw
 }
 
