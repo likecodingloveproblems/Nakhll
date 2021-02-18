@@ -687,6 +687,7 @@
 
         input.addEventListener('change', function (e) {
             var files = e.target.files;
+            form_Data.delete('product_image');
             var done = function (url) {
                 input.value = '';
                 image.src = url;
@@ -738,26 +739,27 @@
                 $alert.removeClass('alert-success alert-warning');
                 canvas.toBlob(function (blob) {
                     
-                    // new Compressor(blob, {
-                    //     quality: 0.6,
-                    //     maxWidth: 900,
-                    //     maxHeight: 900,
-                    //     convertSize: 5000,
-                    //     success(result) {
-                    //         // console.log('result=====>', result)
-                    //         var reader = new FileReader();
-                    //         reader.readAsDataURL(result);
-                    //         reader.onloadend = ()=> {
-                    //             var base64data = reader.result;
-                    //             // console.log('base64data=====>', base64data)
-                    //             // checkActiveCrop.src = base64data;
-                    //             // $('#avatar').val(base64data);
-                    //             form_Data.append('product_image', result, 'avatar.jpg');
-                    //             // formData.append('shop_id', ShopID);
-                    //         }
-                    //     },
-                    // });
-                    form_Data.append('product_image', blob, 'avatar.jpg');
+                     new Compressor(blob, {
+                          quality: 0.6,
+                          maxWidth:900,
+                          maxHeight: 900,
+                          convertSize: 5000,
+                          success(result) {
+                              console.log('result=====>', result)
+                              var reader = new FileReader();
+                              reader.readAsDataURL(result);
+                              reader.onloadend = function () {
+                                  var base64data = reader.result;
+                                //console.log('base64data=====>', base64data)
+                                  //checkActiveCrop.src = base64data;
+                                  // $('#avatar').val(base64data);
+                                  form_Data.append('product_image', result, 'avatar.jpg');
+                                  //files = [...form_Data];
+                                  //console.log('dfvdsfvdfv',...form_Data)
+                            }
+                        },
+                    });
+                    //form_Data.append('product_image', blob, 'avatar.jpg');
                 });
             }
         });
