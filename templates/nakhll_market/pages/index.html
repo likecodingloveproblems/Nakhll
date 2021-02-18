@@ -66,7 +66,7 @@
 
 {% for slider in Sliders %}
 <aside data-target="#mycarousel" class="carousel-item {% if forloop.first %} active {% endif %}">
-<a href="{{slider.URL}}"><img src="{{slidr.Image.url}}"
+<a href="{{slider.URL}}"><img src="{{slider.Image.url}}"
 class="sliderAsli" alt="{{slider.Title}}">
 <!-- https://nakhll.com/media/Pictures/Sliders/MIRPEh.jpg" -->
 {% if slider.ShowInfo %}
@@ -196,7 +196,7 @@ class="sliderAsli" alt="{{slider.Title}}">
                                     <div class="boxslider-slick">
                                         <a href="/{{shop.Slug}}/">
                                             <img src="{{shop.Image_thumbnail_url}}"  alt="{{shop.Title}}" class="seller-img">
-                                            <h3 class="titbox">{{category.Title}}</h3>
+                                            <h2 class="titbox">{{category.Title}}</h2>
                                            
                                             <div class="nameseller">
                                                 <h3>{{shop.Title}}</h3>
@@ -250,7 +250,7 @@ class="sliderAsli" alt="{{slider.Title}}">
 
                     <img src="{{DisProduct.Image_thumbnail_url}}" alt="عکس تخفیفات ویژه" width="175px" height="175px">
                     
-                    <a href="{{DisProduct.get_url}}"><h4 class="longtitle">{{DisProduct.Title}}</h4></a>
+                    <a href="{{DisProduct.get_url}}"><h2 class="longtitle">{{DisProduct.Title}}</h2></a>
                     {% if DisProduct.OldPrice != 0 %}
                     <span class="strikeprice numbersprice takhfif">{{DisProduct.OldPrice}} ریال</span>
                     {% else %}
@@ -263,8 +263,11 @@ class="sliderAsli" alt="{{slider.Title}}">
 
             <div class="col-xl-9 col-lg-9 col-md-8 col-sm-12 col-12 slider-hialf-sec">
                 <div class="slider-full-width">
-                    <h5><a href="#"></a>جدید ترین محصولات</h5>
-                    <h6><a href="/product/all/">نمایش همه محصولات</a></h6>
+                <div style="display: flex;flex: 1;justify-content: space-between;">
+                 <h2><a href="#"></a>جدید ترین محصولات</h2>
+                 <h3><a href="/product/all/">نمایش همه محصولات</a></h3>
+                </div>
+                   
                     <div class="clearfix"></div>
                     <div class="slider-full-cat slider-half">
                         <div class="postslidebt">
@@ -273,7 +276,7 @@ class="sliderAsli" alt="{{slider.Title}}">
                                     <div class="boxslider-slick products-new">
                                         <a href="/product/{{item.FK_Shop.Slug}}/{{item.Slug}}/">
                                             <img src="{{item.Image_thumbnail_url}}" alt="{{item.Title}}"  width="175px" height="175px" >
-                                            <h4 class="titbox">{{item.Title}}</h4>
+                                            <h2 class="titbox">{{item.Title}}</h2>
                                             {% if item.Status != '4' %}<span><span class="numbersprice">{{item.Price}}</span> ریال</span>{% else %}<span class="empty">ناموجود</span>{% endif %}
                                         </a>
                                     </div>
@@ -331,8 +334,10 @@ class="sliderAsli" alt="{{slider.Title}}">
         <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 slider-hialf-sec">
                 <div class="slider-full-width">
-                    <h5><a href="#">محصولات پیشنهادی</a></h5>
-                    <h6><a href="/product/all/">نمایش همه محصولات</a></h6>
+                <div style="display: flex;flex: 1;justify-content: space-between;">
+                    <h2><a href="#">محصولات پیشنهادی</a></h2>
+                    <h3><a href="/product/all/">نمایش همه محصولات</a></h3>
+                    </div>
                     <div class="clearfix"></div>
                     <div class="slider-full-cat slider-half">
                         <div class="postslidebt">
@@ -341,7 +346,7 @@ class="sliderAsli" alt="{{slider.Title}}">
                                     <div class="boxslider-slick">
                                         <a href="/product/{{item.FK_Shop.Slug}}/{{item.Slug}}/">
                                             <img src="{{item.Image_thumbnail_url}}" alt="{{item.Title}}" width="175px" height="175px">
-                                            <h3 class="titbox">{{item.Title}}</h3>
+                                            <h2 class="titbox">{{item.Title}}</h2>
                                             {% if item.Status != '4' %}<span><span class="numbersprice">{{item.Price}}</span> ریال</span>{% else %}<span class="empty">نا موجود</span>{% endif %}
                                         </a>
                                     </div>
@@ -388,9 +393,10 @@ class="sliderAsli" alt="{{slider.Title}}">
 
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 slider-hialf-sec">
                 <div class="slider-full-width off-slider">
-                    <h5><a href="#"></a>جدید ترین تخفیفات</h5>
-                    <h6><a href="/product/all/">نمایش همه محصولات</a></h6>
-                
+                 <div style="display: flex;flex: 1;justify-content: space-between;">
+                    <h2><a href="#"></a>جدید ترین تخفیفات</h2>
+                    <h3><a href="/product/all/">نمایش همه محصولات</a></h3>
+                    </div>
                             <div class="clearfix"></div>
                             <div class="slider-full-seller slider-full-cat">
                                 <div class="postslidebt">
