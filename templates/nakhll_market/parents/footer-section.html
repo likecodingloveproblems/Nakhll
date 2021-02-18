@@ -86,6 +86,7 @@
                             
                          
                             <div >
+                            <!--<img referrerpolicy="origin" id = 'jxlzfukzrgvjesgtnbqesizp' style = 'cursor:pointer' onclick = 'window.open("https://logo.samandehi.ir/Verify.aspx?id=163029&p=rfthgvkaxlaoobpduiwkpfvl", "Popup","toolbar=no, scrollbars=no, location=no, statusbar=no, menubar=no, resizable=0, width=450, height=630, top=30")' alt = 'logo-samandehi' src = '{% static "images/enamad-logo-1.png" %}' style="cursor:pointer"/>-->
                             <img  style = 'cursor:pointer' onclick = 'window.open("https://samandehi.ir/")' alt = 'logo-samandehi' src = "{% static "images/enamad-logo-1.png" %}" />
                             </div>
                             <div >
@@ -103,7 +104,6 @@
                             <span class="carousel-control-next-icon"></span>
                         </a>
                         </div>
-
                             
                         </div>
                     </div>
@@ -114,7 +114,7 @@
                             <form class="search-top newslatter" method="POST" action="/addemail/">
                                 {% csrf_token %}
                                 <input type="email" placeholder="آدرس ایمیل خود را وارد کنید ..." pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" name="email" id="email">
-                                <button type="submit" value="Submit" class="submit-search">عضویت</button>   
+                                <button type="submit" value="Submit" class="submit-search-account">عضویت</button>   
                             </form>
                             <div class="loaderDiv" id="loaderfooter">
                                 لطفا منتظر بمانید
