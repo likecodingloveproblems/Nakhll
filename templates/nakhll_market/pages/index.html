@@ -1,5 +1,4 @@
 {% block header %}
-           <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 
 {% include "nakhll_market/parents/headersite.html" %}
 {% endblock %}
@@ -59,10 +58,10 @@
 <!-- Wrapper for slides -->
 <div class="carousel-inner" role="listbox">
 <!-- changes applied here: -->
-<!-- <a class="carousel-control-prev " href="#mycarousel" role="button" data-slide="prev">
+<!--<a class="carousel-control-prev " href="#mycarousel" role="button" data-slide="prev">
 <span class="carousel-control-prev-icon " aria-hidden="true"></span>
 <span class="sr-only ">قبلی</span>
-</a> -->
+</a>-->
 
 {% for slider in Sliders %}
 <aside data-target="#mycarousel" class="carousel-item {% if forloop.first %} active {% endif %}">
@@ -250,7 +249,9 @@ class="sliderAsli" alt="{{slider.Title}}">
 
                     <img src="{{DisProduct.Image_thumbnail_url}}" alt="عکس تخفیفات ویژه" width="175px" height="175px">
                     
-                    <a href="{{DisProduct.get_url}}"><h2 class="longtitle">{{DisProduct.Title}}</h2></a>
+                    <a href="{{DisProduct.get_url}}">
+                    <h2 style="font-size: 1.1rem" class="longtitle">{{DisProduct.Title}}</h2>
+                    </a>
                     {% if DisProduct.OldPrice != 0 %}
                     <span class="strikeprice numbersprice takhfif">{{DisProduct.OldPrice}} ریال</span>
                     {% else %}
@@ -264,8 +265,8 @@ class="sliderAsli" alt="{{slider.Title}}">
             <div class="col-xl-9 col-lg-9 col-md-8 col-sm-12 col-12 slider-hialf-sec">
                 <div class="slider-full-width">
                 <div style="display: flex;flex: 1;justify-content: space-between;">
-                 <h2><a href="#"></a>جدید ترین محصولات</h2>
-                 <h3><a href="/product/all/">نمایش همه محصولات</a></h3>
+                 <h2 style="font-size:1.2rem"><a href="#"></a>جدید ترین محصولات</h2>
+                 <h3 style="font-size:1.1rem"><a href="/product/all/">نمایش همه محصولات</a></h3>
                 </div>
                    
                     <div class="clearfix"></div>
@@ -276,7 +277,7 @@ class="sliderAsli" alt="{{slider.Title}}">
                                     <div class="boxslider-slick products-new">
                                         <a href="/product/{{item.FK_Shop.Slug}}/{{item.Slug}}/">
                                             <img src="{{item.Image_thumbnail_url}}" alt="{{item.Title}}"  width="175px" height="175px" >
-                                            <h2 class="titbox">{{item.Title}}</h2>
+                                            <h2 style="font-size:1rem" class="titbox">{{item.Title}}</h2>
                                             {% if item.Status != '4' %}<span><span class="numbersprice">{{item.Price}}</span> ریال</span>{% else %}<span class="empty">ناموجود</span>{% endif %}
                                         </a>
                                     </div>
@@ -335,8 +336,8 @@ class="sliderAsli" alt="{{slider.Title}}">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 slider-hialf-sec">
                 <div class="slider-full-width">
                 <div style="display: flex;flex: 1;justify-content: space-between;">
-                    <h2><a href="#">محصولات پیشنهادی</a></h2>
-                    <h3><a href="/product/all/">نمایش همه محصولات</a></h3>
+                    <h2 style="font-size:1.2rem"><a href="#">محصولات پیشنهادی</a></h2>
+                    <h3 style="font-size:1.1rem"><a href="/product/all/">نمایش همه محصولات</a></h3>
                     </div>
                     <div class="clearfix"></div>
                     <div class="slider-full-cat slider-half">
@@ -346,7 +347,7 @@ class="sliderAsli" alt="{{slider.Title}}">
                                     <div class="boxslider-slick">
                                         <a href="/product/{{item.FK_Shop.Slug}}/{{item.Slug}}/">
                                             <img src="{{item.Image_thumbnail_url}}" alt="{{item.Title}}" width="175px" height="175px">
-                                            <h2 class="titbox">{{item.Title}}</h2>
+                                            <h2 style="font-size:1rem" class="titbox">{{item.Title}}</h2>
                                             {% if item.Status != '4' %}<span><span class="numbersprice">{{item.Price}}</span> ریال</span>{% else %}<span class="empty">نا موجود</span>{% endif %}
                                         </a>
                                     </div>
@@ -394,8 +395,8 @@ class="sliderAsli" alt="{{slider.Title}}">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 slider-hialf-sec">
                 <div class="slider-full-width off-slider">
                  <div style="display: flex;flex: 1;justify-content: space-between;">
-                    <h2><a href="#"></a>جدید ترین تخفیفات</h2>
-                    <h3><a href="/product/all/">نمایش همه محصولات</a></h3>
+                    <h2 style="font-size:1.2rem"><a href="#"></a>جدید ترین تخفیفات</h2>
+                    <h3 style="font-size:1.1rem"><a href="/product/all/">نمایش همه محصولات</a></h3>
                     </div>
                             <div class="clearfix"></div>
                             <div class="slider-full-seller slider-full-cat">
@@ -406,7 +407,7 @@ class="sliderAsli" alt="{{slider.Title}}">
                                         <a href="/product/{{item.FK_Shop.Slug}}/{{item.Slug}}/">
                                             <img src="{{item.Image_thumbnail_url}}" alt="{{item.Title}}" width="170px" height="170px">
                                             <div class="title-off-slider">
-                                                <h3 class="titbox longtitle">{{item.Title}}</h3>
+                                                <h3 style="font-size:1.1rem" class="titbox longtitle">{{item.Title}}</h3>
                                             </div>
                                             {% if item.Status != '4' %}                              
                                                 <span class="off-slider-darsad"> {{ item.get_discounted }}% تخفيف </span>

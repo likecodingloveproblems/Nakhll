@@ -4,7 +4,11 @@
 {% load analytical %}
 
 {% load filters %}
+{% block header %}
+<!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">-->
 
+{% include "nakhll_market/parents/headersite.html" %}
+{% endblock %}
 
 <div class="modal fade" id="prod-gallery-Modal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
@@ -165,7 +169,7 @@
                                             </span>
                                         </p>
                                         <div class="des-prod">
-                                            <h2>معرفی {{Product.Title}} :</h2>
+                                            <h2 style="font-size:1.2rem">معرفی {{Product.Title}} :</h2>
                                             <p>{{Product.Bio}}</p>
                                         </div>
                                     </div>
@@ -371,12 +375,12 @@
 
             <div class="col-xl-3 col-lg-3 col-md-4 col-sm-12 col-12 one-slider-col">
                 <div class="oneslide">
-                    <h3  class="title-borderbt">تخفیفات ویژه</h3>
+                    <h3 style="font-size: 1.3rem" class="title-borderbt">تخفیفات ویژه</h3>
 
                     <img src="{{MostDiscount.Image_thumbnail_url}}" alt="عکس تخفیفات ویژه" width="175px" height="175px">
                     
                     <a href="{{MostDiscount.get_absolute_url}}">
-                        <h2 class="longtitle">{{MostDiscount.Title}}</h2>
+                        <h2 style="font-size: 1rem" class="longtitle">{{MostDiscount.Title}}</h2>
                     </a>
                         {% if MostDiscount.OldPrice != 0 %}
                             <span class="strikeprice numbersprice takhfif">{{MostDiscount.OldPrice}} ریال</span>
@@ -389,8 +393,8 @@
              <div class="col-xl-9 col-lg-9 col-md-8 col-sm-12 col-12 slider-hialf-sec">
                 <div class="slider-full-width">
                 <div style="display: flex;flex: 1;justify-content: space-between;">
-                    <h2><a href="#"></a>شاید به کارت بیاد</h2>
-                    <h3><a href="/product/all/">نمایش همه محصولات</a></h3>
+                    <h2 style="font-size: 1.2rem"><a href="#"></a>شاید به کارت بیاد</h2>
+                    <h3 style="font-size: 1.1rem"><a href="/product/all/">نمایش همه محصولات</a></h3>
                     </div>
                     <div class="clearfix"></div>
                     <div class="slider-full-cat slider-half">
@@ -400,7 +404,7 @@
                                     <div class="boxslider-slick products-new">
                                         <a href="/product/{{item.FK_Shop.Slug}}/{{item.Slug}}/">
                                             <img src="{{item.Image_thumbnail_url}}" alt="{{item.Title}}"  width="175px" height="175px" >
-                                            <h2 class="titbox">{{item.Title}}</h2>
+                                            <h2 style="font-size: 1rem" class="titbox">{{item.Title}}</h2>
                                             {% if item.Status != '4' %}<span><span class="numbersprice">{{item.Price}}</span> ریال</span>{% else %}<span class="empty">ناموجود</span>{% endif %}
                                         </a>
                                     </div>
@@ -509,7 +513,7 @@
         <div class="container">
             <div class="slider-hialf-sec">
                 <div class="slider-full-width border-boxshadow">
-                    <h5><a href="#"></a>خریداران این محصول را خریده اند</h5>
+                    <h5 style="font-size: 1rem"><a href="#"></a>خریداران این محصول را خریده اند</h5>
                     <div class="clearfix"></div>
                     <div class="slider-full-seller slider-full-cat">
                         <div class="postslidebt">
@@ -518,7 +522,7 @@
                                     <div class="boxslider-slick products-new">
                                         <a href="{{ item.get_url }}" target="_blank">
                                             <img src="{{ item.Image_thumbnail_url }}" alt="{{item.Title}}" width="175px" height="175px" >
-                                            <h2 class="titbox">{{item.Title}}</h2>
+                                            <h2 style="font-size: 1rem" class="titbox">{{item.Title}}</h2>
                                             <span><span class="numbersprice">{{item.Price}}</span> ریال</span>
                                         </a>
                                     </div>
@@ -534,7 +538,7 @@
                 <div class="container">
             <div class="slider-hialf-sec">
                 <div class="slider-full-width border-boxshadow">
-                    <h3><a href="#"></a>تخفیفات طلایی</h3>
+                    <h3 style="font-size: 1.3rem"><a href="#"></a>تخفیفات طلایی</h3>
                     <div class="clearfix"></div>
                     <div class="slider-full-seller slider-full-cat">
                         <div class="postslidebt">
@@ -543,7 +547,7 @@
                                     <div class="boxslider-slick products-new">
                                         <a href="{{ item.get_url }}" target="_blank">
                                             <img src="{{ item.Image_thumbnail_url }}" alt="{{item.Title}}" width="175px" height="175px" >
-                                            <h2 class="titbox">{{item.Title}}</h2>
+                                            <h2 style="font-size: 1rem" class="titbox">{{item.Title}}</h2>
                                             <span><span class="numbersprice">{{item.Price}}</span> ریال</span>
                                         </a>
                                     </div>
