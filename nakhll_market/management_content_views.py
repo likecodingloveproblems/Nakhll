@@ -1065,6 +1065,7 @@ def Add_New_Full_Shop(request, msg = None):
         context['SubMarkets'] = allsubmarket
         context['ShowAlart'] = show
         context['AlartMessage'] = message
+        context['Profile'] = Profile.objects.all()
 
         return render(request, 'nakhll_market/management/content/add_new_full_shop.html', context)
 
