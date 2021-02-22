@@ -181,7 +181,7 @@ DATABASES = {
     #     'CONN_MAX_AGE': None,
     # },
     'default':{
-        'ENGINE':'django.db.backends.postgresql',
+        'ENGINE':os.environ.get('POSTGRES_ENGINE', 'django.db.backends.postgresql'),
         'NAME': os.environ.get('POSTGRES_DB', 'nakhlldb'),
         'USER': os.environ.get('POSTGRES_USER', 'nakhll'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD', '12345'),
