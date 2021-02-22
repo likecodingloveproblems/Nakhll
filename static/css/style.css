@@ -6215,7 +6215,6 @@ margin-bottom: 10px;
 }
 .c-product-box__amazing {
     position: relative;
-    top: 20px;
     display: inline;
     text-align: left;
     width: 100%;
@@ -6369,10 +6368,10 @@ footer .copyright p {
 .c-price__discount-oval {
     display: inline-block;
     background-color: #fb3449;
-    font-weight: 700;
+    /* font-weight: 700; */
     color: #fff;
-    border-radius: 20px;
-    padding: 4px 6px 1px;
+    border-radius: 5px;
+    padding: 0px 10px 1px;
     letter-spacing: 0;
     margin-bottom: 3px;
     font-size: 1.1em;
@@ -6407,8 +6406,7 @@ footer .copyright p {
 }
 .timerstyle{
     text-align: center;
-    font-size: 60px;
-    margin-top: 0px;
+    font-size: 30px;
 }
 .product-wrapper {
     background-color: #fff;
