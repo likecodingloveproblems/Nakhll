@@ -334,7 +334,7 @@ class ShopManager(models.Manager):
         queryset = self.get_queryset()
         number_of_days = 7
         now = timezone.now()
-        one_week_ago = now.replace(day = now.day-7)
+        one_week_ago = now - datetime.timedelta(days=7)
         return queryset\
             .filter(Publish=True, Available=True)\
             .filter(ShopProduct__Factor_Product__Factor_Products__OrderDate__gte=one_week_ago)\

@@ -181,7 +181,7 @@ DATABASES = {
     #     'CONN_MAX_AGE': None,
     # },
     'default':{
-        'ENGINE':'django.db.backends.postgresql',
+        'ENGINE':os.environ.get('POSTGRES_ENGINE', 'django.db.backends.postgresql'),
         'NAME': os.environ.get('POSTGRES_DB', 'nakhlldb'),
         'USER': os.environ.get('POSTGRES_USER', 'nakhll'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD', '12345'),
@@ -296,3 +296,4 @@ ANALYTICAL_AUTO_IDENTIFY = True
 GOOGLE_ANALYTICS_PROPERTY_ID = 'UA-189302977-1'
 GOOGLE_ANALYTICS_GTAG_PROPERTY_ID = 'UA-189302977-1'
 GOOGLE_ANALYTICS_JS_PROPERTY_ID = 'UA-189302977-1'
+IDENTITY_FUNCTION = lambda user: user.id

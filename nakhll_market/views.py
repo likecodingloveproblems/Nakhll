@@ -764,7 +764,7 @@ def index(request):
         'This_User_Profile':this_profile,
         'This_User_Inverntory': this_inverntory,
         'Options': options,
-        'MenuList':navbar,
+        'MenuList':navbar,                          
         'Products' : pubproduct,
         'Productsold':pubproductold,
         'Sliders':pubsliders,
@@ -778,6 +778,20 @@ def index(request):
         'AmazingProducts':amazing_products,
     }
 
+    # add console.log feature to tell about coming context from back to UI for UI team (only works if we are in debug mode)
+    if settings.DEBUG:
+        full_info = []
+        for key, value in context.items():
+            item_info = [key, value]
+            forbiden_chars = ''''<>[]'''
+            item_info_str = str(item_info)
+            for char in forbiden_chars:
+                item_info_str = item_info_str.replace(char,"")
+            full_info.append(item_info_str)
+        
+        context['context_in_list'] = full_info
+        return render(request, 'nakhll_market/pages/index.html', context)
+    
     return render(request, 'nakhll_market/pages/index.html', context)
 
 

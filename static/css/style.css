@@ -475,6 +475,33 @@ header {
     width: 7%;
     /* border-radius: 10px; */
 }
+.carousel-control-prev {
+    left: 0 important;
+    right: none important
+}
+
+.myCarousel {
+    display: flex
+}
+
+.btn-controll-left{
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.btn-controll-right{
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
 .name-section-title>h3 {
     text-align: center;
