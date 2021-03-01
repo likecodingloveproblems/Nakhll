@@ -206,5 +206,6 @@ class ProductBanner(admin.ModelAdmin):
 
 @admin.register(AmazingProduct)
 class AmazingProduct(admin.ModelAdmin):
+    raw_id_fields = ("product",)
     list_display=('product', 'start_date', 'end_date')
     list_filter=('product', 'start_date', 'end_date')
