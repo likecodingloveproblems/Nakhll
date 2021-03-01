@@ -10,6 +10,12 @@
 <meta name="description" content="بازار نخل، بازاری اجتماعی است که برای رفع نیاز خرید و فروش محصولات با مشارکت فروشنده ها و خریدار ها پدید آمده است">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>بازار نخل | به وسعت یک سرزمین</title>
+<link rel="stylesheet" href="../../../../static/swiper/css/swiper.min.css">
+<link rel="stylesheet" href="../../../../static/slicknav/slicknav.min.css">
+
+
+
+
 
 
 {% analytical_head_bottom %}</head>
@@ -55,13 +61,9 @@
 <li data-target="#myCarousel" data-slide-to="2"></li>
 <li data-target="#myCarousel" data-slide-to="3"></li>
 </ol> -->
+
 <!-- Wrapper for slides -->
 <div class="carousel-inner" role="listbox">
-<!-- changes applied here: -->
-<!--<a class="carousel-control-prev " href="#mycarousel" role="button" data-slide="prev">
-<span class="carousel-control-prev-icon " aria-hidden="true"></span>
-<span class="sr-only ">قبلی</span>
-</a>-->
 
 {% for slider in Sliders %}
 <aside data-target="#mycarousel" class="carousel-item {% if forloop.first %} active {% endif %}">
@@ -77,10 +79,7 @@ class="sliderAsli" alt="{{slider.Title}}">
 </a>
 </aside>
 {% endfor %}
-<!-- <a class="carousel-control-next " href="#mycarousel" role="button" data-slide="next">
-<span class="carousel-control-next-icon" aria-hidden="true"></span>
-<span class="sr-only">بعدی</span>
-</a> -->
+
 <!-- https://nakhll.com/media/Pictures/Sliders/axCYdN.jpg -->
 <!-- {{slidr.Image.url}} -->
 <!-- class="sliderAsli " -->
@@ -120,15 +119,23 @@ class="sliderAsli" alt="{{slider.Title}}">
 
 </div>
 
-<!-- Left and right controls -->
-<a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
-<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-<span class="sr-only">Previous</span>
-</a>
-<a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
-<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+<!--right controls -->
+
+<!-- <a class="right carousel-control carousel-control-next" href="#myCarousel" role="button" data-slide="next">
+<span class="glyphicon glyphicon-chevron-right carousel-control-prev-icon" aria-hidden="true"></span>
 <span class="sr-only">Next</span>
-</a>
+</a> -->
+
+
+    <a class="right carousel-control btn-controll-right" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+    </a>
+    <a class="left carousel-control btn-controll-left" href="#myCarousel" role="button" data-slide="prev" style="left:0 !important, right: none !important">
+    <span class="glyphicon glyphicon-chevron-left carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="sr-only">Prev</span>
+    </a>
+
 </div>
 </div>
 
@@ -294,37 +301,39 @@ class="sliderAsli" alt="{{slider.Title}}">
 </section>
 <!-- -------------------------شگفتانه-------------------------------------- -->
 {% if AmazingProducts %}
-<div class="c-swiper-specials--incredible">
+<div class="c-swiper-specials--incredible ">
     <section class="icontainer">
-        <a href="#" class="specials__title">
-            <img src="{% static 'images/b6c724a0.png' %}" alt="پیشنهاد شگفت‌انگیز">
-  
-        </a>
-    <div class="swiper--specials">
-        <div  class="swiper-container">
-            <div class="product-box swiper-wrapper" style="display: flex;overflow: hidden;">
-                {% for product in AmazingProducts %}
-                    <div class="product-item swiper-slide">
-                        <a href="{{product.product.get_url}}"><img src="{{product.product.get_image}}" alt="{{product.product.get_image_alt}}"></a>
-                        <a class="title" href="{{product.product.get_url}}">{{product.product.Title}}</a>
-                        <div class="inc-product-price">
-                        {% if product.product.OldPrice %}
-                            <del>{{product.product.OldPrice}}</del>
-                            <div class="c-price__discount-oval"><span>{{product.product.get_discounted}}٪</span></div>
-                            <span class="price">{{product.product.Price}} </span>تومان
-                        {% else %}
-                            <span class="price">{{product.product.Price}} </span>تومان
-                        {% endif %}
+        
+    <div class="col-2 col-sm-3 col-md-2">
+        <img width="100%"  src="{% static 'images/shegeftaneh.jpeg' %}" alt="پیشنهاد شگفت‌انگیز">
+                    <div class="c-product-box__amazing">
+                        <div style="text-align:center ; color:aliceblue" class="c-product-box__timer">
+                            <span  class="timerstyle" id="demo"></span>
                         </div>
-                        <div class="c-product-box__amazing">
-                            <div class="c-product-box__timer">
-                                <p class="timerstyle" id="demo"></p>
-                            </div>
-                        </div>
-                    </div><!--item-->
-                {% endfor %}
-        </div>
+                    </div>
+
     </div>
+        <div class="swiper--specials">
+            <div id="sp-slider"  class="swiper-container">
+                <div class="product-box swiper-wrapper" >
+                    {% for product in AmazingProducts %}
+                        <div class="product-item swiper-slide">
+                            <a href="{{product.product.get_url}}"><img src="{{product.product.get_image}}" alt="{{product.product.get_image_alt}}"></a>
+                            <a class="title" href="{{product.product.get_url}}">{{product.product.Title}}</a>
+                            <div class="inc-product-price">
+                            {% if product.product.OldPrice %}
+                                <del>{{product.product.OldPrice}}</del>
+                                <div class="c-price__discount-oval"><span>{{product.product.get_discounted}}٪</span></div>
+                                <span class="price">{{product.product.Price}} </span>تومان
+                            {% else %}
+                                <span class="price">{{product.product.Price}} </span>تومان
+                            {% endif %}
+                            </div>
+
+                        </div><!--item-->
+                    {% endfor %}
+            </div>
+            </div>
     </section>
 </div>
 {% endif %}
@@ -364,7 +373,7 @@ class="sliderAsli" alt="{{slider.Title}}">
 
 <!-- ------------------------------campain----------------------------- -->
 
-<section id="cardWitdh">
+<!-- <section id="cardWitdh">
  
     <div class="card-carouselcontainer">
 <div class="card-carousel">
@@ -383,7 +392,7 @@ class="sliderAsli" alt="{{slider.Title}}">
         </div>
         {% endfor %}
     </div>
-</section>
+</section>-->
 
 
 <!-- --------------------------------جدید ترین تخفیفات--------------------------- -->
@@ -642,45 +651,51 @@ class="sliderAsli" alt="{{slider.Title}}">
           }
         }, 1000);
         </script>
-     <script >
-     $num = $('.my-card').length;
-$even = $num / 2;
-$odd = ($num + 1) / 2;
-if ($num % 2 == 0) {
-  $('.my-card:nth-child(' + $even +')').addClass('active');
-  $('.my-card:nth-child(' + $even +')').prev().addClass('prev');
-  $('.my-card:nth-child(' + $even +')').next().addClass('next');
-}else {
-  $('.my-card:nth-child(' + $odd +')').addClass('active');
-  $('.my-card:nth-child(' + $odd +')').prev().addClass('prev');
-  $('.my-card:nth-child(' + $odd +')').next().addClass('next');
-}
-$('.my-card').click(function() {
-  $slide = $('.active').width();
-  console.log($('.active').position().left);
-  if ($(this).hasClass('next')) {
-    $('.card-carousel').stop(false,true).animate({left:'-=' + $slide});
-  }else if ($(this).hasClass('prev')) {
-    $('.card-carousel').stop(false,true).animate({left:'+=' + $slide});
-  }
-  $(this).removeClass('prev next');
-  $(this).siblings().removeClass('prev active next');
-  $(this).addClass('active');
-  $(this).prev().addClass('prev');
-  $(this).next().addClass('next');
-});
-// Keyboard nav
-$('html body').keydown(function(e) {
-  if (e.keyCode == 37) {// left
- $('.active').prev().trigger('click');
-  }
-  else if (e.keyCode == 39) {// right
-    $('.active').next().trigger('click');
-  }
+<script >
+    $num = $('.my-card').length;
+    $even = $num / 2;
+    $odd = ($num + 1) / 2;
+    if ($num % 2 == 0) {
+    $('.my-card:nth-child(' + $even +')').addClass('active');
+    $('.my-card:nth-child(' + $even +')').prev().addClass('prev');
+    $('.my-card:nth-child(' + $even +')').next().addClass('next');
+    }else {
+    $('.my-card:nth-child(' + $odd +')').addClass('active');
+    $('.my-card:nth-child(' + $odd +')').prev().addClass('prev');
+    $('.my-card:nth-child(' + $odd +')').next().addClass('next');
+    }
+    $('.my-card').click(function() {
+    $slide = $('.active').width();
+    console.log($('.active').position().left);
+    if ($(this).hasClass('next')) {
+        $('.card-carousel').stop(false,true).animate({left:'-=' + $slide});
+    }else if ($(this).hasClass('prev')) {
+        $('.card-carousel').stop(false,true).animate({left:'+=' + $slide});
+    }
+    $(this).removeClass('prev next');
+    $(this).siblings().removeClass('prev active next');
+    $(this).addClass('active');
+    $(this).prev().addClass('prev');
+    $(this).next().addClass('next');
+    });
+    // Keyboard nav
+    $('html body').keydown(function(e) {
+    if (e.keyCode == 37) {// left
+    $('.active').prev().trigger('click');
+    }
+    else if (e.keyCode == 39) {// right
+        $('.active').next().trigger('click');
+    }
 
-});
+    });
 
-    </script>
+</script>
+<script src="../../../../static/js/jquery.min.js"></script>
+<script src="../../../../static/swiper/js/swiper.min.js"></script>
+<script src="../../../../static/js/script.js"></script>
+<script src="../../../../static/slicknav/jquery.slicknav.min.js"></script>
+
+
 
 {% block footer-section %}
 {% include "nakhll_market/parents/footer-section.html" %}
