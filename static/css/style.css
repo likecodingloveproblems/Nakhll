@@ -6223,7 +6223,7 @@ margin-bottom: 10px;
             color: #535353;
         }
         .swiper--specials .product-item .price {
-            font-size: 1.8em;
+            font-size: 1.2em;
             display: inline-block;
         }
         .swiper-button-next,
@@ -6384,12 +6384,18 @@ footer .copyright p {
     text-align: left;
     width: 100%;
 }
+
+.del-product-price {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 .inc-product-price del {
     letter-spacing: .5px;
     color: #acacac;
     text-decoration: line-through;
     padding-top: 3px;
-    font-size: 1.7em;
+    font-size: 1em;
     line-height: 28px;
 }
 .c-price__discount-oval {

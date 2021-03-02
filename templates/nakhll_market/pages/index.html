@@ -311,15 +311,17 @@ class="sliderAsli" alt="{{slider.Title}}">
 <!-- -------------------------شگفتانه-------------------------------------- -->
 {% if AmazingProducts %}
 <div class="c-swiper-specials--incredible ">
+    <div class="d-md-none" style="color:aliceblue ; font-weight:bold ; margin-right:60px ; font-size : 25px ; margin-top :10px">تخفیف ویژه نخل</div>
     <section class="icontainer">
         
-    <div class="col-2 col-sm-3 col-md-2">
-        <img width="100%"  src="{% static 'images/shegeftaneh.jpeg' %}" alt="پیشنهاد شگفت‌انگیز">
-                    <div class="c-product-box__amazing">
-                        <div style="text-align:center ; color:aliceblue" class="c-product-box__timer">
-                            <span  class="timerstyle" id="demo"></span>
-                        </div>
+    <div class=" d-none d-md-block col-2 col-sm-3 col-md-2">
+                <img width="100%"  src="{% static 'images/shegeftaneh.jpeg' %}" alt="پیشنهاد شگفت‌انگیز">
+
+                <div class="c-product-box__amazing">
+                    <div style="text-align:center ; color:aliceblue" class="c-product-box__timer">
+                        <span  class="timerstyle" id="demo"></span>
                     </div>
+                </div>
 
     </div>
         <div class="swiper--specials">
@@ -330,13 +332,20 @@ class="sliderAsli" alt="{{slider.Title}}">
                             <a href="{{product.product.get_url}}"><img src="{{product.product.get_image}}" alt="{{product.product.get_image_alt}}"></a>
                             <a class="title" href="{{product.product.get_url}}">{{product.product.Title}}</a>
                             <div class="inc-product-price">
-                            {% if product.product.OldPrice %}
-                                <del>{{product.product.OldPrice}}</del>
-                                <div class="c-price__discount-oval"><span>{{product.product.get_discounted}}٪</span></div>
-                                <span class="price">{{product.product.Price}} </span>تومان
-                            {% else %}
-                                <span class="price">{{product.product.Price}} </span>تومان
-                            {% endif %}
+                                {% if product.product.OldPrice %}
+                                <div class="del-product-price">
+                                    <del>{{product.product.OldPrice}}</del>
+                                    <div class="c-price__discount-oval"><span>{{product.product.get_discounted}}٪</span></div>
+
+                                </div>
+                                <div style="display:flex ; justify-content : flex-start ; align-items : center ; margin-top : 20px">
+                                    <span class="price">{{product.product.Price}} </span>تومان
+
+                                </div>
+
+                                {% else %}
+                                    <span class="price">{{product.product.Price}} </span>تومان
+                                {% endif %}
                             </div>
 
                         </div><!--item-->
