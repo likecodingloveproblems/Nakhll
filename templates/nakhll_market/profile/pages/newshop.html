@@ -368,7 +368,7 @@
                                             data-placement="left"
                                             title="عنوان باید فارسی و حداکثر 70 کاراکتر باشد."></i>
                                         <input type="text" name="Shop_Title" class="form-control" id="inputshop_title"
-                                            minlength="2" maxlength="70" required>
+                                            minlength="2" maxlength="70" required placeholder="نام حجره خود را وارد نمایید">
                                     </div>
 
                                     <div class="form-group col-md-6">
@@ -377,7 +377,7 @@
                                             data-placement="left"
                                             title='شناسه حجره باید شامل حروف انگلیسی کوچک، خط تیره ("-") و بدون فاصله باشد.'></i>
                                         <input type="text" name="Shop_Slug" class="form-control" id="inputslugshop"
-                                            pattern="[a-z0-9\-_]{2,}">
+                                            pattern="[a-z0-9\-_]{2,}" placeholder="لینک حجره خود را به انگلیسی وارد نمایید">
                                     </div>
                                 </div>
                                 <div class="form-row">
@@ -389,7 +389,7 @@
                                             <input type="file" class="sr-only input-pic-file" id="input" name="image"accept="image/*">
                                             <input type="text"
                                                 class="form-control choose-pic-input-name choose-pic-input-hojre"
-                                                disabled placeholder="آپلود عکس">
+                                                disabled placeholder="عکس حجره خود را بارگذاری نمایید">
                                         </label>
                                         <br>
                                         <img class="rounded cropper-rounded " id="avatar"
@@ -474,7 +474,7 @@
                                         <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
                                             data-placement="left" title="حجره خود را به صورت کامل معرفی نمایید."></i>
                                         <textarea class="form-control" name="Shop_Des" id="inputshopdes"
-                                            rows="2"></textarea>
+                                            rows="2" placeholder="اطلاعات حجره خود را وارد نمایید"></textarea>
                                     </div>
                                 </div>
                                 <br>
@@ -1167,7 +1167,7 @@
 
         $modal.on('shown.bs.modal', function () {
             cropper = new Cropper(image, {
-                aspectRatio: 1,
+                aspectRatio: 129/40,
                 viewMode: 3,
             });
         }).on('hidden.bs.modal', function () {
@@ -1187,8 +1187,8 @@
 
             if (cropper) {
                 canvas = cropper.getCroppedCanvas({
-                    width: 900,
-                    height: 900,
+                    width: 1032,
+                    height: 320,
                 });
                 $modal.modal('hide');
 
@@ -1234,7 +1234,7 @@
                                 $(".progress-bar").width('0%').attr('aria-valuenow', 0).text('0%');
                                 $("#loaderDiv3").hide();
                                 if (json.status) {
-                                    $(".product-gallery-pics-banner").prepend('<div val="' + json.id + '" class="col-xl-3 col-lg-3 col-md-4 col-sm-6 prod-gallery-pic-box newImage">' +
+                                    $(".product-gallery-pics-banner").prepend('<div val="' + json.id + '" class="col-xl-6 col-lg-3 col-md-4 col-sm-6 prod-gallery-pic-box newImage">' +
                                         '<div class="box-gallery-img-section gallery-img-show style="width:100%" ">' +
                                         '<img src="' + canvas.toDataURL() + '" alt="بنر حجره" style="width:100%">' +
                                         '<div class="item-gallery-option">' +
@@ -1913,7 +1913,7 @@
                                 $("#loaderDiv3").hide();
                                 if (true) {
                                     $(".newImage").remove();
-                                    $(".product-gallery-pics").prepend(listGallery.map((item, index)=> '<div val="' + index + '" class="col-xl-3 col-lg-3 col-md-4 col-sm-6 prod-gallery-pic-box newImage" style="opacity: 1">' +
+                                    $(".product-gallery-pics").prepend(listGallery.map((item, index)=> '<div val="' + index + '" class="col-xl-6 col-lg-6 col-md-4 col-sm-6 prod-gallery-pic-box newImage" style="opacity: 1">' +
                                         '<div class="box-gallery-img-section gallery-img-show">' +
                                         '<img src="' + item.img + '" alt="عکس محصول" style="width:100%;" >' +
                                         '<div class="item-gallery-option">' +
