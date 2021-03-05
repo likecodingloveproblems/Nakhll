@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.sitemaps',
+    'pwa',
     'analytical',
     'sms',
     'my_auth',
@@ -297,3 +298,33 @@ GOOGLE_ANALYTICS_PROPERTY_ID = 'UA-189302977-1'
 GOOGLE_ANALYTICS_GTAG_PROPERTY_ID = 'UA-189302977-1'
 GOOGLE_ANALYTICS_JS_PROPERTY_ID = 'UA-189302977-1'
 IDENTITY_FUNCTION = lambda user: user.id
+
+PWA_APP_NAME = 'Nakhll'
+PWA_APP_DESCRIPTION = "This is Nakhll app."
+PWA_APP_THEME_COLOR = '#0A0302'
+PWA_APP_BACKGROUND_COLOR = '#ffffff'
+PWA_APP_DISPLAY = 'standalone'
+PWA_APP_SCOPE = '/'
+PWA_APP_ORIENTATION = 'any'
+PWA_APP_START_URL = '/'
+PWA_APP_STATUS_BAR_COLOR = 'default'
+PWA_APP_ICONS = [
+    {
+        'src': '/static/images/favicon/android-chrome-512x512.png',
+        'sizes': '512x512'
+    }
+]
+PWA_APP_ICONS_APPLE = [
+    {
+        'src': '/static/images/favicon/apple-touch-icon.png',
+        'sizes': '512x512'
+    }
+]
+PWA_APP_SPLASH_SCREEN = [
+    {
+        'src': '/static/images/banner_default.jpg',
+        'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
+    }
+]
+PWA_APP_DIR = 'ltr'
+PWA_APP_LANG = 'en-US'

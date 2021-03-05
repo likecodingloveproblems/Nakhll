@@ -1,7 +1,9 @@
 {% load i18n static %}
 {% load analytical %}{% load analytical %}<!DOCTYPE html>
 <html>
-  <head>{% analytical_head_top %}<title>{% trans 'Popup closing…' %}</title>{% analytical_head_bottom %}</head>
+  <head>
+{% progressive_web_app_meta %}
+{% analytical_head_top %}<title>{% trans 'Popup closing…' %}</title>{% analytical_head_bottom %}</head>
   <body>{% analytical_body_top %}
     <script type="text/javascript"
             id="django-admin-popup-response-constants"

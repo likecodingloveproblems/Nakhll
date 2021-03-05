@@ -4,7 +4,10 @@
 
 {% load analytical %}<!DOCTYPE html>
 <html lang="en">
-<head>{% analytical_head_top %}
+{% load pwa %}
+<head>
+{% progressive_web_app_meta %}
+{% analytical_head_top %}
 
 {% compress css %}
     <link rel="stylesheet" href="{% static "css/bootstrap-rtl.min.css" %}" />
