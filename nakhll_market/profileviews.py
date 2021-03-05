@@ -23,8 +23,11 @@ from nakhll_market.management_content_views import baseData
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
 
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.mixins import UserPassesTestMixin
+# unnecessary imports - TODO: remove later
+# from django.contrib.auth.mixins import LoginRequiredMixin
+# from django.contrib.auth.mixins import UserPassesTestMixin
+from django.views.generic import TemplateView
+from braces.views import LoginRequiredMixin
 
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group 
@@ -148,31 +151,50 @@ class SendMessage:
 
 # ---------------------------------------------------- User Profile Pages ---------------------------------------------------------
 
-
-# Get User Dashboard Info
-def ProfileDashboard(request):
-    # Check User Status
-    if request.user.is_authenticated :
-        this_profile = Profile.objects.get(FK_User=request.user)
-        this_inverntory = request.user.WalletManager.Inverntory
+# implement class based views
+class ProfileDashboard(LoginRequiredMixin, TemplateView):
+    template_name = 'nakhll_market/profile/pages/profile.html'
+    redirect_field_name = 'auth:login'
+    
+    def get_context_data(self, **kwargs):
+        this_profile = Profile.objects.get(FK_User=self.request.user)
+        this_inverntory = self.request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
         navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
         # -------------------------------------------------------------------
+        context = super().get_context_data(**kwargs)
+        context['This_User_Profile'] = this_profile
+        context['This_User_Inverntory'] = this_inverntory
+        context['Options'] = options
+        context['MenuList'] = navbar
+        return context
+    
+# Get User Dashboard Info
+# def ProfileDashboard(request):
+#     # Check User Status
+#     if request.user.is_authenticated :
+#         this_profile = Profile.objects.get(FK_User=request.user)
+#         this_inverntory = request.user.WalletManager.Inverntory
+#         # Get Menu Item
+#         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+#         # Get Nav Bar Menu Item
+#         navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+#         # -------------------------------------------------------------------
 
-        context = {
-            'This_User_Profile':this_profile,
-            'This_User_Inverntory': this_inverntory,
-            'Options': options,
-            'MenuList':navbar,
-        }
+#         context = {
+#             'This_User_Profile':this_profile,
+#             'This_User_Inverntory': this_inverntory,
+#             'Options': options,
+#             'MenuList':navbar,
+#         }
 
-        return render(request, 'nakhll_market/profile/pages/profile.html', context)
+#         return render(request, 'nakhll_market/profile/pages/profile.html', context)
 
-    else:
+#     else:
         
-        return redirect("auth:login")
+#         return redirect("auth:login")
 
 # Get User Wallet Info And Charge It
 def ProfileWallet(request):
