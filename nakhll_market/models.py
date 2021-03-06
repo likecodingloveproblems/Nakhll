@@ -1730,6 +1730,7 @@ class Slider(models.Model):
 
 # Option_Meta (آپشن) Model
 class Option_Meta(models.Model):
+    """ used to create nav bar items and main menu items """
     Title=models.CharField(verbose_name='عنوان', db_index=True, max_length=500)
     Description=models.TextField(verbose_name='توضیحات', blank=True)
     Value_1=models.CharField(verbose_name='مقدار - اول', max_length=500)
