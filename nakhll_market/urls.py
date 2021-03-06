@@ -273,19 +273,25 @@ urlpatterns = [
     # class based view url replaced:
     path('profile/dashboard/', profileviews.ProfileDashboard.as_view(), name='Dashboard'),
     # Wallet Path
-    path('profile/wallet/', profileviews.ProfileWallet, name='Wallet'),
+    # path('profile/wallet/', profileviews.ProfileWallet, name='Wallet'),
+    path('profile/wallet/', profileviews.ProfileWallet.as_view(), name='Wallet'),
     # Message Path
     path('profile/message/', profileviews.ProfileMessage, name='Message'),
     # Factor Path
-    path('profile/factor/', profileviews.ProfileFactor, name='Factor'),
+    # path('profile/factor/', profileviews.ProfileFactor, name='Factor'),
+    path('profile/factor/', profileviews.ProfileFactor.as_view(), name='Factor'),
     # Tarnsaction Path
-    path('profile/transaction/', profileviews.ProfileTransactione, name='Transaction'),
+    # path('profile/transaction/', profileviews.ProfileTransactione, name='Transaction'),
+    path('profile/transaction/', profileviews.ProfileTransactione.as_view(), name='Transaction'),
     # Review Path
-    path('profile/shops/', profileviews.ProfileShops, name='UserShops'),
+    # path('profile/shops/', profileviews.ProfileShops, name='UserShops'),
+    path('profile/shops/', profileviews.ProfileShops.as_view(), name='UserShops'),
     # Shops Path
-    path('profile/review/', profileviews.ProfileReview, name='Review'),
+    # path('profile/review/', profileviews.ProfileReview, name='Review'),
+    path('profile/review/', profileviews.ProfileReview.as_view(), name='Review'),
     # Alerts Path
-    path('profile/alert/', profileviews.ProfileAlert, name='Alert'),
+    # path('profile/alert/', profileviews.ProfileAlert, name='Alert'),
+    path('profile/alert/', profileviews.ProfileAlert.as_view(), name='Alert'),
     # -------------------------------------------------------------------------------------
     # Message Filter
     path('profile/message/filter/', profileviews.MessageFilter, name='Message_Filter'),
