@@ -145,6 +145,7 @@ $(document).on('click', '.number-spinner button', function () {
 	}
 	btn.closest('.number-spinner').find('input').val(newVal);
 });
+var product_data = {id:'{{Product.ID}}', title:'{{Product.Title}}', price:'{{Product.Price}}', discount: '{{Product.get_discounted}}' }
 </script>
 
 {% block footer %}
