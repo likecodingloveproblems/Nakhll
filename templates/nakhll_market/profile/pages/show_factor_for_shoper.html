@@ -8,7 +8,7 @@
 {% endblock %}
 
 
-    <title>بازار نخل | جزئیات فاکتور</title>
+    <title>بازار نخل | جزئیات صورت حساب</title>
 {% analytical_head_bottom %}</head>
 
 
@@ -57,7 +57,7 @@
                         <a href="/profile/factor/">
                             <button class="activebtn">
                                 <i class="fas fa-file-invoice-dollar"></i>
-                                <h5>فاکتور ها</h5>
+                                <h5>صورت حساب ها</h5>
                             </button>
                         </a>
 
@@ -103,7 +103,7 @@
                         <div class="factor-profile">
                             
                             <div class="modal-header">
-                                <h5 class="modal-title">شماره فاکتور {{factor.FactorNumber}}</h5>
+                                <h5 class="modal-title">شماره صورت حساب {{factor.FactorNumber}}</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 </button>
                             </div>
@@ -131,7 +131,7 @@
                                         {% endif %} -->
                                 
                                         <h6 class="black-color">زمان ثبت : <span> {{factor.OrderDate|jformat:'%H:%M - %Y/%m/%d'}}</span></h6>
-                                        <h5 class="black-color">شماره فاکتور : {{factor.FactorNumber}}</h5>
+                                        <h5 class="black-color">شماره صورت حساب : {{factor.FactorNumber}}</h5>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -156,7 +156,7 @@
                                 <div class="row">
                                     <div class="col-xl-12 col-12">
                                         <br>
-                                        <h4> محصولات فاکتور :</h4>
+                                        <h4> محصولات صورت حساب :</h4>
                                     </div>
 
                                     <div class="col-xl-12 col-12">
@@ -237,7 +237,7 @@
                                     document.body.innerHTML = originalContents;
                                     }
                                 </script>
-                                <a class="w3-btn" id="btnPrint" name="btnPrint" onclick="printDiv('{{factor.FactorNumber}}')"><button class="btn btn-primary" >چاپ فاکتور</button></a>
+                                <a class="w3-btn" id="btnPrint" name="btnPrint" onclick="printDiv('{{factor.FactorNumber}}')"><button class="btn btn-primary" >چاپ صورت حساب</button></a>
                                 <button onclick="closeCurrentTab()" class="btn btn-primary" >بستن</button>
                                 <script>
                                     closeCurrentTab = function () {

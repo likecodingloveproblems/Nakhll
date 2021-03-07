@@ -1254,7 +1254,7 @@ def check_status_of_score(request):
         serializer = PointSerializer(order_item, many = True)
         return JsonResponse(serializer.data, status = HTTP_200_OK, safe = False)
     else:
-        return JsonResponse({'res' : 'فاکتوری برای ثبت امتیاز ندارد...'}, status = HTTP_404_NOT_FOUND)
+        return JsonResponse({'res' : 'صورت حسابی برای ثبت امتیاز ندارد...'}, status = HTTP_404_NOT_FOUND)
 
 
 

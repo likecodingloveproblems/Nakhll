@@ -387,7 +387,7 @@ def Pay_Factor_by_wallet(request):
         val2 = int(wallet.Inverntory)
         if val1 > val2 :
             response_data['status'] = False
-            response_data['msg'] = 'موجودی کیف پول شما برای پرداخت این فاکتور کافی نمی باشد.'
+            response_data['msg'] = 'موجودی کیف پول شما برای پرداخت این صورت حساب کافی نمی باشد.'
             return JsonResponse(response_data) 
         else:
             if factor.PaymentType == '1':
@@ -452,7 +452,7 @@ def Pay_Factor_by_wallet(request):
                         factpost.FK_AttrPrice.remove(item)
                 # --------------------- End -----------------
                 alert = Alert.objects.create(Part = '12', FK_User = request.user, Slug = factor.ID)
-                des_trans=' پرداخت از کیف پول برای فاکتور '+ factor.FactorNumber
+                des_trans=' پرداخت از کیف پول برای صورت حساب '+ factor.FactorNumber
                 pricefactori = factor.get_end_price()
                 transaction = Transaction.objects.create(FK_User = request.user, Price = pricefactori, Type = '6', Description = des_trans)
                 response_data['status'] = True
@@ -723,7 +723,7 @@ def get_factor_excel_file(request, id):
     worksheet.write(row, 3, 'هزینه پست')
     worksheet.write(row, 4, 'میزان تخفیف')
     worksheet.write(row, 5, 'نوع تخفیف')
-    worksheet.write(row, 6, 'وضعیت فاکتور')
+    worksheet.write(row, 6, 'وضعیت صورت حساب')
     worksheet.write(row, 7, 'نوع پرداخت')
     worksheet.write(row, 8, 'توضیحات')
     # set factor data

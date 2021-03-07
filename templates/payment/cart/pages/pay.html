@@ -32,7 +32,7 @@
                             <li class="breadcrumb-item"><a href="{% url "Payment:cartdetail" %}">سبد خرید</a></li>
                             <li class="breadcrumb-item"><a href="{% url "Payment:sendinfo" %}">اطلاعات ارسال</a></li>
                             <li class="breadcrumb-item active" aria-current="page">هزینه ارسال و شیوه پرداخت</li>
-                            <li class="breadcrumb-item " aria-current="page">فاکتور نهایی</li>
+                            <li class="breadcrumb-item " aria-current="page">صورت حساب نهایی</li>
                         </ol>
                     </nav>
                 </div>
@@ -134,7 +134,7 @@
                                     <span class="nameradiobox">پرداخت آنلاین</span>
                                     
                                 </div>
-                                <small class="nameradiobox">پرداخت کل مبلغ فاکتور به صورت آنلاین با تمام کارت های بانکی عضو شتاب در درگاه پارسیان ...</small>
+                                <small class="nameradiobox">پرداخت کل مبلغ صورت حساب به صورت آنلاین با تمام کارت های بانکی عضو شتاب در درگاه پارسیان ...</small>
                             </div>
                             {% comment "the only payment method is PEC" %}
                             <div class="boxin-cartbox">
@@ -145,7 +145,7 @@
                                     <span class="nameradiobox">پرداخت آنلاین</span>
                                     
                                 </div>
-                                <small class="nameradiobox">پرداخت کل مبلغ فاکتور به صورت آنلاین با تمام کارت های بانکی عضو شتاب در درگاه زرین پال ...</small>
+                                <small class="nameradiobox">پرداخت کل مبلغ صورت حساب به صورت آنلاین با تمام کارت های بانکی عضو شتاب در درگاه زرین پال ...</small>
                             </div>
                             {% if Wallet_Pay_Status %}
                                 <div class="boxin-cartbox">
@@ -157,7 +157,7 @@
                                         <span class="nameradiobox">پرداخت از کیف پول ( موجودی <span class="numbersprice">{{This_User_Inverntory}}</span> ریال )</span>
                                         
                                     </div>
-                                    <small class="nameradiobox">پرداخت کل مبلغ فاکتور از کیف پول</small>
+                                    <small class="nameradiobox">پرداخت کل مبلغ صورت حساب از کیف پول</small>
                                     <!-- <small class="nameradiobox">پرداخت مبلغ 9000 ریال از کیف پول و  مبلغ 2000 ریال به صورت آنلاین در درگاه زرین پال</small> -->
                                 </div>
                             {% else %}
@@ -184,7 +184,7 @@
                                     <span class="nameradiobox">پرداخت از کیف پول</span>
                                     
                                 </div>
-                                <small class="nameradiobox">پرداخت کامل از کیف پول ،موجودی کیف پول شما برای پرداخت این فاکتور کافی است . </small>
+                                <small class="nameradiobox">پرداخت کامل از کیف پول ،موجودی کیف پول شما برای پرداخت این صورت حساب کافی است . </small>
                             </div> -->
                             
                         </div>
@@ -295,10 +295,10 @@
 
                             <div class="continue-cart">
                             {% if SCBC_List|length == 0 %}
-                                <button class="btn btn-success" id="pay_status_form_check_send"><i class="fal fa-shopping-bag"></i> فاکتور نهایی </button>
+                                <button class="btn btn-success" id="pay_status_form_check_send"><i class="fal fa-shopping-bag"></i> صورت حساب نهایی </button>
                             {% else %}
                         
-                                <a data-toggle="modal" data-target="#myModalerror"><button class="btn btn-success"><i class="fal fa-shopping-bag"></i> فاکتور نهایی </button></a>
+                                <a data-toggle="modal" data-target="#myModalerror"><button class="btn btn-success"><i class="fal fa-shopping-bag"></i> صورت حساب نهایی </button></a>
                                 
                                 <div class="modal fade" id="myModalerror" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                     <div class="modal-dialog" role="document">
