@@ -12,6 +12,7 @@
 <title>بازار نخل | به وسعت یک سرزمین</title>
 <link rel="stylesheet" href="../../../../static/swiper/css/swiper.min.css">
 <link rel="stylesheet" href="../../../../static/slicknav/slicknav.min.css">
+<link rel="stylesheet" href="../../../../static/css/mainCard.css">
 
 
 
@@ -28,6 +29,13 @@
     }, 1600);
 
 </script>
+
+<!-- show context detail that comes from views.py in browser console -->
+{% for item in context_in_list%}
+<script>
+    console.log("{{ item }}")        
+</script>
+{% endfor %}
 
 <div class="loading-index">
     <div class="loadingpage">
@@ -139,6 +147,7 @@ class="sliderAsli" alt="{{slider.Title}}">
 </div>
 </div>
 
+<!--fhfgh -->
 </div>
 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 imgCard">
         <aside><a href="#">
@@ -302,15 +311,17 @@ class="sliderAsli" alt="{{slider.Title}}">
 <!-- -------------------------شگفتانه-------------------------------------- -->
 {% if AmazingProducts %}
 <div class="c-swiper-specials--incredible ">
+    <div class="d-md-none" style="color:aliceblue ; font-weight:bold ; margin-right:60px ; font-size : 25px ; margin-top :10px">تخفیف ویژه نخل</div>
     <section class="icontainer">
         
-    <div class="col-2 col-sm-3 col-md-2">
-        <img width="100%"  src="{% static 'images/shegeftaneh.jpeg' %}" alt="پیشنهاد شگفت‌انگیز">
-                    <div class="c-product-box__amazing">
-                        <div style="text-align:center ; color:aliceblue" class="c-product-box__timer">
-                            <span  class="timerstyle" id="demo"></span>
-                        </div>
+    <div class=" d-none d-md-block col-2 col-sm-3 col-md-2">
+                <img width="100%"  src="{% static 'images/shegeftaneh.jpeg' %}" alt="پیشنهاد شگفت‌انگیز">
+
+                <div class="c-product-box__amazing">
+                    <div style="text-align:center ; color:aliceblue" class="c-product-box__timer">
+                        <span  class="timerstyle" id="demo"></span>
                     </div>
+                </div>
 
     </div>
         <div class="swiper--specials">
@@ -321,13 +332,20 @@ class="sliderAsli" alt="{{slider.Title}}">
                             <a href="{{product.product.get_url}}"><img src="{{product.product.get_image}}" alt="{{product.product.get_image_alt}}"></a>
                             <a class="title" href="{{product.product.get_url}}">{{product.product.Title}}</a>
                             <div class="inc-product-price">
-                            {% if product.product.OldPrice %}
-                                <del>{{product.product.OldPrice}}</del>
-                                <div class="c-price__discount-oval"><span>{{product.product.get_discounted}}٪</span></div>
-                                <span class="price">{{product.product.Price}} </span>تومان
-                            {% else %}
-                                <span class="price">{{product.product.Price}} </span>تومان
-                            {% endif %}
+                                {% if product.product.OldPrice %}
+                                <div class="del-product-price">
+                                    <del>{{product.product.OldPrice}}</del>
+                                    <div class="c-price__discount-oval"><span>{{product.product.get_discounted}}٪</span></div>
+
+                                </div>
+                                <div style="display:flex ; justify-content : flex-start ; align-items : center ; margin-top : 20px">
+                                    <span class="price">{{product.product.Price}} </span>تومان
+
+                                </div>
+
+                                {% else %}
+                                    <span class="price">{{product.product.Price}} </span>تومان
+                                {% endif %}
                             </div>
 
                         </div><!--item-->
@@ -373,26 +391,40 @@ class="sliderAsli" alt="{{slider.Title}}">
 
 <!-- ------------------------------campain----------------------------- -->
 
-<!-- <section id="cardWitdh">
- 
+ <!-- <section id="cardWitdh">
     <div class="card-carouselcontainer">
-<div class="card-carousel">
-        {% for shop in MostSaleShop %}
-        <div class="my-card" style="background-image:url('{{shop.Image_thumbnail_url}}')">
-            <img
-                src="{{shop.get_managment_image}}"
-                alt="برای فرزند دلبند شما!" loading="lazy" class="imageCardCarousel">
-                <h6>حجره دار:{{shop.get_shop_manager_full_name}}</h6>
-                {% if shop.Bio %}
-                <h6 class="textMycardCArousel">
-                    {{shop.Bio}}
-                </h6>
-                {% endif %}
-            <a href="{{shop.get_url}}">مشاهده حجره</a>
+        <div class="card-carousel">
+            {% for shop in MostSaleShop %}
+            <div class="my-card" style="background-image:url('{{shop.Image_thumbnail_url}}')">
+                <img
+                    src="{{shop.get_managment_image}}"
+                    alt="برای فرزند دلبند شما!" loading="lazy" class="imageCardCarousel">
+                    <h6>حجره دار:{{shop.get_shop_manager_full_name}}</h6>
+                    {% if shop.Bio %}
+                    <h6 class="textMycardCArousel">
+                        {{shop.Bio}}
+                    </h6>
+                    {% endif %}
+                <a href="{{shop.get_url}}">مشاهده حجره</a>
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
-</section>-->
+</section> 
+
+
+
+<div style="position:relative" >
+    <div id="wrapper_bu">
+        <div id="bu1"> Slide 1 </div>
+        <div id="bu2"> Slide 2 </div>
+        <div id="bu3"> Slide 3 </div>
+        <div id="bu4"> Slide 4 </div>
+        <div id="bu5"> Slide 5 </div>
+    
+    </div>
+</div> -->
+
 
 
 <!-- --------------------------------جدید ترین تخفیفات--------------------------- -->
@@ -694,6 +726,7 @@ class="sliderAsli" alt="{{slider.Title}}">
 <script src="../../../../static/swiper/js/swiper.min.js"></script>
 <script src="../../../../static/js/script.js"></script>
 <script src="../../../../static/slicknav/jquery.slicknav.min.js"></script>
+<script src="../../../../static/js/mainCard.js"></script>
 
 
 
