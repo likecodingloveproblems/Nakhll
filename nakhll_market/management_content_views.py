@@ -66,11 +66,10 @@ def baseData(request, activeSidebarMenu):
     #       and finally to get user sidebar just pass the permission key to
     #       permissions.get_group_privileges_sidebar()
     # get groups names that user joined them 
-    user_group_permission_keys = []
-    for group in request.user.groups.all():   
-        user_group_permission_keys.append(groups_and_permission(group))
-    
-    sidebarMenu = get_group_privileges_sidebar(user_group_permission_keys)
+    # user_group_permission_keys = []
+    # for group in request.user.groups.all():   
+    #     user_group_permission_keys.append(groups_and_permission(group))
+    # sidebarMenu = get_group_privileges_sidebar(user_group_permission_keys)
     
     # side bar menu 
     sidebarMenu = []
