@@ -3844,7 +3844,7 @@ def CheckCopun(request):
             try:
                 userFactor = Factor.objects.get(FactorNumber = factor)
             except:
-                response_data['error'] = 'فاکتوری برای شما ثبت نشده است '
+                response_data['error'] = 'صورت حسابی برای شما ثبت نشده است '
                 response_data['status'] = False
                 return JsonResponse(response_data)
 
@@ -4320,13 +4320,13 @@ def CartView(request):
                 return JsonResponse(response_data)
             else:
                 response_data['status'] = False
-                response_data['msg'] = 'محصولی در فاکتور شما موجود نمی باشد.'
+                response_data['msg'] = 'محصولی در صورت حساب شما موجود نمی باشد.'
                 response_data['count'] = Product_Count
                 response_data['list'] = Order_List
                 return JsonResponse(response_data)
         else:
             response_data['status'] = False
-            response_data['msg'] = 'فاکتوری برای شما وجود ندارد.'
+            response_data['msg'] = 'صورت حسابی برای شما وجود ندارد.'
             response_data['count'] = Product_Count
             response_data['list'] = Order_List
             return JsonResponse(response_data)

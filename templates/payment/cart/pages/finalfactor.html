@@ -8,7 +8,7 @@
 {% endblock %}
 
 
-    <title>بازار نخل | فاکتور  نهایی</title>
+    <title>بازار نخل | صورت حساب  نهایی</title>
 {% analytical_head_bottom %}</head>
 
 
@@ -70,7 +70,7 @@
                             <li class="breadcrumb-item"><a href="{% url "Payment:cartdetail" %}">سبد خرید</a></li>
                             <li class="breadcrumb-item"><a href="{% url "Payment:sendinfo" %}">اطلاعات ارسال</a></li>
                             <li class="breadcrumb-item " aria-current="page"><a href="{% url "Payment:Pay_Detail" %}"> هزینه ارسال و شیوه پرداخت</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">فاکتور نهایی</li>
+                            <li class="breadcrumb-item active" aria-current="page">صورت حساب نهایی</li>
                         </ol>
                     </nav>
                 </div>
@@ -101,7 +101,7 @@
                             <div class="col-xl-4 col-12 text-center left-factor">
                                     {% if factor.PaymentStatus == True %}<h5 class="green-succeed">پرداخت موفق</h5>{% else %}<h5 class="red-failed">پرداخت نشده</h5>{% endif %}
                                 <h6 class="black-color">زمان ثبت : <span> {{Factor.OrderDate|jformat:'%H:%M - %Y/%m/%d'}}</span></h6>
-                                <h5 class="black-color">شماره فاکتور : {{Factor.FactorNumber}}</h5>
+                                <h5 class="black-color">شماره صورت حساب : {{Factor.FactorNumber}}</h5>
                             </div>
                         </div>
                         <div class="row">
@@ -125,7 +125,7 @@
                         <div class="row">
                             <div class="col-xl-12 col-12">
                                 <br><br>
-                                <h4> محصولات فاکتور : </h4>
+                                <h4> محصولات صورت حساب : </h4>
                                 <br>
                             </div>
                             <div class="col-xl-12 col-12">
@@ -185,7 +185,7 @@
                         <br>
                         <div class="row">
                             <div class="col-xl-12 col-12">
-                            <a id="btnPrint" name="btnPrint" onclick="printDiv('endfactor')"><button class="btn btn-primary" > چاپ پیش فاکتور </button></a>
+                            <a id="btnPrint" name="btnPrint" onclick="printDiv('endfactor')"><button class="btn btn-primary" > چاپ پیش صورت حساب </button></a>
                             </div>
                         </div>
                         <br>
