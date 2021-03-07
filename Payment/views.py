@@ -490,7 +490,7 @@ def verify(request):
         try:
             factor = Factor.objects.get(FactorNumber=pecOrder.FactorNumber)
         except:
-            return HttpResponse('فاکتور درخواست مورد نظر موجود نمی باشد.\nشماره فاکتور:{}'.format(pecOrder.FactorNumber))
+            return HttpResponse('صورت حساب درخواست مورد نظر موجود نمی باشد.\nشماره صورت حساب:{}'.format(pecOrder.FactorNumber))
         user = factor.FK_User
         request.user = user
         this_profile = get_object_or_404(Profile, FK_User = user)
@@ -586,7 +586,7 @@ def verify(request):
                             factpost.FK_AttrPrice.remove(item)
                     # --------------------- End -----------------
                     alert = Alert.objects.create(Part = '12', FK_User = user, Slug = factor.ID)
-                    des_trans=' پرداخت برای فاکتور '+factor.FactorNumber
+                    des_trans=' پرداخت برای صورت حساب '+factor.FactorNumber
                     pricefactori = factor.get_end_price()
                     transaction = Transaction.objects.create(FK_User = user, Price = pricefactori, Type = '2', Description = des_trans)
                     message = 'تراکنش موفق .\nشماره پیگیری: ' + str(result['RRN'])
@@ -597,7 +597,7 @@ def verify(request):
                         message = 'تراکنش موفق نبوده و مبلغ کسر شده به حساب شما برگشت داده شده است. لطفا با پشتیبانی تماس حاصل فرمایید.'
                     except:
                         response = {'Status': 'FAIL'}
-                        message = 'تراکنش موفق بوده و لیکن فاکتور صادر نشده است. برای دریافت وجه پرداختی با پشتیبانی تماس حاصل فرمایید.'
+                        message = 'تراکنش موفق بوده و لیکن صورت حساب صادر نشده است. برای دریافت وجه پرداختی با پشتیبانی تماس حاصل فرمایید.'
 
                     message =  '\nشماره پیگیری:{}' + str(result['RRN']) 
             else:
@@ -706,7 +706,7 @@ def verify(request):
                             factpost.FK_AttrPrice.remove(item)
                     # --------------------- End -----------------
                     alert = Alert.objects.create(Part = '12', FK_User = request.user, Slug = factor.ID)
-                    des_trans=' پرداخت برای فاکتور '+factor.FactorNumber
+                    des_trans=' پرداخت برای صورت حساب '+factor.FactorNumber
                     pricefactori = factor.get_end_price()
                     transaction = Transaction.objects.create(FK_User = request.user, Price = pricefactori, Type = '2', Description = des_trans)
                     message = 'تراکنش موفق .\nشماره پیگیری: ' + str(result.RefID)
