@@ -139,8 +139,16 @@ function add_product_to_local_storage(product_data){
     }
     localStorage.setItem('cart', JSON.stringify(cart))
 }
+
+function set_cart_product_count(){
+    $('.shop-bag-count').text(
+        JSON.parse(localStorage.getItem('cart')).length
+    )
+}
+
 $('#add-to-cart').click(()=> {
    add_product_to_local_storage(product_data)
+   set_cart_product_count()
 })
 
 $(document).on('click', '.number-spinner', function () {    
@@ -159,7 +167,14 @@ $(document).on('click', '.number-spinner', function () {
 	}
 	btn.closest('.number-spinner').find('input').val(newVal);
 });
-var product_data = {id:'{{Product.ID}}', title:'{{Product.Title}}', price:'{{Product.Price}}', discount: '{{Product.get_discounted}}' }
+var product_data = {
+    id:'{{Product.ID}}', 
+    title:'{{Product.Title}}', 
+    price:'{{Product.Price}}', 
+    discount: '{{Product.get_discounted}}',
+    image: '{{Product.get_image}}',
+    url: '{{Product.get_absolute_url}}',
+}
 </script>
 
 {% block footer %}
