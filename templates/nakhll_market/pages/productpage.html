@@ -129,7 +129,21 @@
 {% endblock %}
 
 <script>
-$(document).on('click', '.number-spinner button', function () {    
+function add_product_to_local_storage(product_data){
+    var cart = JSON.parse(localStorage.getItem('cart')) ?? []
+    product = cart.filter(item => item.id == product_data.id)
+    if (product.length) product[0].count += 1
+    else {
+        cart.push(product_data)
+        cart[cart.length-1].count=1
+    }
+    localStorage.setItem('cart', JSON.stringify(cart))
+}
+$('#add-to-cart').click(()=> {
+   add_product_to_local_storage(product_data)
+})
+
+$(document).on('click', '.number-spinner', function () {    
 	var btn = $(this),
 		oldValue = btn.closest('.number-spinner').find('input').val().trim(),
 		newVal = 0;

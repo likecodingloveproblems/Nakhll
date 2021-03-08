@@ -330,7 +330,7 @@
                                                     </span>
                                                 </div> -->
                                                 
-                                                {% if Product.Status != '4' %}<button type="submit" class="btn-add-prod"> <i class="fas fa-cart-plus"></i> افزودن به سبد خرید</button>{% endif %}
+                                                {% if Product.Status != '4' %}<button type="button" id="add-to-cart" class="btn-add-prod"> <i class="fas fa-cart-plus"></i> افزودن به سبد خرید</button>{% endif %}
                                                 {% comment %} {% if Product.FK_Shop.Slug == 's-a-tahami'%}  
                                                     <div class="alert alert-warning alert-add-to-carts-tahami" role="alert">
                                                         لطفا قبل‌از سفارش و تائید نهایی صورت حساب بااین شماره 03432476561 تماس ‌گرفته و از موجود بودن کالا اطمینان حاصل کنید.
