@@ -149,6 +149,7 @@ function set_cart_product_count(){
 $('#add-to-cart').click(()=> {
    add_product_to_local_storage(product_data)
    set_cart_product_count()
+   shopping_cart()
 })
 
 $(document).on('click', '.number-spinner', function () {    
@@ -172,8 +173,13 @@ var product_data = {
     title:'{{Product.Title}}', 
     price:'{{Product.Price}}', 
     discount: '{{Product.get_discounted}}',
-    image: '{{Product.get_image}}',
+    image: '{{Product.Image_thumbnail_url}}',
     url: '{{Product.get_absolute_url}}',
+    inventory:'{{Product.Inventory}}'
+    shop:{
+        title:'{{Product.ShopProduct.Title}}',
+        slug:'{{Product.ShopProduct.Slug}}'
+    }
 }
 </script>
 

@@ -54,7 +54,7 @@
                         </div>
                     {% else %}
                             <div class="user-top dropdown">
-                                <a href="{% url "auth:login" %}"">
+                                <a href="{% url "auth:login" %}">
                                     <img src="{% static "images/user.svg" %}" alt="ناحیه کاربری">
                                     <p> ورود <br> عضویت </p>
                                 </a>
@@ -102,6 +102,41 @@
                             </a>
                         </div>
                     {% endif %}
+
+                    {% comment %} <div class="cart-top dropdown">
+                            <a class="dropdown-toggle" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <img src="{% static "images/shopping-bag.svg" %}" alt="سبد خرید">
+                            </a>
+                            <div class="dropdown-menu dropdown-primary sh-cart cls-cart">
+                                
+                                <span>تعداد کالا</span><span class="shopBagProductCount"></span><a href="{% url "Payment:cartdetail" %}" class="ainsh">مشاهده سبد&zwnj;خرید</a>
+                                <br>
+                                
+                                <P>مبلغ : <span id="totalPrice" class="numbersprice"> 0 </span>ریال</P>
+                                <p>
+                                    <a href="{% url "Payment:cartdetail" %}" class="savecart"><i class="far fa-cart-plus"></i> ثبت سفارش </a>
+                                </p>
+                                <div class="hr-line-in-shop-bag">
+
+                                </div>
+                                <div id="loaderDiv" class="loaderDivclass">
+                                    در حال بارگذاری
+                                    <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری">
+                                </div>
+                                <div class="shop-bag-products-empty">
+                                    <p>
+                                        محصولی در سبد خرید شما وجود ندارد!
+                                    </p>
+                                </div>
+                                <div class="shop-bag-products">
+                                </div>
+                                <p class="shop-bag-more-products-p">
+                                    <a href="{% url "Payment:cartdetail" %}" class="shop-bag-more-products"> بیشتر... </a>
+                                </p> 
+                            </div>
+                        <div class="shop-bag-count"></div>
+                    </div> {% endcomment %}
+                    
                 </div>
             </div>
         </div>
@@ -220,7 +255,7 @@
 </div> {% endcomment %}
 
 
-{% compress js inline %}
+{% comment %} {% compress js inline %} {% endcomment %}
     {% if request.user.is_authenticated %}
         <script type="text/javascript" charset="utf-8">
             $(".shop-bag-more-products-p").hide();
@@ -233,84 +268,58 @@
 
             function shopping_cart() {
 
-            
-
-            var shopBagProductCount;
-            var txt1 ="";
-                $.ajax(
+                var shopBagProductCount;
+                var txt1 ="";
+                var cart = JSON.parse(localStorage.getItem('cart')) ?? []
+                shopBagProductCount = cart.length;
+                if(shopBagProductCount > 0)
+                {
+                    $(".shop-bag-products-empty").hide();
+                    $(".shop-bag-count").show();
+                    $(".shop-bag-count").text(shopBagProductCount);
+                    var totalPrice = cart.map(item => item.price*item.count).reduce((a,b)=> a+b,0)
+                    $("#totalPrice").text(totalPrice);
+                    $(".shopBagProductCount").text(shopBagProductCount);
+                    if (shopBagProductCount <= 3)
                     {
-                        type: 'GET',
-                        url: '{% url "restapi:get_factor_products" %}',
-
-                        success: function (json) {
-                            shopBagProductCount = json.FK_FactorPost.length;
-                            if(shopBagProductCount > 0)
-                            {
-                                $(".shop-bag-products-empty").hide();
-                                $(".shop-bag-count").show();
-                                $(".shop-bag-count").text(shopBagProductCount);
-                                var totalPrice = 0;
-                                for (var i=0; i < shopBagProductCount; i++){
-                                    totalPrice += json.FK_FactorPost[i].get_total_item_price;
-                                }
-                                $("#totalPrice").text(totalPrice);
-                                $(".shopBagProductCount").text(shopBagProductCount);
-                                if (shopBagProductCount <= 3)
-                                {
-                                var i;
-                                for (i=0; i < shopBagProductCount ; i++) {
-                                    txt1 += '<a href="/product/' +
-                                    json.FK_FactorPost[i].FK_Product.FK_Shop.Slug +
-                                    '/' + 
-                                    json.FK_FactorPost[i].FK_Product.Slug + 
-                                    '"> <div class="row shop-bag-product"> <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-12 shop-bag-product-1st-col"> <div class="cart-show"> <img src="' + 
-                                    json.FK_FactorPost[i].FK_Product.Image_thumbnail_url + 
-                                    '" alt="عکس محصول"> </div> </div> <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-12 shop-bag-product-2nd-col"> <div class="shop-bag-product-content">' + 
-                                    json.FK_FactorPost[i].FK_Product.Title +
-                                    ' (تعداد : '+
-                                    json.FK_FactorPost[i].ProductCount +
-                                    ') <div class="shop-bag-product-price"> <span class="numbersprice">' +
-                                    json.FK_FactorPost[i].get_total_item_price + 
-                                    '</span> ریال </div> </div> </div> </div> </a> <div class="hr-line-in-shop-bag"> </div>';
-                                }  
-                                $(".shop-bag-products").html(txt1);
-                                }
-                                else {
-                                    var i;
-                                    for (i=0; i < 3 ; i++) {
-                                        txt1 += '<a href="/product/' +
-                                    json.FK_FactorPost[i].FK_Product.FK_Shop.Slug +
-                                    '/' + 
-                                    json.FK_FactorPost[i].FK_Product.Slug + 
-                                    '"> <div class="row shop-bag-product"> <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-12 shop-bag-product-1st-col"> <div class="cart-show"> <img src="'+ 
-                                    json.FK_FactorPost[i].FK_Product.Image_thumbnail_url + 
-                                    '" alt="عکس محصول"> </div> </div> <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-12 shop-bag-product-2nd-col"> <div class="shop-bag-product-content">' + 
-                                    json.FK_FactorPost[i].FK_Product.Title +
-                                    ' (تعداد : '+
-                                    json.FK_FactorPost[i].ProductCount +
-                                    ') <div class="shop-bag-product-price"> <span class="numbersprice">' +
-                                    json.FK_FactorPost[i].get_total_item_price + 
-                                    '</span> ریال </div> </div> </div> </div> </a> <div class="hr-line-in-shop-bag"> </div>';
-                                }  
-                                    $(".shop-bag-products").html(txt1);
-                                    $(".shop-bag-more-products-p").show();
-                                }
-                            }
-                            else {
-                                $(".shopBagProductCount").text(0);
-                                $(".shop-bag-products-empty").show();
-                            }
-                            $("#loaderDiv").remove();
-                            $(".numbersprice").digits();
-                        },
-                        error: function (xhr) {
-                            $('#results').html("<div class='alert-box alert radius' data-alert>خطای ورود اطلاعات " +
-                                "<br><a href='/accounts/register/' class='btn btn-outline-primary'>امتحان مجدد</a></div>");
-                            $("#loaderDiv").hide();
-                            console.log(xhr.status + ": " + xhr.responseText);
-                        }
+                    var i;
+                    for (i=0; i < shopBagProductCount ; i++) {
+                        txt1 += '<a href="' + cart[i].url + '"> <div class="row shop-bag-product"> <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-12 shop-bag-product-1st-col"> <div class="cart-show"> <img src="' + 
+                        cart[i].image + 
+                        '" alt="عکس محصول"> </div> </div> <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-12 shop-bag-product-2nd-col"> <div class="shop-bag-product-content">' + 
+                        cart[i].title +
+                        ' (تعداد : '+
+                        cart[i].count +
+                        ') <div class="shop-bag-product-price"> <span class="numbersprice">' +
+                        cart[i].price * cart[i].count + 
+                        '</span> ریال </div> </div> </div> </div> </a> <div class="hr-line-in-shop-bag"> </div>';
+                    }  
+                    $(".shop-bag-products").html(txt1);
                     }
-                );
+                    else {
+                        var i;
+                        for (i=0; i < 3 ; i++) {
+                            txt1 += '<a href="' + cart[i].url + 
+                        '"> <div class="row shop-bag-product"> <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-12 shop-bag-product-1st-col"> <div class="cart-show"> <img src="'+ 
+                        cart[i].image + 
+                        '" alt="عکس محصول"> </div> </div> <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-12 shop-bag-product-2nd-col"> <div class="shop-bag-product-content">' + 
+                        cart[i].title +
+                        ' (تعداد : '+
+                        cart[i].count +
+                        ') <div class="shop-bag-product-price"> <span class="numbersprice">' +
+                        cart[i].price * cart[i].count + 
+                        '</span> ریال </div> </div> </div> </div> </a> <div class="hr-line-in-shop-bag"> </div>';
+                    }  
+                        $(".shop-bag-products").html(txt1);
+                        $(".shop-bag-more-products-p").show();
+                    }
+                }
+                else {
+                    $(".shopBagProductCount").text(0);
+                    $(".shop-bag-products-empty").show();
+                }
+                $("#loaderDiv").remove();
+                $(".numbersprice").digits();
             }
         </script>
     {% endif %}
@@ -577,5 +586,5 @@
             })
     //#endregion
 </script>
-{% endcompress %}
+{% comment %} {% endcompress %} {% endcomment %}
     
