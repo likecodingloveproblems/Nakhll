@@ -75,7 +75,8 @@
             <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-12">
                 <div class="product-cart">
 
-                    {% for item in Factor.FK_FactorPost.all %}
+                    {% comment %} {% for item in Factor.FK_FactorPost.all %}
+
                         <div class="prd-cart-list">
                             <div class="row">
                                 <div class="col-xl-2">
@@ -223,7 +224,7 @@
                         <div>
                             هیچ محصولی در سبد خرید شما موجود نیست ...
                         </div>
-                    {% endfor %}
+                    {% endfor %} {% endcomment %}
 
                 </div>
             </div>
@@ -267,7 +268,121 @@
         </div>
     </div>
 </section>
+<script>
+    $(document).ready(function () {
+        render_cart();
+    })
 
+    function render_cart() {
+
+        var shopBagProductCount;
+        var txt1 ="";
+        var cart = JSON.parse(localStorage.getItem('cart'))
+        if (cart){
+            shopBagProductCount = cart.length;
+            for (var i=0; i < shopBagProductCount ; i++) {
+                txt1 += 
+                    `<div class="prd-cart-list">
+                        <div class="row">
+                            <div class="col-xl-2">
+                                <div class="img-prod-cart">
+                                    <img src="${cart[i].image}" alt="${cart[i].title}">
+                                </div>
+                            </div>
+                            <div class="col-xl-7">
+                                <div class="des-prod-cart">
+                                    <h4>${cart[i].title} (<span class="numbersprice">${cart[i].price}</span> ریال )</h4>
+
+                                    <h5>حجره : <a href="/${cart[i].shop.slug}"><span>${cart[i].shop.title}</span></a></h5>
+                                    <p class="inventory-text">تعداد موجودی : ${cart[i].inventory}</p>
+                                </div>
+                            </div>
+                            <div class="col-xl-3">
+                                <div class="price-prod-cart">
+                            `
+                            if (cart[i].discount){
+                                txt1 += `<h6 class="pricenumberdel"><span class="numbersprice del-price"> ${(cart[i].price+cart[i].discount)*cart[i].count} </span>ریال</h6>`
+                            }
+                            txt1 += `               
+                                    <h6><span class="numbersprice itemprice${cart[i].id}" > ${cart[i].price*cart[i].count} </span>ریال</h6>
+                                    
+                                    <label for="numberprod">تعداد:</label>
+                                    <button class="add${cart[i].id}" value="${cart[i].id}"><i class="fal fa-plus"></i></button>
+                                    <span id="id${cart[i].id}">${cart[i].count}</span>
+                                    <button class="remove${cart[i].id}"><i class="fal fa-minus"></i></button>
+                                    <a id="delete${cart[i].id}" class="delbtn">حذف</a>
+                                    <script>
+                                    function add_product_count_local_storage(product_id){
+                                        product = cart.filter(item => item.id == product_id)
+                                        product.count += 1
+                                    }
+                                    function remove_product_count_local_storage(product_id){
+                                        product = cart.filter(item => item.id == product_id)
+                                        if (product.count > 1)
+                                            product.count -= 1
+                                        else
+                                            delete_product_count_local_storage(product_id)
+                                    }
+                                    function delete_product_count_local_storage(product_id){
+                                        product = cart.filter(item => item.id == product_id)
+                                        cart = cart.filter(item => item != product)
+                                        localStorage.cart = cart
+                                    }
+
+                                    $(".add${cart[i].id}").click(function() {
+                                        add_product_count_local_storage(${cart[i].id})
+                                        $('#id${cart[i].id}').html(${cart[i].count});
+                                        $('.itemprice${cart[i].id}').html(${cart[i].price*cart[i].count});
+                                        $('#facctorprice').html(${cart.map(item=>item.price*item.count).reduce((a,b)=> a+b,0)});
+                                        $.fn.digits = function(){ 
+                                            return this.each(function(){ 
+                                                $(this).text( $(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") ); 
+                                            })
+                                        }
+                                        $(".numbersprice").digits();
+
+                                    });
+                                    
+
+                                    $(".remove${cart[i].id}").click(function() {
+
+                                        $('#id${cart[i].id}').html(${cart[i].count});
+                                        $('.itemprice${cart[i].id}').html(${cart[i].price*cart[i].count});
+                                        $('#facctorprice').html(${cart.map(item=>item.price*item.count).reduce((a,b)=> a+b,0)});
+                                        $.fn.digits = function(){ 
+                                            return this.each(function(){ 
+                                                $(this).text( $(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") ); 
+                                            })
+                                        }
+                                        $(".numbersprice").digits();
+                                    });
+
+                                    $(".delete${cart[i].id}").click(function() {
+
+                                        $('#id${cart[i].id}').html(${cart[i].count});
+                                        $('.itemprice${cart[i].id}').html(${cart[i].price*cart[i].count});
+                                        $('#facctorprice').html(${cart.map(item=>item.price*item.count).reduce((a,b)=> a+b,0)});
+                                        $.fn.digits = function(){ 
+                                            return this.each(function(){ 
+                                                $(this).text( $(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") ); 
+                                            })
+                                        }
+                                        $(".numbersprice").digits();
+                                    });
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    `
+                }  
+        } else {
+            txt1 += "هیچ محصولی در سبد خرید شما موجود نیست ..."
+        }
+        $(".product-cart").html(txt1);
+    }
+            
+</script>
 
 
 {% block footer-section %}
