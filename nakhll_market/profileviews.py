@@ -726,6 +726,9 @@ def add_user_bank_account_info(request):
 def add_new_shop(request):
     # Check User Status
     if request.user.is_authenticated:
+        if not (request.user.first_name and request.user.last_name):
+            messages.warning(request, 'لطفا ابتدا اطلاعات خود را تکمیل کنید.')
+            return redirect("nakhll_market:Dashboard")
         if request.method == 'POST':
             # Get Data
             Title = request.POST["Shop_Title"]
