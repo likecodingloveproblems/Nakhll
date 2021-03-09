@@ -33,6 +33,9 @@ from .models import (
 from Payment.models import Coupon, Wallet, Factor, FactorPost, Transaction
 from django.urls import reverse
 from nakhll.settings import KAVENEGAR_KEY
+
+# from .permissions import groups_and_permission, get_group_privileges_sidebar
+
 '''
 TODO
 Use standard styles such as camle case, pascal and ...
@@ -43,7 +46,7 @@ Use slogify instead of getting from user for Shop and Product Slug
 # --------------------------------------------------------------------------------------------------------------------------------------
 # base data for base template
 def baseData(request, activeSidebarMenu):
-    # user profile 
+    # user profile  
     userProfile = request.user.User_Profile
     # user wallet 
     userWallet = request.user.WalletManager
@@ -53,7 +56,23 @@ def baseData(request, activeSidebarMenu):
     navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
     # number of unseen massagged
     new_message_count = Message.objects.filter(FK_Users__FK_User=request.user, FK_Users__SeenStatus=False).count()
-    # side bar menu
+    
+    
+    # TODO: 
+    # CHANGE SIDEBAR RENDERING PATTERN - sidebar should render the same in every page
+    #       for this purpose we created permissions.py
+    #       just pass user group name to permissions.groups_and_permission()
+    #       to retrive user group permission name
+    #       and finally to get user sidebar just pass the permission key to
+    #       permissions.get_group_privileges_sidebar()
+    # get groups names that user joined them 
+    # user_group_permission_keys = []
+    # for group in request.user.groups.all():   
+    #     user_group_permission_keys.append(groups_and_permission(group))
+    # sidebarMenu = get_group_privileges_sidebar(user_group_permission_keys)
+    
+    # side bar menu 
+    sidebarMenu = []
     sidebarMenu = [
         {'id':'dasboard', 'name':'داشبورد', 'url':reverse('nakhll_market:Dashboard'), 'class':'fas fa-id-badge', 'isActive':False, 'staffOnly':False},
         {'id':'transaction', 'name':'تراکنش ها', 'url':reverse('nakhll_market:Transaction'), 'class':'fad fa-clipboard-list', 'isActive':False, 'staffOnly':False},

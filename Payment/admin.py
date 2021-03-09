@@ -75,6 +75,15 @@ class CampaignAdmin(admin.ModelAdmin):
 #Coupon admin panel
 @admin.register(Coupon)
 class CouponAdmin(admin.ModelAdmin):
+    raw_id_fields = (
+        'FK_Creator',
+        'FK_InvitationShops',
+        'FK_Shops',
+        'FK_Products',
+        'FK_Categories',
+        'FK_Users',
+        'FK_User',
+        )
     readonly_fields = ('SerialNumber',)
     list_display=('Title','SerialNumber','StartDate','EndDate','DiscountType','Publish')
     list_filter=('DiscountType','DiscountType','StartDate','Publish')
