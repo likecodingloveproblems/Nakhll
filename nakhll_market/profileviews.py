@@ -492,15 +492,16 @@ class ProfileShops(LoginRequiredMixin, TemplateView):
         for item in this_profile.get_user_shops():
             if item.FK_SubMarket.all().count() != 0:
                 # Get Shop First SubMarket
-                this_shop_subMarket = item.FK_SubMarket.all()[0]
+                this_shop_subMarket = item.FK_SubMarket.first()
                 # Get Shop First SubMarket Market
-                this_shop_market = item.FK_SubMarket.all()[0].FK_Market
+                this_shop_market = item.FK_SubMarket.first().FK_Market
             else:
                 # Get Shop First SubMarket
                 this_shop_subMarket = None
                 # Get Shop First SubMarket Market
                 this_shop_market = None
             user_shop_list.append(Shop_item(item, this_shop_market, this_shop_subMarket))
+        user_unpubished_shops = Shop.objects.filter(FK_ShopManager=request.user, Publish=False)
         # Get All User Products
         user_product_list = this_profile.get_user_products
         context ['This_User_Profile'] = this_profile
@@ -508,6 +509,7 @@ class ProfileShops(LoginRequiredMixin, TemplateView):
         context ['Options'] = options
         context ['MenuList'] = navbar
         context ['UserShops'] = user_shop_list
+        context['UserUnpublishedUser'] = user_unpubished_shops
         context ['UserProducts'] = user_product_list
         return  context
 
