@@ -159,7 +159,7 @@
                                         <label for="inputCopun_Users"> کاربران </label>
                                         <select data-placeholder="کاربران" multiple class="chosen-select-rtl form-control" id="inputCopun_Users" name="copun_users" tabindex="14">
                                             {% for item in AllUsers %}
-                                                <option value="{{item.id}}">{{item.first_name}} {{item.last_name}}</option>
+                                                <option value="{{item.id}}">{{item.first_name}} {{item.last_name}} - {{item.User_Profile.NationalCode}} - {{item.User_Profile.MobileNumber}}</option>
                                             {% endfor %}
                                         </select>
                                         <br>
