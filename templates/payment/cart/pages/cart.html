@@ -311,7 +311,7 @@
                                     <span id="id${cart[i].id}">${cart[i].count}</span>
                                     <button class="remove${cart[i].id}"><i class="fal fa-minus"></i></button>
                                     <a id="delete${cart[i].id}" class="delbtn">حذف</a>
-                                    <script>
+                                    \<\script\>\
                                     function add_product_count_local_storage(product_id){
                                         product = cart.filter(item => item.id == product_id)
                                         product.count += 1
@@ -369,7 +369,7 @@
                                         }
                                         $(".numbersprice").digits();
                                     });
-                                    </script>
+                                    \<\/script\>
                                 </div>
                             </div>
                         </div>
