@@ -61,7 +61,6 @@
                             </div>
                     {% endif %}
 
-                    {% if request.user.is_authenticated %}
                         <div class="cart-top dropdown">
                             <a class="dropdown-toggle" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <img src="{% static "images/shopping-bag.svg" %}" alt="سبد خرید">
@@ -95,13 +94,11 @@
                             </div>
                             <div class="shop-bag-count"></div>
                         </div>
-                    {% else %}
-                        <div class="cart-top dropdown">
+                        {% comment %} <div class="cart-top dropdown">
                             <a class="dropdown-toggle" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="{% url "nakhll_market:AccountLogout" %}">
                                 <img src="{% static "images/shopping-bag.svg" %}" alt="سبد خرید">
                             </a>
-                        </div>
-                    {% endif %}
+                        </div> {% endcomment %}
 
                     {% comment %} <div class="cart-top dropdown">
                             <a class="dropdown-toggle" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -256,7 +253,6 @@
 
 
 {% comment %} {% compress js inline %} {% endcomment %}
-    {% if request.user.is_authenticated %}
         <script type="text/javascript" charset="utf-8">
             $(".shop-bag-more-products-p").hide();
             $(".shop-bag-products-empty").hide();
@@ -322,7 +318,6 @@
                 $(".numbersprice").digits();
             }
         </script>
-    {% endif %}
 
 <script type="text/javascript" charset="utf-8" src="{% static "js/register_login/login.js" %}"></script>
 <script type="text/javascript" charset="utf-8">
