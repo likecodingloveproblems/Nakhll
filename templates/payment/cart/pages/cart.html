@@ -6,6 +6,7 @@
 {% block header %}
 {% include "nakhll_market/parents/headermain.html" %}
 {% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
 
 
     <title>بازار نخل | سبد خرید</title>
@@ -42,7 +43,7 @@
         </button>
       </div>
       <div class="modal-body" id="text_err">
-        
+
       </div>
       <div class="modal-footer" id="modal-footer-err">
       <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
@@ -70,161 +71,58 @@
 </section>
 
 <section id="time">
-    <div class="container">
+    <div class="container" id="cart">
         <div class="row">
             <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-12">
-                <div class="product-cart">
-
-                    {% comment %} {% for item in Factor.FK_FactorPost.all %}
-
-                        <div class="prd-cart-list">
-                            <div class="row">
-                                <div class="col-xl-2">
-                                    <div class="img-prod-cart">
-                                        <img src="{{item.FK_Product.Image_thumbnail_url}}" alt="{{item.FK_Product.Title}}">
+                <div class="product-cart" id="product-cart">
+                    <div v-if="cart">
+                        <div v-for="item in cart">
+                            <div class="prd-cart-list">
+                                <div class="row">
+                                    <div class="col-xl-2">
+                                        <div class="img-prod-cart">
+                                            <img v-bind:src="[[item.image]]" v-bind:alt="[[item.title]]">
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-xl-7">
-                                    <div class="des-prod-cart">
-                                        <h4>{{item.FK_Product.Title}} (<span class="numbersprice">{{item.FK_Product.Price}}</span> ریال )</h4>
+                                    <div class="col-xl-7">
+                                        <div class="des-prod-cart">
+                                            <h4>[[item.title]] (<span class="numbersprice">[[item.price]]</span> ریال )</h4>
 
-                                        <h5>حجره : <a href="/{{item.FK_Product.FK_Shop.Slug}}"><span>{{item.FK_Product.FK_Shop.Title}}</span></a></h5>
+                                            <h5>حجره : <a v-bind:href="[[get_shop_url(item)]]"><span>[[item.shop.title]]</span></a></h5>
 
-                                        {% if item.FK_AttrPrice.all %}
-                                            <h5>ویژگی های انتخابی  :
+                                            {% if item.FK_AttrPrice.all %}
+                                                <h5>ویژگی های انتخابی  :
 
-                                                {% for attribute in item.FK_AttrPrice.all %}
-                                                    <span>{{attribute.Value}} : <span class="numbersprice">{{attribute.ExtraPrice}}</span> ریال , </span>
-                                                {% endfor %}
-                                            </h5>
-                                        {% endif %}
-                                        {% if item.FK_Product.Status == "1" %}
-                                            <p class="inventory-text">تعداد موجودی : {{item.FK_Product.Inventory}}</p>
-                                        {% endif %}
+                                                    {% for attribute in item.FK_AttrPrice.all %}
+                                                        <span>[[attribute.Value]] : <span class="numbersprice">[[attribute.ExtraPrice]]</span> ریال , </span>
+                                                    {% endfor %}
+                                                </h5>
+                                            {% endif %}
+                                                <p class="inventory-text">تعداد موجودی : [[item.inventory]]</p>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-xl-3">
-                                    <div class="price-prod-cart">
+                                    <div class="col-xl-3">
+                                        <div class="price-prod-cart">
 
-                                        {% if item.FK_Product.OldPrice != 0 %}
-                                            <h6 class="pricenumberdel"><span class="numbersprice del-price"> {{item.get_total_old_item_price}} </span>ریال</h6>
-                                        {% endif%}
-                                        
-                                        <h6><span class="numbersprice itemprice{{item.ID}}" > {{item.get_total_item_price}} </span>ریال</h6>
-                                        
-                                        <label for="numberprod">تعداد:</label>
-                                        <button class="add{{item.ID}}" value="{{item.ID}}"><i class="fal fa-plus"></i></button>
-                                        <span id="id{{item.ID}}">{{item.ProductCount}}</span>
-                                        <button class="remove{{item.ID}}"><i class="fal fa-minus"></i></button>
-                                        <script>
-                                        $(".add{{item.ID}}").click(function() {
-                                            $("#checkajax").show();
-                                                $.ajax({
-                                                    type:'POST',
-                                                    url:'{% url "Profile:Add_Single_Item_From_Cart" %}',
-                                                    data:{
-                                                        item_id:'{{item.ID}}',
-                                                        csrfmiddlewaretoken: '{{ csrf_token }}' ,
-                                                    },    
-                                                    dataType: 'json',
-                                                    success:function(json){ 
-                                                        
-                                                        if (json.status == true){
-                                                            $('#id{{item.ID}}').html(json.p_count);
-                                                            $('.itemprice{{item.ID}}').html(json.i_price);
-                                                            $('#facctorprice').html(json.f_price);
-                                                            $.fn.digits = function(){ 
-                                                                return this.each(function(){ 
-                                                                    $(this).text( $(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") ); 
-                                                                })
-                                                            }
-                                                            $(".numbersprice").digits();
-                                                            $("#checkajax").hide();
-                                                        }else{  
-                                                            $('#text_err').html('<p>موجودی محصول کمتر از درخواست شماست.</p>');
-                                                            $("#checkajax").hide();
-                                                            $('#myModalerror').modal('show');
-                                                        }
-                                                    },
-                                                    error : function(xhr,errmsg,err) {
-                                                        $("#checkajax").hide();
-                                                        $('#text_err').html('<p> مشکلی در اتصال شما بوجود آمده است صفحه شما مجدد بارگذاری می شود </p>');
-                                                        $('#modal-footer-err').hide(); 
-                                                        $('#myModalerror').modal('show');
-                                                        setTimeout(function() {
-                                                            location.reload();
-                                                        }, 5000);
-                                                        console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
-                                                    }
-                                                });
-
-                                        });
-                                        
-
-                                        $(".remove{{item.ID}}").click(function() {
-                                            $("#checkajax").show();
-                                            $.ajax({
-                                                type:'POST',
-                                                url:'{% url "Profile:Remove_Single_Item_From_Cart" %}',
-                                                data:{
-                                                    item_id:'{{item.ID}}',
-                                                    csrfmiddlewaretoken: '{{ csrf_token }}' ,
-                                                },    
-                                                dataType: 'json',
-                                                success:function(json){ 
-                                                    if (json.status == true){
-                                                        if (json.dlt == false){
-                                                        $('#id{{item.ID}}').html(json.p_count);
-                                                        $('.itemprice{{item.ID}}').html(json.i_price);
-                                                        $('#facctorprice').html(json.f_price);
-                                                        $.fn.digits = function(){ 
-                                                            return this.each(function(){ 
-                                                                $(this).text( $(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") ); 
-                                                            })
-                                                        }
-                                                        $(".numbersprice").digits();
-                                                        $("#checkajax").hide();
-                                                        }
-                                                        else{
-                                                            location.reload();
-                                                        }
-                                                    }else{  
-                                                        $("#checkajax").hide();
-                                                        $('#text_err').html('<p>خطایی رخ داده است لطفا مجدد تلاش کنید (صفحه را رفرش کنید )</p>');
-                                                        $('#myModalerror').modal('show');
-                                                    }
-                                                },
-                                                error : function(xhr,errmsg,err) {
-                                                    $("#checkajax").hide();
-                                                    $('#text_err').html('<p> مشکلی در اتصال شما بوجود آمده است صفحه شما مجدد بارگذاری می شود </p>');
-                                                    $('#modal-footer-err').hide(); 
-                                                    $('#myModalerror').modal('show');
-                                                    setTimeout(function() {
-                                                        location.reload();
-                                                    }, 5000);
-                                                    console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
-                                                }
-                                            });
-
-                                        });
-                                        </script>
-
-
-
-
-
-
-
-                                        <a href="{% url 'Payment:remove-from-cart' item.ID %}" class="delbtn">حذف</a>
+                                            <div v-if="[[item.discount]]">
+                                                <h6 class="pricenumberdel"><span class="numbersprice del-price" v-text="get_total_price_without_discount(item)"></span>ریال</h6>
+                                            </div>
+                                            <h6><span class="numbersprice itemprice" v-text="get_total_price(item)"></span>ریال</h6>
+                                            <label for="numberprod">تعداد:</label>
+                                            <button v-on:click="increase_product_count(item)"><i class="fal fa-plus"></i></button>
+                                            <input v-model.number="item.count" style="width:30px"></input>
+                                            <button v-on:click="decrease_product_count(item)"><i class="fal fa-minus"></i></button>
+                                            <a v-on:click="delete_product(item)" class="delbtn">حذف</a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    {% empty %}
-                        <div>
-                            هیچ محصولی در سبد خرید شما موجود نیست ...
-                        </div>
-                    {% endfor %} {% endcomment %}
+                    </div>
+                    <div v-else>
+                        هیچ محصولی در سبد خرید شما موجود نیست ...
+                    </div>
+
 
                 </div>
             </div>
@@ -232,44 +130,47 @@
                 <div class="sidebar-cart">
                     <div class="summary-cart">
                     <h5>محصولات سفارش :</h5>
-                    {% for item in Factor.FK_FactorPost.all %}
-                        <div class="row summary-prod">
-                            <div class="col-sm-3">
-                                <img src="{{item.FK_Product.Image_thumbnail_url}}" alt="{{item.FK_Product.Title}}">
-                            </div>
-                            <div class="col-sm-9">
-                                <h6>{{item.FK_Product.Title}} (<span class="numbersprice">{{item.FK_Product.Price}}</span> ریال )</h6>
-                                <h6>تعداد : {{item.ProductCount}} </h6>
-                                <h6>قیمت کل : <span class="numbersprice itemprice{{item.ID}}">{{item.get_total_item_price}}</span></h6>
+                        <div v-if="cart.length">
+                            <div v-for="item in cart">
+                                <div class="row summary-prod">
+                                    <div class="col-sm-3">
+                                        <img v-bind:src="[[item.image]]" v-bind:alt="[[item.title]]">
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <h6>[[item.title]] (<span class="numbersprice">[[item.price]]</span> ریال )</h6>
+                                        <h6>تعداد : [[item.count]] </h6>
+                                        <h6>قیمت کل : <span class="numbersprice itemprice" v-text="get_total_price(item)"></span></h6>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    {% empty %}
-                        <div>
-                            هیچ محصولی در سبد خرید موجود نیست.
+                        <div v-else>
+                            <div>
+                                هیچ محصولی در سبد خرید موجود نیست.
+                            </div>
                         </div>
-                    {% endfor %}
-                    <div class="summary-cart">                     
-                        {% if Factor.FK_FactorPost.all.count != 0 %}
+                    <div class="summary-cart">
+                        <div v-if="cart.length">
                             <h5>خلاصه سفارش :</h5>
                             <div class="factor-cart-summary">
-                                <mark>جمع مبلغ کالا ها <span class="numbersprice" id="facctorprice">{{ Factor.get_total }} ریال</span></mark>
+                                <mark>جمع مبلغ کالا ها <span class="numbersprice" id="facctorprice" v-text="get_cart_total_price()"> ریال</span></mark>
                             </div>
-                        {% endif %}
+                        </div>
                     </div>
-                    <div class="continue-cart">                        
-                        {% if Factor.FK_FactorPost.all.count != 0 %}
+                    <div class="continue-cart">
+                        <div v-if="cart.length">
                             <a href="{% url "Payment:sendinfo" %}"><button class="btn btn-success"><i class="fal fa-shopping-bag"></i> نهایی کردن سبد </button></a>
-                        {% endif %}         
+                        <div>
                         <br>
                         <a href="/" class="aback">بازگشت به صفحه اول</a>
-                    </div>   
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 <script>
-    $(document).ready(function () {
+    {% comment %} $(document).ready(function () {
         render_cart();
     })
 
@@ -281,7 +182,7 @@
         if (cart){
             shopBagProductCount = cart.length;
             for (var i=0; i < shopBagProductCount ; i++) {
-                txt1 += 
+                txt1 +=
                     `<div class="prd-cart-list">
                         <div class="row">
                             <div class="col-xl-2">
@@ -303,9 +204,9 @@
                             if (cart[i].discount){
                                 txt1 += `<h6 class="pricenumberdel"><span class="numbersprice del-price"> ${(cart[i].price+cart[i].discount)*cart[i].count} </span>ریال</h6>`
                             }
-                            txt1 += `               
+                            txt1 += `
                                     <h6><span class="numbersprice itemprice${cart[i].id}" > ${cart[i].price*cart[i].count} </span>ریال</h6>
-                                    
+
                                     <label for="numberprod">تعداد:</label>
                                     <button class="add${cart[i].id}" value="${cart[i].id}"><i class="fal fa-plus"></i></button>
                                     <span id="id${cart[i].id}">${cart[i].count}</span>
@@ -334,24 +235,24 @@
                                         $('#id${cart[i].id}').html(${cart[i].count});
                                         $('.itemprice${cart[i].id}').html(${cart[i].price*cart[i].count});
                                         $('#facctorprice').html(${cart.map(item=>item.price*item.count).reduce((a,b)=> a+b,0)});
-                                        $.fn.digits = function(){ 
-                                            return this.each(function(){ 
-                                                $(this).text( $(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") ); 
+                                        $.fn.digits = function(){
+                                            return this.each(function(){
+                                                $(this).text( $(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") );
                                             })
                                         }
                                         $(".numbersprice").digits();
 
                                     });
-                                    
+
 
                                     $(".remove${cart[i].id}").click(function() {
 
                                         $('#id${cart[i].id}').html(${cart[i].count});
                                         $('.itemprice${cart[i].id}').html(${cart[i].price*cart[i].count});
                                         $('#facctorprice').html(${cart.map(item=>item.price*item.count).reduce((a,b)=> a+b,0)});
-                                        $.fn.digits = function(){ 
-                                            return this.each(function(){ 
-                                                $(this).text( $(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") ); 
+                                        $.fn.digits = function(){
+                                            return this.each(function(){
+                                                $(this).text( $(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") );
                                             })
                                         }
                                         $(".numbersprice").digits();
@@ -362,9 +263,9 @@
                                         $('#id${cart[i].id}').html(${cart[i].count});
                                         $('.itemprice${cart[i].id}').html(${cart[i].price*cart[i].count});
                                         $('#facctorprice').html(${cart.map(item=>item.price*item.count).reduce((a,b)=> a+b,0)});
-                                        $.fn.digits = function(){ 
-                                            return this.each(function(){ 
-                                                $(this).text( $(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") ); 
+                                        $.fn.digits = function(){
+                                            return this.each(function(){
+                                                $(this).text( $(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") );
                                             })
                                         }
                                         $(".numbersprice").digits();
@@ -375,13 +276,59 @@
                         </div>
                     </div>
                     `
-                }  
+                }
         } else {
             txt1 += "هیچ محصولی در سبد خرید شما موجود نیست ..."
         }
         $(".product-cart").html(txt1);
-    }
-            
+    } {% endcomment %}
+
+    var app = new Vue({
+        el: '#cart',
+        delimiters: ['[[', ']]'],
+        data: {
+            cart: JSON.parse(window.localStorage.getItem('cart')),
+        },
+        methods: {
+            get_total_price_without_discount: function (item) {
+                return (parseInt(item.count) * (parseInt(item.price) + parseInt(item.discount)))
+            },
+            get_total_price: function (item) {
+                return (parseInt(item.count) * parseInt(item.price))
+            },
+            get_shop_url (item) {
+                return '/' + item.shop.slug
+            },
+            increase_product_count: function (item) {
+                item.count += 1
+                this.set_local_storage()
+            },
+            decrease_product_count: function (item) {
+                if (item.count > 1){
+                    item.count -= 1
+                    this.set_local_storage()
+                }
+                else{
+                    this.delete_product(item)
+                    this.set_local_storage()
+                }
+            },
+            delete_product: function (item) {
+                this.cart = this.cart.filter(i => i != item)
+                this.set_local_storage()
+            },
+            set_local_storage(){
+                localStorage.setItem('cart', JSON.stringify(this.cart))
+                shopping_cart()
+            },
+            get_cart_total_price: function () {
+                var total_price = 0
+                this.cart.map(item => total_price += this.get_total_price(item))
+                return total_price
+            }
+        }
+    })
+
 </script>
 
 
