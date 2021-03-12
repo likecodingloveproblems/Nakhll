@@ -269,9 +269,9 @@ urlpatterns = [
     # ------------------------------------------------------ Profile Path ---------------------------------------------------------------
 
     # Dashboard Path
-    # path('profile/dashboard/', profileviews.ProfileDashboard, name='Dashboard'),
+    # path('profile/dashboard/', profileviews.UpdateUserDashboard, name='Dashboard'),
     # class based view url replaced:
-    path('profile/dashboard/', profileviews.ProfileDashboard.as_view(), name='Dashboard'),
+    path('profile/dashboard/', profileviews.UpdateUserDashboard.as_view(), name='Dashboard'),
     # Wallet Path
     # path('profile/wallet/', profileviews.ProfileWallet, name='Wallet'),
     path('profile/wallet/', profileviews.ProfileWallet.as_view(), name='Wallet'),

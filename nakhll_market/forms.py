@@ -3,7 +3,8 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from .models import Newsletters
-
+from nakhll_market.models import Profile
+from django.contrib.auth.forms import UserChangeForm
 # Login Form
 class Login (forms.Form):
     username=forms.CharField()
@@ -29,3 +30,15 @@ class CheckEmail (forms.Form):
         if validate_email(email):
             return email
 
+
+# update Profile Form
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model= Profile
+        fields= ['Sex','MobileNumber','ZipCode','PhoneNumber','NationalCode', 'Address', 'State', 'BigCity', 'City', 'BrithDay','Bio', 'TutorialWebsite','ReferenceCode', 'UserReferenceCode','CityPerCode']
+
+
+class MyUserForm(UserChangeForm):
+    class Meta(UserChangeForm.Meta):
+        fields = ['first_name' , 'last_name' , 'email']
+        password = None

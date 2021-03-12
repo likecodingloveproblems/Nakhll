@@ -75,7 +75,7 @@ from sms.models import SMS
 from my_auth.models import UserphoneValid
 from Payment.models import Wallet, Factor ,FactorPost, Coupon
 
-from .forms import Login, CheckEmail
+from .forms import Login, CheckEmail 
 from .profileviews import ProfileDashboard
 
 # Get Username
