@@ -142,18 +142,18 @@
                         </div>
                         <!-- <div class="col-md-4">
                         <label for="inputState">استان <code>*</code></label>
-                        <input value="{{This_User_Profile.State}}" type="text" placeholder="نام استان خود را وارد نمایید..."
+                        <input value="{{request.user.User_Profile.State}}" type="text" placeholder="نام استان خود را وارد نمایید..."
                             name="Factor_State" class="form-control" id="inputState" required>
                     </div>
                     <div class="col-md-4">
                         <label for="inputBigCity">شهرستان <code>*</code></label>
-                        <input value="{{This_User_Profile.BigCity}}" type="text"
+                        <input value="{{request.user.User_Profile.BigCity}}" type="text"
                             placeholder="نام شهرستان خود را وارد نمایید..." name="Factor_BigCity" class="form-control"
                             id="inputBigCity" required>
                     </div>
                     <div class="col-md-4">
                         <label for="inputCity">شهر <code>*</code></label>
-                        <input value="{{This_User_Profile.City}}" type="text" placeholder="نام شهر خود را وارد نمایید..."
+                        <input value="{{request.user.User_Profile.City}}" type="text" placeholder="نام شهر خود را وارد نمایید..."
                             name="Factor_City" class="form-control" id="inputCity" required>
                     </div> -->
                     </div>
@@ -163,7 +163,7 @@
                             <label for="inputPhoneNumber">تلفن ثابت <code>*</code></label>
                             <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
                                 data-placement="left" title="شماره تلفن ثابت شما باید 8 رقم باشد."></i>
-                            <input value="{{This_User_Profile.PhoneNumber}}" type="number" placeholder="98****33"
+                            <input value="{{request.user.User_Profile.PhoneNumber}}" type="number" placeholder="98****33"
                                 name="Factor_PhoneNumber" pattern="[0-9]{8,8}" class="form-control"
                                 id="inputPhoneNumber">
                         </div>
@@ -172,7 +172,7 @@
                             <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
                                 data-placement="left"
                                 title="پیش شماره شهر خود را به صورت اعداد وارد نمایید - پیش شماره شهر باید حداقل 3 رقم باشد."></i>
-                            <input value="{{This_User_Profile.CityPerCode}}" type="number" placeholder="مثال : 034"
+                            <input value="{{request.user.User_Profile.CityPerCode}}" type="number" placeholder="مثال : 034"
                                 name="Factor_CityPerCode" pattern="[0-9]{3,3}" class="form-control"
                                 id="inputCityPerCode">
                         </div>
@@ -183,7 +183,7 @@
                             <label for="inputAddress">آدرس <code>*</code></label>
                             <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
                                 data-placement="left" title="آدرس محل سکونت خود را وارد نمائید."></i>
-                            <input value="{{This_User_Profile.Address}}" type="text"
+                            <input value="{{request.user.User_Profile.Address}}" type="text"
                                 placeholder="آدرس محل سکونت خود را وارد نمائید..." name="Factor_Address"
                                 class="form-control" id="inputAddress" required>
                         </div>
@@ -193,7 +193,7 @@
                             <label for="inputZipCode">کد پستی <code>*</code></label>
                             <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
                                 data-placement="left" title="کد پستی شما باید 10 رقم باشد."></i>
-                            <input required value="{{This_User_Profile.ZipCode}}" type="number" placeholder="999*****76"
+                            <input required value="{{request.user.User_Profile.ZipCode}}" type="number" placeholder="999*****76"
                                 name="Factor_ZipCode" pattern="[0-9]{10,10}" class="form-control" id="inputZipCode">
                         </div>
                         <div class="col-md-6 prof-info-shop-btn">
@@ -1559,9 +1559,9 @@
             }
         )
     }
-    var userprofState = '{{This_User_Profile.State}}';
-    var userprofBigCity = '{{This_User_Profile.BigCity}}';
-    var userprofCity = '{{This_User_Profile.City}}';
+    var userprofState = '{{request.user.User_Profile.State}}';
+    var userprofBigCity = '{{request.user.User_Profile.BigCity}}';
+    var userprofCity = '{{request.user.User_Profile.City}}';
     var selectedProfState;
     var selectedProfBigCity;
     // var selectedProfCity;
