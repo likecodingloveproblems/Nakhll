@@ -76,7 +76,6 @@ from my_auth.models import UserphoneValid
 from Payment.models import Wallet, Factor ,FactorPost, Coupon
 
 from .forms import Login, CheckEmail 
-from .profileviews import ProfileDashboard
 
 # Get Username
 User_username = None

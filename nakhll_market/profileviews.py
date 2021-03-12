@@ -69,6 +69,7 @@ from .forms import Login, CheckEmail
 from nakhll.settings import KAVENEGAR_KEY
 
 from Iran import data
+from nakhll_market.forms import MyUserForm, ProfileForm 
 # Profile Page And Sub Pages
 #---------------------------------------------------------------------------------------------------------------------------------
 
@@ -152,24 +153,26 @@ class SendMessage:
 # ---------------------------------------------------- User Profile Pages ---------------------------------------------------------
 
 # implement class based views
-class ProfileDashboard(LoginRequiredMixin, TemplateView):
-    template_name = 'nakhll_market/profile/pages/profile.html'
-    redirect_field_name = 'auth:login'
+# class ProfileDashboard(LoginRequiredMixin, TemplateView):
+#     template_name = 'nakhll_market/profile/pages/profile.html'
+#     redirect_field_name = 'auth:login'
     
-    def get_context_data(self, **kwargs):
-        this_profile = Profile.objects.get(FK_User=self.request.user)
-        this_inverntory = self.request.user.WalletManager.Inverntory
-        # Get Menu Item
-        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-        # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-        # -------------------------------------------------------------------
-        context = super().get_context_data(**kwargs)
-        context['This_User_Profile'] = this_profile
-        context['This_User_Inverntory'] = this_inverntory
-        context['Options'] = options
-        context['MenuList'] = navbar
-        return context 
+#     def get_context_data(self, **kwargs):
+#         this_profile = Profile.objects.get(FK_User=self.request.user)
+#         this_inverntory = self.request.user.WalletManager.Inverntory
+#         # Get Menu Item
+#         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+#         # Get Nav Bar Menu Item
+#         navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+#         # -------------------------------------------------------------------
+#         context = super().get_context_data(**kwargs)
+#         context['This_User_Profile'] = this_profile
+#         context['This_User_Inverntory'] = this_inverntory
+#         context['Options'] = options
+#         context['MenuList'] = navbar
+#         return context 
+
+
 # Get User Dashboard Info
 # def ProfileDashboard(request):
 #     # Check User Status
@@ -3162,21 +3165,35 @@ class ProfileAlert(LoginRequiredMixin, TemplateView):
 
 # Update Profile Values
 #--------------------------------------------------------------------------------------------------------------------------------
-from django.views import View
 # Update Dashboard (User Info) Values
-class UpdateUserDashboard(View):
+class UpdateUserDashboard(TemplateView):
+    template_name = "nakhll_market/profile/pages/profile.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Get Menu Item
+        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+        # Get Nav Bar Menu Item
+        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+        context['Options'] = options
+        context['MenuList'] = navbar
+        return context
+
     def get(self, request):
-        return render(request, 'nakhll_market/profile/pages/profile.html')
+        context = self.get_context_data()
+        context['profile_form'] = ProfileForm(instance=request.user.User_Profile)
+        context['user_form'] = MyUserForm(instance=request.user)
+        return render(request, self.template_name, context)
         
     def post(self, request):
-        profile_form = ProfileForm(request.post , instance=request.user.profile)
+        profile_form = ProfileForm(request.POST , instance=request.user.User_Profile)
         user_form = MyUserForm(request.POST , instance=request.user)
         if profile_form.is_valid() and user_form.is_valid():
             profile_form.save()
             user_form.save()
 
         else:
-            profile_form = ProfileForm(instance=request.user.profile)
+            profile_form = ProfileForm(instance=request.user.User_Profile)
         context = {
             'profile_form' : profile_form,
             'user_form' : user_form,

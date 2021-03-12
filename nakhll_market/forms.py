@@ -35,10 +35,80 @@ class CheckEmail (forms.Form):
 class ProfileForm(forms.ModelForm):
     class Meta:
         model= Profile
-        fields= ['Sex','MobileNumber','ZipCode','PhoneNumber','NationalCode', 'Address', 'State', 'BigCity', 'City', 'BrithDay','Bio', 'TutorialWebsite','ReferenceCode', 'UserReferenceCode','CityPerCode']
-
+        fields= [
+            'Sex',
+            'MobileNumber',
+            'ZipCode',
+            'PhoneNumber',
+            'NationalCode',
+            'Address',
+            'State',
+            'BigCity',
+            'City',
+            'BrithDay',
+            'Bio',
+            'TutorialWebsite',
+            'ReferenceCode',
+            'UserReferenceCode',
+            'CityPerCode'
+        ]
+        widgets = {
+            'Bio': forms.TextInput(attrs={
+                'class': 'form-control',
+                'type': 'text',
+            }),
+        }
 
 class MyUserForm(UserChangeForm):
     class Meta(UserChangeForm.Meta):
-        fields = ['first_name' , 'last_name' , 'email']
+        fields = ('first_name', 'last_name', 'email')
         password = None
+        widgets = {
+            'first_name': forms.TextInput(attrs={
+                'placeholder': 'نام',
+                'class': 'form-control',
+                'type': 'text',
+            }),
+            'last_name': forms.TextInput(attrs={
+                'placeholder': 'نام خانوادگی',
+                'class': 'form-control',
+                'type': 'text',
+            }),
+            'email': forms.TextInput(attrs={
+                'placeholder': 'ایمیل',
+                'class': 'form-control',
+                'type': 'email',
+            }),
+        }
+
+class ProfileDashboard(forms.Form):
+    first_name = forms.CharField(
+        label=None,
+        required=True,
+        max_length=50,
+        widget=forms.TextInput(attrs={
+                'placeholder': 'نام',
+                'class': 'form-control',
+                'type': 'text',
+            }),
+    )
+    last_name = forms.CharField(
+        label=None,
+        required=True,
+        max_length=50,
+        widget=forms.TextInput(attrs={
+                'placeholder': 'نام خانوادگی',
+                'class': 'form-control',
+                'type': 'text',
+            }),
+    )
+    email = forms.EmailField(
+        label=None,
+        required=False,
+        max_length=127,
+        widget=forms.TextInput(attrs={
+                'placeholder': 'ایمیل',
+                'class': 'form-control',
+                'type': 'email',
+            }),
+    )

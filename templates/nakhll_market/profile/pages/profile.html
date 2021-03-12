@@ -127,15 +127,15 @@
                         <div class="dashboard"> 
                             <h4>داشبورد</h4>    
                             <p class="centertext">برای انجام هر گونه تغییرات کلید ویرایش در انتهای همین صفحه را انتخاب کنید</p>
-                            <form method="POST" enctype="multipart/form-data" action="/profile/dashboard/update">
+                            <form method="POST">
                                 {% csrf_token %}
-                                <div class="form-row" style="display: none;" id="pic-profile-add">
+                                <div class="form-row" id="pic-profile-add">
                                     <div class="form-group col-md-6">
                                         <div id="msg"></div>
                                             <label for="file">عکس پروفایل</label>
                                             <input type="file" name="Profile_Image" class="file file-image-dash" accept="image/*">
                                             <div class="input-group">
-                                                <input type="text" class="form-control input" disabled placeholder="آپلود عکس" id="file">
+                                                <input type="text" class="form-control input" placeholder="آپلود عکس" id="file">
                                                 <div class="input-group-append">
                                                     <button type="button" class="browse btn btn-primary">بارگذاری</button>
                                                 </div>
@@ -148,12 +148,12 @@
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
                                         <label for="inputFirstName">نام <code>*</code></label>
-                                        <input readonly value="{{request.user.first_name}}" type="text" name="User_FirstName" class="form-control" id="inputFirstName" required>
+                                        {{user_form.first_name}}
                                     </div>
 
                                     <div class="form-group col-md-6">
                                         <label for="inputLastName">نام خانوادگی <code>*</code></label>
-                                         <input readonly value="{{request.user.last_name}}" type="text" name="User_LastName" class="form-control" id="inputLastName" required>
+                                        {{user_form.last_name}}
                                     </div>
                                 </div>
 
@@ -161,20 +161,20 @@
                                     <div class="form-group col-md-4">
                                         <label for="inputSex">جنسیت</label>
                                         {% if request.user.User_Profile.Sex == '0' %}
-                                            <select id="inputSexState" name="Profile_SexState" class="form-control selcetoption" disabled>
-                                                <option selected disabled>انتخاب جنسیت</option>
+                                            <select id="inputSexState" name="Profile_SexState" class="form-control selcetoption">
+                                                <option selected>انتخاب جنسیت</option>
                                                 <option>زن</option>
                                                 <option>مرد</option>
                                             </select>
                                         {% elif request.user.User_Profile.Sex == '1' %}
-                                            <select id="inputSexState" name="Profile_SexState" class="form-control selcetoption" disabled>
-                                                <option disabled>انتخاب جنسیت</option>
+                                            <select id="inputSexState" name="Profile_SexState" class="form-control selcetoption">
+                                                <option>انتخاب جنسیت</option>
                                                 <option selected>زن</option>
                                                 <option>مرد</option>
                                             </select>
                                         {% elif request.user.User_Profile.Sex == '2' %}
-                                            <select id="inputSexState" name="Profile_SexState" class="form-control selcetoption" disabled>
-                                                <option disabled>انتخاب جنسیت</option>
+                                            <select id="inputSexState" name="Profile_SexState" class="form-control selcetoption">
+                                                <option>انتخاب جنسیت</option>
                                                 <option>زن</option>
                                                 <option selected>مرد</option>
                                             </select>
@@ -183,28 +183,28 @@
 
                                     <div class="form-group col-md-8">
                                         <label for="inputBio">درباره من</label>
-                                        <input readonly value="{{request.user.User_Profile.Bio}}" type="text"  name="Profile_Bio" class="form-control" id="inputBio">
+                                        {{profile_form.Bio}}
                                     </div>
                                 </div>
                    
                                 <div class="form-row">     
                                     <div class="form-group col-md-6">
                                     <label for="inputUserName">نام کاربری <code>*</code></label>
-                                        <fieldset disabled>
+                                        <fieldset>
                                             <input readonly value="{{request.user.username}}" type="text" name="User_UserName" class="form-control" id="inputUserName" required>
                                         </fieldset>
                                     </div>
 
                                     <div class="form-group col-md-6">
                                     <label for="inputEmail">ایمیل </label>
-                                        <input readonly value="{{request.user.email}}" type="email" name="User_Email" class="form-control" id="inputEmail" >
+                                    {{user_form.email}}
                                     </div>
                                 </div>
 
                                 <div class="form-row">     
                                     <div class="form-group col-md-6">
                                     <label for="inputNationalCode">کد ملی <code>*</code></label>
-                                        <fieldset disabled>
+                                        <fieldset>
                                             <input type="text" id="inputNationalCode" name="Profile_NationalCode" class="form-control" placeholder="{{request.user.User_Profile.NationalCode}}" required>
                                             <small class="form-text text-muted" id="helpinputNationalCode">توجه : برای ویرایش کدملی درخواست را به <a href="{% url "nakhll_market:Ticketing" %}">بخش پشتیبانی</a> ارسال کنید.</small>
                                         </fieldset>
@@ -225,7 +225,7 @@
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
                                     <label for="inputState">استان</label>
-                                        <select disabled name="Profile_State" class="chosen-select-rtl form-control choose-state-chosen" id="inputprofState">
+                                        <select name="Profile_State" class="chosen-select-rtl form-control choose-state-chosen" id="inputprofState">
                                             <option value="0">استان خود را انتخاب نمائید...</option>
                                             <option value="2">مرکزی</option>
                                             <option value="3">خراسان شمالی</option>
@@ -263,14 +263,14 @@
 
                                     <div class="form-group col-md-6">
                                     <label for="inputBigCity">شهرستان</label>
-                                        <select disabled name="Profile_BigCity" class="chosen-select-rtl form-control choose-bigcity-chosen" id="inputprofBigCity">
+                                        <select name="Profile_BigCity" class="chosen-select-rtl form-control choose-bigcity-chosen" id="inputprofBigCity">
                                             <option value="0">شهرستان خود را انتخاب نمائید...</option>
                                         </select>
                                     </div>
 
                                     <div class="form-group col-md-6">
                                     <label for="inputCity">شهر</label>
-                                        <select disabled name="Profile_City" class="chosen-select-rtl form-control choose-city-chosen" id="inputprofCity">
+                                        <select name="Profile_City" class="chosen-select-rtl form-control choose-city-chosen" id="inputprofCity">
                                             <option value="0">شهر خود را انتخاب نمائید...</option>
                                         </select>
                                     </div>
@@ -393,7 +393,7 @@
                                     <div class="form-group col-md-6">
                                         <label for="inputTutorialWebsite">نحوه آشنایی با سایت</label>
                                         {% if request.user.User_Profile.TutorialWebsite == '0' %}
-                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption" disabled>
+                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption">
                                                 <option selected>موتور های جستجو</option>
                                                 <option>حجره داران</option>
                                                 <option>شبکه های اجتماعی</option>
@@ -405,7 +405,7 @@
                                                 <option>هیچ کدام</option>
                                             </select>
                                         {% elif request.user.User_Profile.TutorialWebsite == '1' %}
-                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption" disabled>
+                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption">
                                                 <option>موتور های جستجو</option>
                                                 <option selected>حجره داران</option>
                                                 <option>شبکه های اجتماعی</option>
@@ -417,7 +417,7 @@
                                                 <option>هیچ کدام</option>
                                             </select>
                                         {% elif request.user.User_Profile.TutorialWebsite == '2' %}
-                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption" disabled>
+                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption">
                                                 <option>موتور های جستجو</option>
                                                 <option>حجره داران</option>
                                                 <option selected>شبکه های اجتماعی</option>
@@ -429,7 +429,7 @@
                                                 <option>هیچ کدام</option>
                                             </select>
                                         {% elif request.user.User_Profile.TutorialWebsite == '3' %}
-                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption" disabled>
+                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption">
                                                 <option>موتور های جستجو</option>
                                                 <option>حجره داران</option>
                                                 <option>شبکه های اجتماعی</option>
@@ -441,7 +441,7 @@
                                                 <option>هیچ کدام</option>
                                             </select>
                                         {% elif request.user.User_Profile.TutorialWebsite == '4' %}
-                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption" disabled>
+                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption">
                                                 <option>موتور های جستجو</option>
                                                 <option>حجره داران</option>
                                                 <option>شبکه های اجتماعی</option>
@@ -453,7 +453,7 @@
                                                 <option>هیچ کدام</option>
                                             </select>
                                         {% elif request.user.User_Profile.TutorialWebsite == '5' %}
-                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption" disabled>
+                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption">
                                                 <option>موتور های جستجو</option>
                                                 <option>حجره داران</option>
                                                 <option>شبکه های اجتماعی</option>
@@ -465,7 +465,7 @@
                                                 <option>هیچ کدام</option>
                                             </select>
                                         {% elif request.user.User_Profile.TutorialWebsite == '6' %}
-                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption" disabled>
+                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption">
                                                 <option>موتور های جستجو</option>
                                                 <option>حجره داران</option>
                                                 <option>شبکه های اجتماعی</option>
@@ -477,7 +477,7 @@
                                                 <option>هیچ کدام</option>
                                             </select>
                                         {% elif request.user.User_Profile.TutorialWebsite == '7' %}
-                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption" disabled>
+                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption">
                                                 <option>موتور های جستجو</option>
                                                 <option>حجره داران</option>
                                                 <option>شبکه های اجتماعی</option>
@@ -489,7 +489,7 @@
                                                 <option>هیچ کدام</option>
                                             </select>
                                         {% elif request.user.User_Profile.TutorialWebsite == '8' %}
-                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption" disabled>
+                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption">
                                                 <option>موتور های جستجو</option>
                                                 <option>حجره داران</option>
                                                 <option>شبکه های اجتماعی</option>
@@ -501,7 +501,7 @@
                                                 <option selected>هیچ کدام</option>
                                             </select>
                                         {% else %}
-                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption" disabled>
+                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption">
                                                 <option>موتور های جستجو</option>
                                                 <option>حجره داران</option>
                                                 <option>شبکه های اجتماعی</option>
@@ -529,7 +529,7 @@
 
                                     <div class="form-group col-md-5">
                                         <label for="inputMobileNumber">شماره موبایل</label>
-                                        <fieldset disabled>
+                                        <fieldset>
                                             <input readonly value="{{request.user.User_Profile.MobileNumber}}" type="text" name="Profile_MobileNumber" pattern="[0-9]{11}" maxlength="11" class="form-control" id="inputMobileNumber">
                                             <small class="form-text text-muted" id="helpinputMobileNumber">توجه : برای ویرایش شماره موبایل درخواست را به <a href="{% url "nakhll_market:Ticketing" %}">بخش پشتیبانی</a> ارسال کنید.</small>
                                         </fieldset>
@@ -537,14 +537,13 @@
 
                                     <div class="form-group col-md-1">
                                         <label for="inputCountrPreCode">کد کشور</label>
-                                        <fieldset disabled>
+                                        <fieldset>
                                             <input readonly value="{{request.user.User_Profile.CountrPreCode}}" type="text" name="Profile_CountrPreCode" class="form-control" pattern="[0-9]" id="inputCountrPreCode">
                                         </fieldset>
                                     </div>
                                 </div>
                 
-                                <span class="btn btn-primary" id="readonlyswitchbtn" >ویرایش</span>
-                                <button type="submit" class="btn btn-primary mr-auto" id="edit-profile">ویرایش اطلاعات</button>
+                                <button type="submit" class="btn btn-primary mr-auto">ویرایش اطلاعات</button>
                             </form>
                         </div>
                     </div>
