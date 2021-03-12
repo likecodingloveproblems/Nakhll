@@ -1546,7 +1546,7 @@ class Profile(models.Model):
     BigCity=models.CharField(verbose_name='شهرستان', max_length=50, blank=True)
     City=models.CharField(verbose_name='شهر', max_length=50, blank=True)
     Location=models.CharField(verbose_name='موقعیت مکانی', max_length=150, blank=True, help_text='طول و عرض جغرافیایی')
-    BrithDay=jmodels.jDateField(verbose_name='تاریخ تولد', null=True, auto_now_add=True)
+    BrithDay=jmodels.jDateField(verbose_name='تاریخ تولد', null=True)
     FaxNumber=models.CharField(verbose_name='شماره فکس', max_length=8, blank=True)
     CityPerCode=models.CharField(verbose_name='پیش شماره', max_length=6, blank=True, default='034')
     PhoneNumber=models.CharField(verbose_name='شماره تلفن ثابت', max_length=8, blank=True)
