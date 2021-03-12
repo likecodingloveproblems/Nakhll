@@ -14,7 +14,7 @@
             <div class="body-top-profile">
             <a href="{% url "nakhll_market:Wallet" %}">
                 {% if request.user.is_authenticated %}
-                    کیف پول : <span class="priceline"><span class="numbersprice">{{This_User_Inverntory}}</span></span> ریال 
+                    کیف پول : <span class="priceline"><span class="numbersprice">{{request.user.WalletManager.Inverntory}}</span></span> ریال 
                 {% endif %}
             </a>
             </div>
