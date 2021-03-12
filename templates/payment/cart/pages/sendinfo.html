@@ -61,7 +61,7 @@
     </div>
 </section>
 
-<section id="time">
+<section id="time" id="cart">
     <form method="POST" action="{% url "Payment:sendinfo" %}" id="final_factor_send_info">
         {% csrf_token %}
         <div class="container">
@@ -351,42 +351,45 @@
                     </div>
                 </div>
 
-                <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
-                    <div class="sidebar-cart">
-                        <div class="summary-cart">
-                        <h5>محصولات سفارش :</h5>
-                        {% for item in Factor.FK_FactorPost.all %}
-                            <div class="row summary-prod">
-                                <div class="col-sm-3">
-                                    <img src="{{item.FK_Product.Image_thumbnail_url}}" alt="{{item.FK_Product.Title}} ">
-                                </div>
-                                <div class="col-sm-9">
-                                    <h6>{{item.FK_Product.Title}} (<span class="numbersprice">{{item.FK_Product.Price}}</span> ریال )</h6>
-                                    <h6>تعداد : {{item.ProductCount}} </h6>
-                                    <h6>قیمت کل : <span class="numbersprice">{{item.get_total_item_price}}</span> </h6>
+                <div  class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
+                     <div class="sidebar-cart">
+                    <div class="summary-cart">
+                    <h5>محصولات سفارش :</h5>
+                        <div v-if="cart.length">
+                            <div v-for="item in cart">
+                                <div class="row summary-prod">
+                                    <div class="col-sm-3">
+                                        <img v-bind:src="[[item.image]]" v-bind:alt="[[item.title]]">
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <h6>[[item.title]] (<span class="numbersprice">[[item.price]]</span> ریال )</h6>
+                                        <h6>تعداد : [[item.count]] </h6>
+                                        <h6>قیمت کل : <span class="numbersprice itemprice" v-text="get_total_price(item)"></span></h6>
+                                    </div>
                                 </div>
                             </div>
-                        {% empty %}
+                        </div>
+                        <div v-else>
                             <div>
                                 هیچ محصولی در سبد خرید موجود نیست.
                             </div>
-                        {% endfor %}
-                        <div class="summary-cart">
+                        </div>
+                    <div class="summary-cart">
+                        <div v-if="cart.length">
                             <h5>خلاصه سفارش :</h5>
                             <div class="factor-cart-summary">
-                                <mark>جمع مبلغ کالا ها <span class="numbersprice">{{ Factor.get_total }} ریال</span></mark>
+                                <mark>جمع مبلغ کالا ها <span class="numbersprice" id="facctorprice" v-text="get_cart_total_price()"> ریال</span></mark>
                             </div>
                         </div>
-                        <div class="continue-cart">
-                            <a id="next-step-factor" class="btn btn-success whitcol" onclick="ajaxCallsend()" ><i class="fal fa-map-marker-alt"></i> مرحله بعد </a>
-                                <div id="loaderDiv">
-                                    لطفا منتظر بمانید
-                                    <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری">
-                                </div>
-                            <br>
-                            <a href="/" class="aback">بازگشت به صفحه اول</a>
-                        </div>
                     </div>
+                    <div class="continue-cart">
+                        <div v-if="cart.length">
+                            <a href="{% url "Payment:sendinfo" %}"><button class="btn btn-success"><i class="fal fa-shopping-bag"></i> نهایی کردن سبد </button></a>
+                        <div>
+                        <br>
+                        <a href="/" class="aback">بازگشت به صفحه اول</a>
+                    </div>
+                </div>
                 </div>
 
             </div>
@@ -483,6 +486,52 @@ $(function () {
             }
         }
         
+    })
+
+    var app = new Vue({
+        el: '#cart',
+        delimiters: ['[[', ']]'],
+        data: {
+            cart: JSON.parse(window.localStorage.getItem('cart')),
+        },
+        methods: {
+            get_total_price_without_discount: function (item) {
+                return (parseInt(item.count) * (parseInt(item.price) + parseInt(item.discount)))
+            },
+            get_total_price: function (item) {
+                return (parseInt(item.count) * parseInt(item.price))
+            },
+            get_shop_url (item) {
+                return '/' + item.shop.slug
+            },
+            increase_product_count: function (item) {
+                item.count += 1
+                this.set_local_storage()
+            },
+            decrease_product_count: function (item) {
+                if (item.count > 1){
+                    item.count -= 1
+                    this.set_local_storage()
+                }
+                else{
+                    this.delete_product(item)
+                    this.set_local_storage()
+                }
+            },
+            delete_product: function (item) {
+                this.cart = this.cart.filter(i => i != item)
+                this.set_local_storage()
+            },
+            set_local_storage(){
+                localStorage.setItem('cart', JSON.stringify(this.cart))
+                shopping_cart()
+            },
+            get_cart_total_price: function () {
+                var total_price = 0
+                this.cart.map(item => total_price += this.get_total_price(item))
+                return total_price
+            }
+        }
     })
 </script>
 
