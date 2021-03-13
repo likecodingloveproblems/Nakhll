@@ -3186,7 +3186,7 @@ class UpdateUserDashboard(TemplateView):
         return render(request, self.template_name, context)
         
     def post(self, request):
-        profile_form = ProfileForm(request.POST , instance=request.user.User_Profile)
+        profile_form = ProfileForm(request.POST, instance=request.user.User_Profile)
         user_form = MyUserForm(request.POST , instance=request.user)
         if profile_form.is_valid() and user_form.is_valid():
             profile_form.save()

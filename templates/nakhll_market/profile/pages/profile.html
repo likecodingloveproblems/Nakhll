@@ -160,59 +160,39 @@
                                 <div class="form-row">     
                                     <div class="form-group col-md-4">
                                         <label for="inputSex">جنسیت</label>
-                                        {% if request.user.User_Profile.Sex == '0' %}
-                                            <select id="inputSexState" name="Profile_SexState" class="form-control selcetoption">
-                                                <option selected>انتخاب جنسیت</option>
-                                                <option>زن</option>
-                                                <option>مرد</option>
-                                            </select>
-                                        {% elif request.user.User_Profile.Sex == '1' %}
-                                            <select id="inputSexState" name="Profile_SexState" class="form-control selcetoption">
-                                                <option>انتخاب جنسیت</option>
-                                                <option selected>زن</option>
-                                                <option>مرد</option>
-                                            </select>
-                                        {% elif request.user.User_Profile.Sex == '2' %}
-                                            <select id="inputSexState" name="Profile_SexState" class="form-control selcetoption">
-                                                <option>انتخاب جنسیت</option>
-                                                <option>زن</option>
-                                                <option selected>مرد</option>
-                                            </select>
-                                        {% endif %}
-                                    </div>
+                                        {{profile_form.Sex}}
+                                    </div> 
 
-                                    <div class="form-group col-md-8">
-                                        <label for="inputBio">درباره من</label>
+                                     <div class="form-group col-md-8">
+                                        <label for="Bio">درباره من</label>
                                         {{profile_form.Bio}}
-                                    </div>
-                                </div>
+                                    </div>  
+                                </div>   
+                                
                    
                                 <div class="form-row">     
                                     <div class="form-group col-md-6">
-                                    <label for="inputUserName">نام کاربری <code>*</code></label>
-                                        <fieldset>
-                                            <input readonly value="{{request.user.username}}" type="text" name="User_UserName" class="form-control" id="inputUserName" required>
-                                        </fieldset>
+                                        <label for="inputusername">نام کاربری </label>
+                                        {{profile_form.MobileNumber}}
                                     </div>
 
                                     <div class="form-group col-md-6">
-                                    <label for="inputEmail">ایمیل </label>
-                                    {{user_form.email}}
+                                        <label for="inputEmail">ایمیل </label>
+                                        {{user_form.email}}
                                     </div>
                                 </div>
 
                                 <div class="form-row">     
                                     <div class="form-group col-md-6">
-                                    <label for="inputNationalCode">کد ملی <code>*</code></label>
+                                    <label for="inputNationalCode">کد ملی </label>
                                         <fieldset>
-                                            <input type="text" id="inputNationalCode" name="Profile_NationalCode" class="form-control" placeholder="{{request.user.User_Profile.NationalCode}}" required>
-                                            <small class="form-text text-muted" id="helpinputNationalCode">توجه : برای ویرایش کدملی درخواست را به <a href="{% url "nakhll_market:Ticketing" %}">بخش پشتیبانی</a> ارسال کنید.</small>
+                                          {{profile_form.NationalCode}}   
                                         </fieldset>
                                     </div>
 
                                     <div class="form-group col-md-6">
                                         <label for="inputBrithDay">تاریخ تولد</label>  
-                                        <input readonly value="{{request.user.User_Profile.BrithDay}}" type="text" name="Profile_BrithDay" class="form-control" id="inputBrithDay" >
+                                        {{profile_form.BrithDay}} 
                                         <script>
                                             $("#inputBrithDay").persianDatepicker({
                                                 startDate: "1300/01/01",
@@ -380,20 +360,21 @@
                                 </script>
                                     <div class="form-group col-md-6">
                                         <label for="inputZipCode">کد پستی</label>
-                                        <input readonly value="{{request.user.User_Profile.ZipCode}}" type="text" name="Profile_ZipCode" minlength="10" maxlength="10" class="form-control" id="inputZipCode">
+                                          {{profile_form.ZipCode}}
                                     </div>
                                 </div>
 
                                 <div class="form-row">     
                                     <div class="form-group col-md-6">
                                         <label for="inputAddress">آدرس</label>
-                                        <input readonly value="{{request.user.User_Profile.Address}}" type="text" name="Profile_Address" class="form-control" id="inputAddress">
+                                          {{profile_form.Address}}
                                     </div>
 
                                     <div class="form-group col-md-6">
                                         <label for="inputTutorialWebsite">نحوه آشنایی با سایت</label>
-                                        {% if request.user.User_Profile.TutorialWebsite == '0' %}
-                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption">
+                                           {{profile_form.TutorialWebsite}}
+                                        {% comment %} {% if request.user.User_Profile.TutorialWebsite == '0' %}
+                                            <select profile_form. TutorialWebsite>
                                                 <option selected>موتور های جستجو</option>
                                                 <option>حجره داران</option>
                                                 <option>شبکه های اجتماعی</option>
@@ -416,8 +397,8 @@
                                                 <option>سایر</option>
                                                 <option>هیچ کدام</option>
                                             </select>
-                                        {% elif request.user.User_Profile.TutorialWebsite == '2' %}
-                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption">
+                                        {% elif request.user.User_Profile.TutorialWebsite == '2' %} {% endcomment %}
+                                            {% comment %} <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption">
                                                 <option>موتور های جستجو</option>
                                                 <option>حجره داران</option>
                                                 <option selected>شبکه های اجتماعی</option>
@@ -512,33 +493,32 @@
                                                 <option>سایر</option>
                                                 <option selected>هیچ کدام</option>
                                             </select>
-                                        {% endif %}
+                                        {% endif %} {% endcomment %}
                                     </div>
                                 </div>
 
                                 <div class="form-row">
                                     <div class="form-group col-md-5">
                                         <label for="inputPhoneNumber">تلفن ثابت</label>
-                                        <input readonly value="{{request.user.User_Profile.PhoneNumber}}" type="text" name="Profile_PhoneNumber" pattern="[0-9]{8}" class="form-control" id="inputPhoneNumber">
+                                        {{profile_form.PhoneNumber}}
                                     </div>
 
                                     <div class="form-group col-md-1">
                                         <label for="inputCityPerCode">پیش شماره</label>
-                                        <input readonly value="{{request.user.User_Profile.CityPerCode}}" type="text" name="Profile_CityPerCode" maxlength="3" class="form-control" id="inputCityPerCode">
+                                        {{profile_form.CityPerCode}}
                                     </div>
 
                                     <div class="form-group col-md-5">
                                         <label for="inputMobileNumber">شماره موبایل</label>
                                         <fieldset>
-                                            <input readonly value="{{request.user.User_Profile.MobileNumber}}" type="text" name="Profile_MobileNumber" pattern="[0-9]{11}" maxlength="11" class="form-control" id="inputMobileNumber">
-                                            <small class="form-text text-muted" id="helpinputMobileNumber">توجه : برای ویرایش شماره موبایل درخواست را به <a href="{% url "nakhll_market:Ticketing" %}">بخش پشتیبانی</a> ارسال کنید.</small>
+                                            {{profile_form.MobileNumber}}
                                         </fieldset>
                                     </div>
 
                                     <div class="form-group col-md-1">
                                         <label for="inputCountrPreCode">کد کشور</label>
                                         <fieldset>
-                                            <input readonly value="{{request.user.User_Profile.CountrPreCode}}" type="text" name="Profile_CountrPreCode" class="form-control" pattern="[0-9]" id="inputCountrPreCode">
+                                          {{profile_form.CountrPreCode}}
                                         </fieldset>
                                     </div>
                                 </div>
