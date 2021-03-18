@@ -8,6 +8,7 @@ from django.shortcuts import reverse
 from datetime import datetime, date 
 import jdatetime
 import math
+from simple_history.models import HistoricalRecords
 
 # Rename Method
 @deconstructible
@@ -121,6 +122,7 @@ class Wallet(models.Model):
         verbose_name = "کیف پول"
         verbose_name_plural = "کیف پول ها"
 
+    history = HistoricalRecords()
 #----------------------------------------------------------------------------------------------------------------------------------
 
 # Transaction (تراکنش) Model 
@@ -447,7 +449,8 @@ class FactorPost (models.Model):
         ordering = ('ID',)
         verbose_name = "محصول صورت حساب"
         verbose_name_plural = "محصول صورت حساب ها"
-        
+
+    history = HistoricalRecords()
 #----------------------------------------------------------------------------------------------------------------------------------
 
 # Factor (صورت حساب) Model 
@@ -897,6 +900,7 @@ class Factor(models.Model):
         verbose_name = "صورت حساب"
         verbose_name_plural = "صورت حساب ها"
 
+    history = HistoricalRecords()
 #----------------------------------------------------------------------------------------------------------------------------------
 
 # PostBarCode (بارکد) Model

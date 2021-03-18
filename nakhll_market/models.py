@@ -23,7 +23,7 @@ import datetime
 from django.utils.translation import ugettext_lazy as _
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
-
+from simple_history.models import HistoricalRecords
 
 
 # Rename Method
@@ -658,6 +658,7 @@ class Shop(models.Model):
         verbose_name = "حجره"
         verbose_name_plural = "حجره ها"
 
+    history = HistoricalRecords()
 #----------------------------------------------------------------------------------------------------------------------------------
 
 # BankAccount (حساب بانکی) Model
@@ -1100,6 +1101,7 @@ class Product (models.Model):
         verbose_name = "محصول"
         verbose_name_plural = "محصولات"
 
+    history = HistoricalRecords()
 #----------------------------------------------------------------------------------------------------------------------------------
 
 # AttrProduct (ویژگی محصولات) Model
@@ -1644,6 +1646,7 @@ class Profile(models.Model):
         verbose_name = "پروفایل"
         verbose_name_plural = "پروفایل ها "
 
+    history = HistoricalRecords()
 #----------------------------------------------------------------------------------------------------------------------------------
 
 # Survey (نظرسنجی) Model
@@ -2079,3 +2082,4 @@ class AmazingProduct(models.Model):
 
     def __str__(self):
         return self.product.Title
+
