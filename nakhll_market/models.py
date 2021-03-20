@@ -843,12 +843,12 @@ class Product (models.Model):
     Price=models.BigIntegerField(verbose_name='قیمت محصول')
     OldPrice=models.BigIntegerField(verbose_name='قیمت حذف محصول', default=0)
     # Product Weight Info
-    Net_Weight=models.CharField(verbose_name='وزن خالص محصول (گرم)', max_length=6, default='0')
-    Weight_With_Packing=models.CharField(verbose_name='وزن محصول با بسته بندی (گرم)', max_length=6, default='0')
+    Net_Weight=models.IntegerField(verbose_name='وزن خالص محصول (گرم)', default=0)
+    Weight_With_Packing=models.IntegerField(verbose_name='وزن محصول با بسته بندی (گرم)', default=0)
     # Product Dimensions Info
-    Length_With_Packaging=models.CharField(verbose_name='طول محصول با بسته بندی (سانتی متر(', max_length=4, default='0')
-    Width_With_Packaging=models.CharField(verbose_name='عرض محصول با بسته بندی (سانتی متر(', max_length=4, default='0')
-    Height_With_Packaging=models.CharField(verbose_name='ارتفاع محصول با بسته بندی (سانتی متر(', max_length=4, default='0')
+    Length_With_Packaging=models.IntegerField(verbose_name='طول محصول با بسته بندی (سانتی متر(', default=0)
+    Width_With_Packaging=models.IntegerField(verbose_name='عرض محصول با بسته بندی (سانتی متر(', default=0)
+    Height_With_Packaging=models.IntegerField(verbose_name='ارتفاع محصول با بسته بندی (سانتی متر(', default=0)
     # Product Inventory
     Inventory=models.IntegerField(verbose_name='میزان موجودی از این کالا در انبار', default=5)
     POSTRANGE_TYPE=(
