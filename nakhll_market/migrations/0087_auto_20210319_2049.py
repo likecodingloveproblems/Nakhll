@@ -7,11 +7,11 @@ def make_int(apps, schema_editor):
     # version than this migration expects. We use the historical version.
     products = Product.objects.all()
     for product in products:
-        product.Net_Weight = int(float(product.Net_Weight))
-        product.Weight_With_Packing = int(float(product.Weight_With_Packing))
-        product.Length_With_Packaging = int(float(product.Length_With_Packaging))
-        product.Width_With_Packaging = int(float(product.Width_With_Packaging))
-        product.Height_With_Packaging = int(float(product.Height_With_Packaging))
+        product.Net_Weight = round(float(product.Net_Weight))
+        product.Weight_With_Packing = round(float(product.Weight_With_Packing))
+        product.Length_With_Packaging = round(float(product.Length_With_Packaging))
+        product.Width_With_Packaging = round(float(product.Width_With_Packaging))
+        product.Height_With_Packaging = round(float(product.Height_With_Packaging))
         product.save()
 
 
