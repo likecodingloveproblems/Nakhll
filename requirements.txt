@@ -23,7 +23,6 @@ django-mathfilters==1.0.0
 django-braces==1.14.0
 django-excel-response==2.0.5
 psycopg2-binary==2.8.6
-django-simple-history==2.12.0
 git+https://github.com/likecodeingloveproblems/django-analytical.git
 
 # for dependency inconsistency
