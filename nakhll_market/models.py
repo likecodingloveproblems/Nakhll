@@ -806,10 +806,10 @@ class ProductManager(models.Manager):
         queryset = self.get_queryset()
         return queryset\
             .filter(Publish=True, Available = True, Status__in=['1','2','3'])\
-            .exclude(OldPrice=0)\
-            .annotate(OldPrice_float=Cast(F('OldPrice'), FloatField()))\
+            .exclude(discount=0)\
+            .annotate(discount_float=Cast(F('discount'), FloatField()))\
             .annotate(Price_float=Cast(F('Price'), FloatField()))\
-            .annotate(discount_ratio=(F('OldPrice_float')-F('Price_float'))/F('OldPrice_float'))\
+            .annotate(discount_ratio=(F('discount_float')/F('Price_float')))\
             .order_by('-discount_ratio')
 
     def get_one_most_discount_precenetage_available_product_random(self):
@@ -842,6 +842,7 @@ class Product (models.Model):
     FK_Category=models.ManyToManyField(Category, verbose_name='دسته بندی های محصول', related_name='ProductCategory', blank=True)
     Price=models.BigIntegerField(verbose_name='قیمت محصول')
     OldPrice=models.BigIntegerField(verbose_name='قیمت حذف محصول', default=0)
+    discount = models.BigIntegerField(verbose_name='تخفیف محصول', default=0)
     # Product Weight Info
     Net_Weight=models.IntegerField(verbose_name='وزن خالص محصول (گرم)', default=0)
     Weight_With_Packing=models.IntegerField(verbose_name='وزن محصول با بسته بندی (گرم)', default=0)
@@ -925,13 +926,11 @@ class Product (models.Model):
         return reverse("Payment:remove-from-cart", kwargs={
             'ID': self.ID
         })
-
-    def get_discounted(self):
+    
+    @property
+    def discount_percentage(self):
         # Get Discounted
-        try:
-            return int((100 - (int(self.Price) / (int(self.OldPrice) / 100))))
-        except:
-            return 0
+        return round(self.discount/self.Price*100)
 
     def get_product_net_weight(self):
         # Get Net Weight
