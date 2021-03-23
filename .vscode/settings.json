@@ -6,5 +6,6 @@
         "**/requirements{/**,*}.{txt,in}": "pip-requirements"
     },
     "html.format.enable": false,
-    "debug.allowBreakpointsEverywhere": true
+    "debug.allowBreakpointsEverywhere": true,
+    "python.pythonPath": "/usr/local/bin/python"
 }

@@ -842,6 +842,7 @@ class Product (models.Model):
     FK_Category=models.ManyToManyField(Category, verbose_name='دسته بندی های محصول', related_name='ProductCategory', blank=True)
     Price=models.BigIntegerField(verbose_name='قیمت محصول')
     OldPrice=models.BigIntegerField(verbose_name='قیمت حذف محصول', default=0)
+    DisProduct=models.BigIntegerField(verbose_name='مقدار تخفیف', default=0)
     # Product Weight Info
     Net_Weight=models.IntegerField(verbose_name='وزن خالص محصول (گرم)', default=0)
     Weight_With_Packing=models.IntegerField(verbose_name='وزن محصول با بسته بندی (گرم)', default=0)
