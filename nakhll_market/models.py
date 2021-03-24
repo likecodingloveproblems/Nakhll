@@ -1254,6 +1254,10 @@ class ProductBanner (models.Model):
                                     processors=[ResizeToFill(450, 450)],
                                     format='JPEG',
                                     options={'quality': 60})
+    Image_thumbnail = ImageSpecField(source='Image',
+                                      processors=[ResizeToFill(180, 180)],
+                                      format='JPEG',
+                                      options={'quality': 60})
     NewImage=models.ImageField(verbose_name='عکس جدید حجره', upload_to=PathAndRename('media/Pictures/Markets/SubMarkets/Shops/Products/Banners/'), null=True, blank=True)
     BannerBuilder=models.CharField(verbose_name='نام تولید کننده بنر', max_length=120, blank=True)
     BannerURL=models.URLField(verbose_name='لینک تولید کننده بنر', blank=True)
@@ -1276,6 +1280,7 @@ class ProductBanner (models.Model):
     Publish=models.BooleanField(verbose_name='وضعیت انتشار بنر محصول', choices=PUBLISH_STATUS, default=False)
     FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='تایید کننده', related_name='Product_Banner_Accept', blank=True, null=True) 
     FK_Tag=models.ManyToManyField(Tag, verbose_name='تگ ها', related_name='Product_Banner_Tag', blank=True)
+    default = models.BooleanField(verbose_name='عکس اصلی محصول', default=False)
 
     def Image_thumbnail_url(self):
         try:
