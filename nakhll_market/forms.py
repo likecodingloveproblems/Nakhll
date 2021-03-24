@@ -60,21 +60,24 @@ class ProfileForm(forms.ModelForm):
                 'class': 'form-control',
                 'type': 'text',
             }),
-            'Sex': forms.TextInput(attrs={
+            'Sex': forms.Select(attrs={
                 'class': 'form-control',
                 'type':'text',
             }),
             'MobileNumber': forms.TextInput(attrs={
                 'class': 'form-control',
                 'type':'number',
+                'readonly' : 'readonly',
             }),
             'NationalCode': forms.TextInput(attrs={
                 'class': 'form-control',
                 'type':'number',
+                'readonly' : 'readonly',
+
             }),
             'BrithDay': forms.TextInput(attrs={
                 'class': 'form-control',
-                'type':'Date',
+                'type':'text',
             }),
             'State': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -88,7 +91,7 @@ class ProfileForm(forms.ModelForm):
                 'class': 'form-control',
                 'type':'text',
             }),
-            'TutorialWebsite': forms.TextInput(attrs={
+            'TutorialWebsite': forms.Select(attrs={
                 'class': 'form-control',
                 'type':'text',
             }),
