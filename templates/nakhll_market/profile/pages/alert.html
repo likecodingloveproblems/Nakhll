@@ -202,7 +202,7 @@
                                     <tr>
                                     <th>عنوان</th>
                                     <th>کاربر</th>
-                                    <th>تاریخ</th>
+                                    <th>تاریخ/زمان</th>
                                     <th>بررسی</th>
                                     </tr>
                                 </thead>
@@ -279,7 +279,7 @@
                                                 {% endif %}
                                             </td>
                                             <td>{{alert.FK_User.first_name}} {{alert.FK_User.last_name}}</td>
-                                            <td>{{alert.DateCreate|jformat:'%Y/%m/%d'}}</td>
+                                            <td>{{alert.DateCreate|jformat:'%Y/%m/%d-%H:%m:%S'}}</td>
                                             <td>
                                                 {% if alert.Part == '0' %}
                                                     ایجاد پروفایل
