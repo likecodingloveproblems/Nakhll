@@ -494,7 +494,7 @@
                                                 <div> لطفا منتظر بمانید </div> <img src="{% static "/images/loading.svg" %}" alt="در حال بارگذاری">
                                             </div>
                                         </div>
-                                        <div class="col-xl-3 prod-gallery-pic-box">
+                                        <div class="col-xl-3 col-lg-6 col-md-4 col-sm-6 prod-gallery-pic-box">
                                             <div class="box-gallery-img-section">
                                                 <label id="label-of-gallery" class="label cropper-label">
                                                     <input type="file" class="sr-only" id="input3" name="image"
@@ -1913,7 +1913,7 @@
                                 $("#loaderDiv3").hide();
                                 if (true) {
                                     $(".newImage").remove();
-                                    $(".product-gallery-pics").prepend(listGallery.map((item, index)=> '<div val="' + index + '" class="col-xl-6 col-lg-6 col-md-4 col-sm-6 prod-gallery-pic-box newImage" style="opacity: 1">' +
+                                    $(".product-gallery-pics").prepend(listGallery.map((item, index)=> '<div val="' + index + '" class="col-xl-3 col-lg-6 col-md-4 col-sm-6 prod-gallery-pic-box newImage" >' +
                                         '<div class="box-gallery-img-section gallery-img-show">' +
                                         '<img src="' + item.img + '" alt="عکس محصول" style="width:100%;" >' +
                                         '<div class="item-gallery-option">' +
@@ -1942,7 +1942,7 @@
                         //console.log('listGallery==>', listGallery)
                         parentImage.remove();
                          $(".newImage").remove();
-                        $(".product-gallery-pics").prepend(listGallery.map((item, index)=> '<div val="' + index + '" class="col-xl-3 prod-gallery-pic-box newImage" style="opacity: 1">' +
+                        $(".product-gallery-pics").prepend(listGallery.map((item, index)=> '<div val="' + index + '" class="col-xl-3 col-lg-6 col-md-4 col-sm-6 prod-gallery-pic-box newImage" >' +
                                         '<div class="box-gallery-img-section gallery-img-show">' +
                                         '<img src="' + item.img + '" alt="عکس محصول" style="width:100%;" >' +
                                         '<div class="item-gallery-option">' +
@@ -1991,7 +1991,7 @@
                     //             $(".progress-bar").width('0%').attr('aria-valuenow', 0).text('0%');
                     //             $("#loaderDiv3").hide();
                     //             if (json.status) {
-                    //                 $(".product-gallery-pics").prepend('<div val="' + json.id + '" class="col-xl-3 prod-gallery-pic-box">' +
+                    //                 $(".product-gallery-pics").prepend('<div val="' + json.id + '" class="col-xl-3 col-lg-6 col-md-4 col-sm-6 prod-gallery-pic-box">' +
                     //                     '<div class="box-gallery-img-section gallery-img-show">' +
                     //                     '<img src="' + canvas.toDataURL() + '" alt="عکس محصول">' +
                     //                     '<div class="item-gallery-option">' +
