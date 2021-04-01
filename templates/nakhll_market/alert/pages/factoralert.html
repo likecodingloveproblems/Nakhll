@@ -49,7 +49,7 @@
                         <a href="/profile/factor/">
                             <button>
                                 <i class="fas fa-file-invoice-dollar"></i>
-                                <h5>فاکتور ها</h5>
+                                <h5>صورت حساب ها</h5>
                             </button>
                         </a>
 
@@ -91,9 +91,9 @@
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
                         <div class="dashboard"> 
-                            <h4>بررسی فاکتور کاربر</h4> 
+                            <h4>بررسی صورت حساب کاربر</h4> 
                             <div class="modal-header">
-                                <h5 class="modal-title">شماره فاکتور {{factor.FactorNumber}}</h5>
+                                <h5 class="modal-title">شماره صورت حساب {{factor.FactorNumber}}</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 </button>
                             </div>
@@ -120,7 +120,7 @@
                                         {% endif %}
                                 
                                         <h6 class="black-color">زمان ثبت: <span> {{factor.OrderDate|jformat:'%H:%M - %Y/%m/%d'}}</span></h6>
-                                        <h5 class="black-color">شماره فاکتور : {{factor.FactorNumber}}</h5>
+                                        <h5 class="black-color">شماره صورت حساب : {{factor.FactorNumber}}</h5>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -144,7 +144,7 @@
                                 <div class="row">
                                     <div class="col-xl-12 col-12">
                                         <br>
-                                        <h4> محصولات فاکتور:</h4>
+                                        <h4> محصولات صورت حساب:</h4>
                                     </div>
                                     <div class="col-xl-12 col-12">
                                         <table class="table">
@@ -220,11 +220,11 @@
                                 <div class="col-xl-12 col-12">
                                     <div class="custom-control custom-radio custom-control-inline">
                                         <input type="radio" id="accept-btn" name="accept-btn" value="1" class="custom-control-input" checked>
-                                        <label class="custom-control-label" for="accept-btn">ثبت فاکتور</label>
+                                        <label class="custom-control-label" for="accept-btn">ثبت صورت حساب</label>
                                         </div>
                                         <div class="custom-control custom-radio custom-control-inline">
                                         <input type="radio" id="customRadioInline2" name="accept-btn" value="0" class="custom-control-input">
-                                        <label class="custom-control-label" for="customRadioInline2">عدم تایید فاکتور</label>
+                                        <label class="custom-control-label" for="customRadioInline2">عدم تایید صورت حساب</label>
                                     </div>
                                     <br>
                                     <div class="form-group mg-10">

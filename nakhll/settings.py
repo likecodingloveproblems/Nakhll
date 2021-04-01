@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'compressor',
     'mathfilters',
     'instagram',
+    'simple_history',
 ]
 
 MIDDLEWARE = [
@@ -78,6 +79,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'admin_reorder.middleware.ModelAdminReorder',
     'middlewares.track_url_history.TrackUrlHistory',
+    'simple_history.middleware.HistoryRequestMiddleware',
 ]
 
 ADMIN_REORDER = (

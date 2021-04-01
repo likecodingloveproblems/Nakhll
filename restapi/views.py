@@ -2093,10 +2093,10 @@ def accept_factor_product(request):
             factor.save()
         # Set Alert
         if Alert.objects.filter(Part = '20', FK_User = request.user, Slug = Factor_id).exists():
-            return JsonResponse({'res' : 'شما قبلا این فاکتور را ثبت کرده اید'} , status = HTTP_400_BAD_REQUEST)
+            return JsonResponse({'res' : 'شما قبلا این صورت حساب را ثبت کرده اید'} , status = HTTP_400_BAD_REQUEST)
         else:
             Alert.objects.create(Part = '20', FK_User = request.user, Slug = Factor_id)
-            return JsonResponse({'res' : 'فاکتور با موفقیت، تایید شد.'} , status = HTTP_200_OK)
+            return JsonResponse({'res' : 'صورت حساب با موفقیت، تایید شد.'} , status = HTTP_200_OK)
     
     except Exception as e:
         return JsonResponse({'res' :str(e)}, status = HTTP_400_BAD_REQUEST)
@@ -2145,10 +2145,10 @@ def cancel_factor_product(request):
             factor.save()
         # Set Alert
         if Alert.objects.filter(Part = '13', FK_User = request.user, Slug = factor.ID).exists():
-            return JsonResponse({'res' : 'شما قبلا این فاکتور را ثبت کرده اید!'} , status = HTTP_400_BAD_REQUEST)
+            return JsonResponse({'res' : 'شما قبلا این صورت حساب را ثبت کرده اید!'} , status = HTTP_400_BAD_REQUEST)
         else:
             Alert.objects.create(Part = '13', FK_User = request.user, Slug = factor.ID)
-            return JsonResponse({'res' : 'فاکتور با موفقیت، لغو شد.'} , status = HTTP_200_OK)
+            return JsonResponse({'res' : 'صورت حساب با موفقیت، لغو شد.'} , status = HTTP_200_OK)
     except Exception as e:
         return JsonResponse({'res' :str(e)}, status = HTTP_400_BAD_REQUEST)
 

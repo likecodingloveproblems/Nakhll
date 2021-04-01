@@ -23,8 +23,11 @@ from nakhll_market.management_content_views import baseData
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
 
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.mixins import UserPassesTestMixin
+# unnecessary imports - TODO: remove later
+# from django.contrib.auth.mixins import LoginRequiredMixin
+# from django.contrib.auth.mixins import UserPassesTestMixin
+from django.views.generic import TemplateView
+from braces.views import LoginRequiredMixin
 
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group 
@@ -66,6 +69,7 @@ from .forms import Login, CheckEmail
 from nakhll.settings import KAVENEGAR_KEY
 
 from Iran import data
+from nakhll_market.forms import MyUserForm, ProfileForm 
 # Profile Page And Sub Pages
 #---------------------------------------------------------------------------------------------------------------------------------
 
@@ -148,59 +152,102 @@ class SendMessage:
 
 # ---------------------------------------------------- User Profile Pages ---------------------------------------------------------
 
+# implement class based views
+# class ProfileDashboard(LoginRequiredMixin, TemplateView):
+#     template_name = 'nakhll_market/profile/pages/profile.html'
+#     redirect_field_name = 'auth:login'
+    
+#     def get_context_data(self, **kwargs):
+#         this_profile = Profile.objects.get(FK_User=self.request.user)
+#         this_inverntory = self.request.user.WalletManager.Inverntory
+#         # Get Menu Item
+#         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+#         # Get Nav Bar Menu Item
+#         navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+#         # -------------------------------------------------------------------
+#         context = super().get_context_data(**kwargs)
+#         context['This_User_Profile'] = this_profile
+#         context['This_User_Inverntory'] = this_inverntory
+#         context['Options'] = options
+#         context['MenuList'] = navbar
+#         return context 
+
 
 # Get User Dashboard Info
-def ProfileDashboard(request):
-    # Check User Status
-    if request.user.is_authenticated :
-        this_profile = Profile.objects.get(FK_User=request.user)
-        this_inverntory = request.user.WalletManager.Inverntory
-        # Get Menu Item
-        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-        # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-        # -------------------------------------------------------------------
+# def ProfileDashboard(request):
+#     # Check User Status
+#     if request.user.is_authenticated :
+#         this_profile = Profile.objects.get(FK_User=request.user)
+#         this_inverntory = request.user.WalletManager.Inverntory
+#         # Get Menu Item
+#         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+#         # Get Nav Bar Menu Item
+#         navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+#         # -------------------------------------------------------------------
 
-        context = {
-            'This_User_Profile':this_profile,
-            'This_User_Inverntory': this_inverntory,
-            'Options': options,
-            'MenuList':navbar,
-        }
+#         context = {
+#             'This_User_Profile':this_profile,
+#             'This_User_Inverntory': this_inverntory,
+#             'Options': options,
+#             'MenuList':navbar,
+#         }
 
-        return render(request, 'nakhll_market/profile/pages/profile.html', context)
+#         return render(request, 'nakhll_market/profile/pages/profile.html', context)
 
-    else:
+#     else:
         
-        return redirect("auth:login")
+#         return redirect("auth:login")
 
+# implement class based views
 # Get User Wallet Info And Charge It
-def ProfileWallet(request):
-    # Check User Status
-    if request.user.is_authenticated:
-        this_profile = Profile.objects.get(FK_User=request.user)
-        this_inverntory = request.user.WalletManager.Inverntory
+class ProfileWallet(LoginRequiredMixin, TemplateView):
+    template_name = 'nakhll_market/profile/pages/wallet.html'
+    redirect_field_name = "auth:login"
+    def get_context_data(self, **kwargs):
+        this_profile = Profile.objects.get(FK_User=self.request.user)
+        this_inverntory = self.request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
         # Get Nav Bar Menu Item
         navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
         # -------------------------------------------------------------------
 
-        context = {
-            'This_User_Profile':this_profile,
-            'This_User_Inverntory': this_inverntory,
-            'Options': options,
-            'MenuList':navbar,
-            'Message':None,
-        }
-
-        return render(request, 'nakhll_market/profile/pages/wallet.html', context)
-
-    else:
+        context = super().get_context_data(**kwargs)
+        context['This_User_Profile'] = this_profile
+        context['This_User_Inverntory'] = this_inverntory
+        context['Options'] = options
+        context['MenuList'] = navbar
+        context['Message'] = None
+        return context
         
-        return redirect("auth:login")
+        
+# replaced with class based view - should delete after test
+# def ProfileWallet(request):
+#     # Check User Status
+#     if request.user.is_authenticated:
+#         this_profile = Profile.objects.get(FK_User=request.user)
+#         this_inverntory = request.user.WalletManager.Inverntory
+#         # Get Menu Item
+#         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+#         # Get Nav Bar Menu Item
+#         navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+#         # -------------------------------------------------------------------
 
-# Get User Message
+#         context = {
+#             'This_User_Profile':this_profile,
+#             'This_User_Inverntory': this_inverntory,
+#             'Options': options,
+#             'MenuList':navbar,
+#             'Message':None,
+#         }
+
+#         return render(request, 'nakhll_market/profile/pages/wallet.html', context)
+
+#     else:
+        
+#         return redirect("auth:login")
+
+# # Get User Message
 def ProfileMessage(request, status = None, start = None, end = None):
     # Check User Status
     if request.user.is_authenticated :
@@ -266,9 +313,13 @@ def ProfileMessage(request, status = None, start = None, end = None):
 
 
 # Get User Factors Info
-def ProfileFactor(request):
-    # Check User Status
-    if request.user.is_authenticated :
+class ProfileFactor(LoginRequiredMixin, TemplateView):
+    template_name = 'nakhll_market/profile/pages/factor.html'
+    redirect_field_name = 'auth:login'
+    
+    def get_context_data(self, **kwargs):
+        request = self.request
+        context = super().get_context_data(**kwargs)
         context = baseData(request, 'factor')
         # Get All User Factor
         context['This_User_Factor'] = Factor.objects.filter(FK_User = request.user, PaymentStatus = True).order_by('-OrderDate')
@@ -277,32 +328,61 @@ def ProfileFactor(request):
         context['ShopRedyFactors'] = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus = '2', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
         context['ShopSendFactors'] = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus = '3', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
         context['ShopCanselFactors'] = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus = '0', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
+        return context
+        
+# def ProfileFactor(request):
+#     # Check User Status
+#     if request.user.is_authenticated :
+#         context = baseData(request, 'factor')
+#         # Get All User Factor
+#         context['This_User_Factor'] = Factor.objects.filter(FK_User = request.user, PaymentStatus = True).order_by('-OrderDate')
+#         # Factor List
+#         context['ShopFactors'] = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus = '1', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
+#         context['ShopRedyFactors'] = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus = '2', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
+#         context['ShopSendFactors'] = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus = '3', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
+#         context['ShopCanselFactors'] = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus = '0', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
      
-        return render(request, 'nakhll_market/profile/pages/factor.html', context)
-    else: 
-        return redirect("auth:login")
-
+#         return render(request, 'nakhll_market/profile/pages/factor.html', context)
+#     else: 
+#         return redirect("auth:login")
 
 
 # Get User Transactiones
-def ProfileTransactione(request):
-    # Check User Status
-    if request.user.is_authenticated :
+class ProfileTransactione(LoginRequiredMixin, TemplateView):
+    template_name = 'nakhll_market/profile/pages/transaction.html'
+    redirect_field_name = 'auth:login'
+
+    def get_context_data(self, **kwargs):
+        request = self.request
+        context = super().get_context_data(**kwargs)
         # Get User Info
         context = baseData(request, 'transaction')
         # Get All User Transaction
-        context['Transactions'] = Transaction.objects.filter(FK_User = request.user).order_by('-Date')
-     
-        return render(request, 'nakhll_market/profile/pages/transaction.html', context)
-    else:
-        return redirect("auth:login")
+        context['Transactions']  = Transaction.objects.filter(FK_User = request.user).order_by('-Date')
+        return context
 
+# Get User Transactiones
+# def ProfileTransactione(request):
+#     # Check User Status
+#     if request.user.is_authenticated :
+#         # Get User Info
+#         context = baseData(request, 'transaction')
+#         # Get All User Transaction
+#         context['Transactions']  = Transaction.objects.filter(FK_User = request.user).order_by('-Date')
+     
+#         return render(request, 'nakhll_market/profile/pages/transaction.html', context)
+#     else:
+#         return redirect("auth:login")
 
 
 # Get User Reviews
-def ProfileReview(request):
-   # Check User Status
-    if request.user.is_authenticated :
+class ProfileReview(LoginRequiredMixin, TemplateView):
+    template_name = 'nakhll_market/profile/pages/review.html'
+    redirect_field_name = 'auth:login'
+    
+    def get_context_data(self, **kwargs):
+        request = self.request
+        context = super().get_context_data(**kwargs)
         this_profile = Profile.objects.get(FK_User=request.user)
         this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
@@ -334,24 +414,68 @@ def ProfileReview(request):
         
         user_comments.sort(reverse = True, key = GetDate)
 
-        context = {
-            'This_User_Profile':this_profile,
-            'This_User_Inverntory': this_inverntory,
-            'Options': options,
-            'MenuList':navbar,
-            'Comments':user_comments,
-        }
+        context['This_User_Profile'] = this_profile
+        context['This_User_Inverntory'] = this_inverntory
+        context['Options'] = options
+        context['MenuList'] = navbar
+        context['Comments'] = user_comments
+        return context
+
+# def ProfileReview(request):
+#    # Check User Status
+#     if request.user.is_authenticated :
+#         this_profile = Profile.objects.get(FK_User=request.user)
+#         this_inverntory = request.user.WalletManager.Inverntory
+#         # Get Menu Item
+#         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+#         # Get Nav Bar Menu Item
+#         navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+#         # --------------------------------------------------------------------
+#         # Build Class
+#         class Comments:
+#             def __init__(self, this_type, this_text, this_content, likecount, datecreate, status):
+#                 self.type = this_type
+#                 self.text = this_text
+#                 self.content = this_content
+#                 self.like = likecount
+#                 self.date = datecreate
+#                 self.status = status
+#         # Get All User Comments
+#         user_comments = []
+#         for item in Comment.objects.filter(FK_UserAdder = request.user).order_by('-DateCreate'):
+#             new_item = Comments(item.get_type, item.Description, item.get_object_name, item.get_like_count, item.DateCreate, item.get_status)
+#             user_comments.append(new_item)
+#         for item in ShopComment.objects.filter(FK_UserAdder = request.user).order_by('-DateCreate'):
+#             new_item = Comments(item.get_type, item.Description, item.get_object_name, item.get_like_count, item.DateCreate, item.get_status)
+#             user_comments.append(new_item)
+
+#         # Get Product Create Date
+#         def GetDate(item):
+#             return item.date
+        
+#         user_comments.sort(reverse = True, key = GetDate)
+
+#         context = {
+#             'This_User_Profile':this_profile,
+#             'This_User_Inverntory': this_inverntory,
+#             'Options': options,
+#             'MenuList':navbar,
+#             'Comments':user_comments,
+#         }
      
-        return render(request, 'nakhll_market/profile/pages/review.html', context)
-    else:
-        return redirect("auth:login")
+#         return render(request, 'nakhll_market/profile/pages/review.html', context)
+#     else:
+#         return redirect("auth:login")
 
 
-    
 # Get User Shops
-def ProfileShops(request):
-    # Check User Status
-    if request.user.is_authenticated :
+class ProfileShops(LoginRequiredMixin, TemplateView):
+    template_name = 'nakhll_market/profile/pages/shops.html'
+    redirect_field_name = 'auth:login'
+    
+    def get_context_data(self, **kwargs):
+        request = self.request
+        context = super().get_context_data(**kwargs)
         this_profile = Profile.objects.get(FK_User=request.user)
         this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
@@ -370,29 +494,72 @@ def ProfileShops(request):
         for item in this_profile.get_user_shops():
             if item.FK_SubMarket.all().count() != 0:
                 # Get Shop First SubMarket
-                this_shop_subMarket = item.FK_SubMarket.all()[0]
+                this_shop_subMarket = item.FK_SubMarket.first()
                 # Get Shop First SubMarket Market
-                this_shop_market = item.FK_SubMarket.all()[0].FK_Market
+                this_shop_market = item.FK_SubMarket.first().FK_Market
             else:
                 # Get Shop First SubMarket
                 this_shop_subMarket = None
                 # Get Shop First SubMarket Market
                 this_shop_market = None
             user_shop_list.append(Shop_item(item, this_shop_market, this_shop_subMarket))
+        user_unpubished_shops = Shop.objects.filter(FK_ShopManager=request.user, Publish=False)
         # Get All User Products
         user_product_list = this_profile.get_user_products
+        context ['This_User_Profile'] = this_profile
+        context ['This_User_Inverntory'] = this_inverntory
+        context ['Options'] = options
+        context ['MenuList'] = navbar
+        context ['UserShops'] = user_shop_list
+        context['UserUnpublishedUser'] = user_unpubished_shops
+        context ['UserProducts'] = user_product_list
+        return  context
 
-        context = {
-            'This_User_Profile':this_profile,
-            'This_User_Inverntory': this_inverntory,
-            'Options': options,
-            'MenuList':navbar,
-            'UserShops':user_shop_list,
-            'UserProducts':user_product_list,
-        }
-        return render(request, 'nakhll_market/profile/pages/shops.html', context)
-    else:
-        return redirect("auth:login")
+        
+# def ProfileShops(request):
+#     # Check User Status
+#     if request.user.is_authenticated :
+#         this_profile = Profile.objects.get(FK_User=request.user)
+#         this_inverntory = request.user.WalletManager.Inverntory
+#         # Get Menu Item
+#         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+#         # Get Nav Bar Menu Item
+#         navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+#         # --------------------------------------------------------------------
+#         # Get All User`s Shops
+#         user_shop_list = []
+#         class Shop_item:
+#             def __init__(self, item, item_market, item_submarket):
+#                 self.Shop = item
+#                 self.Market = item_market
+#                 self.SubMarket = item_submarket
+#         # Get All Shops
+#         for item in this_profile.get_user_shops():
+#             if item.FK_SubMarket.all().count() != 0:
+#                 # Get Shop First SubMarket
+#                 this_shop_subMarket = item.FK_SubMarket.all()[0]
+#                 # Get Shop First SubMarket Market
+#                 this_shop_market = item.FK_SubMarket.all()[0].FK_Market
+#             else:
+#                 # Get Shop First SubMarket
+#                 this_shop_subMarket = None
+#                 # Get Shop First SubMarket Market
+#                 this_shop_market = None
+#             user_shop_list.append(Shop_item(item, this_shop_market, this_shop_subMarket))
+#         # Get All User Products
+#         user_product_list = this_profile.get_user_products
+
+#         context = {
+#             'This_User_Profile':this_profile,
+#             'This_User_Inverntory': this_inverntory,
+#             'Options': options,
+#             'MenuList':navbar,
+#             'UserShops':user_shop_list,
+#             'UserProducts':user_product_list,
+#         }
+#         return render(request, 'nakhll_market/profile/pages/shops.html', context)
+#     else:
+#         return redirect("auth:login")
 
 # ----------------------------------------------------- End User Profile Pages ----------------------------------------------------------
 
@@ -561,6 +728,9 @@ def add_user_bank_account_info(request):
 def add_new_shop(request):
     # Check User Status
     if request.user.is_authenticated:
+        if not (request.user.first_name and request.user.last_name):
+            messages.warning(request, 'لطفا ابتدا اطلاعات خود را تکمیل کنید.')
+            return redirect("nakhll_market:Dashboard")
         if request.method == 'POST':
             # Get Data
             Title = request.POST["Shop_Title"]
@@ -2940,11 +3110,13 @@ def RepalyTicketing(request, ticket_id):
 
 # ---------------------- End Ticketin Section ----------------------
 
+class ProfileAlert(LoginRequiredMixin, TemplateView):
+    template_name = 'nakhll_market/profile/pages/alert.html'
+    redirect_field_name = 'auth:login'
 
-# Profile Alert
-def ProfileAlert(request):
-    # Check User Status
-    if request.user.is_staff :
+    def get_context_data(self, **kwargs):
+        request = self.request
+        context = super().get_context_data(**kwargs)
         this_profile = Profile.objects.get(FK_User=request.user)
         this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
@@ -2954,214 +3126,79 @@ def ProfileAlert(request):
         # --------------------------------------------------------------------
         # get all new alert
         alert = Alert.objects.filter(Seen = False).order_by('DateCreate')
+        
+        context['This_User_Profile'] = this_profile
+        context['This_User_Inverntory'] =this_inverntory
+        context['Options'] = options
+        context['MenuList'] = navbar
+        context['Alert'] = alert
+        
+        return context
+        
+        
+# Profile Alert
+# def ProfileAlert(request):
+#     # Check User Status
+#     if request.user.is_staff :
+#         this_profile = Profile.objects.get(FK_User=request.user)
+#         this_inverntory = request.user.WalletManager.Inverntory
+#         # Get Menu Item
+#         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+#         # Get Nav Bar Menu Item
+#         navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+#         # --------------------------------------------------------------------
+#         # get all new alert
+#         alert = Alert.objects.filter(Seen = False).order_by('DateCreate')
 
-        context = {
-            'This_User_Profile':this_profile,
-            'This_User_Inverntory': this_inverntory,
-            'Options': options,
-            'MenuList':navbar,
-            'Alert':alert,
-        }
+#         context = {
+#             'This_User_Profile':this_profile,
+#             'This_User_Inverntory': this_inverntory,
+#             'Options': options,
+#             'MenuList':navbar,
+#             'Alert':alert,
+#         }
      
-        return render(request, 'nakhll_market/profile/pages/alert.html', context)
-    else:
-        return redirect("auth:login")
+#         return render(request, 'nakhll_market/profile/pages/alert.html', context)
+#     else:
+#         return redirect("auth:login")
 
 
 # Update Profile Values
 #--------------------------------------------------------------------------------------------------------------------------------
-
 # Update Dashboard (User Info) Values
-def UpdateUserDashboard(request):
-    if request.user.is_authenticated:
-        try:
-            # Get Data
-            try:
-                FirstName = request.POST["User_FirstName"]
-            except:
-                FirstName = ''
+class UpdateUserDashboard(TemplateView):
+    template_name = "nakhll_market/profile/pages/profile.html"
 
-            try:
-                LastName = request.POST["User_LastName"]
-            except :
-                LastName = ''
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Get Menu Item
+        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+        # Get Nav Bar Menu Item
+        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+        context['Options'] = options
+        context['MenuList'] = navbar
+        return context
 
-            try:
-                Email = request.POST["User_Email"]
-            except :
-                Email = ''
+    def get(self, request):
+        context = self.get_context_data()
+        context['profile_form'] = ProfileForm(instance=request.user.User_Profile)
+        context['user_form'] = MyUserForm(instance=request.user)
+        return render(request, self.template_name, context)
+        
+    def post(self, request):
+        profile_form = ProfileForm(request.POST, instance=request.user.User_Profile)
+        user_form = MyUserForm(request.POST , instance=request.user)
+        if profile_form.is_valid() and user_form.is_valid():
+            profile_form.save()
+            user_form.save()
 
-            try:
-                Image = request.FILES["Profile_Image"]
-            except MultiValueDictKeyError:
-                Image = ''
-
-            try:
-                Bio = request.POST["Profile_Bio"]
-            except:
-                Bio = ''
-
-            try:
-                BrithDay = request.POST["Profile_BrithDay"]
-            except:
-                BrithDay = ''
-
-            try:
-                State = request.POST["Profile_State"]
-            except:
-                State = ''
-
-            try:
-                BigCity = request.POST["Profile_BigCity"]
-            except:
-                BigCity = ''
-
-            try:
-                City = request.POST["Profile_City"]
-            except:
-                City = ''
-
-            try:
-                ZipCode = request.POST["Profile_ZipCode"]
-            except:
-                ZipCode = ''
-
-            try:
-                PhoneNumber = request.POST["Profile_PhoneNumber"]
-            except:
-                PhoneNumber = ''
-
-            try:
-                Address = request.POST["Profile_Address"]
-            except:
-                Address = ''
-
-            try:
-                CityPerCode = request.POST["Profile_CityPerCode"]
-            except:
-                CityPerCode = ''
-
-            try:
-                SexState = request.POST["Profile_SexState"]
-            except:
-                SexState = 'انتخاب جنسیت'
-
-            if SexState == 'انتخاب جنسیت':
-                Sex = '0'
-            elif SexState == 'زن':
-                Sex = '1'
-            elif SexState == 'مرد':
-                Sex = '2'
-            elif SexState == 'سایر':
-                Sex = '3'
-
-            try:
-                TutorialWebsite = request.POST["Profile_TutorialWebsite"]
-            except:
-                TutorialWebsite = 'هیچ کدام'
-
-            if TutorialWebsite == 'موتور های جستجو':
-                ToWeb = '0'
-            elif TutorialWebsite == 'حجره داران':
-                ToWeb = '1'
-            elif TutorialWebsite == 'شبکه های اجتماعی':
-                ToWeb = '2'
-            elif TutorialWebsite == 'کاربران':
-                ToWeb = '3'
-            elif TutorialWebsite == 'رسانه ها':
-                ToWeb = '4'
-            elif TutorialWebsite == 'تبلیغات':
-                ToWeb = '5'
-            elif TutorialWebsite == 'نود ها':
-                ToWeb = '6'
-            elif TutorialWebsite == 'سایر':
-                ToWeb = '7'
-            elif TutorialWebsite == 'هیچ کدام':
-                ToWeb = '8'
-            #-------------------------------------------------------------
-            # Get User
-            this_user = request.user
-            # Get Profile
-            this_profile = get_object_or_404(Profile, FK_User = this_user)
-            # Edit Status
-            edit_user = False
-            edit_profile = False
-            # Get User State, BigCity, City Title
-            state = ''
-            bigcity = ''
-            city = ''
-            for i in data:
-                if (i['divisionType'] == 1) and (i['id'] == int(State)):
-                    state = i['name']
-                if (i['divisionType'] == 2) and (i['id'] == int(BigCity)):
-                    bigcity = i['name']
-                if (i['divisionType'] == 3) and (i['id'] == int(City)):
-                    if i['name'] == 'مرکزی':
-                        for j in data:
-                            if (j['divisionType'] == 2) and (j['id'] == i['parentCountryDivisionId']):
-                                city = j['name']
-                    else:
-                        city = i['name']
-            # Check Fileds
-            if this_user.first_name != FirstName:
-                this_user.first_name = FirstName
-                edit_user = True
-            if this_user.last_name != LastName:
-                this_user.last_name = LastName
-                edit_user = True
-            if this_user.email != Email:
-                this_user.email = Email
-                edit_user = True
-                if not Newsletters.objects.filter(Email = Email).exists():
-                    New = Newsletters.objects.create(Email = Email)
-            if this_profile.ZipCode != ZipCode:
-                this_profile.ZipCode = ZipCode
-                edit_profile = True
-            if this_profile.Address != Address:
-                this_profile.Address = Address
-                edit_profile = True
-            if this_profile.State != state:
-                this_profile.State = state
-                edit_profile = True
-            if this_profile.BigCity != bigcity:
-                this_profile.BigCity = bigcity
-                edit_profile = True
-            if this_profile.City != city:
-                this_profile.City = city
-                edit_profile = True
-            if this_profile.BrithDay != BrithDay:
-                this_profile.BrithDay = BrithDay
-                edit_profile = True
-            if this_profile.CityPerCode != CityPerCode:
-                this_profile.CityPerCode = CityPerCode
-                edit_profile = True
-            if this_profile.PhoneNumber != PhoneNumber:
-                this_profile.PhoneNumber = PhoneNumber
-                edit_profile = True
-            if this_profile.Bio != Bio:
-                this_profile.Bio = Bio
-                edit_profile = True
-            if this_profile.Sex != Sex:
-                this_profile.Sex = Sex
-                edit_profile = True
-            if this_profile.TutorialWebsite != ToWeb:
-                this_profile.TutorialWebsite = ToWeb
-                edit_profile = True
-            if Image != '':
-                this_profile.Image = Image
-                edit_profile = True
-
-            if edit_user:
-                this_user.save()
-            if edit_profile:
-                this_profile.save()
-            # -----------------------------------------
-            return redirect("nakhll_market:Dashboard")
-        except Exception as e:
-            return redirect("nakhll_market:error_500", error_text = str(e))
-    else:
-        return redirect("auth:login")
-
+        else:
+            profile_form = ProfileForm(instance=request.user.User_Profile)
+        context = {
+            'profile_form' : profile_form,
+            'user_form' : user_form,
+            }
+        return render(request ,'nakhll_market/profile/pages/profile.html' ,context)
 
 
 
@@ -3844,7 +3881,7 @@ def CheckCopun(request):
             try:
                 userFactor = Factor.objects.get(FactorNumber = factor)
             except:
-                response_data['error'] = 'فاکتوری برای شما ثبت نشده است '
+                response_data['error'] = 'صورت حسابی برای شما ثبت نشده است '
                 response_data['status'] = False
                 return JsonResponse(response_data)
 
@@ -4320,13 +4357,13 @@ def CartView(request):
                 return JsonResponse(response_data)
             else:
                 response_data['status'] = False
-                response_data['msg'] = 'محصولی در فاکتور شما موجود نمی باشد.'
+                response_data['msg'] = 'محصولی در صورت حساب شما موجود نمی باشد.'
                 response_data['count'] = Product_Count
                 response_data['list'] = Order_List
                 return JsonResponse(response_data)
         else:
             response_data['status'] = False
-            response_data['msg'] = 'فاکتوری برای شما وجود ندارد.'
+            response_data['msg'] = 'صورت حسابی برای شما وجود ندارد.'
             response_data['count'] = Product_Count
             response_data['list'] = Order_List
             return JsonResponse(response_data)

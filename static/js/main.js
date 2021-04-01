@@ -57,34 +57,6 @@ $(document).ready(function(){
     });
 
     var rBtnVal = 'yes';
-    $('#readonlyswitchbtn').click(function(){
-      if(rBtnVal == "yes"){
-          $("#profile-sec input").prop("readonly", false);
-          $('.selcetoption').prop("disabled", false)
-          $('#readonlyswitchbtn').text("لغو");
-          $("#edit-profile").css("display", "inline");
-          $("#pic-profile-add").css("display", "block");
-          $("#helpinputNationalCode").css("display", "block");
-          $("#helpinputMobileNumber").css("display", "block");
-          $("#inputprofState").attr('disabled', false).trigger("chosen:updated");
-          $("#inputprofBigCity").attr('disabled', false).trigger("chosen:updated");
-          $("#inputprofCity").attr('disabled', false).trigger("chosen:updated");
-          rBtnVal = "no"; 
-        }
-        else{ 
-            $("#profile-sec input").prop("readonly", true); 
-            $('.selcetoption').prop("disabled", true)
-            $('#readonlyswitchbtn').text("ویرایش");
-            $("#edit-profile").css("display", "none");
-            $("#helpinputNationalCode").css("display", "none");
-            $("#helpinputMobileNumber").css("display", "none");
-            $("#pic-profile-add").css("display", "none");
-            $("#inputprofState").attr('disabled', true).trigger("chosen:updated");
-            $("#inputprofBigCity").attr('disabled', true).trigger("chosen:updated");
-            $("#inputprofCity").attr('disabled', true).trigger("chosen:updated");
-          rBtnVal = "yes";
-      }
-    });
 
     $('.attr-item-price').click(function(){
         alert('با تغییر این ویژگی قیمت آن در سبد خرید شما تغییر می کند ...');

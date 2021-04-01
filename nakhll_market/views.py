@@ -39,6 +39,8 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group 
 
+from django.contrib.postgres.search import TrigramSimilarity
+
 from .models import AmazingProduct, Tag
 from .models import Market
 from .models import MarketBanner
@@ -73,8 +75,7 @@ from sms.models import SMS
 from my_auth.models import UserphoneValid
 from Payment.models import Wallet, Factor ,FactorPost, Coupon
 
-from .forms import Login, CheckEmail
-from .profileviews import ProfileDashboard
+from .forms import Login, CheckEmail 
 
 # Get Username
 User_username = None
@@ -1491,10 +1492,10 @@ def Advanced_Search(request):
 # search Page
 def search(request):
     if request.method == 'POST':
-
+        similarity_bound = 0.1
         try:
-            words = request.POST["search"]
-            words = words.split(' ')
+            init_words = request.POST["search"]
+            words = init_words.split(' ')
             words = list(filter(lambda i: i!='', words))
             search_words = []
             for word in words:
@@ -1505,6 +1506,7 @@ def search(request):
             word = ' '.join(words)
         except:
             word = False
+            init_words = False
         # ----------------------------------------------------------------
         # Get User Info
         if request.user.is_authenticated:
@@ -1526,7 +1528,12 @@ def search(request):
                 self.Submarket = item_submarket
         # Get Shops
         all_shop_in_query = []
-        for item in Shop.objects.filter(Q(Title__regex = search_word), Available = True, Publish = True).order_by('-DateCreate'):
+        for item in\
+            Shop.objects\
+            .annotate(similarity=TrigramSimilarity('Title', init_words))\
+            .filter(
+                similarity__gt=similarity_bound, Available = True, Publish = True
+            ).order_by('-similarity'):
             all_shop_in_query.append(item)
         # Set Data In Class
         all_shop_in_query_objects = []
@@ -1538,9 +1545,17 @@ def search(request):
 
         # Get Product
         all_product_in_query = []
-        for item in Product.objects.filter(Q(Title__regex = search_word), Available = True, Publish = True, Status__in = ['1', '2', '3']).order_by('-DateCreate'):
+        for item in\
+            Product.objects\
+            .annotate(similarity=TrigramSimilarity('Title', init_words))\
+            .filter(similarity__gt=similarity_bound, Available = True, Publish = True, Status__in = ['1', '2', '3'])\
+            .order_by('-similarity'):
             all_product_in_query.append(item)
-        for item in Product.objects.filter(Q(Title__regex = search_word), Available = True, Publish = True, Status__in = ['4']).order_by('-DateCreate'):
+        for item in\
+            Product.objects\
+            .annotate(similarity=TrigramSimilarity('Title', init_words))\
+            .filter(similarity__gt=similarity_bound, Available = True, Publish = True, Status__in = ['4'])\
+            .order_by('-similarity'):
             all_product_in_query.append(item)
 
         context = {

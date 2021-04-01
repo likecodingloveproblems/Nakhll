@@ -49,7 +49,7 @@
                         <a href="/profile/factor/">
                             <button>
                                 <i class="fas fa-file-invoice-dollar"></i>
-                                <h5>فاکتور ها</h5>
+                                <h5>صورت حساب ها</h5>
                             </button>
                         </a>
 
@@ -106,7 +106,7 @@
                     </div>
                 </div>
                 
-                {% if This_User_Profile.chack_user_bank_account %}
+                {% if request.user.User_Profile.chack_user_bank_account %}
                     <div class="row">
                         <div class="col-xl-12 col-12">
                             <div class="dashboard">
@@ -160,7 +160,7 @@
                                     <div class="form-group col-md-6">
                                     <label for="Account_OwnerBuilder">نام و نام خانوادگی صاحب حساب :</label>
                                     <fieldset disabled>
-                                        <input type="text" value="{{ This_User_Profile.get_bank_account_name }}" class="form-control" id="Account_OwnerBuilder">
+                                        <input type="text" value="{{ request.user.User_Profile.get_bank_account_name }}" class="form-control" id="Account_OwnerBuilder">
                                     </fieldset>
                                     </div>   
                                 </div>          
@@ -168,7 +168,7 @@
                                     <div class="form-group col-md-6">
                                         <label for="CreditCard_NumberBuilder">شماره کارت :</label>
                                         <fieldset disabled>
-                                            <input type="text" value="{{ This_User_Profile.get_credit_card_number }}" class="form-control" id="CreditCard_NumberBuilder">
+                                            <input type="text" value="{{ request.user.User_Profile.get_credit_card_number }}" class="form-control" id="CreditCard_NumberBuilder">
                                         </fieldset>
                                     </div>
 
@@ -177,7 +177,7 @@
                                         <fieldset disabled>
                                             <div class="input-group mb-2 formshaba">
                                                 <div class="input-group-prepend">
-                                                        <input type="text"hu value="{{ This_User_Profile.get_shaba_number }}" class="form-control" id="ShabaBank_NumberBuilder">
+                                                        <input type="text"hu value="{{ request.user.User_Profile.get_shaba_number }}" class="form-control" id="ShabaBank_NumberBuilder">
                                                     <div class="input-group-text">IR</div>
                                                 </div>
                                             </div> 
@@ -192,7 +192,7 @@
                 <div class="dashboard dashboard-padding">
                     <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12 top-of-shops">
-                            <h3> حجره ها <a href="{% url "nakhll_market:Shop_Manager_AddNewShop" %}" class="add-new-inprofile">افزودن حجره</a></h3>
+                            <h3> حجره ها {% if UserUnpublishedUser.count == 0 %} <a href="{% url "nakhll_market:Shop_Manager_AddNewShop" %}" class="add-new-inprofile">افزودن حجره</a>{% endif %}</h3>
                         </div>
                     </div>
 
@@ -222,6 +222,40 @@
                             </div>
                         {% endfor %}
                     </div>
+
+                    {% if UserUnpublishedUser.count %}
+                    <div class="row mt-5">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12 top-of-shops">
+                            <h3 style="color:#b91a1a"> حجره های تایید نشده</h3>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        {% for item in UserUnpublishedUser %}
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-xs-12 col-12">
+                                <div class="shop-list">
+                                    <div class="shops-box">
+                                        <div class="shoplistbox">
+                                            <div class="mohtava">
+                                                <img src="{{item.Image_thumbnail_url}}" alt="{{item.Title}}" class="logo-shop">
+                                                <h2><span><a href="{% url "nakhll_market:ShopsDetail" item.Slug %}">{{item.Title}}</a></span></h2>
+                                                <span class="addr-shop"><img src="{% static "images/maintenance.svg" %}" alt="tag">
+                                                {% if item.Market != None %}<a href="{% url "nakhll_market:ShopsDetail" item.Slug %}"><span>{{item.FK_SubMarket.first.FKـMarket.Title}}</span></a> - <a href="{% url "nakhll_market:ShopsDetail" item.Slug %}"><span>{{item.FK_SubMarket.first.Title}}</span></a>{% endif %}
+                                                </span>     
+                                                <p class="loc-p shoploc"><span class="loc-in-shop-admin"><img src="{% static "images/maps-and-flags.svg" %}" alt="location"> 
+                                                    شهر {{item.City}}
+                                                    </span>
+                                                    <a href="{% url "nakhll_market:Shop_Manager_EditShop" item.Slug %}" class="edit-hojre-btn">ویرایش</a>
+                                                    <a href="{% url "nakhll_market:Shop_Manager_ShopBannerList" item.Slug %}" class="edit-hojre-btn">گالری حجره</a>
+                                                </p>           
+                                            </div>
+                                        </div>
+                                    </div>    
+                                </div>    
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                 </div>
 
                 

@@ -278,9 +278,9 @@ def check_the_seller_interaction(request):
                         worksheet.write(row, 10, 'تعداد تغییرات پذیرفته شده')
                         worksheet.write(row, 11, 'میزان بازدید حجره')
                         worksheet.write(row, 12, 'تعداد نظرات حجره')
-                        worksheet.write(row, 13, 'تعداد فاکتور ها')
-                        worksheet.write(row, 14, 'تعداد فاکتور ها لغو شده')
-                        # worksheet.write(row, 15, 'میانگین زمانی پاسخ به فاکتور ها')
+                        worksheet.write(row, 13, 'تعداد صورت حساب ها')
+                        worksheet.write(row, 14, 'تعداد صورت حساب ها لغو شده')
+                        # worksheet.write(row, 15, 'میانگین زمانی پاسخ به صورت حساب ها')
                         worksheet.write(row, 16, 'وضعیت اطلاعات حساب بانکی')
                         worksheet.write(row, 17, 'آخر ورود کاربر به سایت')
                         # set shop data
@@ -300,7 +300,7 @@ def check_the_seller_interaction(request):
                         worksheet.write(row, 12, ShopComment.objects.filter(FK_Shop = item.FK_Shop).count())
                         worksheet.write(row, 13, len(this_shop_factors))
                         worksheet.write(row, 14, get_shop_factor_cansel(this_shop_factors))
-                        # worksheet.write(row, 15, 'میانگین زمانی پاسخ به فاکتور ها')
+                        # worksheet.write(row, 15, 'میانگین زمانی پاسخ به صورت حساب ها')
                         worksheet.write(row, 16, get_shop_bank_account_status(item.FK_Shop))
                         worksheet.write(row, 17, str(item.FK_Shop.FK_ShopManager.last_login.date()))
                         # set product field
@@ -380,7 +380,7 @@ def get_factor_analyze(request):
                 worksheet.write(row, 3, 'هزینه پست')
                 worksheet.write(row, 4, 'میزان تخفیف')
                 worksheet.write(row, 5, 'نوع تخفیف')
-                worksheet.write(row, 6, 'وضعیت فاکتور')
+                worksheet.write(row, 6, 'وضعیت صورت حساب')
                 worksheet.write(row, 7, 'نوع پرداخت')
                 worksheet.write(row, 8, 'توضیحات')
                 worksheet.write(row, 9, 'نام خریدار')
@@ -405,7 +405,7 @@ def get_factor_analyze(request):
                     except:
                         continue
                 row += 3
-                worksheet.write(row, 0, 'تعداد فاکتور ها ')
+                worksheet.write(row, 0, 'تعداد صورت حساب ها ')
                 worksheet.write(row, 1, 'مجموع فروش')
                 # set sum
                 row += 1

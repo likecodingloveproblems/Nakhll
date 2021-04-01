@@ -1522,7 +1522,7 @@ def RecordSendInfoAlert(request, id):
                     SendAlertResponse('تایید-بارکدپستی', Dec, profile.MobileNumber)
                     # Send Push notification
                     title = 'تایید ارسال مرسوله'
-                    description = 'گزارش ارسال مرسوله برای فاکتور  به شماره ' + factor.FactorNumber + 'تایید شده است.'
+                    description = 'گزارش ارسال مرسوله برای صورت حساب  به شماره ' + factor.FactorNumber + 'تایید شده است.'
                     send_push_notification().run(title, description, profile.MobileNumber)
                     SendPostCode(bar.User_Sender, factor.FactorNumber, bar.BarCode, Profile.objects.get(FK_User = factor.FK_User).MobileNumber)
             
@@ -1542,7 +1542,7 @@ def RecordSendInfoAlert(request, id):
                     SendAlertResponse('عدم-تایید-بارکدپستی', Dec, profile.MobileNumber)
                     # Send Push notification
                     title = 'عدم تایید ارسال مرسوله'
-                    description = 'گزارش ارسال مرسوله برای فاکتور  به شماره ' + factor.FactorNumber + 'تایید نشده است.'
+                    description = 'گزارش ارسال مرسوله برای صورت حساب  به شماره ' + factor.FactorNumber + 'تایید نشده است.'
                     send_push_notification().run(title, description, profile.MobileNumber)
 
                     alert.Seen = True

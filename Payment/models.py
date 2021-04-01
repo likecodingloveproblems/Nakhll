@@ -8,6 +8,7 @@ from django.shortcuts import reverse
 from datetime import datetime, date 
 import jdatetime
 import math
+from simple_history.models import HistoricalRecords
 
 # Rename Method
 @deconstructible
@@ -121,6 +122,7 @@ class Wallet(models.Model):
         verbose_name = "کیف پول"
         verbose_name_plural = "کیف پول ها"
 
+    history = HistoricalRecords()
 #----------------------------------------------------------------------------------------------------------------------------------
 
 # Transaction (تراکنش) Model 
@@ -356,7 +358,7 @@ class Coupon(models.Model):
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-# FactorPost (محصولات فاکتور) Model
+# FactorPost (محصولات صورت حساب) Model
 class FactorPost (models.Model):
     ID=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     FK_Product=models.ForeignKey(Product, on_delete=models.SET_NULL, verbose_name='محصول', related_name='Factor_Product', null=True)
@@ -445,16 +447,17 @@ class FactorPost (models.Model):
     # Ordering With DateCreate
     class Meta:
         ordering = ('ID',)
-        verbose_name = "محصول فاکتور"
-        verbose_name_plural = "محصول فاکتور ها"
-        
+        verbose_name = "محصول صورت حساب"
+        verbose_name_plural = "محصول صورت حساب ها"
+
+    history = HistoricalRecords()
 #----------------------------------------------------------------------------------------------------------------------------------
 
-# Factor (فاکتور) Model 
+# Factor (صورت حساب) Model 
 class Factor(models.Model):
     ID=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
-    FactorNumber=models.CharField(verbose_name='شماره فاکتور', max_length=10, unique=True, default=BuildFactorCode(10))
-    FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='صاحب فاکتور', related_name='UserFactor', null=True)
+    FactorNumber=models.CharField(verbose_name='شماره صورت حساب', max_length=10, unique=True, default=BuildFactorCode(10))
+    FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='صاحب صورت حساب', related_name='UserFactor', null=True)
     Description=models.TextField(verbose_name='توضیحات سبد خرید',max_length=350, blank=True)
     CountrPreCode=models.CharField(verbose_name='کد کشور', max_length=6, default='098')
     MobileNumber=models.CharField(verbose_name='شماره موبایل', max_length=11, blank=True)
@@ -467,12 +470,12 @@ class Factor(models.Model):
     BigCity=models.CharField(verbose_name='شهرستان', max_length=50, blank=True)
     State =models.CharField(verbose_name='استان', max_length=50, blank=True)
     PhoneNumber=models.CharField(verbose_name='شماره تلفن ثابت', max_length=8, blank=True)
-    FK_FactorPost=models.ManyToManyField(FactorPost, verbose_name='محصولات فاکتور', related_name='Factor_Products', blank=True)
+    FK_FactorPost=models.ManyToManyField(FactorPost, verbose_name='محصولات صورت حساب', related_name='Factor_Products', blank=True)
     FACTOR_TYPE=(
-        ('1','فاکتور چاپی'),
-        ('2','فاکتور الکترونیکی'),
+        ('1','صورت حساب چاپی'),
+        ('2','صورت حساب الکترونیکی'),
     )
-    FactorType=models.CharField(verbose_name='نحوه تحویل فاکتور', max_length=1, choices=FACTOR_TYPE, default='1')
+    FactorType=models.CharField(verbose_name='نحوه تحویل صورت حساب', max_length=1, choices=FACTOR_TYPE, default='1')
     SHOPINFO_STATUS=(
         (True,'نمایش اطلاعات حجره'),
         (False,'عدم نمایش اطلاعات حجره'),
@@ -533,12 +536,12 @@ class Factor(models.Model):
         (True,'تسویه شده'),
         (False,'تسویه نشده'),
     )
-    Checkout=models.BooleanField(verbose_name='وضعیت تسویه حساب فاکتور', choices=CHECKOUT_STATUS, default=False)
+    Checkout=models.BooleanField(verbose_name='وضعیت تسویه حساب صورت حساب', choices=CHECKOUT_STATUS, default=False)
     PUBLISH_STATUS =(
         (True,'منتشر شده'),
         (False,'در انتظار تایید'),
     )
-    Publish=models.BooleanField(verbose_name='وضعیت انتشار فاکتور', choices=PUBLISH_STATUS, default=False)
+    Publish=models.BooleanField(verbose_name='وضعیت انتشار صورت حساب', choices=PUBLISH_STATUS, default=False)
     FK_Staff=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='تایید کننده', related_name='Factor_Accept', blank=True, null=True)
     FK_Staff_Checkout=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='تسویه کننده', related_name='Factor_Checkout', blank=True, null=True) 
 
@@ -894,14 +897,15 @@ class Factor(models.Model):
     # Ordering With DateCreate
     class Meta:
         ordering = ('ID',)
-        verbose_name = "فاکتور"
-        verbose_name_plural = "فاکتور ها"
+        verbose_name = "صورت حساب"
+        verbose_name_plural = "صورت حساب ها"
 
+    history = HistoricalRecords()
 #----------------------------------------------------------------------------------------------------------------------------------
 
 # PostBarCode (بارکد) Model
 class PostBarCode (models.Model):
-    FK_Factor=models.ForeignKey(Factor, on_delete=models.SET_NULL, verbose_name='شماره فاکتور', related_name='Factor_PostBarCode', null=True)
+    FK_Factor=models.ForeignKey(Factor, on_delete=models.SET_NULL, verbose_name='شماره صورت حساب', related_name='Factor_PostBarCode', null=True)
     User_Sender=models.TextField(verbose_name='فرستنده محصولات', blank=True)
     FK_Products=models.ManyToManyField(Product, verbose_name='محصول ارسال شده', related_name='Product_Sender', blank=True)
     BarCode=models.CharField(verbose_name='بارکد پستی', max_length=24)
@@ -917,7 +921,7 @@ class PostBarCode (models.Model):
     Image=models.ImageField(verbose_name='عکس ارسال سفارش', upload_to=PathAndRename('media/Pictures/Barcode/'), null=True)
 
     def __str__(self):
-        return "فاکتور : {} - بارکد پستی : {}".format(self.FK_Factor, self.BarCode)
+        return "صورت حساب : {} - بارکد پستی : {}".format(self.FK_Factor, self.BarCode)
 
     def get_send_type(self):
         SendType = {
@@ -942,13 +946,13 @@ class PostBarCode (models.Model):
         
 #----------------------------------------------------------------------------------------------------------------------------------
 
-# ManegerFactor (فاکتور مدیریت) Model
+# ManegerFactor (صورت حساب مدیریت) Model
 class ManegerFactor (models.Model):
     ID=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
-    ManegerFactorNumber=models.CharField(verbose_name='شماره فاکتور', max_length=8, unique=True, default=BuildFactorCode(8))
+    ManegerFactorNumber=models.CharField(verbose_name='شماره صورت حساب', max_length=8, unique=True, default=BuildFactorCode(8))
     FK_Sender=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='واریز کننده', related_name='User_Sender_MF', blank=True, null=True)
     FK_Receiver=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='گیرنده', related_name='User_Receiver_MF', blank=True, null=True)
-    Description=models.TextField(verbose_name='توضیحات فاکتور',max_length=350, blank=True)
+    Description=models.TextField(verbose_name='توضیحات صورت حساب',max_length=350, blank=True)
     Date=models.DateTimeField(verbose_name='تاریخ', auto_now_add=True)
     Price=models.CharField(verbose_name='مبلغ', max_length=15)
 
@@ -959,8 +963,8 @@ class ManegerFactor (models.Model):
     # Ordering With DateCreate
     class Meta:
         ordering = ('ID',)
-        verbose_name = "فاکتور مدیریت"
-        verbose_name_plural = "فاکتور های مدیریت"
+        verbose_name = "صورت حساب مدیریت"
+        verbose_name_plural = "صورت حساب های مدیریت"
  
 #----------------------------------------------------------------------------------------------------------------------------------
 
@@ -969,7 +973,7 @@ class PecOrder(models.Model):
     AdditionalData = models.CharField(verbose_name='نام و نام خانوادگی خریدار', max_length=500)
     Originator = models.CharField(verbose_name='شماره موبایل خریدار', max_length=50)
     Amount = models.IntegerField(verbose_name='هزینه خرید')
-    FactorNumber = models.CharField(verbose_name='شماره فاکتور', max_length=10, default='0')
+    FactorNumber = models.CharField(verbose_name='شماره صورت حساب', max_length=10, default='0')
     Message = models.CharField(verbose_name='پیام پارسیان', max_length=127, null=True, blank=True)
     Status = models.IntegerField(verbose_name='کد وضعیت', null=True, blank=True)
     Token = models.BigIntegerField(verbose_name='توکن', null=True, blank=True)

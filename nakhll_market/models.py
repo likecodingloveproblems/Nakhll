@@ -23,7 +23,7 @@ import datetime
 from django.utils.translation import ugettext_lazy as _
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
-
+from simple_history.models import HistoricalRecords
 
 
 # Rename Method
@@ -658,6 +658,7 @@ class Shop(models.Model):
         verbose_name = "حجره"
         verbose_name_plural = "حجره ها"
 
+    history = HistoricalRecords()
 #----------------------------------------------------------------------------------------------------------------------------------
 
 # BankAccount (حساب بانکی) Model
@@ -841,13 +842,14 @@ class Product (models.Model):
     FK_Category=models.ManyToManyField(Category, verbose_name='دسته بندی های محصول', related_name='ProductCategory', blank=True)
     Price=models.BigIntegerField(verbose_name='قیمت محصول')
     OldPrice=models.BigIntegerField(verbose_name='قیمت حذف محصول', default=0)
+    DisProduct=models.BigIntegerField(verbose_name='مقدار تخفیف', default=0)
     # Product Weight Info
-    Net_Weight=models.CharField(verbose_name='وزن خالص محصول (گرم)', max_length=6, default='0')
-    Weight_With_Packing=models.CharField(verbose_name='وزن محصول با بسته بندی (گرم)', max_length=6, default='0')
+    Net_Weight=models.IntegerField(verbose_name='وزن خالص محصول (گرم)', default=0)
+    Weight_With_Packing=models.IntegerField(verbose_name='وزن محصول با بسته بندی (گرم)', default=0)
     # Product Dimensions Info
-    Length_With_Packaging=models.CharField(verbose_name='طول محصول با بسته بندی (سانتی متر(', max_length=4, default='0')
-    Width_With_Packaging=models.CharField(verbose_name='عرض محصول با بسته بندی (سانتی متر(', max_length=4, default='0')
-    Height_With_Packaging=models.CharField(verbose_name='ارتفاع محصول با بسته بندی (سانتی متر(', max_length=4, default='0')
+    Length_With_Packaging=models.IntegerField(verbose_name='طول محصول با بسته بندی (سانتی متر(', default=0)
+    Width_With_Packaging=models.IntegerField(verbose_name='عرض محصول با بسته بندی (سانتی متر(', default=0)
+    Height_With_Packaging=models.IntegerField(verbose_name='ارتفاع محصول با بسته بندی (سانتی متر(', default=0)
     # Product Inventory
     Inventory=models.IntegerField(verbose_name='میزان موجودی از این کالا در انبار', default=5)
     POSTRANGE_TYPE=(
@@ -1100,6 +1102,7 @@ class Product (models.Model):
         verbose_name = "محصول"
         verbose_name_plural = "محصولات"
 
+    history = HistoricalRecords()
 #----------------------------------------------------------------------------------------------------------------------------------
 
 # AttrProduct (ویژگی محصولات) Model
@@ -1546,7 +1549,7 @@ class Profile(models.Model):
     BigCity=models.CharField(verbose_name='شهرستان', max_length=50, blank=True)
     City=models.CharField(verbose_name='شهر', max_length=50, blank=True)
     Location=models.CharField(verbose_name='موقعیت مکانی', max_length=150, blank=True, help_text='طول و عرض جغرافیایی')
-    BrithDay=jmodels.jDateField(verbose_name='تاریخ تولد', null=True, auto_now_add=True)
+    BrithDay=jmodels.jDateField(verbose_name='تاریخ تولد', null=True)
     FaxNumber=models.CharField(verbose_name='شماره فکس', max_length=8, blank=True)
     CityPerCode=models.CharField(verbose_name='پیش شماره', max_length=6, blank=True, default='034')
     PhoneNumber=models.CharField(verbose_name='شماره تلفن ثابت', max_length=8, blank=True)
@@ -1644,6 +1647,7 @@ class Profile(models.Model):
         verbose_name = "پروفایل"
         verbose_name_plural = "پروفایل ها "
 
+    history = HistoricalRecords()
 #----------------------------------------------------------------------------------------------------------------------------------
 
 # Survey (نظرسنجی) Model
@@ -1730,6 +1734,7 @@ class Slider(models.Model):
 
 # Option_Meta (آپشن) Model
 class Option_Meta(models.Model):
+    """ used to create nav bar items and main menu items """
     Title=models.CharField(verbose_name='عنوان', db_index=True, max_length=500)
     Description=models.TextField(verbose_name='توضیحات', blank=True)
     Value_1=models.CharField(verbose_name='مقدار - اول', max_length=500)
@@ -1904,7 +1909,7 @@ class Alert(models.Model):
         ('16','ثبت تیکت جدید'),
         ('17','ایجاد ارزش ویژگی جدید'),
         ('18','ثبت انتقاد و پیشنهاد یا شکایت'),
-        ('19','لغو فاکتور'),
+        ('19','لغو صورت حساب'),
         ('20','تایید سفارش'),
         ('21','ارسال سفارش'),
         ('22','حذف بنر حجره'),
@@ -2078,3 +2083,4 @@ class AmazingProduct(models.Model):
 
     def __str__(self):
         return self.product.Title
+

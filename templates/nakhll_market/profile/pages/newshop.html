@@ -142,18 +142,18 @@
                         </div>
                         <!-- <div class="col-md-4">
                         <label for="inputState">استان <code>*</code></label>
-                        <input value="{{This_User_Profile.State}}" type="text" placeholder="نام استان خود را وارد نمایید..."
+                        <input value="{{request.user.User_Profile.State}}" type="text" placeholder="نام استان خود را وارد نمایید..."
                             name="Factor_State" class="form-control" id="inputState" required>
                     </div>
                     <div class="col-md-4">
                         <label for="inputBigCity">شهرستان <code>*</code></label>
-                        <input value="{{This_User_Profile.BigCity}}" type="text"
+                        <input value="{{request.user.User_Profile.BigCity}}" type="text"
                             placeholder="نام شهرستان خود را وارد نمایید..." name="Factor_BigCity" class="form-control"
                             id="inputBigCity" required>
                     </div>
                     <div class="col-md-4">
                         <label for="inputCity">شهر <code>*</code></label>
-                        <input value="{{This_User_Profile.City}}" type="text" placeholder="نام شهر خود را وارد نمایید..."
+                        <input value="{{request.user.User_Profile.City}}" type="text" placeholder="نام شهر خود را وارد نمایید..."
                             name="Factor_City" class="form-control" id="inputCity" required>
                     </div> -->
                     </div>
@@ -163,7 +163,7 @@
                             <label for="inputPhoneNumber">تلفن ثابت <code>*</code></label>
                             <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
                                 data-placement="left" title="شماره تلفن ثابت شما باید 8 رقم باشد."></i>
-                            <input value="{{This_User_Profile.PhoneNumber}}" type="number" placeholder="98****33"
+                            <input value="{{request.user.User_Profile.PhoneNumber}}" type="number" placeholder="98****33"
                                 name="Factor_PhoneNumber" pattern="[0-9]{8,8}" class="form-control"
                                 id="inputPhoneNumber">
                         </div>
@@ -172,7 +172,7 @@
                             <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
                                 data-placement="left"
                                 title="پیش شماره شهر خود را به صورت اعداد وارد نمایید - پیش شماره شهر باید حداقل 3 رقم باشد."></i>
-                            <input value="{{This_User_Profile.CityPerCode}}" type="number" placeholder="مثال : 034"
+                            <input value="{{request.user.User_Profile.CityPerCode}}" type="number" placeholder="مثال : 034"
                                 name="Factor_CityPerCode" pattern="[0-9]{3,3}" class="form-control"
                                 id="inputCityPerCode">
                         </div>
@@ -183,7 +183,7 @@
                             <label for="inputAddress">آدرس <code>*</code></label>
                             <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
                                 data-placement="left" title="آدرس محل سکونت خود را وارد نمائید."></i>
-                            <input value="{{This_User_Profile.Address}}" type="text"
+                            <input value="{{request.user.User_Profile.Address}}" type="text"
                                 placeholder="آدرس محل سکونت خود را وارد نمائید..." name="Factor_Address"
                                 class="form-control" id="inputAddress" required>
                         </div>
@@ -193,7 +193,7 @@
                             <label for="inputZipCode">کد پستی <code>*</code></label>
                             <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
                                 data-placement="left" title="کد پستی شما باید 10 رقم باشد."></i>
-                            <input required value="{{This_User_Profile.ZipCode}}" type="number" placeholder="999*****76"
+                            <input required value="{{request.user.User_Profile.ZipCode}}" type="number" placeholder="999*****76"
                                 name="Factor_ZipCode" pattern="[0-9]{10,10}" class="form-control" id="inputZipCode">
                         </div>
                         <div class="col-md-6 prof-info-shop-btn">
@@ -238,7 +238,7 @@
                         <a href="/profile/factor/">
                             <button>
                                 <i class="fas fa-file-invoice-dollar"></i>
-                                <h5>فاکتور ها</h5>
+                                <h5>صورت حساب ها</h5>
                             </button>
                         </a>
 
@@ -368,7 +368,7 @@
                                             data-placement="left"
                                             title="عنوان باید فارسی و حداکثر 70 کاراکتر باشد."></i>
                                         <input type="text" name="Shop_Title" class="form-control" id="inputshop_title"
-                                            minlength="2" maxlength="70" required>
+                                            minlength="2" maxlength="70" required placeholder="نام حجره خود را وارد نمایید">
                                     </div>
 
                                     <div class="form-group col-md-6">
@@ -377,7 +377,7 @@
                                             data-placement="left"
                                             title='شناسه حجره باید شامل حروف انگلیسی کوچک، خط تیره ("-") و بدون فاصله باشد.'></i>
                                         <input type="text" name="Shop_Slug" class="form-control" id="inputslugshop"
-                                            pattern="[a-z0-9\-_]{2,}">
+                                            pattern="[a-z0-9\-_]{2,}" placeholder="لینک حجره خود را به انگلیسی وارد نمایید">
                                     </div>
                                 </div>
                                 <div class="form-row">
@@ -389,7 +389,7 @@
                                             <input type="file" class="sr-only input-pic-file" id="input" name="image"accept="image/*">
                                             <input type="text"
                                                 class="form-control choose-pic-input-name choose-pic-input-hojre"
-                                                disabled placeholder="آپلود عکس">
+                                                disabled placeholder="عکس حجره خود را بارگذاری نمایید">
                                         </label>
                                         <br>
                                         <img class="rounded cropper-rounded " id="avatar"
@@ -474,7 +474,7 @@
                                         <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
                                             data-placement="left" title="حجره خود را به صورت کامل معرفی نمایید."></i>
                                         <textarea class="form-control" name="Shop_Des" id="inputshopdes"
-                                            rows="2"></textarea>
+                                            rows="2" placeholder="اطلاعات حجره خود را وارد نمایید"></textarea>
                                     </div>
                                 </div>
                                 <br>
@@ -1167,7 +1167,7 @@
 
         $modal.on('shown.bs.modal', function () {
             cropper = new Cropper(image, {
-                aspectRatio: 1,
+                aspectRatio: 129/40,
                 viewMode: 3,
             });
         }).on('hidden.bs.modal', function () {
@@ -1187,8 +1187,8 @@
 
             if (cropper) {
                 canvas = cropper.getCroppedCanvas({
-                    width: 900,
-                    height: 900,
+                    width: 1032,
+                    height: 320,
                 });
                 $modal.modal('hide');
 
@@ -1234,7 +1234,7 @@
                                 $(".progress-bar").width('0%').attr('aria-valuenow', 0).text('0%');
                                 $("#loaderDiv3").hide();
                                 if (json.status) {
-                                    $(".product-gallery-pics-banner").prepend('<div val="' + json.id + '" class="col-xl-3 col-lg-3 col-md-4 col-sm-6 prod-gallery-pic-box newImage">' +
+                                    $(".product-gallery-pics-banner").prepend('<div val="' + json.id + '" class="col-xl-6 col-lg-3 col-md-4 col-sm-6 prod-gallery-pic-box newImage">' +
                                         '<div class="box-gallery-img-section gallery-img-show style="width:100%" ">' +
                                         '<img src="' + canvas.toDataURL() + '" alt="بنر حجره" style="width:100%">' +
                                         '<div class="item-gallery-option">' +
@@ -1559,9 +1559,9 @@
             }
         )
     }
-    var userprofState = '{{This_User_Profile.State}}';
-    var userprofBigCity = '{{This_User_Profile.BigCity}}';
-    var userprofCity = '{{This_User_Profile.City}}';
+    var userprofState = '{{request.user.User_Profile.State}}';
+    var userprofBigCity = '{{request.user.User_Profile.BigCity}}';
+    var userprofCity = '{{request.user.User_Profile.City}}';
     var selectedProfState;
     var selectedProfBigCity;
     // var selectedProfCity;
@@ -1913,7 +1913,7 @@
                                 $("#loaderDiv3").hide();
                                 if (true) {
                                     $(".newImage").remove();
-                                    $(".product-gallery-pics").prepend(listGallery.map((item, index)=> '<div val="' + index + '" class="col-xl-3 col-lg-3 col-md-4 col-sm-6 prod-gallery-pic-box newImage" style="opacity: 1">' +
+                                    $(".product-gallery-pics").prepend(listGallery.map((item, index)=> '<div val="' + index + '" class="col-xl-6 col-lg-6 col-md-4 col-sm-6 prod-gallery-pic-box newImage" style="opacity: 1">' +
                                         '<div class="box-gallery-img-section gallery-img-show">' +
                                         '<img src="' + item.img + '" alt="عکس محصول" style="width:100%;" >' +
                                         '<div class="item-gallery-option">' +

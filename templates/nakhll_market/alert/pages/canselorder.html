@@ -48,7 +48,7 @@
                         <a href="/profile/factor/">
                             <button>
                                 <i class="fas fa-file-invoice-dollar"></i>
-                                <h5>فاکتور ها</h5>
+                                <h5>صورت حساب ها</h5>
                             </button>
                         </a>
 
@@ -93,7 +93,7 @@
                             <h4>لغو سفارش</h4>
                             <div class="hr-line-alert"></div>
                             <div class="alert alert-danger" role="alert">
-                                <i class="fas fa-exclamation-triangle float-right warning-back-browser-submit-product"></i> <b>هشدار!</b> حجره دار این فاکتور  را لغو کرده است، بعد از تایید برای مشتری پیامک مبتنی بر لغو فاکتور ارسال می گردد. شماره موبایل و نام مشتری در صورت لزوم در اختیار شما قرار داده شده است.
+                                <i class="fas fa-exclamation-triangle float-right warning-back-browser-submit-product"></i> <b>هشدار!</b> حجره دار این صورت حساب  را لغو کرده است، بعد از تایید برای مشتری پیامک مبتنی بر لغو صورت حساب ارسال می گردد. شماره موبایل و نام مشتری در صورت لزوم در اختیار شما قرار داده شده است.
                             </div>
                             <h6>محصولات لغو شده</h6>
                             <div class="col-xl-12 col-12">
@@ -125,11 +125,11 @@
 
                             <div class="form-row">
                                 <div class="form-group col-md-6">
-                                    <label for="inputUntAttribute">شماره فاکتور</label>
+                                    <label for="inputUntAttribute">شماره صورت حساب</label>
                                     <fieldset disabled>
                                         <input type="text" name="UnitAttribute" value="{{factor.FactorNumber}}" class="form-control" id="inputUntAttribute">
                                     </fieldset>
-                                    <a data-toggle="modal" data-target=".{{factor.FactorNumber}}"><small>برای مشاهده فاکتور اینجا <span class="Riyal button-alert">کلیک</span> نمایید.</small></a>
+                                    <a data-toggle="modal" data-target=".{{factor.FactorNumber}}"><small>برای مشاهده صورت حساب اینجا <span class="Riyal button-alert">کلیک</span> نمایید.</small></a>
                                 </div>
 
                                 <div class="form-group col-md-6">
@@ -174,7 +174,7 @@
                         <div class="modal-content">
                             
                             <div class="modal-header">
-                                <h5 class="modal-title">شماره فاکتور {{factor.FactorNumber}}</h5>
+                                <h5 class="modal-title">شماره صورت حساب {{factor.FactorNumber}}</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 </button>
                             </div>
@@ -190,7 +190,7 @@
                                             {{ factor.get_factor_status }}
                                         </h5>
                                         <h6>زمان ثبت: <span> {{factor.OrderDate|jformat:'%H:%M - %Y/%m/%d'}}</span></h6>
-                                        <h5>شماره فاکتور : {{factor.FactorNumber}}</h5>
+                                        <h5>شماره صورت حساب : {{factor.FactorNumber}}</h5>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -214,7 +214,7 @@
                                 <div class="row">
                                     <div class="col-xl-12 col-12">
                                         <br>
-                                        <h4> محصولات فاکتور:</h4>
+                                        <h4> محصولات صورت حساب:</h4>
                                     </div>
 
                                     <div class="col-xl-12 col-12">

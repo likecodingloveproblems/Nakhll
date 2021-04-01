@@ -3,8 +3,12 @@ from django.contrib import admin
 from django.http import HttpRequest, HttpResponse
 from .models import  AmazingProduct, Tag, Market, MarketBanner, SubMarket, SubMarketBanner,BankAccount, Category ,PostRange, Shop, ShopBanner, ShopMovie, Attribute, AttrPrice, AttrProduct, Product, ProductBanner, ProductMovie, Comment, Profile, Review, Survey, Slider, Option_Meta, Message, Newsletters, Pages ,Alert ,Field, User_Message_Status, UserPoint
 from django.contrib import admin
+from django.contrib.auth.models import Permission
 
 admin.site.site_header = 'مدیریت بازار نخل '
+
+# enable django permission setting in admin panel to define custom permissions
+admin.site.register(Permission)
 
 #tag admin panel
 @admin.register(Tag)
