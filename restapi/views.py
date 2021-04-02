@@ -798,7 +798,7 @@ def create_new_shop(request):
             for item in Shop_SubMarket_test:
                 shop.FK_SubMarket.add(SubMarket.objects.get(Slug = item))
             shop.save()
-            Alert.objects.create(Part = '2', FK_User = request.user, Slug = shop.ID)
+            #Alert.objects.create(Part = '2', FK_User = request.user, Slug = shop.ID)
             return JsonResponse({'res' : 'تغییرات شما ثبت گردیده و پس از تایید کارشناسان اعمال می گردد!' , 'id' : shop.ID} , status = HTTP_201_CREATED)
         except:
             return JsonResponse({'res' : 'خطایی رخ داده است!'} , status = HTTP_400_BAD_REQUEST)
@@ -1029,7 +1029,7 @@ def create_new_product(request):
             # Save Data    
             this_product.save()
             # Set Alert
-            Alert.objects.create(FK_User = request.user, Part = '6', Slug = this_product.ID)
+            #Alert.objects.create(FK_User = request.user, Part = '6', Slug = this_product.ID)
 
             return JsonResponse({'res' : 'محصول جدید ایجاد شد!' , 'id' : this_product.ID}, status = HTTP_201_CREATED)   
         else:
@@ -1306,7 +1306,7 @@ def delete_shop_banner(request):
             banner.Publish = False
             banner.save()
             # Set Alert
-            Alert.objects.create(Part = '22', FK_User = request.user, Slug = banner.id)
+            #Alert.objects.create(Part = '22', FK_User = request.user, Slug = banner.id)
             
             return JsonResponse({'res' : 'بنر حذف شد...'}, status = HTTP_200_OK)
         else:
@@ -1614,7 +1614,7 @@ def add_product_attribute(request):
                     this_attribute = Attribute.objects.get(id = Attribute_id)
                     attrproduct = AttrProduct.objects.create(FK_Product = this_product, FK_Attribute = this_attribute, Value = Value)
                     # Set Alert
-                    Alert.objects.create(FK_User = request.user, Part = '11', Slug = attrproduct.id)
+                    #Alert.objects.create(FK_User = request.user, Part = '11', Slug = attrproduct.id)
 
                     return JsonResponse({'res' : 'ویژگی ثبت شد!'}, status = HTTP_201_CREATED)
                 else:
@@ -1649,7 +1649,7 @@ def add_new_attribute(request):
         try:
             if (Attribute_Title != '') and (Attribute_Value != '') and not (Attribute.objects.filter(Title = Attribute_Title, Unit = Attribute_Value).exists()):
                 this_attribute = Attribute.objects.create(Title = Attribute_Title, Unit = Attribute_Value)
-                Alert.objects.create(FK_User = request.user, Part = '10', Slug = this_attribute.id)
+                #Alert.objects.create(FK_User = request.user, Part = '10', Slug = this_attribute.id)
                 return JsonResponse({'res' : 'True'}, status = HTTP_201_CREATED)
             else:
                 return JsonResponse({'res' : 'False'}, status = HTTP_400_BAD_REQUEST)
@@ -1673,7 +1673,7 @@ def delete_product_attribute(request):
                 this_attrProduct.Available = False
                 this_attrProduct.save()
                 # Set Alert
-                Alert.objects.create(Part = '24', FK_User = request.user, Slug = this_attrProduct.id)
+                #Alert.objects.create(Part = '24', FK_User = request.user, Slug = this_attrProduct.id)
                 return JsonResponse({'res' : 'ویژگی محصول شما حذف شد'}, status = HTTP_200_OK)
             else:
                 return JsonResponse({'res' : 'محصول و حجره برای شما ثبت نشده است...'}, status = HTTP_404_NOT_FOUND)
@@ -1816,7 +1816,7 @@ def add_product_price_attribute(request):
                         this_price_attribute = AttrPrice.objects.create(FK_Product = this_product, Value = AttrPrice_Value, ExtraPrice = AttrPrice_Exp, Unit = AttrPrice_Unit, Publish = False)
                     else:
                         this_price_attribute = AttrPrice.objects.create(FK_Product = this_product, Value = AttrPrice_Value, ExtraPrice = AttrPrice_Exp, Unit = AttrPrice_Unit, Description = AttrPrice_Des, Publish = False)
-                    Alert.objects.create(Part = '17', FK_User = request.user, Slug = this_price_attribute.id)
+                    #Alert.objects.create(Part = '17', FK_User = request.user, Slug = this_price_attribute.id)
                     return JsonResponse({'res' : 'True'}, status = HTTP_201_CREATED)
                 else:
                     return JsonResponse({'res' : 'عنوان - واحد - قسمت اضافه اجباری - این ارزش ویژگی موجود است...'}, status = HTTP_400_BAD_REQUEST)
@@ -1848,7 +1848,7 @@ def delete_product_price_attribute(request):
                 this_price_attribute.Publish = False
                 this_price_attribute.save()
                 # Set Alert
-                Alert.objects.create(Part = '25', FK_User = request.user, Slug = this_price_attribute.id)
+                #Alert.objects.create(Part = '25', FK_User = request.user, Slug = this_price_attribute.id)
                 return JsonResponse({'res' : 'حذف شد...'}, status = HTTP_200_OK)
             except Exception as e:
                 return JsonResponse({'res' :str(e)}, status = HTTP_400_BAD_REQUEST)
@@ -1906,7 +1906,7 @@ def add_product_banner(request):
                 if Banner_Image != '':
                     this_banner = ProductBanner.objects.create(FK_Product = this_product, Image = Banner_Image)
                     # Set Alert
-                    Alert.objects.create(FK_User = request.user, Part = '8', Slug = this_banner.id)
+                    #Alert.objects.create(FK_User = request.user, Part = '8', Slug = this_banner.id)
                     return JsonResponse({'res' : 'ثبت شد...'}, status = HTTP_200_OK)
                 else:
                     return JsonResponse({'res' : 'فیلد عکس نمی تواند خالی باشد...'}, status = HTTP_400_BAD_REQUEST)
@@ -1935,7 +1935,7 @@ def delete_product_banner(request):
             this_banner.Publish = False
             this_banner.save()
             # Set Alert
-            Alert.objects.create(FK_User = request.user, Part = '23', Slug = this_banner.id)
+            #Alert.objects.create(FK_User = request.user, Part = '23', Slug = this_banner.id)
             return JsonResponse({'res' : 'حذف شد...'}, status = HTTP_200_OK)
         else:
             return JsonResponse({'res' : 'عدم دسترسی...'}, status = HTTP_404_NOT_FOUND)
@@ -2038,7 +2038,7 @@ def barcodepost_for_factor(request):
                 # Add Barcode
                 barcode = PostBarCode.objects.create(FK_Factor = Factor.objects.get(ID = Factor_id), User_Sender = User_Send, PostPrice = Price_Send, BarCode = Barcode_Send)
                 # Set Alert
-                Alert.objects.create(Part = '21', FK_User = request.user, Slug = barcode.id)
+                #Alert.objects.create(Part = '21', FK_User = request.user, Slug = barcode.id)
                 return JsonResponse({'res' : 'بارکدپستی ثبت شد...'}, status = HTTP_200_OK)
             else:
                 return JsonResponse({'res' : 'این اطلاعات تکراری می باشد...'}, status = HTTP_400_BAD_REQUEST)
@@ -2095,7 +2095,7 @@ def accept_factor_product(request):
         if Alert.objects.filter(Part = '20', FK_User = request.user, Slug = Factor_id).exists():
             return JsonResponse({'res' : 'شما قبلا این صورت حساب را ثبت کرده اید'} , status = HTTP_400_BAD_REQUEST)
         else:
-            Alert.objects.create(Part = '20', FK_User = request.user, Slug = Factor_id)
+            #Alert.objects.create(Part = '20', FK_User = request.user, Slug = Factor_id)
             return JsonResponse({'res' : 'صورت حساب با موفقیت، تایید شد.'} , status = HTTP_200_OK)
     
     except Exception as e:
@@ -2147,7 +2147,7 @@ def cancel_factor_product(request):
         if Alert.objects.filter(Part = '13', FK_User = request.user, Slug = factor.ID).exists():
             return JsonResponse({'res' : 'شما قبلا این صورت حساب را ثبت کرده اید!'} , status = HTTP_400_BAD_REQUEST)
         else:
-            Alert.objects.create(Part = '13', FK_User = request.user, Slug = factor.ID)
+            #Alert.objects.create(Part = '13', FK_User = request.user, Slug = factor.ID)
             return JsonResponse({'res' : 'صورت حساب با موفقیت، لغو شد.'} , status = HTTP_200_OK)
     except Exception as e:
         return JsonResponse({'res' :str(e)}, status = HTTP_400_BAD_REQUEST)
@@ -2331,7 +2331,7 @@ def add_check_out(request):
             except :
                 Description = ''
 
-            Alert.objects.create(Part = '31', FK_User = request.user, Slug = Description)
+            #Alert.objects.create(Part = '31', FK_User = request.user, Slug = Description)
             return JsonResponse({'res' : 'ثبت شد...'}, status = HTTP_200_OK)
         else:
             return JsonResponse({'res' : 'عدم دسترسی...'}, status = HTTP_200_OK)

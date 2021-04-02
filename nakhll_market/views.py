@@ -1822,7 +1822,7 @@ def AddNewCommentInProduct(request, this_product):
                 else:
 
                     comment = Comment.objects.create(Type = CommentType, FK_UserAdder = request.user, FK_Product = CommentProduct, Description = CommentDescription)
-                    Alert.objects.create(Part = '14', FK_User = request.user, Slug = comment.id)
+                    #Alert.objects.create(Part = '14', FK_User = request.user, Slug = comment.id)
 
                     return redirect('nakhll_market:Re_ProductsDetail',
                     shop_slug = comment.FK_Product.FK_Shop.Slug,
@@ -1866,7 +1866,7 @@ def AddReplayCommentInProduct(request, id):
 
                 else:
                     comment = Comment.objects.create(FK_UserAdder = request.user, FK_Product = CommentProduct, Description = CommentDescription, FK_Pater = father_comment)
-                    Alert.objects.create(Part = '14', FK_User = request.user, Slug = comment.id)
+                    #Alert.objects.create(Part = '14', FK_User = request.user, Slug = comment.id)
 
                     return redirect('nakhll_market:Re_ProductsDetail',
                     shop_slug = comment.FK_Product.FK_Shop.Slug,
@@ -1923,7 +1923,7 @@ def AddNewCommentInShop(request, this_shop):
                 else:
 
                     comment = ShopComment.objects.create(Type = CommentType, FK_UserAdder = request.user, FK_Shop = CommentShop, Description = CommentDescription)
-                    Alert.objects.create(Part = '30', FK_User = request.user, Slug = comment.id)
+                    #Alert.objects.create(Part = '30', FK_User = request.user, Slug = comment.id)
 
                     return redirect('nakhll_market:Re_ShopsDetail',
                     shop_slug = CommentShop.Slug,
@@ -1960,7 +1960,7 @@ def AddReplayCommentInShop(request, id):
 
                 else:
                     comment = ShopComment.objects.create(FK_UserAdder = request.user, FK_Shop = CommentShop, Description = CommentDescription, FK_Pater = father_comment)
-                    Alert.objects.create(Part = '30', FK_User = request.user, Slug = comment.id)
+                    #Alert.objects.create(Part = '30', FK_User = request.user, Slug = comment.id)
 
                     return redirect('nakhll_market:Re_ShopsDetail',
                     shop_slug = CommentShop.Slug,
@@ -2044,7 +2044,7 @@ def AddNewReviewInProduct(request, this_product):
                                 review.FK_NegativeNote.add(New_Note)
 
                     # Set Alert
-                    Alert.objects.create(Part = '15', FK_User = request.user, Slug = review.id)
+                    #Alert.objects.create(Part = '15', FK_User = request.user, Slug = review.id)
                     # -----------------------------------------------------------------------------------------
                     return redirect('nakhll_market:Re_ProductsDetail',
                     shop_slug = profileduct.FK_Shop.Slug,

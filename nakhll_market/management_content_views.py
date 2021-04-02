@@ -1041,7 +1041,7 @@ def Add_New_Full_Shop(request, msg = None):
                             for item in submarkets:
                                 sub = SubMarket.objects.get(Title = item)
                                 shop.FK_SubMarket.add(sub)
-                            Alert.objects.create(Part = '2', FK_User = request.user, Slug = shop.ID, Seen = True, Status = True, FK_Staff = request.user)
+                            #Alert.objects.create(Part = '2', FK_User = request.user, Slug = shop.ID, Seen = True, Status = True, FK_Staff = request.user)
 
                             return redirect('nakhll_market:Show_Shop_Info',
                             id = shop.ID)
@@ -1052,7 +1052,7 @@ def Add_New_Full_Shop(request, msg = None):
                             for item in submarkets:
                                 sub = SubMarket.objects.get(Title = item)
                                 shop.FK_SubMarket.add(sub)
-                            Alert.objects.create(Part = '2', FK_User = request.user, Slug = shop.ID, Seen = True, Status = True, FK_Staff = request.user)
+                            #Alert.objects.create(Part = '2', FK_User = request.user, Slug = shop.ID, Seen = True, Status = True, FK_Staff = request.user)
              
                             return redirect('nakhll_market:Show_Shop_Info',
                             id = shop.ID)
@@ -1271,13 +1271,13 @@ def Add_New_Shop_Banner(request, id, msg = None):
                                                         Available = bool(context['Banner_Seen']), 
                                                         Publish = bool(context['Banner_Status']))
                 # Set New Alert
-                Alert.objects.create(Part = '4', 
-                                    FK_User = request.user, 
-                                    Slug = thisbanner.id, 
-                                    Seen = True, 
-                                    Status = True, 
-                                    FK_Staff = request.user)
-                # Save Data
+                # Alert.objects.create(Part = '4', 
+                #                     FK_User = request.user, 
+                #                     Slug = thisbanner.id, 
+                #                     Seen = True, 
+                #                     Status = True, 
+                #                     FK_Staff = request.user)
+                #Save Data
                 if (context['Banner_URL'] != ''):
                     thisbanner.URL = context['Banner_URL']
                     thisbanner.save()
@@ -1401,7 +1401,7 @@ def Add_New_Shop_Product(request, id):
 
                         product.save()
                                                     
-                        Alert.objects.create(Part = '6', FK_User = request.user, Slug = product.ID, Seen = True, Status = True, FK_Staff = request.user)
+                        #Alert.objects.create(Part = '6', FK_User = request.user, Slug = product.ID, Seen = True, Status = True, FK_Staff = request.user)
 
                         return redirect('nakhll_market:Show_Product_Info',
                         Product_Slug = product.Slug)
@@ -1729,7 +1729,7 @@ def Add_New_Product_Banner(request, id):
                 # Create New Object
                 thisbanner = ProductBanner.objects.create(FK_Product = this_product, Title = Banner_Title, Image = Banner_Image, Available = bool(Banner_Seen), Publish = bool(Banner_Status))
                 # Set New Alert
-                Alert.objects.create(Part = '8', FK_User = request.user, Slug = thisbanner.id, Seen = True, Status = True, FK_Staff = request.user)
+                #Alert.objects.create(Part = '8', FK_User = request.user, Slug = thisbanner.id, Seen = True, Status = True, FK_Staff = request.user)
 
                 return redirect('nakhll_market:Show_Product_Info',
                 Product_Slug = this_product.Slug)
@@ -1776,7 +1776,7 @@ def Add_New_Product_Attribute(request, id):
                 attrtilte = AttrTitle.split('|')
                 attrproduct = AttrProduct.objects.create(FK_Product = this_product, FK_Attribute = Attribute.objects.get(Title = attrtilte[0], Unit = attrtilte[1]), Value = AttrValue)
 
-                Alert.objects.create(Part = '11', FK_User = request.user, Slug = attrproduct.id, Seen = True, Status = True, FK_Staff = request.user)
+                #Alert.objects.create(Part = '11', FK_User = request.user, Slug = attrproduct.id, Seen = True, Status = True, FK_Staff = request.user)
 
                 return redirect('nakhll_market:Add_New_Product_Attribute',
                 id = this_product.ID)
@@ -1840,7 +1840,7 @@ def Add_New_Product_AttrPrice(request, id):
                         attrprice.Description = AttrPrice_Des
                         attrprice.save()
 
-                    Alert.objects.create(Part = '17', FK_User = request.user, Slug = attrprice.id, Seen = True, Status = True, FK_Staff = request.user)
+                    #Alert.objects.create(Part = '17', FK_User = request.user, Slug = attrprice.id, Seen = True, Status = True, FK_Staff = request.user)
 
             else:
                 context['ShowAlart'] = True

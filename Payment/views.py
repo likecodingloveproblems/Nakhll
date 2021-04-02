@@ -1029,8 +1029,8 @@ def accept_factor_product(request, ID):
         if Alert.objects.filter(Part = '20', FK_User = request.user, Slug = ID).exists():
             return redirect("Profile:Factor")
         else:
-            Alert.objects.create(Part = '20', FK_User = request.user, Slug = ID)
-        return redirect("Profile:Factor")
+            #Alert.objects.create(Part = '20', FK_User = request.user, Slug = ID)
+            return redirect("Profile:Factor")
     else:
         return redirect("auth:login")
 
@@ -1066,8 +1066,8 @@ def cansel_factor_product (request, ID):
         if Alert.objects.filter(Part = '13', FK_User = request.user, Slug = this_factor.ID, Seen = False).exists():
             return redirect("Profile:Factor")
         else:
-            Alert.objects.create(Part = '13', FK_User = request.user, Slug = this_factor.ID)
-        return redirect("Profile:Factor")
+            #Alert.objects.create(Part = '13', FK_User = request.user, Slug = this_factor.ID)
+            return redirect("Profile:Factor")
     else:
         return redirect("auth:login")
 
@@ -1124,7 +1124,8 @@ def send_factor(request, ID, status = None, msg = None):
                     if Alert.objects.filter(Part = '21', FK_User = request.user, Slug = barcode.id).exists():
                         return redirect('nakhll_market:Factor')
                     else:
-                        Alert.objects.create(Part = '21', FK_User = request.user, Slug = barcode.id)
+                        pass
+                        #Alert.objects.create(Part = '21', FK_User = request.user, Slug = barcode.id)
                 else:
                     return redirect('Payment:re_send_factor',
                     ID = ID,

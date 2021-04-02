@@ -120,7 +120,7 @@ def create_new_shop(request):
             this_shop.FK_SubMarket.add(SubMarket.objects.get(ID = item))
         this_shop.save()
         # Set Alert
-        Alert.objects.create(Part = '2', FK_User = request.user, Slug = this_shop.ID)
+        #Alert.objects.create(Part = '2', FK_User = request.user, Slug = this_shop.ID)
         return JsonResponse({'title' : this_shop.Title, 'ID' : this_shop.ID}, status = HTTP_201_CREATED)
     except Exception as e:
         try:
@@ -159,7 +159,7 @@ def add_shop_gallery(request):
             # add new shop gallery 
             this_shop_gallery = ShopBanner.objects.create(FK_Shop = this_shop, Image = gallery_image)
             # set alert
-            Alert.objects.create(FK_User = request.user, Part = '4', Slug = this_shop_gallery.id)
+            #Alert.objects.create(FK_User = request.user, Part = '4', Slug = this_shop_gallery.id)
 
             return JsonResponse({'status' : True, 'id' : this_shop_gallery.id, 'image' : str(this_shop_gallery.Image.url)}, status = HTTP_200_OK)
         else:
@@ -237,8 +237,8 @@ def delete_shop_gallery(request):
                 this_shop_gallery.Publish = False
                 this_shop_gallery.save()
                 # set alert
-                if not Alert.objects.filter(FK_User = request.user, Part = '22', Slug = this_shop_gallery.id).exists():
-                    Alert.objects.create(FK_User = request.user, Part = '22', Slug = this_shop_gallery.id)
+                #if not Alert.objects.filter(FK_User = request.user, Part = '22', Slug = this_shop_gallery.id).exists():
+                    #Alert.objects.create(FK_User = request.user, Part = '22', Slug = this_shop_gallery.id)
                 
                 return JsonResponse({'status' : True}, status = HTTP_200_OK)
             else:
@@ -439,7 +439,7 @@ def create_new_product(request):
                 this_product.Inventory = inventory
             this_product.save()
             # Set Alert
-            Alert.objects.create(Part = '6', FK_User = request.user, Slug = this_product.ID)
+            #Alert.objects.create(Part = '6', FK_User = request.user, Slug = this_product.ID)
             return JsonResponse({'title' : this_product.Title, 'id' : this_product.ID}, status = HTTP_201_CREATED)
         else:
             return JsonResponse({'res' : 'You do not have access to do this'}, status = HTTP_403_FORBIDDEN)
@@ -570,8 +570,8 @@ def add_product_attribute(request):
             if not AttrProduct.objects.filter(FK_Product = this_product, FK_Attribute = this_attribute).exists():
                 this_product_attribute = AttrProduct.objects.create(FK_Product = this_product, FK_Attribute = this_attribute, Value = value)
                 # set alert
-                if not Alert.objects.filter(FK_User = request.user, Part = '11', Slug = this_product_attribute.id).exists():
-                    Alert.objects.create(FK_User = request.user, Part = '11', Slug = this_product_attribute.id)
+                #if not Alert.objects.filter(FK_User = request.user, Part = '11', Slug = this_product_attribute.id).exists():
+                    #Alert.objects.create(FK_User = request.user, Part = '11', Slug = this_product_attribute.id)
 
                 return JsonResponse({'status' : True, 'id' : this_product_attribute.id}, status = HTTP_200_OK)
             else:
@@ -611,8 +611,8 @@ def delete_product_attribute(request):
                     this_product_attribute.Available = False
                     this_product_attribute.save()
                     # set alert
-                    if not Alert.objects.filter(Part = '24', FK_User = request.user, Slug = this_product_attribute.id).exists():
-                        Alert.objects.create(Part = '24', FK_User = request.user, Slug = this_product_attribute.id)
+                   # if not Alert.objects.filter(Part = '24', FK_User = request.user, Slug = this_product_attribute.id).exists():
+                        #Alert.objects.create(Part = '24', FK_User = request.user, Slug = this_product_attribute.id)
                     
                     return JsonResponse({'status' : True}, status = HTTP_200_OK)
                 else:
@@ -685,7 +685,7 @@ def add_product_gallery(request):
             # add new product gallery 
             this_product_gallery = ProductBanner.objects.create(FK_Product = this_product, Image = gallery_image)
             # set alert
-            Alert.objects.create(FK_User = request.user, Part = '8', Slug = this_product_gallery.id)
+            #Alert.objects.create(FK_User = request.user, Part = '8', Slug = this_product_gallery.id)
 
             return JsonResponse({'status' : True, 'id' : this_product_gallery.id, 'image' : str(this_product_gallery.Image_thumbnail_url())}, status = HTTP_200_OK)
         else:
@@ -763,8 +763,8 @@ def delete_product_gallery(request):
                 this_product_gallery.Publish = False
                 this_product_gallery.save()
                 # set alert
-                if not Alert.objects.filter(FK_User = request.user, Part = '23', Slug = this_product_gallery.id).exists():
-                    Alert.objects.create(FK_User = request.user, Part = '23', Slug = this_product_gallery.id)
+                #if not Alert.objects.filter(FK_User = request.user, Part = '23', Slug = this_product_gallery.id).exists():
+                    #Alert.objects.create(FK_User = request.user, Part = '23', Slug = this_product_gallery.id)
                 
                 return JsonResponse({'status' : True}, status = HTTP_200_OK)
             else:
@@ -812,7 +812,7 @@ def add_optional_attribute(request):
                 # add this optional attribute to product
                 this_product.FK_OptinalAttribute.add(this_optional_attribute)
                 # set alert
-                Alert.objects.create(Part = '32', FK_User = request.user, Slug = this_optional_attribute.id)
+                #Alert.objects.create(Part = '32', FK_User = request.user, Slug = this_optional_attribute.id)
                 # serializer data
                 serializer = OptionalAttributeSerializer(this_optional_attribute)
                 
@@ -930,8 +930,8 @@ def delete_optional_attribute(request):
                 this_optional_attribute.Publish = False
                 this_optional_attribute.save()
                 # set alert
-                if not Alert.objects.filter(Part = '33', FK_User = request.user, Slug = this_optional_attribute.id).exists():
-                    Alert.objects.create(Part = '33', FK_User = request.user, Slug = this_optional_attribute.id)
+                #if not Alert.objects.filter(Part = '33', FK_User = request.user, Slug = this_optional_attribute.id).exists():
+                    #Alert.objects.create(Part = '33', FK_User = request.user, Slug = this_optional_attribute.id)
                 
                 return JsonResponse({'status' : True}, status = HTTP_200_OK)
             else:

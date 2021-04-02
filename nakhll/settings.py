@@ -67,6 +67,8 @@ INSTALLED_APPS = [
     'mathfilters',
     'instagram',
     'simple_history',
+    'django_extensions',
+    'Alert',
 ]
 
 MIDDLEWARE = [

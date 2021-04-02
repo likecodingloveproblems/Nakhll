@@ -70,6 +70,7 @@ from nakhll.settings import KAVENEGAR_KEY
 
 from Iran import data
 from nakhll_market.forms import MyUserForm, ProfileForm 
+from django.views.generic.edit import CreateView , UpdateView
 # Profile Page And Sub Pages
 #---------------------------------------------------------------------------------------------------------------------------------
 
@@ -827,7 +828,7 @@ def add_new_shop(request):
                     this_shop.FK_SubMarket.add(SubMarket.objects.get(ID = item))
                 this_shop.save()
 
-                Alert.objects.create(Part = '2', FK_User = request.user, Slug = this_shop.ID)
+                #Alert.objects.create(Part = '2', FK_User = request.user, Slug = this_shop.ID)
                 # -----------------------------------------------------------------------------
                 # Get User Info
                 
@@ -1455,8 +1456,8 @@ def delete_shop_banner(request, banner_id):
         # Get This Shop Banners
         this_shop_banners = ShopBanner.objects.filter(FK_Shop = this_shop)
         # Set Alert
-        if not Alert.objects.filter(Part = '22', FK_User = request.user, Slug = banner_id).exists():
-            Alert.objects.create(Part = '22', FK_User = request.user, Slug = banner_id)
+        #if not Alert.objects.filter(Part = '22', FK_User = request.user, Slug = banner_id).exists():
+            #Alert.objects.create(Part = '22', FK_User = request.user, Slug = banner_id)
 
         context = {
             'This_User_Profile':this_profile,
@@ -1534,7 +1535,7 @@ def add_shop_banner(request, shop_slug):
                         this_banner.BannerURL = Builder_URL
                         this_banner.save()
                     # Add Shop Banner Alert
-                    Alert.objects.create(FK_User = request.user, Part = '4', Slug = this_banner.id)
+                    # Alert.objects.create(FK_User = request.user, Part = '4', Slug = this_banner.id)
                     # Go To Shop Banner List
                     # Get User Info
                     
@@ -1930,7 +1931,7 @@ def add_to_product_gallery(request, product_slug):
             if ((Banner_Title != False) and (Banner_Title != '')) and ((Banner_Image != False) and (Banner_Image != '')):
 
                 thisbanner = ProductBanner.objects.create(FK_Product = Product.objects.get(Slug = product_slug), Title = Banner_Title, Description = Banner_Description, Image = Banner_Image)
-                Alert.objects.create(FK_User = request.user, Part = '8', Slug = thisbanner.id)
+                #
 
                 if (Banner_URL != False) and (Banner_URL != ''):
                     thisbanner.URL = Banner_URL
@@ -2360,8 +2361,8 @@ def add_product_attribute(request, product_slug):
                 if not AttrProduct.objects.filter(FK_Product = this_product, FK_Attribute = this_attribute).exists():
                     attrproduct = AttrProduct.objects.create(FK_Product = this_product, FK_Attribute = this_attribute, Value = AttrValue)
 
-                    if not Alert.objects.filter(FK_User = request.user, Part = '11', Slug = attrproduct.id).exists():
-                        Alert.objects.create(FK_User = request.user, Part = '11', Slug = attrproduct.id)
+                    #if not Alert.objects.filter(FK_User = request.user, Part = '11', Slug = attrproduct.id).exists():
+                        #Alert.objects.create(FK_User = request.user, Part = '11', Slug = attrproduct.id)
 
                     
                     this_profile = Profile.objects.get(FK_User=request.user)
@@ -2488,8 +2489,8 @@ def delete_product_attribute(request, attr_id):
         this_attribute_product.Available = False
         this_attribute_product.save()
         # set alert
-        if not Alert.objects.filter(Part = '24', FK_User = request.user, Slug = this_attribute_product.id).exists():
-            Alert.objects.create(Part = '24', FK_User = request.user, Slug = this_attribute_product.id)
+        #if not Alert.objects.filter(Part = '24', FK_User = request.user, Slug = this_attribute_product.id).exists():
+            #Alert.objects.create(Part = '24', FK_User = request.user, Slug = this_attribute_product.id)
         # get this product
         this_product = this_attribute_product.FK_Product
         # get product attribute
@@ -2531,7 +2532,7 @@ def add_new_attribute(request, product_slug):
                     # create new attribute
                     this_attribute = Attribute.objects.create(Title = AttrTitle, Unit = AttrUnit)
                     # set alert
-                    Alert.objects.create(FK_User = request.user, Part = '10', Slug = this_attribute.id)
+                    #Alert.objects.create(FK_User = request.user, Part = '10', Slug = this_attribute.id)
 
                     
                     this_profile = Profile.objects.get(FK_User=request.user)
@@ -2695,8 +2696,8 @@ def delete_product_attribute_price(request, id):
         this_attrprice.Publish = False
         this_attrprice.save()
         # set alert
-        if not Alert.objects.filter(Part = '25', FK_User = request.user, Slug = this_attrprice.id).exists():
-            Alert.objects.create(Part = '25', FK_User = request.user, Slug = this_attrprice.id)
+        #if not Alert.objects.filter(Part = '25', FK_User = request.user, Slug = this_attrprice.id).exists():
+            #Alert.objects.create(Part = '25', FK_User = request.user, Slug = this_attrprice.id)
         return redirect("nakhll_market:Shop_Manager_ProductPriceAttributeList", product_slug = this_attrprice.FK_Product.Slug)
     else:
         return redirect("auth:login")
@@ -2736,7 +2737,7 @@ def add_product_attribute_price(request, product_slug):
                         attrprice.Description = AttrPrice_Des
                         attrprice.save()
                     # set alert
-                    Alert.objects.create(Part = '17', FK_User = request.user, Slug = attrprice.id)
+                    #Alert.objects.create(Part = '17', FK_User = request.user, Slug = attrprice.id)
             
                     # Get User Info
                     
@@ -3100,7 +3101,7 @@ def RepalyTicketing(request, ticket_id):
                 fatherticket.SeenStatus = '0'
                 fatherticket.save()
                 new_ticket = TicketingMessage.objects.create(Description = Tic_Title, FK_Importer = request.user, FK_Replay = fatherticket)
-                Alert.objects.create(Part = '16', FK_User = request.user, Slug = ticket_id)
+                #Alert.objects.create(Part = '16', FK_User = request.user, Slug = ticket_id)
                 # -------------------------------------------------------------------------------------------------------------------------
                 return redirect("nakhll_market:TicketinDetail", ticket_id = ticket_id)
             except Exception as e:
@@ -3108,11 +3109,39 @@ def RepalyTicketing(request, ticket_id):
     else:    
         return redirect("auth:login")
 
-# ---------------------- End Ticketin Section ----------------------
+#---------------------- End Ticketin Section ----------------------
 
-class ProfileAlert(LoginRequiredMixin, TemplateView):
-    template_name = 'nakhll_market/profile/pages/alert.html'
+#  class ProfileAlert(LoginRequiredMixin, TemplateView):
+#     template_name = 'nakhll_market/profile/pages/alert.html'
+#     redirect_field_name = 'auth:login'
+
+#     def get_context_data(self, **kwargs):
+#         request = self.request
+#         context = super().get_context_data(**kwargs)
+#         this_profile = Profile.objects.get(FK_User=request.user)
+#         this_inverntory = request.user.WalletManager.Inverntory
+#         # Get Menu Item
+#         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+#         # Get Nav Bar Menu Item
+#         navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+#         # --------------------------------------------------------------------
+#         # get all new alert
+#         alert = Alert.objects.filter(Seen = False).order_by('DateCreate')
+        
+#         context['This_User_Profile'] = this_profile
+#         context['This_User_Inverntory'] =this_inverntory
+#         context['Options'] = options
+#         context['MenuList'] = navbar
+#         context['Alert'] = alert
+        
+#         return context
+
+
+class ProfileAlert(LoginRequiredMixin , UpdateView):
+    model = User
+    fields = ['username' , 'first_name' , 'last_name' , 'password']
     redirect_field_name = 'auth:login'
+    template_name = "nakhll_market/profile/pages/alert.html"
 
     def get_context_data(self, **kwargs):
         request = self.request
@@ -3126,13 +3155,13 @@ class ProfileAlert(LoginRequiredMixin, TemplateView):
         # --------------------------------------------------------------------
         # get all new alert
         alert = Alert.objects.filter(Seen = False).order_by('DateCreate')
-        
+
         context['This_User_Profile'] = this_profile
         context['This_User_Inverntory'] =this_inverntory
         context['Options'] = options
         context['MenuList'] = navbar
         context['Alert'] = alert
-        
+
         return context
         
         
@@ -3413,7 +3442,7 @@ def AddNewComplaint(request):
             else:
                 msg = Complaint.objects.crete(Title = Connect_Title, Description = Connect_Des, MobileNumber = Connect_PhoneNumber, Email = Connect_Email, Type = '0')
 
-            Alert.objects.create(Part = '18', FK_User = request.user, Slug = msg.id)
+           # Alert.objects.create(Part = '18', FK_User = request.user, Slug = msg.id)
             
             Road = []
             #Get User Info
@@ -3690,7 +3719,7 @@ def AddShopCopun(request):
                     thread = threading.Thread(target = thread_add_object_to_coupon, args = (copun, Copun_Shops, Copun_Products))
                     thread.start()
                     # set alert
-                    Alert.objects.create(Part = '26', FK_User = request.user, Slug = copun.id)
+                    #Alert.objects.create(Part = '26', FK_User = request.user, Slug = copun.id)
                     #-------------------------------------------------------------------------
                     # Get User Info
                     
@@ -3843,7 +3872,7 @@ def DeleteShopCopun(request, id):
         coupon.Publish = False
         coupon.save()
         # set alert
-        Alert.objects.create(Part = '27', FK_User = request.user, Slug = coupon.id)
+        #Alert.objects.create(Part = '27', FK_User = request.user, Slug = coupon.id)
         # redirect to coupon list
         return redirect("nakhll_market:Shop_Manager_ShopCopunList")
     else:

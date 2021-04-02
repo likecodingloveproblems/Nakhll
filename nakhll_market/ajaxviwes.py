@@ -451,7 +451,7 @@ def Pay_Factor_by_wallet(request):
                     for item in factpost.FK_AttrPrice.all():
                         factpost.FK_AttrPrice.remove(item)
                 # --------------------- End -----------------
-                alert = Alert.objects.create(Part = '12', FK_User = request.user, Slug = factor.ID)
+                #alert = Alert.objects.create(Part = '12', FK_User = request.user, Slug = factor.ID)
                 des_trans=' پرداخت از کیف پول برای صورت حساب '+ factor.FactorNumber
                 pricefactori = factor.get_end_price()
                 transaction = Transaction.objects.create(FK_User = request.user, Price = pricefactori, Type = '6', Description = des_trans)
