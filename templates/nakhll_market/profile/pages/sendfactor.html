@@ -134,8 +134,8 @@
 
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
-                        <div class="dashboard"> 
-                            <h4>گزارش کالا های ارسالی</h4> 
+                        <div class="dashboard">
+                            <h4>گزارش کالا های ارسالی</h4>
 
                             <form id="new-shopBanner-form" method="POST" enctype="multipart/form-data" action="/cart/send_factor/{{Factor.ID}}">
                                 {% csrf_token %}
@@ -150,11 +150,11 @@
                                             {% endfor %}
                                         </select>
                                     </div>
-                                    
+
                                     <div class="form-group col-md-6">
                                         <label for="inputPost_UserSend">نام ارسال کننده <code>*</code></label>
                                         <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="نام فرد ارسال کننده مرسوله را وارد نمایید."></i>
-                                        <input type="text" name="Post_UserSend" value="{{request.user.first_name}} {{request.user.last_name}}" class="form-control" id="inputPost_UserSend" required>
+                                        <input type="text" readonly name="Post_UserSend" value="{{request.user.first_name}} {{request.user.last_name}}" class="form-control" id="inputPost_UserSend" required>
                                     </div>
                                 </div>
 
@@ -196,8 +196,8 @@
                                         </script>
                                     </div>
                                 </div>
-
                                 <div class="form-row">
+                                    </div>
                                     <div class="form-group col-md-6">
                                         <label for="inputPost_Image">بارگذاری عکس</label>
                                         <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="سند ارسال مرسوله را بارگذاری نمایید."></i>
@@ -206,7 +206,16 @@
                                             <br>
                                     </div>
                                 </div>
- 
+
+                              <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="inputPost_Image">بارگذاری عکس</label>
+                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="سند ارسال مرسوله را بارگذاری نمایید."></i>
+                                        <br>
+                                            <input type="file" accept="image/*" name="Post_Image" id="inputPost_Image">
+                                            <br>
+                                    </div>
+                                </div>
                                 <button type="submit" class="btn btn-primary mr-auto" id="send-left">ثبت</button>
                                     <div class="clearfix"></div>
                                 </div>
