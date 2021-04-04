@@ -8,7 +8,8 @@
 {% endblock %}
 
     <title>بازار نخل | گزارش کالا های ارسالی</title>
-{% analytical_head_bottom %}</head>
+{% analytical_head_bottom%}
+</head>
 
 {% block headertag %}
     {% include "nakhll_market/parents/new-headertag-section.html" %}
@@ -161,8 +162,8 @@
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
                                     <label for="inputPost_Barcode">بارکد پستی مرسوله <code>*</code></label>
-                                    <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="بارکد پستی فقط باید شامل اعداد و  24 رقم باشد."></i>
-                                        <input type="number" name="Post_Barcode" class="form-control" maxlength="24" minlength="24" id="inputPost_Barcode" required>
+                                    <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="بارکد پستی فقط باید شامل اعداد باشد."></i>
+                                        <input type="number" name="Post_Barcode" class="form-control" minlength="2" maxlength="30" required>
                                     </div>
 
                                     <div class="form-group col-md-6">
@@ -203,20 +204,12 @@
                                         <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="سند ارسال مرسوله را بارگذاری نمایید."></i>
                                         <br>
                                             <input type="file" accept="image/*" name="Post_Image" id="inputPost_Image">
-                                            <br>
+
                                     </div>
                                 </div>
 
-                              <div class="form-row">
-                                    <div class="form-group col-md-6">
-                                        <label for="inputPost_Image">بارگذاری عکس</label>
-                                        <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="سند ارسال مرسوله را بارگذاری نمایید."></i>
-                                        <br>
-                                            <input type="file" accept="image/*" name="Post_Image" id="inputPost_Image">
-                                            <br>
-                                    </div>
-                                </div>
-                                <button type="submit" class="btn btn-primary mr-auto" id="send-left">ثبت</button>
+                                <div>
+                                    <button type="submit" class="btn btn-primary mr-auto" id="send-left">ثبت</button>
                                     <div class="clearfix"></div>
                                 </div>
 
