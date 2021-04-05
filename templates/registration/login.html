@@ -14,7 +14,54 @@
     <div class="login-page-whole-content">
     <h5>ورود به سایت</h5>
     {% include 'registration/messages.html' %}
-    <form id="login-form" method="POST">
+     <form id="login-form" method="POST">
+      <input type="hidden" name="csrfmiddlewaretoken" value="AjeC4dP7ACTZ3fuWTeDg2beG8R6MOmI62BsDFxHehcOH2CohmCDZMnaSvpOhycEl">
+        <div class="input-login-modal input-mob-login login-page-main-input-login-mob">
+         <div class="before-input-icon">
+<i class="fal fa-phone fix-before-input-icon-place"></i>
+</div>
+<div class="main-input-login">
+<input type="number" name="mobile_number" placeholder="موبایل" class="input-login" pattern="09[0-9]{9}" maxlength="11" minlength="11" required id="id_mobile_number">
+</div>
+
+</div>
+<div class="input-login-modal input-password-login">
+<div class="before-input-icon">
+<i class="fal fa-lock-alt fix-before-input-icon-place"></i>
+</div>
+<div class="main-input-login">
+<input type="password" name="password" placeholder="رمز عبور" class="input-login" required id="id_password" id="passwordfild">
+</div>
+<div class="after-input-icon">
+<i class="fal fa-eye fix-before-input-icon-place " id="showPassword" onclick="FunctionShow(this)"></i>
+
+</div>
+</div>
+<div id="captchaStyle">
+<body onload="Captcha();">
+<div class="capt">
+<h2 type="text" id="mainCaptcha"></h2>
+<p><i class="fas fa-repeat" id="refresh" onclick="Captcha();"></i></p>
+</div>
+<input type="text" id="txtInput" maxlength="7" />
+</body>
+</div>
+<div class="under-inputs">
+<div class="remember-checkbox">
+<input type="checkbox" name="remember_me" id="id_remember_me"> مرا به خاطر بسپار
+</div>
+<div class="forget-password-login-modal">
+<a href="/accounts/forget-password-mobile/">رمز عبور خود را فراموش کرده اید؟</a>
+</div>
+</div>
+<div class="clearfix"></div>
+<div class="login-button-modal login-button-in-login-page">
+<button id="login-button" onclick="alert(ValidCaptcha())">
+ورود
+</button>
+</div>
+</form>
+    {% comment %} <form id="login-form" method="POST">
         {% csrf_token %}
         {% if form.non_field_errors %}
         <div class="alert alert-danger" role="alert">
@@ -27,15 +74,35 @@
             </div>
             <div class="main-input-login">
                 {{ form.mobile_number }}
+                
             </div>
+            <div class="after-input-icon">
+                <i class="fal fa-eye fix-before-input-icon-place"></i>
+            </div>
+            
+            
+           
+            
+            
+            
+            
+            
+
+            
         </div>
         {% if form.mobile_number.errors %}
+        
             <ul>
             {% for error in form.mobile_number.errors %}
+            
                 <li><strong class='text-danger text-sm'>{{ error|escape }}</strong></li>
             {% endfor %}
             </ul>
         {% endif %}
+        
+       
+        
+        </div>
         <div class="input-login-modal input-password-login">
             <div class="before-input-icon">
                 <i class="fal fa-lock-alt fix-before-input-icon-place"></i>
@@ -68,7 +135,7 @@
                 ورود
             </button>
         </div>
-    </form>
+    </form> {% endcomment %}
     </div>
     <div class="hr-line-full"></div>
     <div class="login-page-whole-content login-page-footer">
@@ -79,6 +146,60 @@
 
 
     <script>
+    const togglePassword = document.querySelector('#showPassword');
+    const password = document.querySelector('#id_password');
+    togglePassword.addEventListener('click', function (e) {
+    // toggle the type attribute
+    const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+    password.setAttribute('type', type);
+    // toggle the eye slash icon
+    this.classList.toggle('fa-eye-slash');
+        });
+
+
+
+    {% comment %} function FunctionShow(a){
+        
+        
+        let x = document.getElementById("showPassword");
+        let y = document.getElementById("id_password");
+        if(y.type === "password"){
+            y.type = "text";
+            
+
+        } else {
+            y.type = "password";
+            
+        }
+    } {% endcomment %}
+
+
+
+    {% comment %} function FunctionShow(x) {
+     x.classList.toggle("fa-thumbs-down");
+     var y = document.getElementById("passwordfild");
+     if (y.type === "password") {
+       y.type = "text";
+      } else {
+       y.type = "password";
+   }
+    } {% endcomment %}
+
+
+    {% comment %} const showpasswordhand=document.querySelector('.showPassword')
+    const passwordfild=document.querySelector('.passwordfild')
+
+    function ShowPassword() {
+    var x = document.getElementById("id_password");
+      if (x.type === "password") {
+       x.type = "text";
+       } else {
+       x.type = "password";
+     }
+    } {% endcomment %}
+
+
+    showpasswordhand.addEventListener('click',handeltoggleinput)
     
     let loginBtnEl = document.querySelector('#login-button');
     let txtInputCaptcha = document.querySelector('#txtInput');

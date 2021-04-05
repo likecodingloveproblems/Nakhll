@@ -72,7 +72,7 @@ class AuthenticationForm(forms.Form):
         strip=False,
         widget=forms.PasswordInput(attrs={
             'placeholder': 'رمز عبور',
-            'class': 'input-login'
+            'class': 'input-login',
         })
     )
     remember_me = forms.BooleanField(required=False, widget=CheckboxInput)
@@ -282,7 +282,8 @@ class PasswordForm(forms.Form):
         max_length=12,
         widget=forms.PasswordInput(attrs={
             'placeholder': 'رمز عبور',
-            'class': 'input-login'
+            'class': 'input-login',
+            
         })
     )
     confirm_password = forms.CharField(

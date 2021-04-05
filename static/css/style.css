@@ -5042,6 +5042,11 @@ a.disabled {
     width: 7%;
     text-align: center;
 }
+.after-input-icon {
+    float: left;
+    width: 7%;
+    text-align: center;
+}
 .fix-before-input-icon-place {
     vertical-align: bottom;
 }
@@ -5051,6 +5056,8 @@ a.disabled {
 }
 .input-password-login {
     margin-top: 15px;
+    display: flex;
+    
 }
 .under-inputs {
     margin-top: 25px;
@@ -5353,6 +5360,7 @@ a.disabled {
 }
 .login-page-main-input-login-mob {
     margin: 25px 0 20px 0;
+    display:flex;
 }
 .login-button-in-login-page {
     margin-bottom: 45px;
