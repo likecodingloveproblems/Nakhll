@@ -3111,38 +3111,10 @@ def RepalyTicketing(request, ticket_id):
 
 #---------------------- End Ticketin Section ----------------------
 
-#  class ProfileAlert(LoginRequiredMixin, TemplateView):
-#     template_name = 'nakhll_market/profile/pages/alert.html'
-#     redirect_field_name = 'auth:login'
-
-#     def get_context_data(self, **kwargs):
-#         request = self.request
-#         context = super().get_context_data(**kwargs)
-#         this_profile = Profile.objects.get(FK_User=request.user)
-#         this_inverntory = request.user.WalletManager.Inverntory
-#         # Get Menu Item
-#         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-#         # Get Nav Bar Menu Item
-#         navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-#         # --------------------------------------------------------------------
-#         # get all new alert
-#         alert = Alert.objects.filter(Seen = False).order_by('DateCreate')
-        
-#         context['This_User_Profile'] = this_profile
-#         context['This_User_Inverntory'] =this_inverntory
-#         context['Options'] = options
-#         context['MenuList'] = navbar
-#         context['Alert'] = alert
-        
-#         return context
-
-
-class ProfileAlert(LoginRequiredMixin , UpdateView):
-    model = User
-    fields = ['username' , 'first_name' , 'last_name' , 'password']
+class ProfileAlert(LoginRequiredMixin, TemplateView):
+    template_name = 'nakhll_market/profile/pages/alert.html'
     redirect_field_name = 'auth:login'
-    template_name = "nakhll_market/profile/pages/alert.html"
-
+    
     def get_context_data(self, **kwargs):
         request = self.request
         context = super().get_context_data(**kwargs)
@@ -3155,14 +3127,38 @@ class ProfileAlert(LoginRequiredMixin , UpdateView):
         # --------------------------------------------------------------------
         # get all new alert
         alert = Alert.objects.filter(Seen = False).order_by('DateCreate')
-
+        
         context['This_User_Profile'] = this_profile
         context['This_User_Inverntory'] =this_inverntory
         context['Options'] = options
         context['MenuList'] = navbar
         context['Alert'] = alert
-
+        
         return context
+
+# # Rewrite ProfileAlert with updateview
+# class ProfileAlert(LoginRequiredMixin , UpdateView):
+#     model = User
+#     fields = ['username' , 'first_name' , 'last_name']
+#     redirect_field_name = 'auth:login'
+#     template_name = "nakhll_market/profile/pages/alert.html"
+
+#     def get_context_data(self, **kwargs):
+#         request = self.request
+#         context = super().get_context_data(**kwargs)
+#         # Get Menu Item
+#         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+#         # Get Nav Bar Menu Item
+#         navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+#         # --------------------------------------------------------------------
+#         # get all new alert
+#         alert = Alert.objects.filter(Seen = False).order_by('DateCreate')
+
+#         context['Options'] = options
+#         context['MenuList'] = navbar
+#         context['Alert'] = alert
+
+#         return context
         
         
 # Profile Alert

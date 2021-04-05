@@ -291,7 +291,7 @@ urlpatterns = [
     path('profile/review/', profileviews.ProfileReview.as_view(), name='Review'),
     # Alerts Path
     # path('profile/alert/', profileviews.ProfileAlert, name='Alert'),
-    path('profile/alert/<int:pk>/', profileviews.ProfileAlert.as_view(), name='Alert'),
+    path('profile/alert/', profileviews.ProfileAlert.as_view(), name='Alert'),
     # -------------------------------------------------------------------------------------
     # Message Filter
     path('profile/message/filter/', profileviews.MessageFilter, name='Message_Filter'),

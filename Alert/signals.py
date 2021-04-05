@@ -26,7 +26,7 @@ def shop_banner(sender , instance , created ,**kwargs):
                               FK_Staff = request.user)
 
 @receiver(post_save)
-def add_new_product(sendre , instance , created , **kwargs):
+def add_new_product(sender , instance , created , **kwargs):
      if created == True :
           Alert.objects.create(Part = '6', FK_User = request.user, Slug = product.ID, 
                                Seen = True, Status = True, FK_Staff = request.user)
@@ -38,13 +38,13 @@ def new_product_banner(sender , instance , created , **kwargs):
                                Seen = True, Status = True, FK_Staff = request.user)
 
 @receiver(post_save)
-def add_new_product_attribut(sender , instance , created , **kwargs):
+def add_new_product_attribute(sender , instance , created , **kwargs):
      if created == True :
           Alert.objects.create(Part = '11', FK_User = request.user, Slug = attrproduct.id,
                                Seen = True, Status = True, FK_Staff = request.user)
 
 @receiver(post_save)
-def add_new_product_attrprice(sender , instance , created , **kwargs):
+def add_new_product_attribute_price(sender , instance , created , **kwargs):
      if created == True :
           Alert.objects.create(Part = '17', FK_User = request.user, Slug = attrprice.id,
                                Seen = True, Status = True, FK_Staff = request.user)
@@ -55,7 +55,7 @@ def add_new_attribute(sender , instance , created , **kwargs):
          Alert.objects.create(FK_User = request.user, Part = '10', Slug = this_attribute.id)
 
 @receiver(post_save)
-def repaly_ticketing(sender , instance , created , **kwargs):
+def reply_ticketing(sender , instance , created , **kwargs):
      if created == True :
         Alert.objects.create(Part = '16', FK_User = request.user, Slug = ticket_id)
 
@@ -65,7 +65,7 @@ def add_new_complaint(sender , instance , created , **kwargs):
         Alert.objects.create(Part = '18', FK_User = request.user, Slug = msg.id)
 
 @receiver(post_save)
-def add_shop_copun(sender , instance , created , **kwargs):
+def add_shop_Coupons(sender , instance , created , **kwargs):
      if created == True :
         Alert.objects.create(Part = '26', FK_User = request.user, Slug = copun.id)
 
@@ -90,7 +90,7 @@ def accept_factor_product(sender , instance , created , **kwargs):
         Alert.objects.create(Part = '20', FK_User = request.user, Slug = ID)
 
 @receiver(post_save)
-def cansel_factor_product(sender , instance , created , **kwargs):
+def cancel_factor_product(sender , instance , created , **kwargs):
      if created == True :
         Alert.objects.create(Part = '13', FK_User = request.user, Slug = this_factor.ID)
 
@@ -127,7 +127,7 @@ def delete_product_attribute_price(sender , instance , **kwargs):
      Alert.objects.create(Part = '25', FK_User = request.user, Slug = this_attrprice.id)
 
 @receiver(post_delete)
-def delete_shop_copun(sender , instance , **kwargs):
+def delete_shop_Coupons(sender , instance , **kwargs):
      Alert.objects.create(Part = '27', FK_User = request.user, Slug = coupon.id)
 
 @receiver(post_delete)
