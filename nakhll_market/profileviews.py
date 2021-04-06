@@ -61,7 +61,7 @@ from .models import Alert
 from .models import Field
 from .models import OptinalAttribute
 
-from Payment.models import Wallet, Transaction, Factor, FactorPost, Coupon, Campaign
+from Payment.models import Wallet, Transaction, Factor, FactorPost, Coupon, Campaign, PostBarCode
 
 from Ticketing.models import Ticketing, TicketingMessage, Complaint
 
@@ -4366,6 +4366,8 @@ def ShowFactorItemForShop(request, ID, status):
         #-----------------------------------------------------------------------
         # Get This Factor
         this_factor = get_object_or_404(Factor, ID = ID)
+        # get factor post bar code
+        post_barcode = PostBarCode.objects.filter(FK_Factor=this_factor)
 
         context = {
             'This_User_Profile':this_profile,
@@ -4373,6 +4375,7 @@ def ShowFactorItemForShop(request, ID, status):
             'Options': options,
             'MenuList':navbar,
             'factor':this_factor,
+            'post_barcodes':post_barcode
         }
 
         if status == 0:

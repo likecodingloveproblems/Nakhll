@@ -204,6 +204,49 @@
 
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-xl-12 col-12">
+                                            <br>
+                                            <h4>ارسال سفارش :</h4>
+                                        </div>
+                                        {% if post_barcodes %}                                  <div class="col-xl-12 col-12">
+
+                                            <table class="table">
+
+                                                <thead class="thead-light">
+                                                    <tr>
+                                                        <th>نام فرستنده</th>
+                                                        <th>محصولات</th>
+                                                        <th>بارکد پستی</th>
+                                                        <th>هزینه ارسال</th>
+                                                        <th>تاریخ ارسال مرسوله</th>
+                                                        <th>تاریخ ایجاد</th>
+                                                        <th>وضعیت ارسال</th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody class="code">
+                                                    {% for item in post_barcodes %}
+                                                        <tr>
+                                                                <td>{{item.User_Sender}}</td>
+                                                                <td>
+                                                                    {% for product in item.FK_Products.all %}
+                                                                        {{product.Title}}
+                                                                    {% endfor %}
+                                                                </td>
+                                                                <td>{{item.BarCode}}</td>
+                                                                <td><span class="numbersprice">{{item.PostPrice}}</span> ریال</td>
+                                                                <td>{{item.SendDate}}</td>  
+                                                                <td>{{item.CreateDate}}</td>  
+                                                                <td>{{item.get_send_type}}</td>  
+                                                    {% endfor %}
+                                                </tbody>
+
+                                            </table>
+                                        {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
              
                                 {% if factor.FK_Coupon != None %}
                                     <div class="row">
@@ -238,7 +281,35 @@
                                     document.body.innerHTML = originalContents;
                                     }
                                 </script>
-                                <a class="btn btn-primary" href="{{factor.send_factor_page}}"> ارسال سفارش </a>
+                                {% if post_barcodes.count %}
+                                    <!-- Button trigger modal -->
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                                    ارسال سفارش
+                                    </button>
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">ارسال سفارش</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            شما یک مرتبه ارسال سفارش را برای این فاکتور قبلا ثبت کرده اید. آیا می خواهید دوباره ارسال سفارش را ثبت نمایید؟
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">خیر</button>
+                                            <a class="btn btn-primary" href="{{factor.send_factor_page}}">بله</a>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                {% else %}
+                                    <a class="btn btn-primary" href="{{factor.send_factor_page}}"> ارسال سفارش </a>
+                                {% endif %}
                                 <a class="w3-btn" id="btnPrint" name="btnPrint" onclick="printDiv('{{factor.FactorNumber}}')"><button class="btn btn-primary" >چاپ صورت حساب</button></a>
                                 <button onclick="closeCurrentTab()" class="btn btn-primary" >بستن</button>
                                 <script>
