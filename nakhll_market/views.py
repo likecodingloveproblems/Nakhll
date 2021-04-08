@@ -284,14 +284,6 @@ def ChangePassword(request):
                 'AlartMessage':message,
             }
 
-            return redirect(request, 'registration/login.html', context)
-
-        else:
-            context = {
-                'ShowAlart':False,
-                'AlartMessage':'',
-            }
-
             return redirect('registration/forgetpassword/changepassword.html', context)
 
     else:
@@ -711,6 +703,8 @@ def Get_Shop_Visits_Count(request, obj_id):
         return view_count
     except:
         return 'عدم دسترسی'
+        
+# nt 2 ویو مربوط به صفحه ام برای هندل اطلاعیه
 
 def index(request):
     if request.user.is_authenticated:

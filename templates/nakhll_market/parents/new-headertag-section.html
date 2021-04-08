@@ -36,8 +36,15 @@
                                 <a href="{% url "nakhll_market:Dashboard" %}" >
                                 <div class="profile-top">
                                     <img src="{{This_User_Profile.Image_thumbnail_url}}" class="profileimg" alt="profileimg">
-                                    <span>خوش آمدید</span>
-                                    <h3>{{request.user.first_name}}</h3>
+                                    <small>خوش آمدید</small>
+                                    <br/>
+
+                                    {% if request.user.first_name != ''%}
+                                     <h3>{{request.user.first_name}}</h3>
+                                     {%else%}
+                                     <span style="color:red; ">تکمیل اطلاعات</span>
+                                     {%endif%}
+                                    
                                 </div>
                                 </a>
                         
