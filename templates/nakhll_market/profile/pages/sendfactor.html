@@ -163,7 +163,7 @@
                                     <div class="form-group col-md-6">
                                     <label for="inputPost_Barcode">بارکد پستی مرسوله <code>*</code></label>
                                     <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="بارکد پستی فقط باید شامل اعداد باشد."></i>
-                                        <input type="number" name="Post_Barcode" class="form-control" minlength="2" maxlength="30" required>
+                                        <input type="number" name="Post_Barcode" class="form-control" id="inputPost_Barcode" minlength="2" maxlength="30" required>
                                     </div>
 
                                     <div class="form-group col-md-6">
@@ -226,7 +226,14 @@
 
 <script src="{% static "js/num2persian-min.js" %}"></script>
 <script type="text/javascript" charset="utf-8" src="{% static "js/factor/sendfactor.js" %}"></script>
-
+<!-- for barcode post min or max lenth -->
+<script>
+    let id_barcode=document.querySelector("#inputPost_Barcode");
+    window.addEventListener("DOMContentLoaded",function (){
+        id_barcode.setAttribute('oninput',"javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);")
+        id_barcode.setAttribute("maxlength",'30')
+    })
+</script>
 {% block footer-section %}
     {% include "nakhll_market/parents/footer-section.html" %}
 {% endblock %}

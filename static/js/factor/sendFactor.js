@@ -60,7 +60,7 @@ $("#alert-div-inputpost-barcode-empty").html('<div class="col-xl-12 xol-lg-12 co
 $("#alert-div-inputpost-barcode-24char").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
 	'<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
 	'<i class="far fa-exclamation-circle"></i>' +
-	'<p>بارکد پستی مرسوله حتما باید 24 رقم باشد.</p>' +
+	'<p>بارکد پستی مرسوله حتما باید 30 رقم باشد.</p>' +
     '</div></div>');
     
 $("#alert-div-inputpost-sendprice-empty").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
@@ -148,7 +148,7 @@ $("#inputPost_Barcode").on("focusout", function () {
         $("#alert-div-inputpost-barcode-24char").hide();
         $(this).addClass('inputshopempty');
     }
-    else if (thisLength !== 24)
+    else if (thisLength !== 30)
     {
         $("#alert-div-inputpost-barcode-empty").hide();
         $("#alert-div-inputpost-barcode-24char").show();
@@ -168,14 +168,14 @@ $("#inputPost_Barcode").on("input", function () {
         $("#alert-div-inputpost-barcode-empty").hide();
         $(this).removeClass('inputshopempty');
     }
-    if ($(this).val().length == 24)
+    if ($(this).val().length == 30)
     {
         $("#alert-div-inputpost-barcode-24char").hide();
     }
     var textLength = $(this).val().length;
-    if (textLength >= 24) {
-        $(this).val($(this).val().substr(0, 24));
-        $(this).prop("maxlength", 24);
+    if (textLength >= 30) {
+        $(this).val($(this).val().substr(0, 30));
+        $(this).prop("maxlength", 30);
     }
 })
 $("#inputprod_sellprice").on("focusout", function () {
@@ -238,7 +238,7 @@ checkFields = function () {
         $("#inputPost_Barcode").addClass("inputshopempty");
         checks = false;
     }
-    else if($("#inputPost_Barcode").val().length !== 24)
+    else if($("#inputPost_Barcode").val().length !== 30)
     {
         $("#alert-div-inputpost-barcode-24char").show();
         $("#inputPost_Barcode").addClass("inputshopempty");
