@@ -936,7 +936,7 @@ def AddProductToCartWithAttrPrice(request, ID):
                                 shop_slug = this_product.FK_Shop.Slug,
                                 product_slug = this_product.Slug,
                                 status = True,
-                                msg ='فروشنده بیش از این تعداد قادر به تامین  کالا نمی باشد')
+                                msg ='.فروشنده بیش از این تعداد قادر به تامین  کالا نمی باشد')
 
                         else:
                             this_item = FactorPost.objects.create(FK_Product = this_product, FK_User = request.user)

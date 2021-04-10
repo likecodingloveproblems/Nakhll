@@ -704,7 +704,7 @@ def Get_Shop_Visits_Count(request, obj_id):
     except:
         return 'عدم دسترسی'
         
-# nt 2 ویو مربوط به صفحه ام برای هندل اطلاعیه
+
 
 def index(request):
     if request.user.is_authenticated:
