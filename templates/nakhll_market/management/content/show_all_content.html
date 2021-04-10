@@ -87,6 +87,7 @@
                 <th>نام حجره دار</th>
                 <th>تاریخ ثبت حجره</th>
                 <th>وضعیت نمایش</th>
+                <th>شماره موبایل </th>
                 <th>وضعیت انتشار</th>
                 <th>نمایش</th>
             </tr>
@@ -109,6 +110,7 @@
                             <p style="color: red">عدم نمایش</p>
                         </a></td>
                     {% endif %}
+                    <td>{{ shop.FK_ShopManager.User_Profile.MobileNumber }}</td>
                     {% if shop.Publish %}
                     <td title="برای عدم انتشار این حجره کلیک کنید."><a
                             href="{% url "nakhll_market:Change_Shop_Status" attribute='Publish' id=shop.ID %}">
