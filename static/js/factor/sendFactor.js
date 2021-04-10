@@ -148,7 +148,7 @@ $("#inputPost_Barcode").on("focusout", function () {
         $("#alert-div-inputpost-barcode-24char").hide();
         $(this).addClass('inputshopempty');
     }
-    else if (thisLength !== 30)
+    else if (thisLength == 30)
     {
         $("#alert-div-inputpost-barcode-empty").hide();
         $("#alert-div-inputpost-barcode-24char").show();
@@ -238,7 +238,7 @@ checkFields = function () {
         $("#inputPost_Barcode").addClass("inputshopempty");
         checks = false;
     }
-    else if($("#inputPost_Barcode").val().length !== 30)
+    else if($("#inputPost_Barcode").val().length > 30)
     {
         $("#alert-div-inputpost-barcode-24char").show();
         $("#inputPost_Barcode").addClass("inputshopempty");
