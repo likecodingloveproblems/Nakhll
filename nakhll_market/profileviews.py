@@ -4306,11 +4306,11 @@ def ShowAllFactorList(request):
         #-----------------------------------------------------------------------
         # Get All Factor
         factors = Factor.objects.filter(PaymentStatus = True, Publish = True).order_by('-OrderDate')
-        # get user list
-        user_list = []
-        for item in factors:
-            user_list.append(item.FK_User)
-        user_list = list(dict.fromkeys(user_list))
+        # get factors user
+        user_factor = User.objects\
+            .filter(UserFactor__PaymentStatus=True, UserFactor__Publish=True)\
+            .distinct()\
+            .order_by('-UserFactor__OrderDate')
 
         context = {
             'This_User_Profile':this_profile,
@@ -4318,7 +4318,7 @@ def ShowAllFactorList(request):
             'Options': options,
             'MenuList':navbar,
             'Factors':factors,
-            'User':user_list,
+            'User':user_factor,
         }
         return render(request, 'nakhll_market/profile/pages/all_factors.html', context)
     else:
