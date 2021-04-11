@@ -158,7 +158,7 @@
                                     <div class="col-xl-5 col-lg-4 col-md-5 col-sm-7 col-6 factor-profile-input-group-col">
                                         <div class="input-group mb-3">
                                             <div class="input-group-prepend factor-profile-input-group-prepend">
-                                                <label class="input-group-text factor-profile-input-group-text for="inputGroupSelect01">وضعیت</label>
+                                                <label class="input-group-text factor-profile-input-group-text" for="inputGroupSelect01">وضعیت</label>
                                             </div>
                                             <select class="custom-select factor-profile-custom-select" name="check_out" id="inputGroupSelect01">
                                                 <option value="0" {% if CheckOut == '0' %}selected{% endif %}>همه</option>
@@ -170,7 +170,7 @@
                                     <div class="col-xl-6 col-lg-5 col-md-7 col-sm-9 col-9">
                                         <div class="input-group mb-3">
                                             <div class="input-group-prepend factor-profile-input-group-prepend">
-                                                <label class="input-group-text factor-profile-input-group-text for="inputGroupSelect01">وضعیت صورت حساب</label>
+                                                <label class="input-group-text factor-profile-input-group-text" for="inputGroupSelect01">وضعیت صورت حساب</label>
                                             </div>
                                             <select class="custom-select factor-profile-custom-select" name="status" id="inputGroupSelect01">
                                                 <option value="6" {% if Status == '6' %}selected{% endif %}>همه</option>
@@ -213,6 +213,7 @@
                                     <th>تاریخ خرید</th>
                                     <th>وضعیت صورت حساب</th>
                                     <th>وضعیت تسویه</th>
+                                    <th>نام حجره</th>
                                     <th>نمایش</th>
                                     </tr>
                                 </thead>
@@ -242,12 +243,40 @@
                                                 <td class="not-cleared"><a href="{% url "nakhll_market:ChangeFactorCheckoutStatus" factor.ID %}"><p>تسویه نشده</p></a></td>
 
                                             {% endif %}
+                                            <td>
+                                                {% for title in factor.get_shop_titles %}
+                                                    {{title}} -
+                                                {% endfor %}
+                                            </td>
                                             <td class="pointer"><a href="{% url "nakhll_market:ShowFactorItem" factor.ID %}" target="_blank"><i class="fad fa-eye"></i></a></td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="row pagerow">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination">
+                                {% if Factors.has_previous %}
+                                    <li class="page-item"><a class="page-link" href="?page=1">اولی</a></li>
+                                    <li class="page-item"><a class="page-link" href="?page={{Factors.previous_page_number}}">قبلی</a></li>
+                                {% endif %}
+                                {% for num in Factors.paginator.page_range %}
+                                    {% if num == Factors.number %}
+                                        <li class="page-item"><a class="page-link" href="?page={{num}}"><strong>{{num}}</strong></a></li>
+                                    {% elif num > Factors.number|add:'-3' and num < Factors.number|add:'3' %}
+                                        <li class="page-item"><a class="page-link" href="?page={{num}}">{{num}}</a></li>
+                                    {% endif %}
+                                {% endfor %}
+                                {% if Factors.has_next %}
+                                    <li class="page-item"><a class="page-link" href="?page={{Factors.next_page_number}}">بعدی</a></li>
+                                    <li class="page-item"><a class="page-link" href="?page={{Factors.paginator.num_pages}}">آخری</a></li>
+                                {% endif %}
+                            </ul>
+                        </nav>
                     </div>
                 </div>
 

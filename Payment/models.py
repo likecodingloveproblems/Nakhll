@@ -891,6 +891,10 @@ class Factor(models.Model):
         except:
             return None
 
+    def get_shop_titles(self):
+        return set(self.FK_FactorPost.values_list('FK_Product__FK_Shop__Title',flat=True))
+
+
     # Ordering With DateCreate
     class Meta:
         ordering = ('ID',)
