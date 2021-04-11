@@ -970,7 +970,7 @@ checkFieldsSendInfo = function () {
             if ((r == 0 && r == c) || (r == 1 && c == 1) || (r > 1 && c == 11 - r)) {
 
             } else {
-                $("#alert-div-inputNationalCode-Persian").hide();
+                $("#alert-div-inputNationalCode-Persian").show();
                 $("#alert-div-inputNationalCodeError-Persian").hide();
                 $("#alert-div-inputNationalCodeFormat-Persian").hide();
                 checks = false;
@@ -983,7 +983,7 @@ checkFieldsSendInfo = function () {
         }
 
     } else {
-        $("#alert-div-inputNationalCode-Persian").hide();
+        $("#alert-div-inputNationalCode-Persian").show();
         $("#alert-div-inputNationalCodeError-Persian").hide();
         $("#alert-div-inputNationalCodeFormat-Persian").hide();
         checks = false;
@@ -1070,7 +1070,9 @@ checkFieldsSendInfo = function () {
     // {
     //     checks = false;
     // }
-    checks = checkLeftPart();
+    if (checks){
+        checks = checkLeftPart();
+    }
     return checks;
 }
 
