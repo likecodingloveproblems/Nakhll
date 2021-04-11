@@ -30,7 +30,7 @@ from django.views.generic import TemplateView
 from braces.views import LoginRequiredMixin
 
 from django.contrib.auth.models import User
-from django.contrib.auth.models import Group 
+from django.contrib.auth.models import Group
 
 from .models import Tag
 from .models import Market
@@ -56,7 +56,7 @@ from .models import Survey
 from .models import Slider
 from .models import Message, User_Message_Status
 from .models import Option_Meta
-from .models import Newsletters 
+from .models import Newsletters
 from .models import Alert
 from .models import Field
 from .models import OptinalAttribute
@@ -70,8 +70,10 @@ from nakhll.settings import KAVENEGAR_KEY
 
 from Iran import data
 from django.core.paginator import Paginator
+
+
 # Profile Page And Sub Pages
-#---------------------------------------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------------------------
 
 # Send Pushnotification
 class SendPushnotif:
@@ -80,7 +82,7 @@ class SendPushnotif:
             TOKEN = '70c66e5fcb993ac51a432617941d5694c03c4943'
 
             # Get User Mobile Number
-            mobile_number = Profile.objects.get(FK_User_id = user_id).MobileNumber
+            mobile_number = Profile.objects.get(FK_User_id=user_id).MobileNumber
 
             # set header
             headers = {
@@ -93,20 +95,20 @@ class SendPushnotif:
                 'data': {
                     'title': title,
                     'content': description,
-                    'wake_screen':'True',
-                    'action_type':'A',
-                    'led_color':'8206336',
+                    'wake_screen': 'True',
+                    'action_type': 'A',
+                    'led_color': '8206336',
                 },
                 'filters': {
-                    'phone_number': [mobile_number,]
+                    'phone_number': [mobile_number, ]
                 },
             }
 
             # send request
             response = requests.post(
                 'https://api.pushe.co/v2/messaging/notifications/',
-                json = data,
-                headers = headers,
+                json=data,
+                headers=headers,
             )
 
             if response.status_code == 201:
@@ -114,12 +116,13 @@ class SendPushnotif:
         except Exception as e:
             print(str(e))
 
+
 # Send Alert SMS
 class SendMessage:
 
     def __init__(self, user_id):
-        self.user = User.objects.get(id = user_id)
-        
+        self.user = User.objects.get(id=user_id)
+
     # Check User Message
     def CheckUserMessage(self):
         # Message Count
@@ -144,11 +147,12 @@ class SendMessage:
         # User Message Count
         msg_count = self.CheckUserMessage()
         # Get User Phone Number
-        PhoneNumber = Profile.objects.get(FK_User = self.user).MobileNumber
+        PhoneNumber = Profile.objects.get(FK_User=self.user).MobileNumber
         # Send SMS
-        url = 'https://api.kavenegar.com/v1/{}/verify/lookup.json'.format(KAVENEGAR_KEY) 
-        params = {'receptor': PhoneNumber, 'token' : msg_count, 'template' : 'nakhll-message'}
-        requests.post(url, params = params)
+        url = 'https://api.kavenegar.com/v1/{}/verify/lookup.json'.format(KAVENEGAR_KEY)
+        params = {'receptor': PhoneNumber, 'token': msg_count, 'template': 'nakhll-message'}
+        requests.post(url, params=params)
+
 
 # ---------------------------------------------------- User Profile Pages ---------------------------------------------------------
 
@@ -156,14 +160,14 @@ class SendMessage:
 class ProfileDashboard(LoginRequiredMixin, TemplateView):
     template_name = 'nakhll_market/profile/pages/profile.html'
     redirect_field_name = 'auth:login'
-    
+
     def get_context_data(self, **kwargs):
         this_profile = Profile.objects.get(FK_User=self.request.user)
         this_inverntory = self.request.user.WalletManager.Inverntory
         # Get Menu Item
-        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+        options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
         # -------------------------------------------------------------------
         context = super().get_context_data(**kwargs)
         context['This_User_Profile'] = this_profile
@@ -171,7 +175,8 @@ class ProfileDashboard(LoginRequiredMixin, TemplateView):
         context['Options'] = options
         context['MenuList'] = navbar
         return context
-    
+
+
 # Get User Dashboard Info
 # def ProfileDashboard(request):
 #     # Check User Status
@@ -194,7 +199,7 @@ class ProfileDashboard(LoginRequiredMixin, TemplateView):
 #         return render(request, 'nakhll_market/profile/pages/profile.html', context)
 
 #     else:
-        
+
 #         return redirect("auth:login")
 
 # implement class based views
@@ -202,13 +207,14 @@ class ProfileDashboard(LoginRequiredMixin, TemplateView):
 class ProfileWallet(LoginRequiredMixin, TemplateView):
     template_name = 'nakhll_market/profile/pages/wallet.html'
     redirect_field_name = "auth:login"
+
     def get_context_data(self, **kwargs):
         this_profile = Profile.objects.get(FK_User=self.request.user)
         this_inverntory = self.request.user.WalletManager.Inverntory
         # Get Menu Item
-        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+        options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
         # -------------------------------------------------------------------
 
         context = super().get_context_data(**kwargs)
@@ -218,8 +224,8 @@ class ProfileWallet(LoginRequiredMixin, TemplateView):
         context['MenuList'] = navbar
         context['Message'] = None
         return context
-        
-        
+
+
 # replaced with class based view - should delete after test
 # def ProfileWallet(request):
 #     # Check User Status
@@ -243,31 +249,32 @@ class ProfileWallet(LoginRequiredMixin, TemplateView):
 #         return render(request, 'nakhll_market/profile/pages/wallet.html', context)
 
 #     else:
-        
+
 #         return redirect("auth:login")
 
 # # Get User Message
-def ProfileMessage(request, status = None, start = None, end = None):
+def ProfileMessage(request, status=None, start=None, end=None):
     # Check User Status
-    if request.user.is_authenticated :
+    if request.user.is_authenticated:
         this_profile = Profile.objects.get(FK_User=request.user)
         this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
-        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+        options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
         # ------------------------------------------------------------------
         # Get All Message
         User_Message_List = []
+
         # Build Message Class
         class MessageClass:
             def __init__(self, item, status):
                 self.Message = item
                 self.Status = status
-        
+
         if (status == None) and (start == None) and (end == None):
             # Search In All Message
-            messages = Message.objects.filter(Type = True)
+            messages = Message.objects.filter(Type=True)
             for msg_item in messages:
                 for item in msg_item.FK_Users.all():
                     if item.FK_User == request.user:
@@ -275,7 +282,7 @@ def ProfileMessage(request, status = None, start = None, end = None):
                         User_Message_List.append(new)
 
         elif (start != '') and (end != ''):
-            messages = Message.objects.filter(Type = True, Date__range = [start, end])
+            messages = Message.objects.filter(Type=True, Date__range=[start, end])
             for msg_item in messages:
                 for item in msg_item.FK_Users.all():
                     if item.FK_User == request.user:
@@ -295,15 +302,15 @@ def ProfileMessage(request, status = None, start = None, end = None):
         def GetDate(item):
             return item.Message.Date
 
-        User_Message_List.sort(reverse = True, key = GetDate)
+        User_Message_List.sort(reverse=True, key=GetDate)
 
         context = {
-            'This_User_Profile':this_profile,
+            'This_User_Profile': this_profile,
             'This_User_Inverntory': this_inverntory,
             'Options': options,
-            'MenuList':navbar,
-            'Messages':User_Message_List,
-            'Status':'0',
+            'MenuList': navbar,
+            'Messages': User_Message_List,
+            'Status': '0',
         }
 
         return render(request, 'nakhll_market/profile/pages/message.html', context)
@@ -315,20 +322,34 @@ def ProfileMessage(request, status = None, start = None, end = None):
 class ProfileFactor(LoginRequiredMixin, TemplateView):
     template_name = 'nakhll_market/profile/pages/factor.html'
     redirect_field_name = 'auth:login'
-    
+
     def get_context_data(self, **kwargs):
         request = self.request
         context = super().get_context_data(**kwargs)
         context = baseData(request, 'factor')
         # Get All User Factor
-        context['This_User_Factor'] = Factor.objects.filter(FK_User = request.user, PaymentStatus = True).order_by('-OrderDate')
+        context['This_User_Factor'] = Factor.objects.filter(FK_User=request.user, PaymentStatus=True).order_by(
+            '-OrderDate')
         # Factor List
-        context['ShopFactors'] = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus = '1', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
-        context['ShopRedyFactors'] = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus = '2', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
-        context['ShopSendFactors'] = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus = '3', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
-        context['ShopCanselFactors'] = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus = '0', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
+        context['ShopFactors'] = Factor.objects.filter(PaymentStatus=True, Publish=True,
+                                                       FK_FactorPost__ProductStatus='1',
+                                                       FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by(
+            '-OrderDate')
+        context['ShopRedyFactors'] = Factor.objects.filter(PaymentStatus=True, Publish=True,
+                                                           FK_FactorPost__ProductStatus='2',
+                                                           FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by(
+            '-OrderDate')
+        context['ShopSendFactors'] = Factor.objects.filter(PaymentStatus=True, Publish=True,
+                                                           FK_FactorPost__ProductStatus='3',
+                                                           FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by(
+            '-OrderDate')
+        context['ShopCanselFactors'] = Factor.objects.filter(PaymentStatus=True, Publish=True,
+                                                             FK_FactorPost__ProductStatus='0',
+                                                             FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by(
+            '-OrderDate')
         return context
-        
+
+
 # def ProfileFactor(request):
 #     # Check User Status
 #     if request.user.is_authenticated :
@@ -340,7 +361,7 @@ class ProfileFactor(LoginRequiredMixin, TemplateView):
 #         context['ShopRedyFactors'] = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus = '2', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
 #         context['ShopSendFactors'] = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus = '3', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
 #         context['ShopCanselFactors'] = Factor.objects.filter(PaymentStatus = True, Publish = True, FK_FactorPost__ProductStatus = '0', FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=request.user).distinct().order_by('-OrderDate')
-     
+
 #         return render(request, 'nakhll_market/profile/pages/factor.html', context)
 #     else: 
 #         return redirect("auth:login")
@@ -357,8 +378,9 @@ class ProfileTransactione(LoginRequiredMixin, TemplateView):
         # Get User Info
         context = baseData(request, 'transaction')
         # Get All User Transaction
-        context['Transactions']  = Transaction.objects.filter(FK_User = request.user).order_by('-Date')
+        context['Transactions'] = Transaction.objects.filter(FK_User=request.user).order_by('-Date')
         return context
+
 
 # Get User Transactiones
 # def ProfileTransactione(request):
@@ -368,7 +390,7 @@ class ProfileTransactione(LoginRequiredMixin, TemplateView):
 #         context = baseData(request, 'transaction')
 #         # Get All User Transaction
 #         context['Transactions']  = Transaction.objects.filter(FK_User = request.user).order_by('-Date')
-     
+
 #         return render(request, 'nakhll_market/profile/pages/transaction.html', context)
 #     else:
 #         return redirect("auth:login")
@@ -378,16 +400,17 @@ class ProfileTransactione(LoginRequiredMixin, TemplateView):
 class ProfileReview(LoginRequiredMixin, TemplateView):
     template_name = 'nakhll_market/profile/pages/review.html'
     redirect_field_name = 'auth:login'
-    
+
     def get_context_data(self, **kwargs):
         request = self.request
         context = super().get_context_data(**kwargs)
         this_profile = Profile.objects.get(FK_User=request.user)
         this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
-        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+        options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
+
         # --------------------------------------------------------------------
         # Build Class
         class Comments:
@@ -398,20 +421,23 @@ class ProfileReview(LoginRequiredMixin, TemplateView):
                 self.like = likecount
                 self.date = datecreate
                 self.status = status
+
         # Get All User Comments
         user_comments = []
-        for item in Comment.objects.filter(FK_UserAdder = request.user).order_by('-DateCreate'):
-            new_item = Comments(item.get_type, item.Description, item.get_object_name, item.get_like_count, item.DateCreate, item.get_status)
+        for item in Comment.objects.filter(FK_UserAdder=request.user).order_by('-DateCreate'):
+            new_item = Comments(item.get_type, item.Description, item.get_object_name, item.get_like_count,
+                                item.DateCreate, item.get_status)
             user_comments.append(new_item)
-        for item in ShopComment.objects.filter(FK_UserAdder = request.user).order_by('-DateCreate'):
-            new_item = Comments(item.get_type, item.Description, item.get_object_name, item.get_like_count, item.DateCreate, item.get_status)
+        for item in ShopComment.objects.filter(FK_UserAdder=request.user).order_by('-DateCreate'):
+            new_item = Comments(item.get_type, item.Description, item.get_object_name, item.get_like_count,
+                                item.DateCreate, item.get_status)
             user_comments.append(new_item)
 
         # Get Product Create Date
         def GetDate(item):
             return item.date
-        
-        user_comments.sort(reverse = True, key = GetDate)
+
+        user_comments.sort(reverse=True, key=GetDate)
 
         context['This_User_Profile'] = this_profile
         context['This_User_Inverntory'] = this_inverntory
@@ -419,6 +445,7 @@ class ProfileReview(LoginRequiredMixin, TemplateView):
         context['MenuList'] = navbar
         context['Comments'] = user_comments
         return context
+
 
 # def ProfileReview(request):
 #    # Check User Status
@@ -451,7 +478,7 @@ class ProfileReview(LoginRequiredMixin, TemplateView):
 #         # Get Product Create Date
 #         def GetDate(item):
 #             return item.date
-        
+
 #         user_comments.sort(reverse = True, key = GetDate)
 
 #         context = {
@@ -461,7 +488,7 @@ class ProfileReview(LoginRequiredMixin, TemplateView):
 #             'MenuList':navbar,
 #             'Comments':user_comments,
 #         }
-     
+
 #         return render(request, 'nakhll_market/profile/pages/review.html', context)
 #     else:
 #         return redirect("auth:login")
@@ -471,24 +498,26 @@ class ProfileReview(LoginRequiredMixin, TemplateView):
 class ProfileShops(LoginRequiredMixin, TemplateView):
     template_name = 'nakhll_market/profile/pages/shops.html'
     redirect_field_name = 'auth:login'
-    
+
     def get_context_data(self, **kwargs):
         request = self.request
         context = super().get_context_data(**kwargs)
         this_profile = Profile.objects.get(FK_User=request.user)
         this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
-        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+        options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
         # --------------------------------------------------------------------
         # Get All User`s Shops
         user_shop_list = []
+
         class Shop_item:
             def __init__(self, item, item_market, item_submarket):
                 self.Shop = item
                 self.Market = item_market
                 self.SubMarket = item_submarket
+
         # Get All Shops
         for item in this_profile.get_user_shops():
             if item.FK_SubMarket.all().count() != 0:
@@ -505,16 +534,16 @@ class ProfileShops(LoginRequiredMixin, TemplateView):
         user_unpubished_shops = Shop.objects.filter(FK_ShopManager=request.user, Publish=False)
         # Get All User Products
         user_product_list = this_profile.get_user_products
-        context ['This_User_Profile'] = this_profile
-        context ['This_User_Inverntory'] = this_inverntory
-        context ['Options'] = options
-        context ['MenuList'] = navbar
-        context ['UserShops'] = user_shop_list
+        context['This_User_Profile'] = this_profile
+        context['This_User_Inverntory'] = this_inverntory
+        context['Options'] = options
+        context['MenuList'] = navbar
+        context['UserShops'] = user_shop_list
         context['UserUnpublishedUser'] = user_unpubished_shops
-        context ['UserProducts'] = user_product_list
-        return  context
+        context['UserProducts'] = user_product_list
+        return context
 
-        
+
 # def ProfileShops(request):
 #     # Check User Status
 #     if request.user.is_authenticated :
@@ -563,15 +592,14 @@ class ProfileShops(LoginRequiredMixin, TemplateView):
 # ----------------------------------------------------- End User Profile Pages ----------------------------------------------------------
 
 
-
 # -----------------------------------------------------------------------------------------------------------------------------------------
 
 
 # New Message
-def AddNewMessage(request, msg = None):
+def AddNewMessage(request, msg=None):
     # Check User Status
     if request.user.is_authenticated:
-        if request.method == 'POST' :
+        if request.method == 'POST':
             try:
                 Message_Title = request.POST["msg_title"]
             except:
@@ -585,9 +613,9 @@ def AddNewMessage(request, msg = None):
 
             if ((Message_Title != None) and (Message_Title != '')) and ((Message_Des != None) and (Message_Des != '')):
                 if len(Message_User) != 0:
-                    new_message =  Message.objects.create(Title = Message_Title, Text = Message_Des, FK_Sender = request.user)
+                    new_message = Message.objects.create(Title=Message_Title, Text=Message_Des, FK_Sender=request.user)
                     for item in Message_User:
-                        new = User_Message_Status.objects.create(FK_User = User.objects.get(id = item))
+                        new = User_Message_Status.objects.create(FK_User=User.objects.get(id=item))
                         new_message.FK_Users.add(new)
                     for item in new_message.FK_Users.all():
                         SendMessage(item.FK_User.id).run()
@@ -596,26 +624,26 @@ def AddNewMessage(request, msg = None):
                         description = new_message.Title + '...'
                         SendPushnotif().run(title, description, item.FK_User.id)
                 else:
-                    new_message =  Message.objects.create(Title = Message_Title, Text = Message_Des, FK_Sender = request.user)
+                    new_message = Message.objects.create(Title=Message_Title, Text=Message_Des, FK_Sender=request.user)
                     for item in Profile.objects.all():
-                        new = User_Message_Status.objects.create(FK_User = item.FK_User)
+                        new = User_Message_Status.objects.create(FK_User=item.FK_User)
                         new_message.FK_Users.add(new)
                 return redirect('nakhll_market:Re_AddNewMessage',
-                msg = 'پیام شما ثبت شد...')
-            else:  
+                                msg='پیام شما ثبت شد...')
+            else:
                 return redirect('nakhll_market:Re_AddNewMessage',
-                msg = 'عنوان و متن پیام نمی تواند خالی باشد!')
+                                msg='عنوان و متن پیام نمی تواند خالی باشد!')
         else:
             # Get User Info
             this_profile = Profile.objects.get(FK_User=request.user)
             this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
-            options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+            options = Option_Meta.objects.filter(Title='index_page_menu_items')
             # Get Nav Bar Menu Item
-            navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+            navbar = Option_Meta.objects.filter(Title='nav_menu_items')
             # -------------------------------------------------------------------
             # get all active user
-            user_list = User.objects.filter(is_active = True)
+            user_list = User.objects.filter(is_active=True)
 
             if msg != None:
                 show = True
@@ -625,13 +653,13 @@ def AddNewMessage(request, msg = None):
                 message = None
 
             context = {
-                'This_User_Profile':this_profile,
+                'This_User_Profile': this_profile,
                 'This_User_Inverntory': this_inverntory,
                 'Options': options,
-                'MenuList':navbar,
-                'User':user_list,
-                'ShowAlart':show,
-                'AlartMessage':message,
+                'MenuList': navbar,
+                'User': user_list,
+                'ShowAlart': show,
+                'AlartMessage': message,
             }
 
             return render(request, 'nakhll_market/profile/pages/newmessage.html', context)
@@ -643,14 +671,12 @@ def AddNewMessage(request, msg = None):
 def SendPush(request):
     SendPushnotif().run()
     return redirect('nakhll_market:AddNewMessage')
-    
-
 
 
 # Show Invate Page
 def ShowInvatePage(request):
     # Check User Status
-    if request.user.is_authenticated :
+    if request.user.is_authenticated:
         # Get User Info
         user = User.objects.all()
         # Get User Profile
@@ -658,42 +684,38 @@ def ShowInvatePage(request):
         # Get Wallet Inverntory
         wallets = Wallet.objects.all()
         # Get Menu Item
-        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+        options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
         # ------------------------------------------------------------------
 
         context = {
-            'Users':user,
-            'Profile':profile,
+            'Users': user,
+            'Profile': profile,
             'Wallet': wallets,
             'Options': options,
-            'MenuList':navbar,
+            'MenuList': navbar,
         }
 
         return render(request, 'nakhll_market/profile/pages/invitation.html', context)
 
     else:
-        
+
         return redirect("auth:login")
 
 
-
-
-
-
 # -----------------------------------------------------------------------------------------------------------------------------------------
-   
+
 
 # Add And Show User`s Shop And Peoduct
-#--------------------------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------------------------------------
 
 # Add User Bank Account Info In Shop-Manage
 def add_user_bank_account_info(request):
     # Check User Status
-    if request.user.is_authenticated :
-        if request.method == 'POST': 
-            try :
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            try:
                 # get data
                 try:
                     CreditCardNumber = request.POST["Shop_CreditCardNumber"]
@@ -710,17 +732,19 @@ def add_user_bank_account_info(request):
                 except:
                     AccountOwner = None
                 # check data
-                if ((CreditCardNumber != None) and (CreditCardNumber != '')) and ((ShabaBankNumber != None) and (ShabaBankNumber != '')) and ((AccountOwner != None) and (AccountOwner != '')):
-                    BankAccount.objects.create(FK_Profile = Profile.objects.get(FK_User = request.user), CreditCardNumber = CreditCardNumber, ShabaBankNumber = ShabaBankNumber, AccountOwner = AccountOwner)
+                if ((CreditCardNumber != None) and (CreditCardNumber != '')) and (
+                        (ShabaBankNumber != None) and (ShabaBankNumber != '')) and (
+                        (AccountOwner != None) and (AccountOwner != '')):
+                    BankAccount.objects.create(FK_Profile=Profile.objects.get(FK_User=request.user),
+                                               CreditCardNumber=CreditCardNumber, ShabaBankNumber=ShabaBankNumber,
+                                               AccountOwner=AccountOwner)
                     return redirect("nakhll_market:UserShops")
                 else:
                     return redirect("nakhll_market:UserShops")
             except Exception as e:
-                return redirect("nakhll_market:error_500", error_text = str(e))
-    else:    
+                return redirect("nakhll_market:error_500", error_text=str(e))
+    else:
         return redirect("auth:login")
-
-
 
 
 # Add New Shop In Shop-Manage
@@ -817,61 +841,63 @@ def add_new_shop(request):
                         holidays += '-'
                     holidays += '6'
                 # Add New Record
-                this_shop = Shop.objects.create(FK_ShopManager = request.user, Title = Title, Slug = Slug, Description = Description, Bio = Bio, State = State, BigCity = BigCity, City = City)
+                this_shop = Shop.objects.create(FK_ShopManager=request.user, Title=Title, Slug=Slug,
+                                                Description=Description, Bio=Bio, State=State, BigCity=BigCity,
+                                                City=City)
                 if holidays != '':
                     this_shop.Holidays = holidays
                 if Image != '':
                     this_shop.Image = Image
                 for item in SubMarkets:
-                    this_shop.FK_SubMarket.add(SubMarket.objects.get(ID = item))
+                    this_shop.FK_SubMarket.add(SubMarket.objects.get(ID=item))
                 this_shop.save()
 
-                Alert.objects.create(Part = '2', FK_User = request.user, Slug = this_shop.ID)
+                Alert.objects.create(Part='2', FK_User=request.user, Slug=this_shop.ID)
                 # -----------------------------------------------------------------------------
                 # Get User Info
-                
+
                 this_profile = Profile.objects.get(FK_User=request.user)
                 this_inverntory = request.user.WalletManager.Inverntory
                 # Get Menu Item
-                options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+                options = Option_Meta.objects.filter(Title='index_page_menu_items')
                 # Get Nav Bar Menu Item
-                navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+                navbar = Option_Meta.objects.filter(Title='nav_menu_items')
                 # -------------------------------------------------------------------
                 # Get All Submarkets
-                submarkets = SubMarket.objects.filter(Publish = True)
+                submarkets = SubMarket.objects.filter(Publish=True)
 
                 context = {
-                    'This_User_Profile':this_profile,
+                    'This_User_Profile': this_profile,
                     'This_User_Inverntory': this_inverntory,
                     'Options': options,
-                    'MenuList':navbar,
-                    'Submarkets':submarkets,
-                    'ShowAlart':True,
-                    'AlartMessage':'حجره "' + this_shop.Title + '" ثبت شد، و پس از تایید کارشناسان سایت منتشر می شود.',
+                    'MenuList': navbar,
+                    'Submarkets': submarkets,
+                    'ShowAlart': True,
+                    'AlartMessage': 'حجره "' + this_shop.Title + '" ثبت شد، و پس از تایید کارشناسان سایت منتشر می شود.',
                 }
 
                 return render(request, 'nakhll_market/profile/pages/newshop.html', context)
             except Exception as e:
                 # Get User Info
-                
+
                 this_profile = Profile.objects.get(FK_User=request.user)
                 this_inverntory = request.user.WalletManager.Inverntory
                 # Get Menu Item
-                options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+                options = Option_Meta.objects.filter(Title='index_page_menu_items')
                 # Get Nav Bar Menu Item
-                navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+                navbar = Option_Meta.objects.filter(Title='nav_menu_items')
                 # -------------------------------------------------------------------
                 # Get All Submarkets
-                submarkets = SubMarket.objects.filter(Publish = True)
+                submarkets = SubMarket.objects.filter(Publish=True)
 
                 context = {
-                    'This_User_Profile':this_profile,
+                    'This_User_Profile': this_profile,
                     'This_User_Inverntory': this_inverntory,
                     'Options': options,
-                    'MenuList':navbar,
-                    'Submarkets':submarkets,
-                    'ShowAlart':True,
-                    'AlartMessage':str(e),
+                    'MenuList': navbar,
+                    'Submarkets': submarkets,
+                    'ShowAlart': True,
+                    'AlartMessage': str(e),
                 }
 
                 return render(request, 'nakhll_market/profile/pages/newshop.html', context)
@@ -880,32 +906,30 @@ def add_new_shop(request):
             this_profile = Profile.objects.get(FK_User=request.user)
             this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
-            options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+            options = Option_Meta.objects.filter(Title='index_page_menu_items')
             # Get Nav Bar Menu Item
-            navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+            navbar = Option_Meta.objects.filter(Title='nav_menu_items')
             # -------------------------------------------------------------------
             # Get All Submarkets
-            submarkets = SubMarket.objects.filter(Publish = True)
+            submarkets = SubMarket.objects.filter(Publish=True)
 
             context = {
-                'This_User_Profile':this_profile,
+                'This_User_Profile': this_profile,
                 'This_User_Inverntory': this_inverntory,
                 'Options': options,
-                'MenuList':navbar,
-                'Submarkets':submarkets,
+                'MenuList': navbar,
+                'Submarkets': submarkets,
             }
 
             return render(request, 'nakhll_market/profile/pages/newshop.html', context)
-    else:    
+    else:
         return redirect("auth:login")
-
-
 
 
 # Edit Shop In Shop-Manage
 def edit_shop_info(request, shop_slug):
     # Check User Status
-    if request.user.is_authenticated :
+    if request.user.is_authenticated:
         if request.method == 'POST':
             # Get Data
             Title = request.POST["Shop_Title"]
@@ -960,7 +984,7 @@ def edit_shop_info(request, shop_slug):
             except MultiValueDictKeyError:
                 Image = ''
             # Get This Shop
-            this_shop = get_object_or_404(Shop, ID = id)
+            this_shop = get_object_or_404(Shop, ID=id)
             # Set Data
             try:
                 holidays = ''
@@ -994,71 +1018,73 @@ def edit_shop_info(request, shop_slug):
                         holidays += '-'
                     holidays += '6'
                 # Shop Edit Alert
-                if not Alert.objects.filter(Part = '3', Slug = this_shop.ID, Seen = False).exists():
-                    edit_shop_alert = Alert.objects.create(FK_User = request.user, Part = '3', Slug = this_shop.ID)
+                if not Alert.objects.filter(Part='3', Slug=this_shop.ID, Seen=False).exists():
+                    edit_shop_alert = Alert.objects.create(FK_User=request.user, Part='3', Slug=this_shop.ID)
                 else:
-                    edit_shop_alert = Alert.objects.get(Part = '3', Slug = this_shop.ID, Seen = False)
+                    edit_shop_alert = Alert.objects.get(Part='3', Slug=this_shop.ID, Seen=False)
                     edit_shop_alert.FK_Field.all().delete()
                 # Check Change Dtat
                 if SubMarkets:
                     new_shop_submarket_list = ''
                     for item in SubMarkets:
-                        new_shop_submarket_list += item + '~' 
-                    shop_submarket_field = Field.objects.create(Title = 'SubMarket', Value = new_shop_submarket_list)
+                        new_shop_submarket_list += item + '~'
+                    shop_submarket_field = Field.objects.create(Title='SubMarket', Value=new_shop_submarket_list)
                     edit_shop_alert.FK_Field.add(shop_submarket_field)
-                
+
                 if Image != '':
                     this_shop.NewImage = Image
                     this_shop.save()
                     new_image_string = 'NewImage' + '#' + str(this_shop.NewImage)
-                    shop_image_field = Field.objects.create(Title = 'Image', Value = new_image_string)
+                    shop_image_field = Field.objects.create(Title='Image', Value=new_image_string)
                     edit_shop_alert.FK_Field.add(shop_image_field)
-                    
+
                 if Title != this_shop.Title:
-                    shop_title_field = Field(Title = 'Title', Value = Title)
+                    shop_title_field = Field(Title='Title', Value=Title)
                     edit_shop_alert.FK_Field.add(shop_title_field)
 
                 if Description != this_shop.Description:
-                    shop_description_field = Field(Title = 'Description', Value = Description)
+                    shop_description_field = Field(Title='Description', Value=Description)
                     edit_shop_alert.FK_Field.add(shop_description_field)
 
                 if Bio != this_shop.Bio:
-                    shop_bio_field = Field(Title = 'Bio', Value = Bio)
+                    shop_bio_field = Field(Title='Bio', Value=Bio)
                     edit_shop_alert.FK_Field.add(shop_bio_field)
 
                 if State != this_shop.State:
-                    shop_state_field = Field.objects.create(Title = 'State', Value = State)
+                    shop_state_field = Field.objects.create(Title='State', Value=State)
                     edit_shop_alert.FK_Field.add(shop_state_field)
 
                 if BigCity != this_shop.BigCity:
-                    shop_bigcity_field = Field.objects.create(Title = 'BigCity', Value = BigCity)
+                    shop_bigcity_field = Field.objects.create(Title='BigCity', Value=BigCity)
                     edit_shop_alert.FK_Field.add(shop_bigcity_field)
 
                 if City != this_shop.City:
-                    shop_city_field = Field.objects.create(Title = 'City', Value = City)
+                    shop_city_field = Field.objects.create(Title='City', Value=City)
                     edit_shop_alert.FK_Field.add(shop_city_field)
 
                 if holidays != this_shop.Holidays:
-                    shop_holidays_field = Field.objects.create(Title = 'Holidays', Value = holidays)
+                    shop_holidays_field = Field.objects.create(Title='Holidays', Value=holidays)
                     edit_shop_alert.FK_Field.add(shop_holidays_field)
-                    
+
                 if edit_shop_alert.FK_Field.all().count() != 0:
                     # Get User Info
-                    
+
                     this_profile = Profile.objects.get(FK_User=request.user)
                     this_inverntory = request.user.WalletManager.Inverntory
                     # Get Menu Item
-                    options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+                    options = Option_Meta.objects.filter(Title='index_page_menu_items')
                     # Get Nav Bar Menu Item
-                    navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+                    navbar = Option_Meta.objects.filter(Title='nav_menu_items')
                     # --------------------------------------------------------------------
                     # Get This Shop
-                    this_shop = get_object_or_404(Shop, Slug = shop_slug)
+                    this_shop = get_object_or_404(Shop, Slug=shop_slug)
+
                     # Build Class
                     class submarket:
                         def __init__(self, item, status):
                             self.SubMarket = item
                             self.Status = status
+
                     # Submarket List
                     this_shop_submarket_list = []
                     this_shop_submarket = []
@@ -1066,7 +1092,7 @@ def edit_shop_info(request, shop_slug):
                     for item in this_shop.FK_SubMarket.all():
                         this_shop_submarket.append(item)
                     # Select Submarket
-                    for item in SubMarket.objects.filter(Publish = True):
+                    for item in SubMarket.objects.filter(Publish=True):
                         if item in this_shop_submarket:
                             new_object = submarket(item, True)
                         else:
@@ -1074,37 +1100,39 @@ def edit_shop_info(request, shop_slug):
                         this_shop_submarket_list.append(new_object)
 
                     context = {
-                        'This_User_Profile':this_profile,
+                        'This_User_Profile': this_profile,
                         'This_User_Inverntory': this_inverntory,
                         'Options': options,
-                        'MenuList':navbar,
-                        'UserShop':this_shop,
-                        'Submarkets':this_shop_submarket_list,
-                        'ShowAlart':True,
-                        'AlartMessage':'اطلاعات حجره "' + this_shop.Title +'" تغییر پیدا کرده است، و پس از تایید کارشناسان اعمال می شود.',
+                        'MenuList': navbar,
+                        'UserShop': this_shop,
+                        'Submarkets': this_shop_submarket_list,
+                        'ShowAlart': True,
+                        'AlartMessage': 'اطلاعات حجره "' + this_shop.Title + '" تغییر پیدا کرده است، و پس از تایید کارشناسان اعمال می شود.',
                     }
 
                     return render(request, 'nakhll_market/profile/pages/shopdetails.html', context)
                 else:
                     edit_shop_alert.delete()
-                    return redirect("nakhll_market:UserShops")   
+                    return redirect("nakhll_market:UserShops")
             except Exception as e:
                 # Get User Info
-                
+
                 this_profile = Profile.objects.get(FK_User=request.user)
                 this_inverntory = request.user.WalletManager.Inverntory
                 # Get Menu Item
-                options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+                options = Option_Meta.objects.filter(Title='index_page_menu_items')
                 # Get Nav Bar Menu Item
-                navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+                navbar = Option_Meta.objects.filter(Title='nav_menu_items')
                 # --------------------------------------------------------------------
                 # Get This Shop
-                this_shop = get_object_or_404(Shop, Slug = shop_slug)
+                this_shop = get_object_or_404(Shop, Slug=shop_slug)
+
                 # Build Class
                 class submarket:
                     def __init__(self, item, status):
                         self.SubMarket = item
                         self.Status = status
+
                 # Submarket List
                 this_shop_submarket_list = []
                 this_shop_submarket = []
@@ -1112,7 +1140,7 @@ def edit_shop_info(request, shop_slug):
                 for item in this_shop.FK_SubMarket.all():
                     this_shop_submarket.append(item)
                 # Select Submarket
-                for item in SubMarket.objects.filter(Publish = True):
+                for item in SubMarket.objects.filter(Publish=True):
                     if item in this_shop_submarket:
                         new_object = submarket(item, True)
                     else:
@@ -1120,14 +1148,14 @@ def edit_shop_info(request, shop_slug):
                     this_shop_submarket_list.append(new_object)
 
                 context = {
-                    'This_User_Profile':this_profile,
+                    'This_User_Profile': this_profile,
                     'This_User_Inverntory': this_inverntory,
                     'Options': options,
-                    'MenuList':navbar,
-                    'UserShop':this_shop,
-                    'Submarkets':this_shop_submarket_list,
-                    'ShowAlart':True,
-                    'AlartMessage':str(e),
+                    'MenuList': navbar,
+                    'UserShop': this_shop,
+                    'Submarkets': this_shop_submarket_list,
+                    'ShowAlart': True,
+                    'AlartMessage': str(e),
                 }
 
                 return render(request, 'nakhll_market/profile/pages/shopdetails.html', context)
@@ -1136,17 +1164,19 @@ def edit_shop_info(request, shop_slug):
             this_profile = Profile.objects.get(FK_User=request.user)
             this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
-            options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+            options = Option_Meta.objects.filter(Title='index_page_menu_items')
             # Get Nav Bar Menu Item
-            navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+            navbar = Option_Meta.objects.filter(Title='nav_menu_items')
             # --------------------------------------------------------------------
             # Get This Shop
-            this_shop = get_object_or_404(Shop, Slug = shop_slug)
+            this_shop = get_object_or_404(Shop, Slug=shop_slug)
+
             # Build Class
             class submarket:
                 def __init__(self, item, status):
                     self.SubMarket = item
                     self.Status = status
+
             # Submarket List
             this_shop_submarket_list = []
             this_shop_submarket = []
@@ -1154,7 +1184,7 @@ def edit_shop_info(request, shop_slug):
             for item in this_shop.FK_SubMarket.all():
                 this_shop_submarket.append(item)
             # Select Submarket
-            for item in SubMarket.objects.filter(Publish = True):
+            for item in SubMarket.objects.filter(Publish=True):
                 if item in this_shop_submarket:
                     new_object = submarket(item, True)
                 else:
@@ -1162,20 +1192,17 @@ def edit_shop_info(request, shop_slug):
                 this_shop_submarket_list.append(new_object)
 
             context = {
-                'This_User_Profile':this_profile,
+                'This_User_Profile': this_profile,
                 'This_User_Inverntory': this_inverntory,
                 'Options': options,
-                'MenuList':navbar,
-                'UserShop':this_shop,
-                'Submarkets':this_shop_submarket_list,
+                'MenuList': navbar,
+                'UserShop': this_shop,
+                'Submarkets': this_shop_submarket_list,
             }
 
             return render(request, 'nakhll_market/profile/pages/shopdetails.html', context)
     else:
         return redirect("auth:login")
-
-
-
 
 
 # Shop Banners List
@@ -1184,38 +1211,35 @@ def shop_banner_list(request, shop_slug):
         this_profile = Profile.objects.get(FK_User=request.user)
         this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
-        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+        options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
         # --------------------------------------------------------------------
         # Get Shop
-        this_shop = get_object_or_404(Shop, Slug = shop_slug)
+        this_shop = get_object_or_404(Shop, Slug=shop_slug)
         # Get This Shop Banners
-        this_shop_banners = ShopBanner.objects.filter(FK_Shop = this_shop)
+        this_shop_banners = ShopBanner.objects.filter(FK_Shop=this_shop)
 
         context = {
-            'This_User_Profile':this_profile,
+            'This_User_Profile': this_profile,
             'This_User_Inverntory': this_inverntory,
             'Options': options,
-            'MenuList':navbar,
-            'ShopID':this_shop.ID,
-            'ShopBanners':this_shop_banners,
+            'MenuList': navbar,
+            'ShopID': this_shop.ID,
+            'ShopBanners': this_shop_banners,
         }
-     
+
         return render(request, 'nakhll_market/profile/pages/shopbannerlist.html', context)
     else:
         return redirect("auth:login")
 
 
-
-
-
 # Change Shop Banner Status
 def change_shop_banner_status(request, banner_id):
     # Check User Status
-    if request.user.is_authenticated :
+    if request.user.is_authenticated:
         # Get This Banner
-        this_banner = ShopBanner.objects.get(id = banner_id)
+        this_banner = ShopBanner.objects.get(id=banner_id)
         # Change Status
         if this_banner.Available:
             this_banner.Available = False
@@ -1224,12 +1248,9 @@ def change_shop_banner_status(request, banner_id):
             this_banner.Available = True
             this_banner.save()
 
-        return redirect("nakhll_market:Shop_Manager_ShopBannerList", shop_slug = this_banner.FK_Shop.Slug)
+        return redirect("nakhll_market:Shop_Manager_ShopBannerList", shop_slug=this_banner.FK_Shop.Slug)
     else:
         return redirect("auth:login")
-
-
-
 
 
 # Edit Shop Banner Info
@@ -1252,12 +1273,12 @@ def edit_shop_banner(request, banner_id):
                 URL = request.POST["Banner_URL"]
             except:
                 URL = None
-            
+
             try:
                 Description = request.POST["Banner_Description"]
             except:
                 Description = None
-            
+
             try:
                 Builder_Name = request.POST["Banner_Builder"]
             except:
@@ -1268,170 +1289,166 @@ def edit_shop_banner(request, banner_id):
             except:
                 Builder_URL = None
             # Get This Shop Banner
-            this_banner = get_object_or_404(ShopBanner, id = banner_id)
+            this_banner = get_object_or_404(ShopBanner, id=banner_id)
             try:
                 # Shop Banner Edit Alert
-                if not Alert.objects.filter(Part = '5', Slug = this_banner.id, Seen = False).exists():
-                    edit_shop_banner_alert = Alert.objects.create(FK_User = request.user, Part = '5', Slug = this_banner.id)
+                if not Alert.objects.filter(Part='5', Slug=this_banner.id, Seen=False).exists():
+                    edit_shop_banner_alert = Alert.objects.create(FK_User=request.user, Part='5', Slug=this_banner.id)
                 else:
-                    edit_shop_banner_alert = Alert.objects.get(Part = '5', Slug = this_banner.id, Seen = False)
+                    edit_shop_banner_alert = Alert.objects.get(Part='5', Slug=this_banner.id, Seen=False)
                     edit_shop_banner_alert.FK_Field.all().delete()
                 # Check Change Info
                 if (Title != None) and (Title != ''):
                     if Title != this_banner.Title:
-                        shop_banner_title_field = Field.objects.create(Title = 'Title', Value = Title)
+                        shop_banner_title_field = Field.objects.create(Title='Title', Value=Title)
                         edit_shop_banner_alert.FK_Field.add(shop_banner_title_field)
                     if Image != '':
                         this_banner.NewImage = Image
                         this_banner.save()
                         new_image_string = 'NewImage' + '#' + str(this_banner.NewImage)
-                        shop_banner_image_field = Field.objects.create(Title = 'Image', Value = new_image_string)
+                        shop_banner_image_field = Field.objects.create(Title='Image', Value=new_image_string)
                         edit_shop_banner_alert.FK_Field.add(shop_banner_image_field)
                     if Description != this_banner.Description:
-                        shop_banner_description_field = Field(Title = 'Description', Value = Description)
+                        shop_banner_description_field = Field(Title='Description', Value=Description)
                         edit_shop_banner_alert.FK_Field.add(shop_banner_description_field)
                     if (URL != this_banner.URL):
-                        shop_banner_url_field = Field.objects.create(Title = 'URL',Value = URL)
+                        shop_banner_url_field = Field.objects.create(Title='URL', Value=URL)
                         edit_shop_banner_alert.FK_Field.add(shop_banner_url_field)
                     if Builder_Name != this_banner.BannerBuilder:
-                        shop_banner_builder_name_field = Field.objects.create(Title = 'BannerBuilder', Value = Builder_Name)
+                        shop_banner_builder_name_field = Field.objects.create(Title='BannerBuilder', Value=Builder_Name)
                         edit_shop_banner_alert.FK_Field.add(shop_banner_builder_name_field)
                     if Builder_URL != this_banner.BannerURL:
-                        shop_banner_builder_name_field = Field(Title = 'BannerURL',Value = Builder_URL)
+                        shop_banner_builder_name_field = Field(Title='BannerURL', Value=Builder_URL)
                         edit_shop_banner_alert.FK_Field.add(shop_banner_builder_name_field)
                     if edit_shop_banner_alert.FK_Field.all().count() != 0:
                         # Get User Info
-                        
+
                         this_profile = Profile.objects.get(FK_User=request.user)
                         this_inverntory = request.user.WalletManager.Inverntory
                         # Get Menu Item
-                        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+                        options = Option_Meta.objects.filter(Title='index_page_menu_items')
                         # Get Nav Bar Menu Item
-                        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+                        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
                         # --------------------------------------------------------------------
                         # Get Shop
-                        this_shop = get_object_or_404(Shop, Slug = this_banner.FK_Shop.Slug)
+                        this_shop = get_object_or_404(Shop, Slug=this_banner.FK_Shop.Slug)
                         # Get This Shop Banners
-                        this_shop_banners = ShopBanner.objects.filter(FK_Shop = this_shop)
+                        this_shop_banners = ShopBanner.objects.filter(FK_Shop=this_shop)
                         # Change Banner Status
                         this_banner.Edite = True
                         this_banner.save()
 
                         context = {
-                            'This_User_Profile':this_profile,
+                            'This_User_Profile': this_profile,
                             'This_User_Inverntory': this_inverntory,
                             'Options': options,
-                            'MenuList':navbar,
-                            'ThisShop':this_shop,
-                            'ShopBanners':this_shop_banners,
-                            'ShowAlart':True,
-                            'AlartMessage':'اطلاعات بنر حجره مورد نظر شما تغییر کرده است، و پس از تایید کارشناسان اعمال می گردد.',
+                            'MenuList': navbar,
+                            'ThisShop': this_shop,
+                            'ShopBanners': this_shop_banners,
+                            'ShowAlart': True,
+                            'AlartMessage': 'اطلاعات بنر حجره مورد نظر شما تغییر کرده است، و پس از تایید کارشناسان اعمال می گردد.',
                         }
-                    
+
                         return render(request, 'nakhll_market/profile/pages/shopbannerlist.html', context)
                     else:
                         # Get User Info
-                        
+
                         this_profile = Profile.objects.get(FK_User=request.user)
                         this_inverntory = request.user.WalletManager.Inverntory
                         # Get Menu Item
-                        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+                        options = Option_Meta.objects.filter(Title='index_page_menu_items')
                         # Get Nav Bar Menu Item
-                        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+                        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
                         # --------------------------------------------------------------------
                         # Get This Shop Banner
-                        this_banner = get_object_or_404(ShopBanner, id = banner_id)
+                        this_banner = get_object_or_404(ShopBanner, id=banner_id)
 
                         context = {
-                            'This_User_Profile':this_profile,
+                            'This_User_Profile': this_profile,
                             'This_User_Inverntory': this_inverntory,
                             'Options': options,
-                            'MenuList':navbar,
-                            'ThisShopBanner':this_banner,
-                            'ShowAlart':True,
-                            'AlartMessage':'شما تغییر ایجاد نکرده اید.'
+                            'MenuList': navbar,
+                            'ThisShopBanner': this_banner,
+                            'ShowAlart': True,
+                            'AlartMessage': 'شما تغییر ایجاد نکرده اید.'
                         }
 
                         return render(request, 'nakhll_market/profile/pages/editeshopbanner.html', context)
                 else:
                     # Get User Info
-                    
+
                     this_profile = Profile.objects.get(FK_User=request.user)
                     this_inverntory = request.user.WalletManager.Inverntory
                     # Get Menu Item
-                    options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+                    options = Option_Meta.objects.filter(Title='index_page_menu_items')
                     # Get Nav Bar Menu Item
-                    navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+                    navbar = Option_Meta.objects.filter(Title='nav_menu_items')
                     # --------------------------------------------------------------------
                     # Get This Shop Banner
-                    this_banner = get_object_or_404(ShopBanner, id = banner_id)
+                    this_banner = get_object_or_404(ShopBanner, id=banner_id)
 
                     context = {
-                        'This_User_Profile':this_profile,
+                        'This_User_Profile': this_profile,
                         'This_User_Inverntory': this_inverntory,
                         'Options': options,
-                        'MenuList':navbar,
-                        'ThisShopBanner':this_banner,
-                        'ShowAlart':True,
-                        'AlartMessage':'فیلد "عنوان بنر" نمی تواند خالی باشد.'
+                        'MenuList': navbar,
+                        'ThisShopBanner': this_banner,
+                        'ShowAlart': True,
+                        'AlartMessage': 'فیلد "عنوان بنر" نمی تواند خالی باشد.'
                     }
 
                     return render(request, 'nakhll_market/profile/pages/editeshopbanner.html', context)
             except Exception as e:
                 # Get User Info
-                
+
                 this_profile = Profile.objects.get(FK_User=request.user)
                 this_inverntory = request.user.WalletManager.Inverntory
                 # Get Menu Item
-                options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+                options = Option_Meta.objects.filter(Title='index_page_menu_items')
                 # Get Nav Bar Menu Item
-                navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+                navbar = Option_Meta.objects.filter(Title='nav_menu_items')
                 # --------------------------------------------------------------------
                 # Get Shop
-                this_shop = get_object_or_404(Shop, Slug = this_banner.FK_Shop.Slug)
+                this_shop = get_object_or_404(Shop, Slug=this_banner.FK_Shop.Slug)
                 # Get This Shop Banners
-                this_shop_banners = ShopBanner.objects.filter(FK_Shop = this_shop)
+                this_shop_banners = ShopBanner.objects.filter(FK_Shop=this_shop)
 
                 context = {
-                    'This_User_Profile':this_profile,
+                    'This_User_Profile': this_profile,
                     'This_User_Inverntory': this_inverntory,
                     'Options': options,
-                    'MenuList':navbar,
-                    'ThisShop':this_shop,
-                    'ShopBanners':this_shop_banners,
-                    'ShowAlart':True,
-                    'AlartMessage':str(e),
+                    'MenuList': navbar,
+                    'ThisShop': this_shop,
+                    'ShopBanners': this_shop_banners,
+                    'ShowAlart': True,
+                    'AlartMessage': str(e),
 
                 }
-            
+
                 return render(request, 'nakhll_market/profile/pages/shopbannerlist.html', context)
         else:
             # Get User Info
             this_profile = Profile.objects.get(FK_User=request.user)
             this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
-            options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+            options = Option_Meta.objects.filter(Title='index_page_menu_items')
             # Get Nav Bar Menu Item
-            navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+            navbar = Option_Meta.objects.filter(Title='nav_menu_items')
             # --------------------------------------------------------------------
             # Get This Shop Banner
-            this_banner = get_object_or_404(ShopBanner, id = banner_id)
+            this_banner = get_object_or_404(ShopBanner, id=banner_id)
 
             context = {
-                'This_User_Profile':this_profile,
+                'This_User_Profile': this_profile,
                 'This_User_Inverntory': this_inverntory,
                 'Options': options,
-                'MenuList':navbar,
-                'ThisShopBanner':this_banner,
+                'MenuList': navbar,
+                'ThisShopBanner': this_banner,
             }
-        
+
             return render(request, 'nakhll_market/profile/pages/editeshopbanner.html', context)
     else:
         return redirect("auth:login")
-
-
-
-
 
 
 # Delete Shop Banner
@@ -1441,46 +1458,42 @@ def delete_shop_banner(request, banner_id):
         this_profile = Profile.objects.get(FK_User=request.user)
         this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
-        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+        options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
         # --------------------------------------------------------------------
         # Get This Shop Banner
-        this_banner = get_object_or_404(ShopBanner, id = banner_id)
+        this_banner = get_object_or_404(ShopBanner, id=banner_id)
         this_banner.Publish = False
         this_banner.save()
         # Get Shop
-        this_shop = get_object_or_404(Shop, Slug = this_banner.FK_Shop.Slug)
+        this_shop = get_object_or_404(Shop, Slug=this_banner.FK_Shop.Slug)
         # Get This Shop Banners
-        this_shop_banners = ShopBanner.objects.filter(FK_Shop = this_shop)
+        this_shop_banners = ShopBanner.objects.filter(FK_Shop=this_shop)
         # Set Alert
-        if not Alert.objects.filter(Part = '22', FK_User = request.user, Slug = banner_id).exists():
-            Alert.objects.create(Part = '22', FK_User = request.user, Slug = banner_id)
+        if not Alert.objects.filter(Part='22', FK_User=request.user, Slug=banner_id).exists():
+            Alert.objects.create(Part='22', FK_User=request.user, Slug=banner_id)
 
         context = {
-            'This_User_Profile':this_profile,
+            'This_User_Profile': this_profile,
             'This_User_Inverntory': this_inverntory,
             'Options': options,
-            'MenuList':navbar,
-            'ThisShop':this_shop,
-            'ShopBanners':this_shop_banners,
-            'ShowAlart':True,
-            'AlartMessage':'درخواست حذف بنر شما ثبت شد، و پس از بررسی کارشناسان تایید می گردد.',
+            'MenuList': navbar,
+            'ThisShop': this_shop,
+            'ShopBanners': this_shop_banners,
+            'ShowAlart': True,
+            'AlartMessage': 'درخواست حذف بنر شما ثبت شد، و پس از بررسی کارشناسان تایید می گردد.',
         }
-    
+
         return render(request, 'nakhll_market/profile/pages/shopbannerlist.html', context)
     else:
         return redirect("auth:login")
 
 
-
-
-
-
 # Add New Shop Banner Info
 def add_shop_banner(request, shop_slug):
     # Check User Status
-    if request.user.is_authenticated :
+    if request.user.is_authenticated:
         if request.method == 'POST':
             # Get Data
             try:
@@ -1497,12 +1510,12 @@ def add_shop_banner(request, shop_slug):
                 URL = request.POST["Banner_URL"]
             except:
                 URL = None
-            
+
             try:
                 Description = request.POST["Banner_Description"]
             except:
                 Description = None
-            
+
             try:
                 Builder_Name = request.POST["Banner_Builder"]
             except:
@@ -1513,12 +1526,12 @@ def add_shop_banner(request, shop_slug):
             except:
                 Builder_URL = None
             # Get This Shop Banner
-            this_shop = get_object_or_404(Shop, Slug = shop_slug)
+            this_shop = get_object_or_404(Shop, Slug=shop_slug)
             try:
                 # Set Data
                 if (Title != None) and (Title != '') and (Image != ''):
                     # Create New Shop Banner
-                    this_banner = ShopBanner.objects.create(FK_Shop = this_shop, Title = Title,  Image = Image)
+                    this_banner = ShopBanner.objects.create(FK_Shop=this_shop, Title=Title, Image=Image)
                     # Set Shop Banner Description
                     if (Description != None) and (Description != ''):
                         this_banner.Description = Description
@@ -1533,109 +1546,105 @@ def add_shop_banner(request, shop_slug):
                         this_banner.BannerURL = Builder_URL
                         this_banner.save()
                     # Add Shop Banner Alert
-                    Alert.objects.create(FK_User = request.user, Part = '4', Slug = this_banner.id)
+                    Alert.objects.create(FK_User=request.user, Part='4', Slug=this_banner.id)
                     # Go To Shop Banner List
                     # Get User Info
-                    
+
                     this_profile = Profile.objects.get(FK_User=request.user)
                     this_inverntory = request.user.WalletManager.Inverntory
                     # Get Menu Item
-                    options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+                    options = Option_Meta.objects.filter(Title='index_page_menu_items')
                     # Get Nav Bar Menu Item
-                    navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+                    navbar = Option_Meta.objects.filter(Title='nav_menu_items')
                     # --------------------------------------------------------------------
                     # Get Shop
-                    this_shop = get_object_or_404(Shop, Slug = shop_slug)
+                    this_shop = get_object_or_404(Shop, Slug=shop_slug)
                     # Get This Shop Banners
-                    this_shop_banners = ShopBanner.objects.filter(FK_Shop = this_shop)
+                    this_shop_banners = ShopBanner.objects.filter(FK_Shop=this_shop)
 
                     context = {
-                        'This_User_Profile':this_profile,
+                        'This_User_Profile': this_profile,
                         'This_User_Inverntory': this_inverntory,
                         'Options': options,
-                        'MenuList':navbar,
-                        'ThisShop':this_shop,
-                        'ShopBanners':this_shop_banners,
-                        'ShowAlart':True,
-                        'AlartMessage':'بنر جدیدی برای حجره "' + this_shop.Title + '" اضافه شده است، و پس از تایید کارشناسان منتشر می گردد.',
+                        'MenuList': navbar,
+                        'ThisShop': this_shop,
+                        'ShopBanners': this_shop_banners,
+                        'ShowAlart': True,
+                        'AlartMessage': 'بنر جدیدی برای حجره "' + this_shop.Title + '" اضافه شده است، و پس از تایید کارشناسان منتشر می گردد.',
                     }
-                
-                    return render(request, 'nakhll_market/profile/pages/shopbannerlist.html', context) 
+
+                    return render(request, 'nakhll_market/profile/pages/shopbannerlist.html', context)
                 else:
                     # Get User Info
-                    
+
                     this_profile = Profile.objects.get(FK_User=request.user)
                     this_inverntory = request.user.WalletManager.Inverntory
                     # Get Menu Item
-                    options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+                    options = Option_Meta.objects.filter(Title='index_page_menu_items')
                     # Get Nav Bar Menu Item
-                    navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+                    navbar = Option_Meta.objects.filter(Title='nav_menu_items')
                     # --------------------------------------------------------------------
                     # Get Shop
-                    this_shop = get_object_or_404(Shop, Slug = shop_slug)
+                    this_shop = get_object_or_404(Shop, Slug=shop_slug)
 
                     context = {
-                        'This_User_Profile':this_profile,
+                        'This_User_Profile': this_profile,
                         'This_User_Inverntory': this_inverntory,
                         'Options': options,
-                        'MenuList':navbar,
-                        'UserShop':this_shop,
-                        'ShowAlart':True,
-                        'AlartMessage':'فیلد های "عنوان بنر" و "تصویر بنر" نمی تواند خالی باشد.',
+                        'MenuList': navbar,
+                        'UserShop': this_shop,
+                        'ShowAlart': True,
+                        'AlartMessage': 'فیلد های "عنوان بنر" و "تصویر بنر" نمی تواند خالی باشد.',
                     }
-                
-                    return render(request, 'nakhll_market/profile/pages/addshopbanner.html', context)                
+
+                    return render(request, 'nakhll_market/profile/pages/addshopbanner.html', context)
             except Exception as e:
                 # Get User Info
-                
+
                 this_profile = Profile.objects.get(FK_User=request.user)
                 this_inverntory = request.user.WalletManager.Inverntory
                 # Get Menu Item
-                options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+                options = Option_Meta.objects.filter(Title='index_page_menu_items')
                 # Get Nav Bar Menu Item
-                navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+                navbar = Option_Meta.objects.filter(Title='nav_menu_items')
                 # --------------------------------------------------------------------
                 # Get Shop
-                this_shop = get_object_or_404(Shop, Slug = shop_slug)
+                this_shop = get_object_or_404(Shop, Slug=shop_slug)
 
                 context = {
-                    'This_User_Profile':this_profile,
+                    'This_User_Profile': this_profile,
                     'This_User_Inverntory': this_inverntory,
                     'Options': options,
-                    'MenuList':navbar,
-                    'UserShop':this_shop,
-                    'ShowAlart':True,
-                    'AlartMessage':str(e),
+                    'MenuList': navbar,
+                    'UserShop': this_shop,
+                    'ShowAlart': True,
+                    'AlartMessage': str(e),
                 }
-            
+
                 return render(request, 'nakhll_market/profile/pages/addshopbanner.html', context)
         else:
             # Get User Info
             this_profile = Profile.objects.get(FK_User=request.user)
             this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
-            options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+            options = Option_Meta.objects.filter(Title='index_page_menu_items')
             # Get Nav Bar Menu Item
-            navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+            navbar = Option_Meta.objects.filter(Title='nav_menu_items')
             # --------------------------------------------------------------------
             # Get Shop
-            this_shop = get_object_or_404(Shop, Slug = shop_slug)
+            this_shop = get_object_or_404(Shop, Slug=shop_slug)
 
             context = {
-                'This_User_Profile':this_profile,
+                'This_User_Profile': this_profile,
                 'This_User_Inverntory': this_inverntory,
                 'Options': options,
-                'MenuList':navbar,
-                'UserShop':this_shop,
+                'MenuList': navbar,
+                'UserShop': this_shop,
             }
-        
+
             return render(request, 'nakhll_market/profile/pages/addshopbanner.html', context)
     else:
         return redirect("auth:login")
-
-
-
-
 
 
 # <----------- product section ------------->
@@ -1644,29 +1653,29 @@ def add_shop_banner(request, shop_slug):
 def add_new_product(request):
     # Get User Info
     if request.user.is_authenticated:
-        
+
         this_profile = Profile.objects.get(FK_User=request.user)
         this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
-        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+        options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
         # --------------------------------------------------------------------
         # get user shops
-        usershops = Shop.objects.filter(FK_ShopManager = request.user)
+        usershops = Shop.objects.filter(FK_ShopManager=request.user)
         # get all category
-        allcategory = Category.objects.filter(Publish = True)
+        allcategory = Category.objects.filter(Publish=True)
         # get all attribute
-        attribute_list = list(Attribute.objects.filter(Publish = True))
+        attribute_list = list(Attribute.objects.filter(Publish=True))
 
         context = {
-            'This_User_Profile':this_profile,
+            'This_User_Profile': this_profile,
             'This_User_Inverntory': this_inverntory,
             'Options': options,
-            'MenuList':navbar,
-            'Shops':usershops,
-            'Categort':allcategory,
-            'Attribute':attribute_list,
+            'MenuList': navbar,
+            'Shops': usershops,
+            'Categort': allcategory,
+            'Attribute': attribute_list,
         }
 
         return render(request, 'nakhll_market/profile/pages/newproduct.html', context)
@@ -1674,12 +1683,10 @@ def add_new_product(request):
         return redirect("auth:login")
 
 
-
-
 # edit product
 def edit_product(request, product_slug):
-   # Check User Status
-    if request.user.is_authenticated :
+    # Check User Status
+    if request.user.is_authenticated:
 
         this_profile = Profile.objects.get(FK_User=request.user)
         this_inverntory = request.user.WalletManager.Inverntory
@@ -1688,28 +1695,28 @@ def edit_product(request, product_slug):
         # Get Nav Bar Menu Item
         navbar = Option_Meta.objects.filter(Title='nav_menu_items')
         # -------------------------------------------------------------------
-        usershops = Shop.objects.filter(FK_ShopManager = request.user)
-        this_product = get_object_or_404(Product, Slug = product_slug)
+        usershops = Shop.objects.filter(FK_ShopManager=request.user)
+        this_product = get_object_or_404(Product, Slug=product_slug)
         allcategory = this_product.get_product_categories()
         allpostrange = this_product.get_product_inpostrange()
         allexepostrange = this_product.get_product_outpostrange()
         otherSubMarkets = SubMarket.objects.exclude(ID=this_product.FK_SubMarket.ID)
         context = {
-            'This_User_Profile':this_profile,
+            'This_User_Profile': this_profile,
             'This_User_Inverntory': this_inverntory,
             'Options': options,
-            'MenuList':navbar,
-            'Shops':usershops,
-            'Product':this_product,
-            'Categort':allcategory,
-            'ProPostRange':allpostrange,
-            'ProExePostRange':allexepostrange,
-            'OtherSubMarkets':otherSubMarkets,
+            'MenuList': navbar,
+            'Shops': usershops,
+            'Product': this_product,
+            'Categort': allcategory,
+            'ProPostRange': allpostrange,
+            'ProExePostRange': allexepostrange,
+            'OtherSubMarkets': otherSubMarkets,
         }
         if request.method == 'GET':
             context['ShowAlart'] = False
             return render(request, 'nakhll_market/profile/pages/editeproduct.html', context)
-    
+
         if request.method == 'POST':
             # Get Data
             title = request.POST.get("prod_title")
@@ -1725,7 +1732,7 @@ def edit_product(request, product_slug):
             if discount == '0':
                 oldprice = '0'
             else:
-                oldprice = str(int(price)+int(discount))
+                oldprice = str(int(price) + int(discount))
             send_type = request.POST.get("ProdRange")
             status = request.POST.get("ProdPostType")
             net_weight = request.POST.get("product_netweight")
@@ -1762,99 +1769,100 @@ def edit_product(request, product_slug):
             except:
                 inventory = None
             # get this product
-            this_product = Product.objects.get(Slug = product_slug)
+            this_product = Product.objects.get(Slug=product_slug)
             # check access level
-            if (this_product.FK_Shop.FK_ShopManager == request.user) and (Shop.objects.get(ID = shop_id).FK_ShopManager == request.user):
+            if (this_product.FK_Shop.FK_ShopManager == request.user) and (
+                    Shop.objects.get(ID=shop_id).FK_ShopManager == request.user):
                 # check alert
                 edit_product_alert = None
-                if not Alert.objects.filter(Part = '7', Slug = this_product.ID, Seen = False).exists():
-                    edit_product_alert = Alert.objects.create(FK_User = request.user, Part = '7', Slug = this_product.ID)
+                if not Alert.objects.filter(Part='7', Slug=this_product.ID, Seen=False).exists():
+                    edit_product_alert = Alert.objects.create(FK_User=request.user, Part='7', Slug=this_product.ID)
                 else:
-                    edit_product_alert = Alert.objects.get(Part = '7', Slug = this_product.ID, Seen = False)
+                    edit_product_alert = Alert.objects.get(Part='7', Slug=this_product.ID, Seen=False)
                     edit_product_alert.FK_Field.all().delete()
                 # check product title
                 if this_product.Title != title:
-                    product_title_field = Field.objects.create(Title = 'Title', Value = title)
+                    product_title_field = Field.objects.create(Title='Title', Value=title)
                     edit_product_alert.FK_Field.add(product_title_field)
                 # check product price
                 if this_product.Price != price:
-                    product_price_field = Field.objects.create(Title = 'Price', Value = price)
+                    product_price_field = Field.objects.create(Title='Price', Value=price)
                     edit_product_alert.FK_Field.add(product_price_field)
                 # check product oldprice
                 if this_product.OldPrice != oldprice:
-                    product_oldprice_field = Field.objects.create(Title = 'OldPrice', Value = oldprice)
+                    product_oldprice_field = Field.objects.create(Title='OldPrice', Value=oldprice)
                     edit_product_alert.FK_Field.add(product_oldprice_field)
                 # check product send_type
                 if this_product.PostRangeType != send_type:
-                    product_sendtype_field = Field.objects.create(Title = 'ProdRange', Value = send_type)
+                    product_sendtype_field = Field.objects.create(Title='ProdRange', Value=send_type)
                     edit_product_alert.FK_Field.add(product_sendtype_field)
                 # check product status
                 if this_product.Status != status:
-                    product_status_field = Field.objects.create(Title = 'ProdPostType', Value = status)
+                    product_status_field = Field.objects.create(Title='ProdPostType', Value=status)
                     edit_product_alert.FK_Field.add(product_status_field)
                 # check product inventory
                 if status == '1':
                     # check product inventory
                     if (inventory != None) and (this_product.Inventory != int(inventory)):
-                        product_inventory_field = Field.objects.create(Title = 'ProdInStore', Value = inventory)
+                        product_inventory_field = Field.objects.create(Title='ProdInStore', Value=inventory)
                         edit_product_alert.FK_Field.add(product_inventory_field)
                 elif (status == '4') or (status == '3') or (status == '2'):
                     # check product inventory
-                    product_inventory_field = Field.objects.create(Title = 'ProdInStore', Value = 0)
+                    product_inventory_field = Field.objects.create(Title='ProdInStore', Value=0)
                     edit_product_alert.FK_Field.add(product_inventory_field)
                 # check product net_weight
                 if this_product.Net_Weight != net_weight:
-                    product_netweight_field = Field.objects.create(Title = 'ProdNetWeight', Value = net_weight)
+                    product_netweight_field = Field.objects.create(Title='ProdNetWeight', Value=net_weight)
                     edit_product_alert.FK_Field.add(product_netweight_field)
                 # check product packing_weight
                 if this_product.Weight_With_Packing != packing_weight:
-                    product_packingweight_field = Field.objects.create(Title = 'ProdPackingWeight', Value = packing_weight)
+                    product_packingweight_field = Field.objects.create(Title='ProdPackingWeight', Value=packing_weight)
                     edit_product_alert.FK_Field.add(product_packingweight_field)
                 # check product length
                 if this_product.Length_With_Packaging != length:
-                    product_length_field = Field.objects.create(Title = 'ProdLengthWithPackaging', Value = length)
+                    product_length_field = Field.objects.create(Title='ProdLengthWithPackaging', Value=length)
                     edit_product_alert.FK_Field.add(product_length_field)
                 # check product width
                 if this_product.Width_With_Packaging != width:
-                    product_width_field = Field.objects.create(Title = 'ProdWidthWithPackaging', Value = width)
+                    product_width_field = Field.objects.create(Title='ProdWidthWithPackaging', Value=width)
                     edit_product_alert.FK_Field.add(product_width_field)
                 # check product height
                 if this_product.Height_With_Packaging != height:
-                    product_height_field = Field.objects.create(Title = 'ProdHeightWithPackaging', Value = height)
+                    product_height_field = Field.objects.create(Title='ProdHeightWithPackaging', Value=height)
                     edit_product_alert.FK_Field.add(product_height_field)
                 # check product shop
-                if this_product.FK_Shop != Shop.objects.get(ID = shop_id):
-                    product_shop_field = Field.objects.create(Title = 'Shop', Value = shop_id)
+                if this_product.FK_Shop != Shop.objects.get(ID=shop_id):
+                    product_shop_field = Field.objects.create(Title='Shop', Value=shop_id)
                     edit_product_alert.FK_Field.add(product_shop_field)
                 # check product submarket
-                if this_product.FK_SubMarket != SubMarket.objects.get(ID = submarket_id):
-                    product_submarket_field = Field.objects.create(Title = 'SubMarket', Value = submarket_id)
+                if this_product.FK_SubMarket != SubMarket.objects.get(ID=submarket_id):
+                    product_submarket_field = Field.objects.create(Title='SubMarket', Value=submarket_id)
                     edit_product_alert.FK_Field.add(product_submarket_field)
                 # check product image
                 if (image != '') and (image != None):
                     this_product.NewImage = image
                     this_product.save()
                     new_image_string = 'NewImage' + '#' + str(this_product.NewImage)
-                    product_image_field = Field.objects.create(Title = 'Image', Value = new_image_string)
+                    product_image_field = Field.objects.create(Title='Image', Value=new_image_string)
                     edit_product_alert.FK_Field.add(product_image_field)
                 # check product bio
                 if (bio != '') and (bio != None) and (this_product.Bio != bio):
-                    product_bio_field = Field.objects.create(Title = 'Bio', Value = bio)
+                    product_bio_field = Field.objects.create(Title='Bio', Value=bio)
                     edit_product_alert.FK_Field.add(product_bio_field)
                 # check product description
                 if (description != None) and (this_product.Description != description):
-                    product_description_field = Field.objects.create(Title = 'Description', Value = description)
+                    product_description_field = Field.objects.create(Title='Description', Value=description)
                     edit_product_alert.FK_Field.add(product_description_field)
                 # check product story
                 if (story != '') and (story != None) and (this_product.Story != story):
-                    product_story_field = Field.objects.create(Title = 'Story', Value = story)
+                    product_story_field = Field.objects.create(Title='Story', Value=story)
                     edit_product_alert.FK_Field.add(product_story_field)
                 # check product categories
                 product_category = categories
                 category_list = ''
                 for item in product_category:
                     category_list += item + '-'
-                product_category_field = Field.objects.create(Title = 'Category', Value = category_list)
+                product_category_field = Field.objects.create(Title='Category', Value=category_list)
                 edit_product_alert.FK_Field.add(product_category_field)
                 # check product within range
                 product_within = within_range
@@ -1863,10 +1871,10 @@ def edit_product(request, product_slug):
                     if len(item) >= 1:
                         in_range_list += item + '-'
                 if in_range_list:
-                    product_withinrange_field = Field.objects.create(Title = 'PostRange', Value = in_range_list)
+                    product_withinrange_field = Field.objects.create(Title='PostRange', Value=in_range_list)
                     edit_product_alert.FK_Field.add(product_withinrange_field)
                 else:
-                    product_withinrange_field = Field.objects.create(Title = 'PostRange', Value = 'remove')
+                    product_withinrange_field = Field.objects.create(Title='PostRange', Value='remove')
                     edit_product_alert.FK_Field.add(product_withinrange_field)
                 # check product out of range
                 product_Out = out_of_range
@@ -1874,10 +1882,10 @@ def edit_product(request, product_slug):
                 for item in product_Out:
                     out_range_list += item + '-'
                 if out_range_list:
-                    product_outrange_field = Field.objects.create(Title = 'ExePostRange', Value = out_range_list)
+                    product_outrange_field = Field.objects.create(Title='ExePostRange', Value=out_range_list)
                     edit_product_alert.FK_Field.add(product_outrange_field)
                 else:
-                    product_outrange_field = Field.objects.create(Title = 'ExePostRange', Value = 'remove')
+                    product_outrange_field = Field.objects.create(Title='ExePostRange', Value='remove')
                     edit_product_alert.FK_Field.add(product_outrange_field)
                 # check edit
                 if edit_product_alert.FK_Field.all().count() != 0:
@@ -1889,12 +1897,12 @@ def edit_product(request, product_slug):
                 return render(request, 'nakhll_market/profile/pages/editeproduct.html', context)
     else:
         return redirect("auth:login")
-        
+
 
 # add to product gallery 
 def add_to_product_gallery(request, product_slug):
     # Check User Status
-    if request.user.is_authenticated :
+    if request.user.is_authenticated:
         if request.method == 'POST':
             try:
                 Banner_Image = request.FILES["Banner_Image"]
@@ -1910,12 +1918,12 @@ def add_to_product_gallery(request, product_slug):
                 Banner_URL = request.POST["Banner_URL"]
             except MultiValueDictKeyError:
                 Banner_URL = False
-            
+
             try:
                 Banner_Description = request.POST["Banner_Description"]
             except MultiValueDictKeyError:
                 Banner_Description = False
-            
+
             try:
                 Banner_Builder = request.POST["Banner_Builder"]
             except MultiValueDictKeyError:
@@ -1926,10 +1934,13 @@ def add_to_product_gallery(request, product_slug):
             except MultiValueDictKeyError:
                 Banner_URL_Builder = False
 
-            if ((Banner_Title != False) and (Banner_Title != '')) and ((Banner_Image != False) and (Banner_Image != '')):
+            if ((Banner_Title != False) and (Banner_Title != '')) and (
+                    (Banner_Image != False) and (Banner_Image != '')):
 
-                thisbanner = ProductBanner.objects.create(FK_Product = Product.objects.get(Slug = product_slug), Title = Banner_Title, Description = Banner_Description, Image = Banner_Image)
-                Alert.objects.create(FK_User = request.user, Part = '8', Slug = thisbanner.id)
+                thisbanner = ProductBanner.objects.create(FK_Product=Product.objects.get(Slug=product_slug),
+                                                          Title=Banner_Title, Description=Banner_Description,
+                                                          Image=Banner_Image)
+                Alert.objects.create(FK_User=request.user, Part='8', Slug=thisbanner.id)
 
                 if (Banner_URL != False) and (Banner_URL != ''):
                     thisbanner.URL = Banner_URL
@@ -1938,76 +1949,75 @@ def add_to_product_gallery(request, product_slug):
                 if (Banner_Builder != False) and (Banner_Builder != ''):
                     thisbanner.BannerBuilder = Banner_Builder
                     thisbanner.save()
-                
+
                 if (Banner_URL_Builder != False) and (Banner_URL_Builder != ''):
                     thisbanner.BannerURL = Banner_URL_Builder
                     thisbanner.save()
 
-                
                 this_profile = Profile.objects.get(FK_User=request.user)
                 this_inverntory = request.user.WalletManager.Inverntory
                 # Get Menu Item
-                options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+                options = Option_Meta.objects.filter(Title='index_page_menu_items')
                 # Get Nav Bar Menu Item
-                navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+                navbar = Option_Meta.objects.filter(Title='nav_menu_items')
                 # --------------------------------------------------------------------
                 # get this product
-                this_product = get_object_or_404(Product, Slug = product_slug)
+                this_product = get_object_or_404(Product, Slug=product_slug)
                 # get all product banner
-                banners = ProductBanner.objects.filter(FK_Product = this_product)
+                banners = ProductBanner.objects.filter(FK_Product=this_product)
 
                 context = {
-                    'This_User_Profile':this_profile,
+                    'This_User_Profile': this_profile,
                     'This_User_Inverntory': this_inverntory,
                     'Options': options,
-                    'MenuList':navbar,
-                    'ShopBanners':banners,
-                    'ShowAlart':True,
-                    'AlartMessage':'بنر شما با موفقیت ثبت گردید و پس از تایید کارشناسان منتشر می گردد!',
+                    'MenuList': navbar,
+                    'ShopBanners': banners,
+                    'ShowAlart': True,
+                    'AlartMessage': 'بنر شما با موفقیت ثبت گردید و پس از تایید کارشناسان منتشر می گردد!',
                 }
-            
+
                 return render(request, 'nakhll_market/profile/pages/productimagelist.html', context)
             else:
-                
+
                 this_profile = Profile.objects.get(FK_User=request.user)
                 this_inverntory = request.user.WalletManager.Inverntory
                 # Get Menu Item
-                options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+                options = Option_Meta.objects.filter(Title='index_page_menu_items')
                 # Get Nav Bar Menu Item
-                navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+                navbar = Option_Meta.objects.filter(Title='nav_menu_items')
                 # --------------------------------------------------------------------
                 # get this product
-                this_product = get_object_or_404(Product, Slug = product_slug)
+                this_product = get_object_or_404(Product, Slug=product_slug)
 
                 context = {
-                    'This_User_Profile':this_profile,
+                    'This_User_Profile': this_profile,
                     'This_User_Inverntory': this_inverntory,
                     'Options': options,
-                    'MenuList':navbar,
-                    'UserProduct':this_product,
-                    'ShowAlart':True,
-                    'AlartMessage':'اطلاعات وارد شده کامل نمی باشد! (عنوان و عکس بنر اجباریست)',
+                    'MenuList': navbar,
+                    'UserProduct': this_product,
+                    'ShowAlart': True,
+                    'AlartMessage': 'اطلاعات وارد شده کامل نمی باشد! (عنوان و عکس بنر اجباریست)',
                 }
-            
+
                 return render(request, 'nakhll_market/profile/pages/productimage.html', context)
         else:
             this_profile = Profile.objects.get(FK_User=request.user)
             this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
-            options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+            options = Option_Meta.objects.filter(Title='index_page_menu_items')
             # Get Nav Bar Menu Item
-            navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+            navbar = Option_Meta.objects.filter(Title='nav_menu_items')
             # --------------------------------------------------------------------
-            this_product = get_object_or_404(Product, Slug = product_slug)
+            this_product = get_object_or_404(Product, Slug=product_slug)
 
             context = {
-                'This_User_Profile':this_profile,
+                'This_User_Profile': this_profile,
                 'This_User_Inverntory': this_inverntory,
                 'Options': options,
-                'MenuList':navbar,
-                'UserProduct':this_product,
+                'MenuList': navbar,
+                'UserProduct': this_product,
             }
-        
+
             return render(request, 'nakhll_market/profile/pages/productimage.html', context)
     else:
         return redirect("auth:login")
@@ -2016,27 +2026,27 @@ def add_to_product_gallery(request, product_slug):
 # show product gallery
 def show_product_gallery(request, product_slug):
     # Check User Status
-    if request.user.is_authenticated :
-        
+    if request.user.is_authenticated:
+
         this_profile = Profile.objects.get(FK_User=request.user)
         this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
-        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+        options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
         # --------------------------------------------------------------------
         # get this product
-        this_product = get_object_or_404(Product, Slug = product_slug)
+        this_product = get_object_or_404(Product, Slug=product_slug)
         # get all product banner
-        banners = ProductBanner.objects.filter(FK_Product = this_product)
+        banners = ProductBanner.objects.filter(FK_Product=this_product)
 
         context = {
-            'This_User_Profile':this_profile,
+            'This_User_Profile': this_profile,
             'This_User_Inverntory': this_inverntory,
             'Options': options,
-            'MenuList':navbar,
-            'ProductBanners':banners,
-            'ProductID':this_product.ID,
+            'MenuList': navbar,
+            'ProductBanners': banners,
+            'ProductID': this_product.ID,
         }
 
         return render(request, 'nakhll_market/profile/pages/productimagelist.html', context)
@@ -2047,9 +2057,9 @@ def show_product_gallery(request, product_slug):
 # change product banner status
 def change_product_banner_status(request, banner_id):
     # Check User Status
-    if request.user.is_authenticated :
+    if request.user.is_authenticated:
         # get this banner
-        banner = get_object_or_404(ProductBanner, id = banner_id)
+        banner = get_object_or_404(ProductBanner, id=banner_id)
         # Change Status
         if banner.Available:
             banner.Available = False
@@ -2058,7 +2068,7 @@ def change_product_banner_status(request, banner_id):
             banner.Available = True
             banner.save()
 
-        return redirect("nakhll_market:Shop_Manager_ProductBannerList", product_slug = banner.FK_Product.Slug)
+        return redirect("nakhll_market:Shop_Manager_ProductBannerList", product_slug=banner.FK_Product.Slug)
     else:
         return redirect("auth:login")
 
@@ -2066,10 +2076,10 @@ def change_product_banner_status(request, banner_id):
 # edit product banner
 def edit_product_banner(request, banner_id):
     # Check User Status
-    if request.user.is_authenticated :
+    if request.user.is_authenticated:
         if request.method == 'POST':
-            
-            thisbanner = ProductBanner.objects.get(id = banner_id)
+
+            thisbanner = ProductBanner.objects.get(id=banner_id)
 
             try:
                 Banner_Image = request.FILES["Banner_Image"]
@@ -2085,12 +2095,12 @@ def edit_product_banner(request, banner_id):
                 Banner_URL = request.POST["Banner_URL"]
             except MultiValueDictKeyError:
                 Banner_URL = False
-            
+
             try:
                 Banner_Description = request.POST["Banner_Description"]
             except MultiValueDictKeyError:
                 Banner_Description = False
-            
+
             try:
                 Banner_Builder = request.POST["Banner_Builder"]
             except MultiValueDictKeyError:
@@ -2103,157 +2113,158 @@ def edit_product_banner(request, banner_id):
 
             if (Banner_Title != ''):
 
-                if (Banner_Title != thisbanner.Title) or (Banner_Image != '') or (Banner_Description != thisbanner.Description) or (Banner_URL != thisbanner.URL) or (Banner_Builder != thisbanner.BannerBuilder) or (Banner_URL_Builder != thisbanner.BannerURL):
+                if (Banner_Title != thisbanner.Title) or (Banner_Image != '') or (
+                        Banner_Description != thisbanner.Description) or (Banner_URL != thisbanner.URL) or (
+                        Banner_Builder != thisbanner.BannerBuilder) or (Banner_URL_Builder != thisbanner.BannerURL):
 
-                    if Alert.objects.filter(Part = '9', Slug = thisbanner.id, Seen = False).count() == 0:
-                        alert = Alert.objects.create(FK_User = request.user, Part = '9', Slug = thisbanner.id)
+                    if Alert.objects.filter(Part='9', Slug=thisbanner.id, Seen=False).count() == 0:
+                        alert = Alert.objects.create(FK_User=request.user, Part='9', Slug=thisbanner.id)
 
                         if (Banner_Title != False) and (Banner_Title != thisbanner.Title):
-                            Title_Alert = Field.objects.create(Title = 'Title', Value = Banner_Title)
+                            Title_Alert = Field.objects.create(Title='Title', Value=Banner_Title)
                             alert.FK_Field.add(Title_Alert)
 
                         if (Banner_Image != False) and (Banner_Image != ''):
                             thisbanner.NewImage = Banner_Image
                             thisbanner.save()
                             img_str = 'NewImage' + '#' + str(thisbanner.NewImage)
-                            Image_Alert = Field.objects.create(Title = 'Image', Value = 'img_str')
+                            Image_Alert = Field.objects.create(Title='Image', Value='img_str')
                             alert.FK_Field.add(Image_Alert)
 
                         if (Banner_Description != False) and (Banner_Description != thisbanner.Description):
-                            Description_Alert = Field.objects.create(Title = 'Description', Value = Banner_Description)
+                            Description_Alert = Field.objects.create(Title='Description', Value=Banner_Description)
                             alert.FK_Field.add(Description_Alert)
 
                         if (Banner_URL != False) and (Banner_URL != thisbanner.URL):
-                            URL_Alert = Field.objects.create(Title = 'URL',Value = Banner_URL)
+                            URL_Alert = Field.objects.create(Title='URL', Value=Banner_URL)
                             alert.FK_Field.add(URL_Alert)
 
                         if (Banner_Builder != False) and (Banner_Builder != thisbanner.BannerBuilder):
-                            BannerBuilder_Alert = Field.objects.create(Title = 'BannerBuilder', Value = Banner_Builder)
+                            BannerBuilder_Alert = Field.objects.create(Title='BannerBuilder', Value=Banner_Builder)
                             alert.FK_Field.add(BannerBuilder_Alert)
-                        
+
                         if (Banner_URL_Builder != False) and (Banner_URL_Builder != thisbanner.BannerURL):
-                            BannerURL_Alert = Field.objects.create(Title = 'BannerURL',Value = Banner_URL_Builder)
+                            BannerURL_Alert = Field.objects.create(Title='BannerURL', Value=Banner_URL_Builder)
                             alert.FK_Field.add(BannerURL_Alert)
                     else:
-                        alert = Alert.objects.get(Part = '9', Slug = thisbanner.id, Seen = False)
+                        alert = Alert.objects.get(Part='9', Slug=thisbanner.id, Seen=False)
                         alert.FK_Field.all().delete()
 
                         if (Banner_Title != False) and (Banner_Title != thisbanner.Title):
-                            Title_Alert = Field.objects.create(Title = 'Title', Value = Banner_Title)
+                            Title_Alert = Field.objects.create(Title='Title', Value=Banner_Title)
                             alert.FK_Field.add(Title_Alert)
 
                         if (Banner_Image != ''):
                             thisbanner.NewImage = Banner_Image
                             thisbanner.save()
                             img_str = 'NewImage' + '#' + str(thisbanner.NewImage)
-                            Image_Alert = Field.objects.create(Title = 'Image', Value = img_str)
+                            Image_Alert = Field.objects.create(Title='Image', Value=img_str)
                             alert.FK_Field.add(Image_Alert)
 
                         if (Banner_Description != False) and (Banner_Description != thisbanner.Description):
-                            Description_Alert = Field.objects.create(Title = 'Description', Value = Banner_Description)
+                            Description_Alert = Field.objects.create(Title='Description', Value=Banner_Description)
                             alert.FK_Field.add(Description_Alert)
 
                         if (Banner_URL != False) and (Banner_URL != thisbanner.URL):
-                            URL_Alert = Field.objects.create(Title = 'URL',Value = Banner_URL)
+                            URL_Alert = Field.objects.create(Title='URL', Value=Banner_URL)
                             alert.FK_Field.add(URL_Alert)
 
                         if (Banner_Builder != False) and (Banner_Builder != thisbanner.BannerBuilder):
-                            BannerBuilder_Alert = Field.objects.create(Title = 'BannerBuilder', Value = Banner_Builder)
+                            BannerBuilder_Alert = Field.objects.create(Title='BannerBuilder', Value=Banner_Builder)
                             alert.FK_Field.add(BannerBuilder_Alert)
-                        
+
                         if (Banner_URL_Builder != False) and (Banner_URL_Builder != thisbanner.BannerURL):
-                            BannerURL_Alert = Field.objects.create(Title = 'BannerURL',Value = Banner_URL_Builder)
+                            BannerURL_Alert = Field.objects.create(Title='BannerURL', Value=Banner_URL_Builder)
                             alert.FK_Field.add(BannerURL_Alert)
 
-                    
                     this_profile = Profile.objects.get(FK_User=request.user)
                     this_inverntory = request.user.WalletManager.Inverntory
                     # Get Menu Item
-                    options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+                    options = Option_Meta.objects.filter(Title='index_page_menu_items')
                     # Get Nav Bar Menu Item
-                    navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+                    navbar = Option_Meta.objects.filter(Title='nav_menu_items')
                     # --------------------------------------------------------------------
                     # get all product gallery
-                    banners = ProductBanner.objects.filter(FK_Product = thisbanner.FK_Product)
+                    banners = ProductBanner.objects.filter(FK_Product=thisbanner.FK_Product)
 
                     thisbanner.Edite = True
                     thisbanner.save()
 
                     context = {
-                        'This_User_Profile':this_profile,
+                        'This_User_Profile': this_profile,
                         'This_User_Inverntory': this_inverntory,
                         'Options': options,
-                        'MenuList':navbar,
-                        'ShopBanners':banners,
-                        'ShowAlart':True,
-                        'AlartMessage':'اطلاعات بنر شما با موفقیت تغییر کرده و پس از تایید کارشناسان ثبت می گردد!',
+                        'MenuList': navbar,
+                        'ShopBanners': banners,
+                        'ShowAlart': True,
+                        'AlartMessage': 'اطلاعات بنر شما با موفقیت تغییر کرده و پس از تایید کارشناسان ثبت می گردد!',
                     }
-                
+
                     return render(request, 'nakhll_market/profile/pages/productimagelist.html', context)
                 else:
-                    
+
                     this_profile = Profile.objects.get(FK_User=request.user)
                     this_inverntory = request.user.WalletManager.Inverntory
                     # Get Menu Item
-                    options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+                    options = Option_Meta.objects.filter(Title='index_page_menu_items')
                     # Get Nav Bar Menu Item
-                    navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+                    navbar = Option_Meta.objects.filter(Title='nav_menu_items')
                     # --------------------------------------------------------------------
-                    this_banner = get_object_or_404(ProductBanner, id = banner_id)
+                    this_banner = get_object_or_404(ProductBanner, id=banner_id)
 
                     context = {
-                        'This_User_Profile':this_profile,
+                        'This_User_Profile': this_profile,
                         'This_User_Inverntory': this_inverntory,
                         'Options': options,
-                        'MenuList':navbar,
-                        'Banners':this_banner,
-                        'ShowAlart':True,
-                        'AlartMessage':'تغییری ایجاد نکرده اید!'
+                        'MenuList': navbar,
+                        'Banners': this_banner,
+                        'ShowAlart': True,
+                        'AlartMessage': 'تغییری ایجاد نکرده اید!'
                     }
-                
+
                     return render(request, 'nakhll_market/profile/pages/editeproductbanner.html', context)
 
             else:
-                
+
                 this_profile = Profile.objects.get(FK_User=request.user)
                 this_inverntory = request.user.WalletManager.Inverntory
                 # Get Menu Item
-                options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+                options = Option_Meta.objects.filter(Title='index_page_menu_items')
                 # Get Nav Bar Menu Item
-                navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+                navbar = Option_Meta.objects.filter(Title='nav_menu_items')
                 # --------------------------------------------------------------------
-                this_banner = get_object_or_404(ProductBanner, id = banner_id)
+                this_banner = get_object_or_404(ProductBanner, id=banner_id)
 
                 context = {
-                    'This_User_Profile':this_profile,
+                    'This_User_Profile': this_profile,
                     'This_User_Inverntory': this_inverntory,
                     'Options': options,
-                    'MenuList':navbar,
-                    'Banners':this_banner,
-                    'ShowAlart':True,
-                    'AlartMessage':'موارد وارد شده کامل نمی باشند! (عکس و عنوان اجباریست)'
+                    'MenuList': navbar,
+                    'Banners': this_banner,
+                    'ShowAlart': True,
+                    'AlartMessage': 'موارد وارد شده کامل نمی باشند! (عکس و عنوان اجباریست)'
                 }
-            
+
                 return render(request, 'nakhll_market/profile/pages/editeproductbanner.html', context)
 
         else:
             this_profile = Profile.objects.get(FK_User=request.user)
             this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
-            options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+            options = Option_Meta.objects.filter(Title='index_page_menu_items')
             # Get Nav Bar Menu Item
-            navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+            navbar = Option_Meta.objects.filter(Title='nav_menu_items')
             # --------------------------------------------------------------------
-            this_banner = get_object_or_404(ProductBanner, id = banner_id)
+            this_banner = get_object_or_404(ProductBanner, id=banner_id)
 
             context = {
-                'This_User_Profile':this_profile,
+                'This_User_Profile': this_profile,
                 'This_User_Inverntory': this_inverntory,
                 'Options': options,
-                'MenuList':navbar,
-                'Banners':this_banner,
+                'MenuList': navbar,
+                'Banners': this_banner,
             }
-        
+
             return render(request, 'nakhll_market/profile/pages/editeproductbanner.html', context)
 
     else:
@@ -2263,77 +2274,75 @@ def edit_product_banner(request, banner_id):
 # delete product banner
 def delete_product_banner(request, banner_id):
     # Check User Status
-    if request.user.is_authenticated :
-        
+    if request.user.is_authenticated:
+
         this_profile = Profile.objects.get(FK_User=request.user)
         this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
-        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+        options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
         # --------------------------------------------------------------------
         # get this banner
-        banner = get_object_or_404(ProductBanner, id = banner_id)
+        banner = get_object_or_404(ProductBanner, id=banner_id)
         banner.Publish = False
         banner.save()
         # get all product banner
-        banners = ProductBanner.objects.filter(FK_Product = banner.FK_Product)
+        banners = ProductBanner.objects.filter(FK_Product=banner.FK_Product)
         # set alert
-        if not Alert.objects.filter(FK_User = request.user, Part = '23', Slug = banner.id).exists():
-            alert = Alert.objects.create(FK_User = request.user, Part = '23', Slug = banner.id)
+        if not Alert.objects.filter(FK_User=request.user, Part='23', Slug=banner.id).exists():
+            alert = Alert.objects.create(FK_User=request.user, Part='23', Slug=banner.id)
 
         context = {
-            'This_User_Profile':this_profile,
+            'This_User_Profile': this_profile,
             'This_User_Inverntory': this_inverntory,
             'Options': options,
-            'MenuList':navbar,
-            'ShopBanners':banners,
-            'ShowAlart':True,
-            'AlartMessage':'بنر شما پس از بررسی کارشناسان حذف می گردد!',
+            'MenuList': navbar,
+            'ShopBanners': banners,
+            'ShowAlart': True,
+            'AlartMessage': 'بنر شما پس از بررسی کارشناسان حذف می گردد!',
         }
-    
+
         return render(request, 'nakhll_market/profile/pages/productimagelist.html', context)
     else:
         return redirect("auth:login")
-
 
 
 # product attribute list
 def product_attribute_list(request, product_slug):
     # Check User Status
     if request.user.is_authenticated:
-        
+
         this_profile = Profile.objects.get(FK_User=request.user)
         this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
-        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+        options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
         # --------------------------------------------------------------------
         # get this product
-        this_product = get_object_or_404(Product, Slug = product_slug)
+        this_product = get_object_or_404(Product, Slug=product_slug)
         # get product attribute
-        product_attribute_list = AttrProduct.objects.filter(FK_Product = this_product)
+        product_attribute_list = AttrProduct.objects.filter(FK_Product=this_product)
         # get all attribute
-        attribute_list = Attribute.objects.filter(Publish = True)
+        attribute_list = Attribute.objects.filter(Publish=True)
 
         context = {
-            'This_User_Profile':this_profile,
+            'This_User_Profile': this_profile,
             'This_User_Inverntory': this_inverntory,
             'Options': options,
-            'MenuList':navbar,
-            'AttrProduct':product_attribute_list,
-            'Attributes':attribute_list,
-            'NetWeight':this_product.Net_Weight,
-            'WeightWithPacking':this_product.Weight_With_Packing,
-            'Length_Width_Height':this_product.Length_With_Packaging + '*' + this_product.Width_With_Packaging + '*' + this_product.Height_With_Packaging,
-            'ProductID':this_product.ID,
+            'MenuList': navbar,
+            'AttrProduct': product_attribute_list,
+            'Attributes': attribute_list,
+            'NetWeight': this_product.Net_Weight,
+            'WeightWithPacking': this_product.Weight_With_Packing,
+            'Length_Width_Height': this_product.Length_With_Packaging + '*' + this_product.Width_With_Packaging + '*' + this_product.Height_With_Packaging,
+            'ProductID': this_product.ID,
         }
-     
+
         return render(request, 'nakhll_market/profile/pages/productattributelist.html', context)
     else:
         return redirect("auth:login")
-
 
 
 # add product attribute
@@ -2353,116 +2362,116 @@ def add_product_attribute(request, product_slug):
 
             if ((AttrTitle != None) and (AttrTitle != '')) and ((AttrValue != None) and (AttrValue != '')):
                 # get this product
-                this_product = get_object_or_404(Product, Slug = product_slug)
+                this_product = get_object_or_404(Product, Slug=product_slug)
                 # get this attribute
-                this_attribute = get_object_or_404(Attribute, id = AttrTitle)
-                if not AttrProduct.objects.filter(FK_Product = this_product, FK_Attribute = this_attribute).exists():
-                    attrproduct = AttrProduct.objects.create(FK_Product = this_product, FK_Attribute = this_attribute, Value = AttrValue)
+                this_attribute = get_object_or_404(Attribute, id=AttrTitle)
+                if not AttrProduct.objects.filter(FK_Product=this_product, FK_Attribute=this_attribute).exists():
+                    attrproduct = AttrProduct.objects.create(FK_Product=this_product, FK_Attribute=this_attribute,
+                                                             Value=AttrValue)
 
-                    if not Alert.objects.filter(FK_User = request.user, Part = '11', Slug = attrproduct.id).exists():
-                        Alert.objects.create(FK_User = request.user, Part = '11', Slug = attrproduct.id)
+                    if not Alert.objects.filter(FK_User=request.user, Part='11', Slug=attrproduct.id).exists():
+                        Alert.objects.create(FK_User=request.user, Part='11', Slug=attrproduct.id)
 
-                    
                     this_profile = Profile.objects.get(FK_User=request.user)
                     this_inverntory = request.user.WalletManager.Inverntory
                     # Get Menu Item
-                    options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+                    options = Option_Meta.objects.filter(Title='index_page_menu_items')
                     # Get Nav Bar Menu Item
-                    navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+                    navbar = Option_Meta.objects.filter(Title='nav_menu_items')
                     # --------------------------------------------------------------------
                     # get all attribute
-                    attribute_list = Attribute.objects.filter(Publish = True)
+                    attribute_list = Attribute.objects.filter(Publish=True)
                     # this product
-                    this_product = get_object_or_404(Product, Slug = product_slug)
-
-                    context = {  
-                        'This_User_Profile':this_profile,
-                        'This_User_Inverntory': this_inverntory,
-                        'Options': options,
-                        'MenuList':navbar,
-                        'Attributes':attribute_list,
-                        'Product':this_product,
-                        'ShowAlart':True,
-                        'AlartMessage':'ویژگی محصول شما ثبت شد و پس از بررسی کارشناسان اضافه می شود!',
-                    }
-                
-                    return render(request, 'nakhll_market/profile/pages/productattribute.html', context)
-                else:
-                    
-                    this_profile = Profile.objects.get(FK_User=request.user)
-                    this_inverntory = request.user.WalletManager.Inverntory
-                    # Get Menu Item
-                    options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-                    # Get Nav Bar Menu Item
-                    navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-                    # --------------------------------------------------------------------
-                    # get all attribute
-                    attribute_list = Attribute.objects.filter(Publish = True)
-                    # this product
-                    this_product = get_object_or_404(Product, Slug = product_slug)
+                    this_product = get_object_or_404(Product, Slug=product_slug)
 
                     context = {
-                        'This_User_Profile':this_profile,
+                        'This_User_Profile': this_profile,
                         'This_User_Inverntory': this_inverntory,
                         'Options': options,
-                        'MenuList':navbar,
-                        'Attributes':attribute_list,
-                        'Product':this_product,
-                        'ShowAlart':True,
-                        'AlartMessage':'این ویژگی قبلا برای این محصول ثبت شده است!',
+                        'MenuList': navbar,
+                        'Attributes': attribute_list,
+                        'Product': this_product,
+                        'ShowAlart': True,
+                        'AlartMessage': 'ویژگی محصول شما ثبت شد و پس از بررسی کارشناسان اضافه می شود!',
                     }
-                
+
+                    return render(request, 'nakhll_market/profile/pages/productattribute.html', context)
+                else:
+
+                    this_profile = Profile.objects.get(FK_User=request.user)
+                    this_inverntory = request.user.WalletManager.Inverntory
+                    # Get Menu Item
+                    options = Option_Meta.objects.filter(Title='index_page_menu_items')
+                    # Get Nav Bar Menu Item
+                    navbar = Option_Meta.objects.filter(Title='nav_menu_items')
+                    # --------------------------------------------------------------------
+                    # get all attribute
+                    attribute_list = Attribute.objects.filter(Publish=True)
+                    # this product
+                    this_product = get_object_or_404(Product, Slug=product_slug)
+
+                    context = {
+                        'This_User_Profile': this_profile,
+                        'This_User_Inverntory': this_inverntory,
+                        'Options': options,
+                        'MenuList': navbar,
+                        'Attributes': attribute_list,
+                        'Product': this_product,
+                        'ShowAlart': True,
+                        'AlartMessage': 'این ویژگی قبلا برای این محصول ثبت شده است!',
+                    }
+
                     return render(request, 'nakhll_market/profile/pages/productattribute.html', context)
 
             else:
-                
+
                 this_profile = Profile.objects.get(FK_User=request.user)
                 this_inverntory = request.user.WalletManager.Inverntory
                 # Get Menu Item
-                options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+                options = Option_Meta.objects.filter(Title='index_page_menu_items')
                 # Get Nav Bar Menu Item
-                navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+                navbar = Option_Meta.objects.filter(Title='nav_menu_items')
                 # --------------------------------------------------------------------
                 # get all attribute
-                attribute_list = Attribute.objects.filter(Publish = True)
+                attribute_list = Attribute.objects.filter(Publish=True)
                 # this product
-                this_product = get_object_or_404(Product, Slug = product_slug)
+                this_product = get_object_or_404(Product, Slug=product_slug)
 
-                context = { 
-                    'This_User_Profile':this_profile,
+                context = {
+                    'This_User_Profile': this_profile,
                     'This_User_Inverntory': this_inverntory,
                     'Options': options,
-                    'MenuList':navbar,
-                    'Attributes':attribute_list,
-                    'Product':this_product,
-                    'ShowAlart':True,
-                    'AlartMessage':'مقادیر وارد شده معتبر نمی باشد!',
+                    'MenuList': navbar,
+                    'Attributes': attribute_list,
+                    'Product': this_product,
+                    'ShowAlart': True,
+                    'AlartMessage': 'مقادیر وارد شده معتبر نمی باشد!',
                 }
-            
+
                 return render(request, 'nakhll_market/profile/pages/productattribute.html', context)
 
         else:
             this_profile = Profile.objects.get(FK_User=request.user)
             this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
-            options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+            options = Option_Meta.objects.filter(Title='index_page_menu_items')
             # Get Nav Bar Menu Item
-            navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+            navbar = Option_Meta.objects.filter(Title='nav_menu_items')
             # --------------------------------------------------------------------
             # get all attribute
-            attribute_list = Attribute.objects.filter(Publish = True)
+            attribute_list = Attribute.objects.filter(Publish=True)
             # this product
-            this_product = get_object_or_404(Product, Slug = product_slug)
+            this_product = get_object_or_404(Product, Slug=product_slug)
 
             context = {
-                'This_User_Profile':this_profile,
+                'This_User_Profile': this_profile,
                 'This_User_Inverntory': this_inverntory,
                 'Options': options,
-                'MenuList':navbar,
-                'Attributes':attribute_list,
-                'Product':this_product,
+                'MenuList': navbar,
+                'Attributes': attribute_list,
+                'Product': this_product,
             }
-        
+
             return render(request, 'nakhll_market/profile/pages/productattribute.html', context)
 
     else:
@@ -2472,38 +2481,38 @@ def add_product_attribute(request, product_slug):
 # delete product attribute
 def delete_product_attribute(request, attr_id):
     # Check User Status
-    if request.user.is_authenticated :
-        
+    if request.user.is_authenticated:
+
         this_profile = Profile.objects.get(FK_User=request.user)
         this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
-        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+        options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
         # --------------------------------------------------------------------
         # get this attribute product
-        this_attribute_product = get_object_or_404(AttrProduct, id = attr_id)
+        this_attribute_product = get_object_or_404(AttrProduct, id=attr_id)
         # change status
         this_attribute_product.Available = False
         this_attribute_product.save()
         # set alert
-        if not Alert.objects.filter(Part = '24', FK_User = request.user, Slug = this_attribute_product.id).exists():
-            Alert.objects.create(Part = '24', FK_User = request.user, Slug = this_attribute_product.id)
+        if not Alert.objects.filter(Part='24', FK_User=request.user, Slug=this_attribute_product.id).exists():
+            Alert.objects.create(Part='24', FK_User=request.user, Slug=this_attribute_product.id)
         # get this product
         this_product = this_attribute_product.FK_Product
         # get product attribute
-        product_attribute_list = AttrProduct.objects.filter(FK_Product = this_product)
+        product_attribute_list = AttrProduct.objects.filter(FK_Product=this_product)
 
         context = {
-            'This_User_Profile':this_profile,
+            'This_User_Profile': this_profile,
             'This_User_Inverntory': this_inverntory,
             'Options': options,
-            'MenuList':navbar,
-            'AttrProduct':product_attribute_list,
-            'ShowAlart':True,
-            'AlartMessage':'ویژگی شما پس از بررسی کارشناسان حذف می گردد!',
+            'MenuList': navbar,
+            'AttrProduct': product_attribute_list,
+            'ShowAlart': True,
+            'AlartMessage': 'ویژگی شما پس از بررسی کارشناسان حذف می گردد!',
         }
-     
+
         return render(request, 'nakhll_market/profile/pages/productattributelist.html', context)
     else:
         return redirect("auth:login")
@@ -2526,111 +2535,110 @@ def add_new_attribute(request, product_slug):
             # add new data
             if ((AttrUnit != None) and (AttrUnit != '')) and ((AttrTitle != None) and (AttrTitle != '')):
 
-                if not (Attribute.objects.filter(Title = AttrTitle, Unit = AttrUnit)).exists():
+                if not (Attribute.objects.filter(Title=AttrTitle, Unit=AttrUnit)).exists():
                     # create new attribute
-                    this_attribute = Attribute.objects.create(Title = AttrTitle, Unit = AttrUnit)
+                    this_attribute = Attribute.objects.create(Title=AttrTitle, Unit=AttrUnit)
                     # set alert
-                    Alert.objects.create(FK_User = request.user, Part = '10', Slug = this_attribute.id)
+                    Alert.objects.create(FK_User=request.user, Part='10', Slug=this_attribute.id)
 
-                    
                     this_profile = Profile.objects.get(FK_User=request.user)
                     this_inverntory = request.user.WalletManager.Inverntory
                     # Get Menu Item
-                    options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+                    options = Option_Meta.objects.filter(Title='index_page_menu_items')
                     # Get Nav Bar Menu Item
-                    navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+                    navbar = Option_Meta.objects.filter(Title='nav_menu_items')
                     # --------------------------------------------------------------------
                     # get all attribute
-                    attribute_list = Attribute.objects.filter(Publish = True)
+                    attribute_list = Attribute.objects.filter(Publish=True)
                     # this product
-                    this_product = get_object_or_404(Product, Slug = product_slug)
-
-                    context = {  
-                        'This_User_Profile':this_profile,
-                        'This_User_Inverntory': this_inverntory,
-                        'Options': options,
-                        'MenuList':navbar,
-                        'Attributes':attribute_list,
-                        'Product':this_product,
-                        'ShowAlart':True,
-                        'AlartMessage':'ویژگی مدنظر شما ثبت شد و پس از بررسی کارشناسان اضافه می شود!',
-                    }
-                
-                    return render(request, 'nakhll_market/profile/pages/productattribute.html', context)
-                else:
-                    
-                    this_profile = Profile.objects.get(FK_User=request.user)
-                    this_inverntory = request.user.WalletManager.Inverntory
-                    # Get Menu Item
-                    options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-                    # Get Nav Bar Menu Item
-                    navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-                    # --------------------------------------------------------------------
-                    # get all attribute
-                    attribute_list = Attribute.objects.filter(Publish = True)
-                    # this product
-                    this_product = get_object_or_404(Product, Slug = product_slug)
+                    this_product = get_object_or_404(Product, Slug=product_slug)
 
                     context = {
-                        'This_User_Profile':this_profile,
+                        'This_User_Profile': this_profile,
                         'This_User_Inverntory': this_inverntory,
                         'Options': options,
-                        'MenuList':navbar,
-                        'Attributes':attribute_list,
-                        'Product':this_product,
-                        'ShowAlart':True,
-                        'AlartMessage':'ویژگی با این مشخصات موجود است!',
+                        'MenuList': navbar,
+                        'Attributes': attribute_list,
+                        'Product': this_product,
+                        'ShowAlart': True,
+                        'AlartMessage': 'ویژگی مدنظر شما ثبت شد و پس از بررسی کارشناسان اضافه می شود!',
                     }
-                
+
+                    return render(request, 'nakhll_market/profile/pages/productattribute.html', context)
+                else:
+
+                    this_profile = Profile.objects.get(FK_User=request.user)
+                    this_inverntory = request.user.WalletManager.Inverntory
+                    # Get Menu Item
+                    options = Option_Meta.objects.filter(Title='index_page_menu_items')
+                    # Get Nav Bar Menu Item
+                    navbar = Option_Meta.objects.filter(Title='nav_menu_items')
+                    # --------------------------------------------------------------------
+                    # get all attribute
+                    attribute_list = Attribute.objects.filter(Publish=True)
+                    # this product
+                    this_product = get_object_or_404(Product, Slug=product_slug)
+
+                    context = {
+                        'This_User_Profile': this_profile,
+                        'This_User_Inverntory': this_inverntory,
+                        'Options': options,
+                        'MenuList': navbar,
+                        'Attributes': attribute_list,
+                        'Product': this_product,
+                        'ShowAlart': True,
+                        'AlartMessage': 'ویژگی با این مشخصات موجود است!',
+                    }
+
                     return render(request, 'nakhll_market/profile/pages/productattribute.html', context)
             else:
-                
+
                 this_profile = Profile.objects.get(FK_User=request.user)
                 this_inverntory = request.user.WalletManager.Inverntory
                 # Get Menu Item
-                options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+                options = Option_Meta.objects.filter(Title='index_page_menu_items')
                 # Get Nav Bar Menu Item
-                navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+                navbar = Option_Meta.objects.filter(Title='nav_menu_items')
                 # --------------------------------------------------------------------
                 # get all attribute
-                attribute_list = Attribute.objects.filter(Publish = True)
+                attribute_list = Attribute.objects.filter(Publish=True)
                 # this product
-                this_product = get_object_or_404(Product, Slug = product_slug)
+                this_product = get_object_or_404(Product, Slug=product_slug)
 
                 context = {
-                    'This_User_Profile':this_profile,
+                    'This_User_Profile': this_profile,
                     'This_User_Inverntory': this_inverntory,
                     'Options': options,
-                    'MenuList':navbar,
-                    'Attributes':attribute_list,
-                    'Product':this_product,
-                    'ShowAlart':True,
-                    'AlartMessage':'مقادیر وارد شده معتبر نمی باشد!',
+                    'MenuList': navbar,
+                    'Attributes': attribute_list,
+                    'Product': this_product,
+                    'ShowAlart': True,
+                    'AlartMessage': 'مقادیر وارد شده معتبر نمی باشد!',
                 }
-            
+
                 return render(request, 'nakhll_market/profile/pages/productattribute.html', context)
         else:
             this_profile = Profile.objects.get(FK_User=request.user)
             this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
-            options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+            options = Option_Meta.objects.filter(Title='index_page_menu_items')
             # Get Nav Bar Menu Item
-            navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+            navbar = Option_Meta.objects.filter(Title='nav_menu_items')
             # --------------------------------------------------------------------
             # get all attribute
-            attribute_list = Attribute.objects.filter(Publish = True)
+            attribute_list = Attribute.objects.filter(Publish=True)
             # this product
-            this_product = get_object_or_404(Product, Slug = product_slug)
+            this_product = get_object_or_404(Product, Slug=product_slug)
 
             context = {
-                'This_User_Profile':this_profile,
+                'This_User_Profile': this_profile,
                 'This_User_Inverntory': this_inverntory,
                 'Options': options,
-                'MenuList':navbar,
-                'Attributes':attribute_list,
-                'Product':this_product,
+                'MenuList': navbar,
+                'Attributes': attribute_list,
+                'Product': this_product,
             }
-        
+
             return render(request, 'nakhll_market/profile/pages/productattribute.html', context)
     else:
         return redirect("auth:login")
@@ -2639,39 +2647,39 @@ def add_new_attribute(request, product_slug):
 # product attribute price list
 def product_attribute_price_list(request, product_slug):
     # Check User Status
-    if request.user.is_authenticated :
-        
+    if request.user.is_authenticated:
+
         this_profile = Profile.objects.get(FK_User=request.user)
         this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
-        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+        options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
         # --------------------------------------------------------------------
         # get this product
-        this_product = get_object_or_404(Product, Slug = product_slug)
+        this_product = get_object_or_404(Product, Slug=product_slug)
         # get all product optional attribute
-        optional_attribute_list = this_product.FK_OptinalAttribute.filter(Publish = True)
+        optional_attribute_list = this_product.FK_OptinalAttribute.filter(Publish=True)
 
         context = {
-            'This_User_Profile':this_profile,
+            'This_User_Profile': this_profile,
             'This_User_Inverntory': this_inverntory,
             'Options': options,
-            'MenuList':navbar,
-            'ThisProduct':this_product,
-            'OptinalAttribute':optional_attribute_list,
+            'MenuList': navbar,
+            'ThisProduct': this_product,
+            'OptinalAttribute': optional_attribute_list,
         }
-        
+
         return render(request, 'nakhll_market/profile/pages/showattrpricelist.html', context)
-    else:    
+    else:
         return redirect("auth:login")
 
 
 # change product attribute price status
 def change_product_attribute_price_status(request, id):
     # Check User Status
-    if request.user.is_authenticated :
-        this_attrprice = get_object_or_404(AttrPrice, id = id)
+    if request.user.is_authenticated:
+        this_attrprice = get_object_or_404(AttrPrice, id=id)
         # Change Status
         if this_attrprice.Available:
             this_attrprice.Available = False
@@ -2679,158 +2687,161 @@ def change_product_attribute_price_status(request, id):
         else:
             this_attrprice.Available = True
             this_attrprice.save()
-        return redirect("nakhll_market:Shop_Manager_ProductPriceAttributeList", product_slug = this_attrprice.FK_Product.Slug)
-    else:    
+        return redirect("nakhll_market:Shop_Manager_ProductPriceAttributeList",
+                        product_slug=this_attrprice.FK_Product.Slug)
+    else:
         return redirect("auth:login")
 
 
 # delete product attribute price
 def delete_product_attribute_price(request, id):
     # Check User Status
-    if request.user.is_authenticated :
+    if request.user.is_authenticated:
         # get this product attribute price
-        this_attrprice = get_object_or_404(AttrPrice, id = id)
+        this_attrprice = get_object_or_404(AttrPrice, id=id)
         # change status
         this_attrprice.Publish = False
         this_attrprice.save()
         # set alert
-        if not Alert.objects.filter(Part = '25', FK_User = request.user, Slug = this_attrprice.id).exists():
-            Alert.objects.create(Part = '25', FK_User = request.user, Slug = this_attrprice.id)
-        return redirect("nakhll_market:Shop_Manager_ProductPriceAttributeList", product_slug = this_attrprice.FK_Product.Slug)
+        if not Alert.objects.filter(Part='25', FK_User=request.user, Slug=this_attrprice.id).exists():
+            Alert.objects.create(Part='25', FK_User=request.user, Slug=this_attrprice.id)
+        return redirect("nakhll_market:Shop_Manager_ProductPriceAttributeList",
+                        product_slug=this_attrprice.FK_Product.Slug)
     else:
         return redirect("auth:login")
-
 
 
 # add new product attribute price
 def add_product_attribute_price(request, product_slug):
     # Check User Status
-    if request.user.is_authenticated :
+    if request.user.is_authenticated:
         if request.method == 'POST':
             # get data
             try:
                 AttrPrice_Value = request.POST["AttributePrice_Value"]
-            except :
+            except:
                 AttrPrice_Value = None
             try:
                 AttrPrice_Exp = request.POST["AttributePrice_Exp"]
-            except :
+            except:
                 AttrPrice_Exp = None
             try:
                 AttrPrice_Unit = request.POST["AttributePrice_Unit"]
-            except :
+            except:
                 AttrPrice_Unit = None
             try:
                 AttrPrice_Des = request.POST["AttributePrice_Des"]
-            except :
+            except:
                 AttrPrice_Des = None
             # set data
-            if ((AttrPrice_Value != None) and (AttrPrice_Value != '')) and ((AttrPrice_Exp != None) and (AttrPrice_Exp != '')) and ((AttrPrice_Unit != None) and (AttrPrice_Unit != '')):
+            if ((AttrPrice_Value != None) and (AttrPrice_Value != '')) and (
+                    (AttrPrice_Exp != None) and (AttrPrice_Exp != '')) and (
+                    (AttrPrice_Unit != None) and (AttrPrice_Unit != '')):
                 # get this product
-                this_product = get_object_or_404(Product, Slug = product_slug)
-                if not AttrPrice.objects.filter(FK_Product = this_product, Value = AttrPrice_Value, ExtraPrice = AttrPrice_Exp, Unit = AttrPrice_Unit).exists():
+                this_product = get_object_or_404(Product, Slug=product_slug)
+                if not AttrPrice.objects.filter(FK_Product=this_product, Value=AttrPrice_Value,
+                                                ExtraPrice=AttrPrice_Exp, Unit=AttrPrice_Unit).exists():
                     # create new attribute price
-                    attrprice = AttrPrice.objects.create(FK_Product = this_product, Value = AttrPrice_Value, ExtraPrice = AttrPrice_Exp, Unit = AttrPrice_Unit, Publish = False)
+                    attrprice = AttrPrice.objects.create(FK_Product=this_product, Value=AttrPrice_Value,
+                                                         ExtraPrice=AttrPrice_Exp, Unit=AttrPrice_Unit, Publish=False)
                     if AttrPrice_Des != '':
                         attrprice.Description = AttrPrice_Des
                         attrprice.save()
                     # set alert
-                    Alert.objects.create(Part = '17', FK_User = request.user, Slug = attrprice.id)
-            
+                    Alert.objects.create(Part='17', FK_User=request.user, Slug=attrprice.id)
+
                     # Get User Info
-                    
+
                     this_profile = Profile.objects.get(FK_User=request.user)
                     this_inverntory = request.user.WalletManager.Inverntory
                     # Get Menu Item
-                    options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+                    options = Option_Meta.objects.filter(Title='index_page_menu_items')
                     # Get Nav Bar Menu Item
-                    navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+                    navbar = Option_Meta.objects.filter(Title='nav_menu_items')
                     # --------------------------------------------------------------------
                     # get all product attribute price
-                    attribute_price_list = AttrPrice.objects.filter(FK_Product = this_product)
+                    attribute_price_list = AttrPrice.objects.filter(FK_Product=this_product)
 
                     context = {
-                        'This_User_Profile':this_profile,
+                        'This_User_Profile': this_profile,
                         'This_User_Inverntory': this_inverntory,
                         'Options': options,
-                        'MenuList':navbar,
-                        'Product':this_product,
-                        'AttrPrice':attribute_price_list,
-                        'ShowAlart':True,
-                        'AlartMessage':'ارزش ویژگی شما ثبت شد و بعد از بررسی کارشناسان منتشر می گردد!',
+                        'MenuList': navbar,
+                        'Product': this_product,
+                        'AttrPrice': attribute_price_list,
+                        'ShowAlart': True,
+                        'AlartMessage': 'ارزش ویژگی شما ثبت شد و بعد از بررسی کارشناسان منتشر می گردد!',
                     }
-                    
+
                     return render(request, 'nakhll_market/profile/pages/showattrpricelist.html', context)
                 else:
                     # Get User Info
-                    
+
                     this_profile = Profile.objects.get(FK_User=request.user)
                     this_inverntory = request.user.WalletManager.Inverntory
                     # Get Menu Item
-                    options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+                    options = Option_Meta.objects.filter(Title='index_page_menu_items')
                     # Get Nav Bar Menu Item
-                    navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+                    navbar = Option_Meta.objects.filter(Title='nav_menu_items')
                     # -------------------------------------------------------------------
                     # get this product
-                    this_product = get_object_or_404(Product, Slug = product_slug)
+                    this_product = get_object_or_404(Product, Slug=product_slug)
 
                     context = {
-                        'This_User_Profile':this_profile,
+                        'This_User_Profile': this_profile,
                         'This_User_Inverntory': this_inverntory,
                         'Options': options,
-                        'MenuList':navbar,
-                        'Product':this_product,
-                        'ShowAlart':True,
-                        'AlartMessage':'ارزش ویژگی با این مشخصات قبلا برای این محصول ثبت شده است!',
+                        'MenuList': navbar,
+                        'Product': this_product,
+                        'ShowAlart': True,
+                        'AlartMessage': 'ارزش ویژگی با این مشخصات قبلا برای این محصول ثبت شده است!',
                     }
-                    
+
                     return render(request, 'nakhll_market/profile/pages/showattrprice.html', context)
             else:
                 # Get User Info
-                
+
                 this_profile = Profile.objects.get(FK_User=request.user)
                 this_inverntory = request.user.WalletManager.Inverntory
                 # Get Menu Item
-                options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+                options = Option_Meta.objects.filter(Title='index_page_menu_items')
                 # Get Nav Bar Menu Item
-                navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+                navbar = Option_Meta.objects.filter(Title='nav_menu_items')
                 # -------------------------------------------------------------------
                 # get this product
-                this_product = get_object_or_404(Product, Slug = product_slug)
-
+                this_product = get_object_or_404(Product, Slug=product_slug)
 
                 context = {
-                    'This_User_Profile':this_profile,
+                    'This_User_Profile': this_profile,
                     'This_User_Inverntory': this_inverntory,
                     'Options': options,
-                    'MenuList':navbar,
-                    'Product':this_product,
-                    'ShowAlart':True,
-                    'AlartMessage':'لطفا تمامی فیلد های ستاره دار را کامل کنید!',
+                    'MenuList': navbar,
+                    'Product': this_product,
+                    'ShowAlart': True,
+                    'AlartMessage': 'لطفا تمامی فیلد های ستاره دار را کامل کنید!',
                 }
-                
+
                 return render(request, 'nakhll_market/profile/pages/showattrprice.html', context)
         else:
             # Get User Info
             this_profile = Profile.objects.get(FK_User=request.user)
             this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
-            options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+            options = Option_Meta.objects.filter(Title='index_page_menu_items')
             # Get Nav Bar Menu Item
-            navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+            navbar = Option_Meta.objects.filter(Title='nav_menu_items')
             # -------------------------------------------------------------------
             # get this product
-            this_product = get_object_or_404(Product, Slug = product_slug)
-
+            this_product = get_object_or_404(Product, Slug=product_slug)
 
             context = {
-                'This_User_Profile':this_profile,
+                'This_User_Profile': this_profile,
                 'This_User_Inverntory': this_inverntory,
                 'Options': options,
-                'MenuList':navbar,
-                'Product':this_product,
+                'MenuList': navbar,
+                'Product': this_product,
             }
-            
+
             return render(request, 'nakhll_market/profile/pages/showattrprice.html', context)
     else:
         return redirect("auth:login")
@@ -2839,79 +2850,48 @@ def add_product_attribute_price(request, product_slug):
 # <----------- end product section ------------->
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # ---------------- Ticketin Section ----------------------------
 
 # Get User Ticketing
 def ProfileTicketing(request):
     # Check User Status
-    if request.user.is_authenticated :
+    if not (request.user.first_name and request.user.last_name):
+        messages.warning(request, 'لطفا ابتدا اطلاعات خود را تکمیل کنید.')
+        return redirect("nakhll_market:Dashboard")
+    if request.user.is_authenticated:
         this_profile = Profile.objects.get(FK_User=request.user)
         this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
-        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+        options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
         # ----------------------------------------------------------------
-        ticketing = Ticketing.objects.filter(FK_Importer = request.user).order_by('-Date')
-        ticfani = ticketing.filter(SectionType = '2').count()
-        ticposhtibani = ticketing.filter(SectionType = '0').count()
-        ticmali = ticketing.filter(SectionType = '1').count()
+        ticketing = Ticketing.objects.filter(FK_Importer=request.user).order_by('-Date')
+        ticfani = ticketing.filter(SectionType='2').count()
+        ticposhtibani = ticketing.filter(SectionType='0').count()
+        ticmali = ticketing.filter(SectionType='1').count()
 
         context = {
-            'This_User_Profile':this_profile,
+            'This_User_Profile': this_profile,
             'This_User_Inverntory': this_inverntory,
             'Options': options,
-            'MenuList':navbar,
-            'Ticketings':ticketing,
-            'TicFani':ticfani,
-            'TicPoshtibani':ticposhtibani,
-            'TicMali':ticmali,
+            'MenuList': navbar,
+            'Ticketings': ticketing,
+            'TicFani': ticfani,
+            'TicPoshtibani': ticposhtibani,
+            'TicMali': ticmali,
         }
-     
+
         return render(request, 'nakhll_market/profile/pages/ticketing.html', context)
     else:
         return redirect("auth:login")
 
+
 # Add New Ticket
 def AddNewTicket(request):
-    # Check User Status
-    if request.user.is_authenticated :
-
-        if request.method == 'POST': 
+    # for check ferstname and lastname
+    if request.user.is_authenticated:
+        if request.method == 'POST':
 
             try:
                 Tic_Title = request.POST["Ticket_Title"]
@@ -2919,134 +2899,136 @@ def AddNewTicket(request):
                 Tic_Title = False
 
             try:
-               Tic_Sec = request.POST["Ticket_Section"]
+                Tic_Sec = request.POST["Ticket_Section"]
             except MultiValueDictKeyError:
-               Tic_Sec = False
+                Tic_Sec = False
 
             try:
                 Tic_Des = request.POST["Ticket_Description"]
             except MultiValueDictKeyError:
-               Tic_Des = False
-  
+                Tic_Des = False
+
             try:
                 Tic_Img = request.FILES["Ticket_Image"]
             except MultiValueDictKeyError:
                 Tic_Img = False
-               
 
             if (Tic_Title != False) and (Tic_Sec != False) and (Tic_Des != False):
 
                 if (Tic_Img != False):
-                    tic = Ticketing(Title = Tic_Title, SectionType = Tic_Sec, FK_Importer = request.user, Description = Tic_Des, Image = Tic_Img)
+                    tic = Ticketing(Title=Tic_Title, SectionType=Tic_Sec, FK_Importer=request.user, Description=Tic_Des,
+                                    Image=Tic_Img)
                     tic.save()
                 else:
-                    tic = Ticketing(Title = Tic_Title, SectionType = Tic_Sec, FK_Importer = request.user, Description = Tic_Des)
+                    tic = Ticketing(Title=Tic_Title, SectionType=Tic_Sec, FK_Importer=request.user, Description=Tic_Des)
                     tic.save()
 
-                if Alert.objects.filter(Part = '16', FK_User = request.user, Slug = tic.ID, Seen = False).count() == 0:
-                    alert = Alert(Part = '16', FK_User = request.user, Slug = tic.ID)
+                if Alert.objects.filter(Part='16', FK_User=request.user, Slug=tic.ID, Seen=False).count() == 0:
+                    alert = Alert(Part='16', FK_User=request.user, Slug=tic.ID)
                     alert.save()
 
             else:
-                #Get User Info
-                user=User.objects.all()
+                # Get User Info
+                user = User.objects.all()
                 # Get User Profile
-                profile=Profile.objects.all()
+                profile = Profile.objects.all()
                 # Get Wallet Inverntory
-                wallets=Wallet.objects.all()
+                wallets = Wallet.objects.all()
                 # Get Menu Item
-                options=Option_Meta.objects.filter(Title='index_page_menu_items')
+                options = Option_Meta.objects.filter(Title='index_page_menu_items')
                 # Get Nav Bar Menu Item
-                navbar=Option_Meta.objects.filter(Title='nav_menu_items')
+                navbar = Option_Meta.objects.filter(Title='nav_menu_items')
                 # ----------------------------------------------------------------
-                ticketing = Ticketing.objects.filter(FK_Importer = request.user).order_by('Date')
-                ticfani = ticketing.filter(SectionType = '2').count()
-                ticposhtibani = ticketing.filter(SectionType = '0').count()
-                ticmali = ticketing.filter(SectionType = '1').count()
+                ticketing = Ticketing.objects.filter(FK_Importer=request.user).order_by('Date')
+                ticfani = ticketing.filter(SectionType='2').count()
+                ticposhtibani = ticketing.filter(SectionType='0').count()
+                ticmali = ticketing.filter(SectionType='1').count()
 
                 context = {
-                    'Users':user,
-                    'Profile':profile,
+                    'Users': user,
+                    'Profile': profile,
                     'Wallet': wallets,
                     'Options': options,
-                    'MenuList':navbar,
-                    'ShowAlart':True,
-                    'Ticketings':ticketing,
-                    'TicFani':ticfani,
-                    'TicPoshtibani':ticposhtibani,
-                    'TicMali':ticmali,
-                    'AlartMessage':'تیکت شما ثبت نشد!'
+                    'MenuList': navbar,
+                    'ShowAlart': True,
+                    'Ticketings': ticketing,
+                    'TicFani': ticfani,
+                    'TicPoshtibani': ticposhtibani,
+                    'TicMali': ticmali,
+                    'AlartMessage': 'تیکت شما ثبت نشد!'
                 }
 
                 return render(request, 'nakhll_market/profile/pages/ticketing.html', context)
 
-            #Get User Info
-            user=User.objects.all()
+            # Get User Info
+            user = User.objects.all()
             # Get User Profile
-            profile=Profile.objects.all()
+            profile = Profile.objects.all()
             # Get Wallet Inverntory
-            wallets=Wallet.objects.all()
+            wallets = Wallet.objects.all()
             # Get Menu Item
-            options=Option_Meta.objects.filter(Title='index_page_menu_items')
+            options = Option_Meta.objects.filter(Title='index_page_menu_items')
             # Get Nav Bar Menu Item
-            navbar=Option_Meta.objects.filter(Title='nav_menu_items')
+            navbar = Option_Meta.objects.filter(Title='nav_menu_items')
             # ----------------------------------------------------------------
-            ticketing = Ticketing.objects.filter(FK_Importer = request.user).order_by('Date')
-            ticfani = ticketing.filter(SectionType = '2').count()
-            ticposhtibani = ticketing.filter(SectionType = '0').count()
-            ticmali = ticketing.filter(SectionType = '1').count()
+            ticketing = Ticketing.objects.filter(FK_Importer=request.user).order_by('Date')
+            ticfani = ticketing.filter(SectionType='2').count()
+            ticposhtibani = ticketing.filter(SectionType='0').count()
+            ticmali = ticketing.filter(SectionType='1').count()
 
             context = {
-                'Users':user,
-                'Profile':profile,
+                'Users': user,
+                'Profile': profile,
                 'Wallet': wallets,
                 'Options': options,
-                'MenuList':navbar,
-                'ShowAlart':True,
-                'Ticketings':ticketing,
-                'TicFani':ticfani,
-                'TicPoshtibani':ticposhtibani,
-                'TicMali':ticmali,
-                'AlartMessage':'تیکت شما ثبت شد!'
+                'MenuList': navbar,
+                'ShowAlart': True,
+                'Ticketings': ticketing,
+                'TicFani': ticfani,
+                'TicPoshtibani': ticposhtibani,
+                'TicMali': ticmali,
+                'AlartMessage': 'تیکت شما ثبت شد!'
             }
-        
+
             return render(request, 'nakhll_market/profile/pages/ticketing.html', context)
 
-    else:    
-        #Get User Info
-        user=User.objects.all()
+    else:
+        # Get User Info
+        user = User.objects.all()
         # Get User Profile
-        profile=Profile.objects.all()
+        profile = Profile.objects.all()
         # Get Wallet Inverntory
-        wallets=Wallet.objects.all()
+        wallets = Wallet.objects.all()
         # Get Menu Item
-        options=Option_Meta.objects.filter(Title='index_page_menu_items')
+        options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
-        navbar=Option_Meta.objects.filter(Title='nav_menu_items')
+        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
 
         context = {
-            'Users':user,
-            'Profile':profile,
+            'Users': user,
+            'Profile': profile,
             'Wallet': wallets,
             'Options': options,
-            'MenuList':navbar,
+            'MenuList': navbar,
         }
-        
+
         return render(request, 'registration/login.html', context)
+
 
 # Ticket Detail
 def ProfileTicketingDetail(request, ticket_id):
     # Check User Status
-    if request.user.is_authenticated :
+    if request.user.is_authenticated:
         this_profile = Profile.objects.get(FK_User=request.user)
         this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
-        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+        options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
         # ------- Ticket --------------------------------------------------
         # Get This Tickect
-        ticket = get_object_or_404(Ticketing, ID = ticket_id)
+        ticket = get_object_or_404(Ticketing, ID=ticket_id)
+
         # Build Class
         class Replay:
             def __init__(self, id, username, userimage, des, date_create, father_id):
@@ -3056,56 +3038,57 @@ def ProfileTicketingDetail(request, ticket_id):
                 self.descriptino = des
                 self.date = date_create
                 self.father = father_id
+
         # Get All Ticket`s Message
         ticket_replay_list = []
-        for item in TicketingMessage.objects.filter(FK_Replay_id = ticket.ID).order_by('Date'):
+        for item in TicketingMessage.objects.filter(FK_Replay_id=ticket.ID).order_by('Date'):
             name = item.FK_Importer.first_name + ' ' + item.FK_Importer.last_name
-            image = Profile.objects.get(FK_User = item.FK_Importer).Image_thumbnail_url
+            image = Profile.objects.get(FK_User=item.FK_Importer).Image_thumbnail_url
             new_item = Replay(item.ID, name, image, item.Description, item.Date, item.FK_Replay.ID)
             ticket_replay_list.append(new_item)
         # ------------------------------
-        ticketing = Ticketing.objects.filter(FK_Importer = request.user).order_by('-Date')
-        ticfani = ticketing.filter(SectionType = '2').count()
-        ticposhtibani = ticketing.filter(SectionType = '0').count()
-        ticmali = ticketing.filter(SectionType = '1').count()
-
+        ticketing = Ticketing.objects.filter(FK_Importer=request.user).order_by('-Date')
+        ticfani = ticketing.filter(SectionType='2').count()
+        ticposhtibani = ticketing.filter(SectionType='0').count()
+        ticmali = ticketing.filter(SectionType='1').count()
 
         context = {
-            'This_User_Profile':this_profile,
+            'This_User_Profile': this_profile,
             'This_User_Inverntory': this_inverntory,
             'Options': options,
-            'MenuList':navbar,
-            'Ticketings':ticketing,
-            'TicFani':ticfani,
-            'TicPoshtibani':ticposhtibani,
-            'TicMali':ticmali,
-            'ThisTicket':ticket,
-            'ReplayTicket':ticket_replay_list,
+            'MenuList': navbar,
+            'Ticketings': ticketing,
+            'TicFani': ticfani,
+            'TicPoshtibani': ticposhtibani,
+            'TicMali': ticmali,
+            'ThisTicket': ticket,
+            'ReplayTicket': ticket_replay_list,
         }
-        
-        return render(request, 'nakhll_market/profile/pages/ticketdetail.html', context)
 
+        return render(request, 'nakhll_market/profile/pages/ticketdetail.html', context)
 
 
 # Replay Ticket
 def RepalyTicketing(request, ticket_id):
     # Check User Status
-    if request.user.is_authenticated :
-        if request.method == 'POST': 
+    if request.user.is_authenticated:
+        if request.method == 'POST':
             try:
                 Tic_Title = request.POST["Ticket_Pasokh"]
                 # Set Replay
-                fatherticket = get_object_or_404(Ticketing, ID = ticket_id)
+                fatherticket = get_object_or_404(Ticketing, ID=ticket_id)
                 fatherticket.SeenStatus = '0'
                 fatherticket.save()
-                new_ticket = TicketingMessage.objects.create(Description = Tic_Title, FK_Importer = request.user, FK_Replay = fatherticket)
-                Alert.objects.create(Part = '16', FK_User = request.user, Slug = ticket_id)
+                new_ticket = TicketingMessage.objects.create(Description=Tic_Title, FK_Importer=request.user,
+                                                             FK_Replay=fatherticket)
+                Alert.objects.create(Part='16', FK_User=request.user, Slug=ticket_id)
                 # -------------------------------------------------------------------------------------------------------------------------
-                return redirect("nakhll_market:TicketinDetail", ticket_id = ticket_id)
+                return redirect("nakhll_market:TicketinDetail", ticket_id=ticket_id)
             except Exception as e:
-                return redirect("nakhll_market:error_500", error_text = str(e))  
-    else:    
+                return redirect("nakhll_market:error_500", error_text=str(e))
+    else:
         return redirect("auth:login")
+
 
 # ---------------------- End Ticketin Section ----------------------
 
@@ -3119,22 +3102,22 @@ class ProfileAlert(LoginRequiredMixin, TemplateView):
         this_profile = Profile.objects.get(FK_User=request.user)
         this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
-        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+        options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
         # --------------------------------------------------------------------
         # get all new alert
-        alert = Alert.objects.filter(Seen = False).order_by('DateCreate')
-        
+        alert = Alert.objects.filter(Seen=False).order_by('DateCreate')
+
         context['This_User_Profile'] = this_profile
-        context['This_User_Inverntory'] =this_inverntory
+        context['This_User_Inverntory'] = this_inverntory
         context['Options'] = options
         context['MenuList'] = navbar
         context['Alert'] = alert
-        
+
         return context
-        
-        
+
+
 # Profile Alert
 # def ProfileAlert(request):
 #     # Check User Status
@@ -3156,14 +3139,14 @@ class ProfileAlert(LoginRequiredMixin, TemplateView):
 #             'MenuList':navbar,
 #             'Alert':alert,
 #         }
-     
+
 #         return render(request, 'nakhll_market/profile/pages/alert.html', context)
 #     else:
 #         return redirect("auth:login")
 
 
 # Update Profile Values
-#--------------------------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------------------------------------
 
 # Update Dashboard (User Info) Values
 def UpdateUserDashboard(request):
@@ -3177,12 +3160,12 @@ def UpdateUserDashboard(request):
 
             try:
                 LastName = request.POST["User_LastName"]
-            except :
+            except:
                 LastName = ''
 
             try:
                 Email = request.POST["User_Email"]
-            except :
+            except:
                 Email = ''
 
             try:
@@ -3272,11 +3255,11 @@ def UpdateUserDashboard(request):
                 ToWeb = '7'
             elif TutorialWebsite == 'هیچ کدام':
                 ToWeb = '8'
-            #-------------------------------------------------------------
+            # -------------------------------------------------------------
             # Get User
             this_user = request.user
             # Get Profile
-            this_profile = get_object_or_404(Profile, FK_User = this_user)
+            this_profile = get_object_or_404(Profile, FK_User=this_user)
             # Edit Status
             edit_user = False
             edit_profile = False
@@ -3306,8 +3289,8 @@ def UpdateUserDashboard(request):
             if this_user.email != Email:
                 this_user.email = Email
                 edit_user = True
-                if not Newsletters.objects.filter(Email = Email).exists():
-                    New = Newsletters.objects.create(Email = Email)
+                if not Newsletters.objects.filter(Email=Email).exists():
+                    New = Newsletters.objects.create(Email=Email)
             if this_profile.ZipCode != ZipCode:
                 this_profile.ZipCode = ZipCode
                 edit_profile = True
@@ -3352,74 +3335,59 @@ def UpdateUserDashboard(request):
             # -----------------------------------------
             return redirect("nakhll_market:Dashboard")
         except Exception as e:
-            return redirect("nakhll_market:error_500", error_text = str(e))
+            return redirect("nakhll_market:error_500", error_text=str(e))
     else:
         return redirect("auth:login")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # --------------------------------------- Add Connect Us Message ----------------------------------------
 
 # Add New Connect
 def AddNewConnect(request):
-
     if request.method == 'POST':
 
         try:
             Connect_Title = request.POST["Input_Title"]
-        except :
+        except:
             Connect_Title = ''
 
         try:
             Connect_Des = request.POST["Input_Text"]
-        except :
+        except:
             Connect_Des = ''
 
         try:
             Connect_PhoneNumber = request.POST["Input_Phone"]
-        except :
+        except:
             Connect_PhoneNumber = ''
 
         try:
             Connect_Email = request.POST["Input_Email"]
-        except :
+        except:
             Connect_Email = ''
 
         if (Connect_PhoneNumber != '') or (Connect_Email != ''):
 
-            msg = Complaint(Title = Connect_Title, Description = Connect_Des, MobileNumber = Connect_PhoneNumber, Email = Connect_Email, Type = '1')
+            msg = Complaint(Title=Connect_Title, Description=Connect_Des, MobileNumber=Connect_PhoneNumber,
+                            Email=Connect_Email, Type='1')
             msg.save()
 
-            alert = Alert(Part = '18', FK_User = request.user, Slug = msg.id)
+            alert = Alert(Part='18', FK_User=request.user, Slug=msg.id)
             alert.save()
-            
+
             Road = []
-            #Get User Info
-            user=User.objects.all()
+            # Get User Info
+            user = User.objects.all()
             # Get User Profile
-            profile=Profile.objects.all()
+            profile = Profile.objects.all()
             # Get Wallet Inverntory
-            wallets=Wallet.objects.all()
+            wallets = Wallet.objects.all()
             # Get Menu Item
-            options=Option_Meta.objects.filter(Title='index_page_menu_items')
+            options = Option_Meta.objects.filter(Title='index_page_menu_items')
             # Get Nav Bar Menu Item
-            navbar=Option_Meta.objects.filter(Title='nav_menu_items')
-            #---------------------------------------------------------------------
+            navbar = Option_Meta.objects.filter(Title='nav_menu_items')
+
+            # ---------------------------------------------------------------------
             # Build Connect Class
             class ConnectToSite:
                 def __init__(self, TitleSection, PhoneNumbers, icon):
@@ -3428,23 +3396,22 @@ def AddNewConnect(request):
                     self.PhoneNumber = PhoneNumbers
 
             # Get Connect Us
-            connect = Option_Meta.objects.filter(Title = 'connect_us')
+            connect = Option_Meta.objects.filter(Title='connect_us')
 
             for con in connect:
                 phones = con.Description.split('-')
                 CTS = ConnectToSite(con.Value_1, phones, con.Value_2)
                 Road.append(CTS)
 
-
             context = {
-                'Users':user,
-                'Profile':profile,
+                'Users': user,
+                'Profile': profile,
                 'Wallet': wallets,
                 'Options': options,
-                'MenuList':navbar,
-                'ShowAlart':True,
-                'AlartMessage':'پیام شما ثبت و بعد از بررسی کارشناسان نتیجه آن به شما گزارش داده می شود!',
-                'ConnectRoad':Road,
+                'MenuList': navbar,
+                'ShowAlart': True,
+                'AlartMessage': 'پیام شما ثبت و بعد از بررسی کارشناسان نتیجه آن به شما گزارش داده می شود!',
+                'ConnectRoad': Road,
             }
 
             return render(request, 'nakhll_market/pages/connect.html', context)
@@ -3452,17 +3419,18 @@ def AddNewConnect(request):
         else:
 
             Road = []
-            #Get User Info
-            user=User.objects.all()
+            # Get User Info
+            user = User.objects.all()
             # Get User Profile
-            profile=Profile.objects.all()
+            profile = Profile.objects.all()
             # Get Wallet Inverntory
-            wallets=Wallet.objects.all()
+            wallets = Wallet.objects.all()
             # Get Menu Item
-            options=Option_Meta.objects.filter(Title='index_page_menu_items')
+            options = Option_Meta.objects.filter(Title='index_page_menu_items')
             # Get Nav Bar Menu Item
-            navbar=Option_Meta.objects.filter(Title='nav_menu_items')
-            #---------------------------------------------------------------------
+            navbar = Option_Meta.objects.filter(Title='nav_menu_items')
+
+            # ---------------------------------------------------------------------
             # Build Connect Class
             class ConnectToSite:
                 def __init__(self, TitleSection, PhoneNumbers, icon):
@@ -3471,40 +3439,40 @@ def AddNewConnect(request):
                     self.PhoneNumber = PhoneNumbers
 
             # Get Connect Us
-            connect = Option_Meta.objects.filter(Title = 'connect_us')
+            connect = Option_Meta.objects.filter(Title='connect_us')
 
             for con in connect:
                 phones = con.Description.split('-')
                 CTS = ConnectToSite(con.Value_1, phones, con.Value_2)
                 Road.append(CTS)
 
-
             context = {
-                'Users':user,
-                'Profile':profile,
+                'Users': user,
+                'Profile': profile,
                 'Wallet': wallets,
                 'Options': options,
-                'MenuList':navbar,
-                'ShowAlart':True,
-                'AlartMessage':'برای پاسخ دهی به پیام شما، لازم است حداقل یکی از فیلد های شماره تماس یا ایمیل را پر نمایید!',
-                'ConnectRoad':Road,
+                'MenuList': navbar,
+                'ShowAlart': True,
+                'AlartMessage': 'برای پاسخ دهی به پیام شما، لازم است حداقل یکی از فیلد های شماره تماس یا ایمیل را پر نمایید!',
+                'ConnectRoad': Road,
             }
 
             return render(request, 'nakhll_market/pages/connect.html', context)
     else:
 
         Road = []
-        #Get User Info
-        user=User.objects.all()
+        # Get User Info
+        user = User.objects.all()
         # Get User Profile
-        profile=Profile.objects.all()
+        profile = Profile.objects.all()
         # Get Wallet Inverntory
-        wallets=Wallet.objects.all()
+        wallets = Wallet.objects.all()
         # Get Menu Item
-        options=Option_Meta.objects.filter(Title='index_page_menu_items')
+        options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
-        navbar=Option_Meta.objects.filter(Title='nav_menu_items')
-        #---------------------------------------------------------------------
+        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
+
+        # ---------------------------------------------------------------------
         # Build Connect Class
         class ConnectToSite:
             def __init__(self, TitleSection, PhoneNumbers, icon):
@@ -3513,7 +3481,7 @@ def AddNewConnect(request):
                 self.PhoneNumber = PhoneNumbers
 
         # Get Connect Us
-        connect = Option_Meta.objects.filter(Title = 'connect_us')
+        connect = Option_Meta.objects.filter(Title='connect_us')
 
         for con in connect:
             phones = con.Description.split('-')
@@ -3521,13 +3489,13 @@ def AddNewConnect(request):
             Road.append(CTS)
 
         context = {
-            'Users':user,
-            'Profile':profile,
+            'Users': user,
+            'Profile': profile,
             'Wallet': wallets,
             'Options': options,
-            'MenuList':navbar,
-            'ShowAlart':False,
-            'ConnectRoad':Road,
+            'MenuList': navbar,
+            'ShowAlart': False,
+            'ConnectRoad': Road,
         }
 
         return render(request, 'nakhll_market/pages/connect.html', context)
@@ -3535,29 +3503,28 @@ def AddNewConnect(request):
 
 # Add New Complint
 def AddNewComplaint(request):
-
     if request.method == 'POST':
 
         try:
             Connect_Title = request.POST["Input_Title"]
-        except :
+        except:
             Connect_Title = ''
 
         try:
             Connect_Des = request.POST["Input_Text"]
-        except :
+        except:
             Connect_Des = ''
 
         try:
             Connect_PhoneNumber = request.POST["Input_Phone"]
-        except :
+        except:
             Connect_PhoneNumber = ''
 
         try:
             Connect_Email = request.POST["Input_Email"]
-        except :
+        except:
             Connect_Email = ''
-            
+
         try:
             Connect_Image = request.FILES["Input_Image"]
         except MultiValueDictKeyError:
@@ -3566,24 +3533,28 @@ def AddNewComplaint(request):
         if (Connect_PhoneNumber != '') or (Connect_Email != ''):
 
             if Connect_Image != '':
-                msg = Complaint.objects.create(Title = Connect_Title, Description = Connect_Des, MobileNumber = Connect_PhoneNumber, Email = Connect_Email, Type = '0', Image = Connect_Image)
+                msg = Complaint.objects.create(Title=Connect_Title, Description=Connect_Des,
+                                               MobileNumber=Connect_PhoneNumber, Email=Connect_Email, Type='0',
+                                               Image=Connect_Image)
             else:
-                msg = Complaint.objects.crete(Title = Connect_Title, Description = Connect_Des, MobileNumber = Connect_PhoneNumber, Email = Connect_Email, Type = '0')
+                msg = Complaint.objects.crete(Title=Connect_Title, Description=Connect_Des,
+                                              MobileNumber=Connect_PhoneNumber, Email=Connect_Email, Type='0')
 
-            Alert.objects.create(Part = '18', FK_User = request.user, Slug = msg.id)
-            
+            Alert.objects.create(Part='18', FK_User=request.user, Slug=msg.id)
+
             Road = []
-            #Get User Info
-            user=User.objects.all()
+            # Get User Info
+            user = User.objects.all()
             # Get User Profile
-            profile=Profile.objects.all()
+            profile = Profile.objects.all()
             # Get Wallet Inverntory
-            wallets=Wallet.objects.all()
+            wallets = Wallet.objects.all()
             # Get Menu Item
-            options=Option_Meta.objects.filter(Title='index_page_menu_items')
+            options = Option_Meta.objects.filter(Title='index_page_menu_items')
             # Get Nav Bar Menu Item
-            navbar=Option_Meta.objects.filter(Title='nav_menu_items')
-            #---------------------------------------------------------------------
+            navbar = Option_Meta.objects.filter(Title='nav_menu_items')
+
+            # ---------------------------------------------------------------------
             # Build Connect Class
             class ConnectToSite:
                 def __init__(self, TitleSection, PhoneNumbers, icon):
@@ -3592,7 +3563,7 @@ def AddNewComplaint(request):
                     self.PhoneNumber = PhoneNumbers
 
             # Get Connect Us
-            connect = Option_Meta.objects.filter(Title = 'connect_us')
+            connect = Option_Meta.objects.filter(Title='connect_us')
 
             for con in connect:
                 phones = con.Description.split('-')
@@ -3600,14 +3571,14 @@ def AddNewComplaint(request):
                 Road.append(CTS)
 
             context = {
-                'Users':user,
-                'Profile':profile,
+                'Users': user,
+                'Profile': profile,
                 'Wallet': wallets,
                 'Options': options,
-                'MenuList':navbar,
-                'ShowAlart':True,
-                'AlartMessage':'شکایت شما ثبت و بعد از بررسی کارشناسان نتیجه آن به شما گزارش داده می شود!',
-                'ConnectRoad':Road,
+                'MenuList': navbar,
+                'ShowAlart': True,
+                'AlartMessage': 'شکایت شما ثبت و بعد از بررسی کارشناسان نتیجه آن به شما گزارش داده می شود!',
+                'ConnectRoad': Road,
             }
 
             return render(request, 'nakhll_market/pages/complaint.html', context)
@@ -3615,17 +3586,18 @@ def AddNewComplaint(request):
         else:
 
             Road = []
-            #Get User Info
-            user=User.objects.all()
+            # Get User Info
+            user = User.objects.all()
             # Get User Profile
-            profile=Profile.objects.all()
+            profile = Profile.objects.all()
             # Get Wallet Inverntory
-            wallets=Wallet.objects.all()
+            wallets = Wallet.objects.all()
             # Get Menu Item
-            options=Option_Meta.objects.filter(Title='index_page_menu_items')
+            options = Option_Meta.objects.filter(Title='index_page_menu_items')
             # Get Nav Bar Menu Item
-            navbar=Option_Meta.objects.filter(Title='nav_menu_items')
-            #---------------------------------------------------------------------
+            navbar = Option_Meta.objects.filter(Title='nav_menu_items')
+
+            # ---------------------------------------------------------------------
             # Build Connect Class
             class ConnectToSite:
                 def __init__(self, TitleSection, PhoneNumbers, icon):
@@ -3634,38 +3606,39 @@ def AddNewComplaint(request):
                     self.PhoneNumber = PhoneNumbers
 
             # Get Connect Us
-            connect = Option_Meta.objects.filter(Title = 'connect_us')
+            connect = Option_Meta.objects.filter(Title='connect_us')
 
             for con in connect:
                 phones = con.Description.split('-')
                 CTS = ConnectToSite(con.Value_1, phones, con.Value_2)
                 Road.append(CTS)
             context = {
-                'Users':user,
-                'Profile':profile,
+                'Users': user,
+                'Profile': profile,
                 'Wallet': wallets,
                 'Options': options,
-                'MenuList':navbar,
-                'ShowAlart':True,
-                'AlartMessage':'برای پاسخ دهی به پیام شما، لازم است حداقل یکی از فیلد های شماره تماس یا ایمیل را پر نمایید!',
-                'ConnectRoad':Road,
+                'MenuList': navbar,
+                'ShowAlart': True,
+                'AlartMessage': 'برای پاسخ دهی به پیام شما، لازم است حداقل یکی از فیلد های شماره تماس یا ایمیل را پر نمایید!',
+                'ConnectRoad': Road,
             }
 
             return render(request, 'nakhll_market/pages/complaint.html', context)
     else:
 
         Road = []
-        #Get User Info
-        user=User.objects.all()
+        # Get User Info
+        user = User.objects.all()
         # Get User Profile
-        profile=Profile.objects.all()
+        profile = Profile.objects.all()
         # Get Wallet Inverntory
-        wallets=Wallet.objects.all()
+        wallets = Wallet.objects.all()
         # Get Menu Item
-        options=Option_Meta.objects.filter(Title='index_page_menu_items')
+        options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
-        navbar=Option_Meta.objects.filter(Title='nav_menu_items')
-        #---------------------------------------------------------------------
+        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
+
+        # ---------------------------------------------------------------------
         # Build Connect Class
         class ConnectToSite:
             def __init__(self, TitleSection, PhoneNumbers, icon):
@@ -3674,7 +3647,7 @@ def AddNewComplaint(request):
                 self.PhoneNumber = PhoneNumbers
 
         # Get Connect Us
-        connect = Option_Meta.objects.filter(Title = 'connect_us')
+        connect = Option_Meta.objects.filter(Title='connect_us')
 
         for con in connect:
             phones = con.Description.split('-')
@@ -3682,72 +3655,72 @@ def AddNewComplaint(request):
             Road.append(CTS)
 
         context = {
-            'Users':user,
-            'Profile':profile,
+            'Users': user,
+            'Profile': profile,
             'Wallet': wallets,
             'Options': options,
-            'MenuList':navbar,
-            'ShowAlart':False,
-            'ConnectRoad':Road,
+            'MenuList': navbar,
+            'ShowAlart': False,
+            'ConnectRoad': Road,
         }
 
         return render(request, 'nakhll_market/pages/complaint.html', context)
 
-        
+
 # Profile Show All Alert
 def ProfileShowAllAlert(request):
-
     # Check User Status
-    if request.user.is_authenticated :
-   
-        #Get User Info
-        user=User.objects.all()
+    if request.user.is_authenticated:
+
+        # Get User Info
+        user = User.objects.all()
         # Get User Profile
-        profile=Profile.objects.all()
+        profile = Profile.objects.all()
         # Get Wallet Inverntory
-        wallets=Wallet.objects.all()
+        wallets = Wallet.objects.all()
         # Get Menu Item
-        options=Option_Meta.objects.filter(Title='index_page_menu_items')
+        options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
-        navbar=Option_Meta.objects.filter(Title='nav_menu_items')
+        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
         # ---------------------------------------------------------------
         # Get All Alert
-        alert = Alert.objects.filter(Seen = True).order_by('-DateCreate')
+        alert = Alert.objects.filter(Seen=True).order_by('-DateCreate')
 
         context = {
-            'Users':user,
-            'Profile':profile,
+            'Users': user,
+            'Profile': profile,
             'Wallet': wallets,
             'Options': options,
-            'MenuList':navbar,
-            'Alert':alert,
+            'MenuList': navbar,
+            'Alert': alert,
         }
-        
+
         return render(request, 'nakhll_market/profile/pages/allalert.html', context)
 
-    
-    else:    
-        #Get User Info
-        user=User.objects.all()
+
+    else:
+        # Get User Info
+        user = User.objects.all()
         # Get User Profile
-        profile=Profile.objects.all()
+        profile = Profile.objects.all()
         # Get Wallet Inverntory
-        wallets=Wallet.objects.all()
+        wallets = Wallet.objects.all()
         # Get Menu Item
-        options=Option_Meta.objects.filter(Title='index_page_menu_items')
+        options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
-        navbar=Option_Meta.objects.filter(Title='nav_menu_items')
+        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
 
         context = {
-            'Users':user,
-            'Profile':profile,
+            'Users': user,
+            'Profile': profile,
             'Wallet': wallets,
             'Options': options,
-            'MenuList':navbar,
+            'MenuList': navbar,
         }
-        
+
         return render(request, 'registration/login.html', context)
-        
+
+
 # ------------------------------------------------------------ Copun Sections ----------------------------------------------------
 
 # add shop and product in coupon
@@ -3755,64 +3728,69 @@ def thread_add_object_to_coupon(this_coupon, shops, products):
     # check shops
     if len(shops) != 0:
         for item in shops:
-            if Shop.objects.filter(ID = item).exists():
-                this_coupon.FK_Shops.add(Shop.objects.get(ID = item))
+            if Shop.objects.filter(ID=item).exists():
+                this_coupon.FK_Shops.add(Shop.objects.get(ID=item))
     # check products
     if len(products) != 0:
         for item in products:
-            if Product.objects.filter(ID = item).exists():
-                this_coupon.FK_Products.add(Product.objects.get(ID = item))
+            if Product.objects.filter(ID=item).exists():
+                this_coupon.FK_Products.add(Product.objects.get(ID=item))
+
 
 # Add New Shop Copun
 def AddShopCopun(request):
     # Check User Status
-    if request.user.is_authenticated :
+    if request.user.is_authenticated:
         if request.method == 'POST':
             # get data
             try:
                 Copun_Title = request.POST["copun_title"]
-            except :
+            except:
                 Copun_Title = None
             try:
                 Copun_Des = request.POST["copun_des"]
-            except :
+            except:
                 Copun_Des = None
             try:
                 Copun_Serial = request.POST["copun_serial"]
-            except :
+            except:
                 Copun_Serial = None
             Copun_Shops = request.POST.getlist("copun_shops")
             Copun_Products = request.POST.getlist("copun_products")
             try:
                 Copun_SatrtDay = request.POST["Copun_SatatDay"]
-            except :
+            except:
                 Copun_SatrtDay = None
             try:
                 Copun_EndDay = request.POST["Copun_EndDay"]
-            except :
+            except:
                 Copun_EndDay = None
             try:
                 Copun_DiscountType = request.POST["Copun_DiscountType"]
-            except :
+            except:
                 Copun_DiscountType = None
             try:
                 Copun_DiscountRate = request.POST["Copun_DiscountRate"]
-            except :
+            except:
                 Copun_DiscountRate = None
             try:
                 Copun_MinimumAmount = request.POST["Copun_MinimumAmount"]
-            except :
+            except:
                 Copun_MinimumAmount = None
             try:
                 Copun_MaximumAmount = request.POST["Copun_MaximumAmount"]
-            except :
+            except:
                 Copun_MaximumAmount = None
             try:
                 Copun_NumberOfUse = request.POST["Copun_NumberOfUse"]
-            except :
+            except:
                 Copun_NumberOfUse = None
             # set data
-            if ((Copun_Title != None) and (Copun_Title != '')) and ((Copun_DiscountRate != None) and (Copun_DiscountRate != '')) and ((Copun_EndDay != None) and (Copun_EndDay != '')) and ((Copun_SatrtDay != None) and (Copun_SatrtDay != '')) and ((Copun_NumberOfUse != None) and (Copun_NumberOfUse != '')):
+            if ((Copun_Title != None) and (Copun_Title != '')) and (
+                    (Copun_DiscountRate != None) and (Copun_DiscountRate != '')) and (
+                    (Copun_EndDay != None) and (Copun_EndDay != '')) and (
+                    (Copun_SatrtDay != None) and (Copun_SatrtDay != '')) and (
+                    (Copun_NumberOfUse != None) and (Copun_NumberOfUse != '')):
                 if (len(Copun_Shops) != 0) or (len(Copun_Products) != 0):
                     # Discount Type Checking
                     DT = None
@@ -3822,9 +3800,16 @@ def AddShopCopun(request):
                         DT = '2'
                     # create new coupon
                     if Copun_Serial != '':
-                        copun = Coupon.objects.create(Title = Copun_Title, SerialNumber = Copun_Serial, FK_Creator = request.user, StartDate = Copun_SatrtDay, EndDate = Copun_EndDay, DiscountRate = Copun_DiscountRate, DiscountStatus = '1', NumberOfUse = Copun_NumberOfUse, DiscountType = DT)
+                        copun = Coupon.objects.create(Title=Copun_Title, SerialNumber=Copun_Serial,
+                                                      FK_Creator=request.user, StartDate=Copun_SatrtDay,
+                                                      EndDate=Copun_EndDay, DiscountRate=Copun_DiscountRate,
+                                                      DiscountStatus='1', NumberOfUse=Copun_NumberOfUse,
+                                                      DiscountType=DT)
                     else:
-                        copun = Coupon.objects.create(Title = Copun_Title, FK_Creator = request.user, StartDate = Copun_SatrtDay, EndDate = Copun_EndDay, DiscountRate = Copun_DiscountRate, DiscountStatus = '1', NumberOfUse = Copun_NumberOfUse, DiscountType = DT)
+                        copun = Coupon.objects.create(Title=Copun_Title, FK_Creator=request.user,
+                                                      StartDate=Copun_SatrtDay, EndDate=Copun_EndDay,
+                                                      DiscountRate=Copun_DiscountRate, DiscountStatus='1',
+                                                      NumberOfUse=Copun_NumberOfUse, DiscountType=DT)
                     # Minimum Amount Cheking
                     if Copun_MinimumAmount != '':
                         copun.MinimumAmount = Copun_MinimumAmount
@@ -3844,90 +3829,91 @@ def AddShopCopun(request):
                         copun.Description = Copun_Des
                         copun.save()
                     # add shops and products in coupon
-                    thread = threading.Thread(target = thread_add_object_to_coupon, args = (copun, Copun_Shops, Copun_Products))
+                    thread = threading.Thread(target=thread_add_object_to_coupon,
+                                              args=(copun, Copun_Shops, Copun_Products))
                     thread.start()
                     # set alert
-                    Alert.objects.create(Part = '26', FK_User = request.user, Slug = copun.id)
-                    #-------------------------------------------------------------------------
+                    Alert.objects.create(Part='26', FK_User=request.user, Slug=copun.id)
+                    # -------------------------------------------------------------------------
                     # Get User Info
-                    
+
                     this_profile = Profile.objects.get(FK_User=request.user)
                     this_inverntory = request.user.WalletManager.Inverntory
                     # Get Menu Item
-                    options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+                    options = Option_Meta.objects.filter(Title='index_page_menu_items')
                     # Get Nav Bar Menu Item
-                    navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+                    navbar = Option_Meta.objects.filter(Title='nav_menu_items')
                     # ----------------------------------------------------------------------
                     # get all user coupons
-                    allcoupon = Coupon.objects.filter(DiscountStatus = '1', FK_Creator = request.user, Available = True)
+                    allcoupon = Coupon.objects.filter(DiscountStatus='1', FK_Creator=request.user, Available=True)
 
                     context = {
-                        'This_User_Profile':this_profile,
+                        'This_User_Profile': this_profile,
                         'This_User_Inverntory': this_inverntory,
                         'Options': options,
-                        'MenuList':navbar,
-                        'AllUserCupons':allcoupon,
-                        'ShowAlert':True,
-                        'AlartMessage':'کوپن شما ثبت شد و پس از تایید کارشناسان منتشر می گردد!',
+                        'MenuList': navbar,
+                        'AllUserCupons': allcoupon,
+                        'ShowAlert': True,
+                        'AlartMessage': 'کوپن شما ثبت شد و پس از تایید کارشناسان منتشر می گردد!',
                     }
 
                     return render(request, 'nakhll_market/profile/pages/allcuponlist.html', context)
 
                 else:
                     # Get User Info
-                    
+
                     this_profile = Profile.objects.get(FK_User=request.user)
                     this_inverntory = request.user.WalletManager.Inverntory
                     # Get Menu Item
-                    options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+                    options = Option_Meta.objects.filter(Title='index_page_menu_items')
                     # Get Nav Bar Menu Item
-                    navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+                    navbar = Option_Meta.objects.filter(Title='nav_menu_items')
                     # --------------------------------------------------------------------
                     # get all user`s shops
-                    shop_list = list(Shop.objects.filter(FK_ShopManager = request.user, Available = True, Publish = True))
+                    shop_list = list(Shop.objects.filter(FK_ShopManager=request.user, Available=True, Publish=True))
                     # get all user`s products
                     product_list = []
                     for item in shop_list:
                         product_list += list(item.get_products())
 
                     context = {
-                        'This_User_Profile':this_profile,
+                        'This_User_Profile': this_profile,
                         'This_User_Inverntory': this_inverntory,
                         'Options': options,
-                        'MenuList':navbar,
-                        'Shops':shop_list,
-                        'Products':product_list,
-                        'ShowAlart':True,
-                        'AlartMessage':'برای ایجاد کوپن حداقل یک حجره یا یک محصول باید وارد نمایید!',
+                        'MenuList': navbar,
+                        'Shops': shop_list,
+                        'Products': product_list,
+                        'ShowAlart': True,
+                        'AlartMessage': 'برای ایجاد کوپن حداقل یک حجره یا یک محصول باید وارد نمایید!',
                     }
 
                     return render(request, 'nakhll_market/profile/pages/addshopcupon.html', context)
             else:
                 # Get User Info
-                
+
                 this_profile = Profile.objects.get(FK_User=request.user)
                 this_inverntory = request.user.WalletManager.Inverntory
                 # Get Menu Item
-                options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+                options = Option_Meta.objects.filter(Title='index_page_menu_items')
                 # Get Nav Bar Menu Item
-                navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+                navbar = Option_Meta.objects.filter(Title='nav_menu_items')
                 # --------------------------------------------------------------------
                 # get all user`s shops
-                shop_list = list(Shop.objects.filter(FK_ShopManager = request.user, Available = True, Publish = True))
+                shop_list = list(Shop.objects.filter(FK_ShopManager=request.user, Available=True, Publish=True))
                 # get all user`s products
                 product_list = []
                 for item in shop_list:
                     product_list += list(item.get_products())
 
                 context = {
-                    'This_User_Profile':this_profile,
+                    'This_User_Profile': this_profile,
                     'This_User_Inverntory': this_inverntory,
                     'Options': options,
-                    'MenuList':navbar,
-                    'Shops':shop_list,
-                    'Products':product_list,
-                    'ShowAlart':True,
-                    'AlartMessage':'مقادیر عنوان، تاریخ شروع، تاریخ انقضاء، میزان تخفیف و تعداد دفعات مجاز نمی تواند خالی باشد!',
+                    'MenuList': navbar,
+                    'Shops': shop_list,
+                    'Products': product_list,
+                    'ShowAlart': True,
+                    'AlartMessage': 'مقادیر عنوان، تاریخ شروع، تاریخ انقضاء، میزان تخفیف و تعداد دفعات مجاز نمی تواند خالی باشد!',
                 }
 
                 return render(request, 'nakhll_market/profile/pages/addshopcupon.html', context)
@@ -3936,27 +3922,27 @@ def AddShopCopun(request):
             this_profile = Profile.objects.get(FK_User=request.user)
             this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
-            options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+            options = Option_Meta.objects.filter(Title='index_page_menu_items')
             # Get Nav Bar Menu Item
-            navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+            navbar = Option_Meta.objects.filter(Title='nav_menu_items')
             # --------------------------------------------------------------------
             # get all user`s shops
-            shop_list = list(Shop.objects.filter(FK_ShopManager = request.user, Available = True, Publish = True))
+            shop_list = list(Shop.objects.filter(FK_ShopManager=request.user, Available=True, Publish=True))
             # get all user`s products
             product_list = []
             for item in shop_list:
                 product_list += list(item.get_products())
 
             context = {
-                'This_User_Profile':this_profile,
+                'This_User_Profile': this_profile,
                 'This_User_Inverntory': this_inverntory,
                 'Options': options,
-                'MenuList':navbar,
-                'Shops':shop_list,
-                'Products':product_list,
+                'MenuList': navbar,
+                'Shops': shop_list,
+                'Products': product_list,
             }
 
-            return render(request, 'nakhll_market/profile/pages/addshopcupon.html', context)    
+            return render(request, 'nakhll_market/profile/pages/addshopcupon.html', context)
     else:
         return redirect("auth:login")
 
@@ -3964,23 +3950,23 @@ def AddShopCopun(request):
 # Shop Copun List
 def ShopCopunList(request):
     # Check User Status
-    if request.user.is_authenticated :
+    if request.user.is_authenticated:
         this_profile = Profile.objects.get(FK_User=request.user)
         this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
-        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+        options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
         # ----------------------------------------------------------------------
         # get all user coupons
-        allcoupon = Coupon.objects.filter(DiscountStatus = '1', FK_Creator = request.user, Available = True)
+        allcoupon = Coupon.objects.filter(DiscountStatus='1', FK_Creator=request.user, Available=True)
 
         context = {
-            'This_User_Profile':this_profile,
+            'This_User_Profile': this_profile,
             'This_User_Inverntory': this_inverntory,
             'Options': options,
-            'MenuList':navbar,
-            'AllUserCupons':allcoupon,
+            'MenuList': navbar,
+            'AllUserCupons': allcoupon,
         }
 
         return render(request, 'nakhll_market/profile/pages/allcuponlist.html', context)
@@ -3989,37 +3975,35 @@ def ShopCopunList(request):
         return redirect("auth:login")
 
 
-
 # Delete Shop Copun
 def DeleteShopCopun(request, id):
     # Check User Status
-    if request.user.is_authenticated :
+    if request.user.is_authenticated:
         # get this coupon
-        coupon = get_object_or_404(Coupon, id = id)
+        coupon = get_object_or_404(Coupon, id=id)
         # change coupon status
         coupon.Publish = False
         coupon.save()
         # set alert
-        Alert.objects.create(Part = '27', FK_User = request.user, Slug = coupon.id)
+        Alert.objects.create(Part='27', FK_User=request.user, Slug=coupon.id)
         # redirect to coupon list
         return redirect("nakhll_market:Shop_Manager_ShopCopunList")
     else:
         return redirect("auth:login")
 
 
-
 # Check Copun
 def CheckCopun(request):
-    response_data = {} 
+    response_data = {}
 
     if request.POST.get('action') == 'post':
 
-        try: 
+        try:
             code = request.POST.get("code")
         except MultiValueDictKeyError:
             code = 'Error'
-        
-        try: 
+
+        try:
             factor = request.POST.get("factor")
         except MultiValueDictKeyError:
             code = 'Error'
@@ -4028,20 +4012,19 @@ def CheckCopun(request):
 
             # Get Copuns
             try:
-                copun = Coupon.objects.get(SerialNumber = code, Publish = True, Available = True)
+                copun = Coupon.objects.get(SerialNumber=code, Publish=True, Available=True)
             except:
                 response_data['error'] = 'کد تخفیف وارد شده معتبر نمی باشد.'
                 response_data['status'] = False
                 return JsonResponse(response_data)
-                
+
             # Get Factor
             try:
-                userFactor = Factor.objects.get(FactorNumber = factor)
+                userFactor = Factor.objects.get(FactorNumber=factor)
             except:
                 response_data['error'] = 'صورت حسابی برای شما ثبت نشده است '
                 response_data['status'] = False
                 return JsonResponse(response_data)
-
 
             if copun.Publish == True:
 
@@ -4060,9 +4043,9 @@ def CheckCopun(request):
 
                             if IsUser:
 
-                                if Factor.objects.filter(FK_User = request.user, Publish = True, PaymentStatus = True, FK_Coupon = copun).count() < int(copun.NumberOfUse):
+                                if Factor.objects.filter(FK_User=request.user, Publish=True, PaymentStatus=True,
+                                                         FK_Coupon=copun).count() < int(copun.NumberOfUse):
 
-                                
                                     # Build Product Class
                                     class ProductClass:
                                         def __init__(self, item, status):
@@ -4074,7 +4057,7 @@ def CheckCopun(request):
 
                                     if copun.FK_Shops.all().count() != 0:
                                         for item in copun.FK_Shops.all():
-                                            for product in Product.objects.filter(Publish = True, FK_Shop = item):
+                                            for product in Product.objects.filter(Publish=True, FK_Shop=item):
                                                 New = ProductClass(product, False)
                                                 Product_List.append(New)
 
@@ -4085,7 +4068,7 @@ def CheckCopun(request):
 
                                     Product_List = list(dict.fromkeys(Product_List))
 
-                                    for factor_item in userFactor.FK_FactorPost.all():    
+                                    for factor_item in userFactor.FK_FactorPost.all():
                                         for item in Product_List:
                                             if factor_item.FK_Product.ID == item.Product.ID:
                                                 item.Status = True
@@ -4099,7 +4082,7 @@ def CheckCopun(request):
                                                 Check = True
                                     else:
                                         Check = True
-                                    
+
                                     if Check:
                                         if copun.MinimumAmount != '0':
 
@@ -4107,44 +4090,50 @@ def CheckCopun(request):
 
                                                 if copun.MaximumAmount != '0':
 
-                                                    if userFactor.get_total_coupon_test(copun.id) <= int(copun.MaximumAmount):
+                                                    if userFactor.get_total_coupon_test(copun.id) <= int(
+                                                            copun.MaximumAmount):
 
                                                         # Add Coupn To Factor
                                                         userFactor.FK_Coupon = copun
                                                         userFactor.save()
 
-                                                        response_data['error'] = 'کد تخفیف برای شما ثبت شد، لطفا تا بارگذاری مجدد صفحه منتظر بمانید...'
+                                                        response_data[
+                                                            'error'] = 'کد تخفیف برای شما ثبت شد، لطفا تا بارگذاری مجدد صفحه منتظر بمانید...'
                                                         response_data['status'] = True
                                                         return JsonResponse(response_data)
 
                                                     else:
 
-                                                        response_data['error'] = 'خرید شما از حجره مرتبط با این کد تخفیف بیشتر از میزان تعیین شده (' + copun.MaximumAmount + 'ریال' +') می باشد.'
+                                                        response_data[
+                                                            'error'] = 'خرید شما از حجره مرتبط با این کد تخفیف بیشتر از میزان تعیین شده (' + copun.MaximumAmount + 'ریال' + ') می باشد.'
                                                         response_data['status'] = False
                                                         return JsonResponse(response_data)
                                                 else:
-    
+
                                                     # Add Coupn To Factor
                                                     userFactor.FK_Coupon = copun
                                                     userFactor.save()
 
-                                                    response_data['error'] = 'کد تخفیف برای شما ثبت شد، لطفا تا بارگذاری مجدد صفحه منتظر بمانید...'
+                                                    response_data[
+                                                        'error'] = 'کد تخفیف برای شما ثبت شد، لطفا تا بارگذاری مجدد صفحه منتظر بمانید...'
                                                     response_data['status'] = True
                                                     return JsonResponse(response_data)
 
                                             else:
 
-                                                response_data['error'] = 'خرید شما از حجره مرتبط با این کد تخفیف به میزان تعیین شده (' + copun.MinimumAmount + 'ریال' +') نرسیده است.'
+                                                response_data[
+                                                    'error'] = 'خرید شما از حجره مرتبط با این کد تخفیف به میزان تعیین شده (' + copun.MinimumAmount + 'ریال' + ') نرسیده است.'
                                                 response_data['status'] = False
                                                 return JsonResponse(response_data)
-                                        
+
                                         else:
 
                                             # Add Coupn To Factor
                                             userFactor.FK_Coupon = copun
                                             userFactor.save()
 
-                                            response_data['error'] = 'کد تخفیف برای شما ثبت شد، لطفا تا بارگذاری مجدد صفحه منتظر بمانید...'
+                                            response_data[
+                                                'error'] = 'کد تخفیف برای شما ثبت شد، لطفا تا بارگذاری مجدد صفحه منتظر بمانید...'
                                             response_data['status'] = True
                                             return JsonResponse(response_data)
 
@@ -4152,11 +4141,12 @@ def CheckCopun(request):
 
                                         response_data['error'] = 'شما محصولی که شامل این کوپن باشد، ندارید!'
                                         response_data['status'] = False
-                                        return JsonResponse(response_data)   
+                                        return JsonResponse(response_data)
 
                                 else:
 
-                                    response_data['error'] = 'تعداد دفعات مجاز استفاده شما از این کد تخفیف تمام شده است!'
+                                    response_data[
+                                        'error'] = 'تعداد دفعات مجاز استفاده شما از این کد تخفیف تمام شده است!'
                                     response_data['status'] = False
                                     return JsonResponse(response_data)
                             else:
@@ -4167,7 +4157,8 @@ def CheckCopun(request):
 
                         else:
 
-                            if Factor.objects.filter(FK_User = request.user, Publish = True, PaymentStatus = True, FK_Coupon = copun).count() < int(copun.NumberOfUse):
+                            if Factor.objects.filter(FK_User=request.user, Publish=True, PaymentStatus=True,
+                                                     FK_Coupon=copun).count() < int(copun.NumberOfUse):
 
                                 # Build Product Class
                                 class ProductClass:
@@ -4180,7 +4171,7 @@ def CheckCopun(request):
 
                                 if copun.FK_Shops.all().count() != 0:
                                     for item in copun.FK_Shops.all():
-                                        for product in Product.objects.filter(Publish = True, FK_Shop = item):
+                                        for product in Product.objects.filter(Publish=True, FK_Shop=item):
                                             New = ProductClass(product, False)
                                             Product_List.append(New)
 
@@ -4191,7 +4182,7 @@ def CheckCopun(request):
 
                                 Product_List = list(dict.fromkeys(Product_List))
 
-                                for factor_item in userFactor.FK_FactorPost.all():    
+                                for factor_item in userFactor.FK_FactorPost.all():
                                     for item in Product_List:
                                         if factor_item.FK_Product.ID == item.Product.ID:
                                             item.Status = True
@@ -4213,70 +4204,77 @@ def CheckCopun(request):
 
                                             if copun.MaximumAmount != '0':
 
-                                                if userFactor.get_total_coupon_test(copun.id) <= int(copun.MaximumAmount):
+                                                if userFactor.get_total_coupon_test(copun.id) <= int(
+                                                        copun.MaximumAmount):
 
                                                     # Add Coupn To Factor
                                                     userFactor.FK_Coupon = copun
                                                     userFactor.save()
 
-                                                    response_data['error'] = 'کد تخفیف برای شما ثبت شد، لطفا تا بارگذاری مجدد صفحه منتظر بمانید...'
+                                                    response_data[
+                                                        'error'] = 'کد تخفیف برای شما ثبت شد، لطفا تا بارگذاری مجدد صفحه منتظر بمانید...'
                                                     response_data['status'] = True
                                                     return JsonResponse(response_data)
 
                                                 else:
 
-                                                    response_data['error'] = 'خرید شما از حجره مرتبط با این کد تخفیف بیشتر از میزان تعیین شده (' + copun.MaximumAmount + 'ریال' +') می باشد.'
+                                                    response_data[
+                                                        'error'] = 'خرید شما از حجره مرتبط با این کد تخفیف بیشتر از میزان تعیین شده (' + copun.MaximumAmount + 'ریال' + ') می باشد.'
                                                     response_data['status'] = False
                                                     return JsonResponse(response_data)
                                             else:
 
-                                                    # Add Coupn To Factor
-                                                    userFactor.FK_Coupon = copun
-                                                    userFactor.save()
+                                                # Add Coupn To Factor
+                                                userFactor.FK_Coupon = copun
+                                                userFactor.save()
 
-                                                    response_data['error'] = 'کد تخفیف برای شما ثبت شد، لطفا تا بارگذاری مجدد صفحه منتظر بمانید...'
-                                                    response_data['status'] = True
-                                                    return JsonResponse(response_data)
+                                                response_data[
+                                                    'error'] = 'کد تخفیف برای شما ثبت شد، لطفا تا بارگذاری مجدد صفحه منتظر بمانید...'
+                                                response_data['status'] = True
+                                                return JsonResponse(response_data)
 
                                         else:
 
-                                            response_data['error'] = 'خرید شما از حجره مرتبط با این کد تخفیف به میزان تعیین شده (' + copun.MinimumAmount + 'ریال' +') نرسیده است.'
+                                            response_data[
+                                                'error'] = 'خرید شما از حجره مرتبط با این کد تخفیف به میزان تعیین شده (' + copun.MinimumAmount + 'ریال' + ') نرسیده است.'
                                             response_data['status'] = False
                                             return JsonResponse(response_data)
-                                    
+
                                     else:
 
                                         # Add Coupn To Factor
                                         userFactor.FK_Coupon = copun
                                         userFactor.save()
 
-                                        response_data['error'] = 'کد تخفیف برای شما ثبت شد، لطفا تا بارگذاری مجدد صفحه منتظر بمانید...'
+                                        response_data[
+                                            'error'] = 'کد تخفیف برای شما ثبت شد، لطفا تا بارگذاری مجدد صفحه منتظر بمانید...'
                                         response_data['status'] = True
                                         return JsonResponse(response_data)
 
-                                
+
                                 else:
 
                                     response_data['error'] = 'شما محصولی که شامل این کوپن باشد، ندارید!'
                                     response_data['status'] = False
-                                    return JsonResponse(response_data)                                    
+                                    return JsonResponse(response_data)
 
                             else:
 
-                                response_data['error'] = 'تعداد دفعات مجاز استفاده از این کد تخفیف برای شما به پایان رسیده است.'
+                                response_data[
+                                    'error'] = 'تعداد دفعات مجاز استفاده از این کد تخفیف برای شما به پایان رسیده است.'
                                 response_data['status'] = False
                                 return JsonResponse(response_data)
-                                
+
                     else:
                         response_data['error'] = 'کد تخفیف منقضی شده است.'
                         response_data['status'] = False
                         return JsonResponse(response_data)
-                    
+
                 else:
                     response_data['error'] = 'امکان استفاده از این کد تخفیف وجود ندارد.'
                     response_data['status'] = False
                     return JsonResponse(response_data)
-                    
+
             else:
                 response_data['error'] = 'امکان استفاده از این کد تخفیف وجود ندارد.'
                 response_data['status'] = False
@@ -4288,70 +4286,67 @@ def CheckCopun(request):
             return JsonResponse(response_data)
 
 
-
 # ---------------------------------------------------------- End Copun Sections --------------------------------------------------
 
 # --------------------------------------------------------- All Factor Sections --------------------------------------------------
 
 # Show All Factor List
 def ShowAllFactorList(request):
-
     # Check User Status
-    if request.user.is_authenticated :
+    if request.user.is_authenticated:
         this_profile = Profile.objects.get(FK_User=request.user)
         this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
-        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+        options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-        #-----------------------------------------------------------------------
+        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
+        # -----------------------------------------------------------------------
         # Get All Factor
-        factors = Factor.objects.filter(PaymentStatus = True, Publish = True).order_by('-OrderDate')
+        factors = Factor.objects.filter(PaymentStatus=True, Publish=True).order_by('-OrderDate')
         # Paginate Profiles
-        factors_paginator = Paginator (factors, 20)
+        factors_paginator = Paginator(factors, 20)
         page = request.GET.get('page')
 
         factors = factors_paginator.get_page(page)
         # get factors user
-        user_factor = User.objects\
-            .filter(UserFactor__PaymentStatus=True, UserFactor__Publish=True)\
-            .distinct()\
+        user_factor = User.objects \
+            .filter(UserFactor__PaymentStatus=True, UserFactor__Publish=True) \
+            .distinct() \
             .order_by('-UserFactor__OrderDate')
 
         context = {
-            'This_User_Profile':this_profile,
+            'This_User_Profile': this_profile,
             'This_User_Inverntory': this_inverntory,
             'Options': options,
-            'MenuList':navbar,
-            'Factors':factors,
-            'User':user_factor,
+            'MenuList': navbar,
+            'Factors': factors,
+            'User': user_factor,
         }
         return render(request, 'nakhll_market/profile/pages/all_factors.html', context)
     else:
         return redirect("auth:login")
 
 
-
 # Show Factor Item
 def ShowFactorItem(request, ID):
     # Check User Status
-    if request.user.is_authenticated :
+    if request.user.is_authenticated:
         this_profile = Profile.objects.get(FK_User=request.user)
         this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
-        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+        options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-        #---------------------------------------------------------------------
+        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
+        # ---------------------------------------------------------------------
         # Get This Factor
-        this_factor = get_object_or_404(Factor, ID = ID)
+        this_factor = get_object_or_404(Factor, ID=ID)
 
         context = {
-            'This_User_Profile':this_profile,
+            'This_User_Profile': this_profile,
             'This_User_Inverntory': this_inverntory,
             'Options': options,
-            'MenuList':navbar,
-            'factor':this_factor,
+            'MenuList': navbar,
+            'factor': this_factor,
         }
         return render(request, 'nakhll_market/profile/pages/show_factor.html', context)
     else:
@@ -4360,28 +4355,27 @@ def ShowFactorItem(request, ID):
 
 # Show Factor Item For Shop
 def ShowFactorItemForShop(request, ID, status):
-
     # Check User Status
-    if request.user.is_authenticated :
+    if request.user.is_authenticated:
         this_profile = Profile.objects.get(FK_User=request.user)
         this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
-        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+        options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-        #-----------------------------------------------------------------------
+        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
+        # -----------------------------------------------------------------------
         # Get This Factor
-        this_factor = get_object_or_404(Factor, ID = ID)
+        this_factor = get_object_or_404(Factor, ID=ID)
         # get factor post bar code
         post_barcode = PostBarCode.objects.filter(FK_Factor=this_factor)
 
         context = {
-            'This_User_Profile':this_profile,
+            'This_User_Profile': this_profile,
             'This_User_Inverntory': this_inverntory,
             'Options': options,
-            'MenuList':navbar,
-            'factor':this_factor,
-            'post_barcodes':post_barcode
+            'MenuList': navbar,
+            'factor': this_factor,
+            'post_barcodes': post_barcode
         }
 
         if status == 0:
@@ -4395,14 +4389,12 @@ def ShowFactorItemForShop(request, ID, status):
         return redirect("auth:login")
 
 
-
 # Change Factor Checkout Status
 def ChangeFactorCheckoutStatus(request, id):
-
-    if request.user.is_authenticated :
+    if request.user.is_authenticated:
 
         # Get This Factor
-        this_factor = Factor.objects.get(ID = id)
+        this_factor = Factor.objects.get(ID=id)
         # Factor Change Checkout Status
         if this_factor.Checkout:
             this_factor.Checkout = False
@@ -4416,7 +4408,8 @@ def ChangeFactorCheckoutStatus(request, id):
 
     else:
 
-       return redirect("auth:login")
+        return redirect("auth:login")
+
 
 # ------------------------------------------------------- End All Factor Sections ------------------------------------------------
 
@@ -4459,14 +4452,14 @@ def ChengeMessageStatus(request):
                 id = request.POST["id"]
             except MultiValueDictKeyError:
                 id = ''
-            
-            messge = Message.objects.filter(id = id)
+
+            messge = Message.objects.filter(id=id)
             if messge.exists():
                 last = messge[0]
                 for item in last.FK_Users.all():
                     if (item.FK_User == request.user) and (item.SeenStatus == False):
                         item.SeenStatus = True
-                        item.save()          
+                        item.save()
                         response_data['status'] = True
                         response_data['needload'] = True
                         return JsonResponse(response_data)
@@ -4484,11 +4477,11 @@ def ChengeMessageStatus(request):
         return JsonResponse(response_data)
 
 
-
 # Cart View To User
 def CartView(request):
     # Result
     response_data = {}
+
     # Build Result Class
     class Result:
         def __init__(self, title, product_slug, shop_slug, image, price):
@@ -4497,20 +4490,21 @@ def CartView(request):
             self.Shop_Slug = shop_slug
             self.Image = image
             self.Price = price
-    
-    Product_Count = 0 # Get Product In Cart Count
-    Order_List = [] # Get Orders List
-    if request.user.is_authenticated :
-        user_factor = Factor.objects.filter(FK_User = request.user, PaymentStatus = False) # Get Users Factor
+
+    Product_Count = 0  # Get Product In Cart Count
+    Order_List = []  # Get Orders List
+    if request.user.is_authenticated:
+        user_factor = Factor.objects.filter(FK_User=request.user, PaymentStatus=False)  # Get Users Factor
         if user_factor.exists():
-            last_factor = user_factor[0] # Get Last Factor
+            last_factor = user_factor[0]  # Get Last Factor
             if last_factor.FK_FactorPost.all().count() != 0:
-                Product_Count = last_factor.FK_FactorPost.all().count() # Get Product Count
+                Product_Count = last_factor.FK_FactorPost.all().count()  # Get Product Count
                 # Add Order In List
                 length = 3
                 for item in last_factor.FK_FactorPost.all():
                     if length != 0:
-                        new = Result(item.FK_Product.Title, item.FK_Product.Slug, item.FK_Product.FK_Shop.Slug, item.FK_Product.Image, item.get_total_item_price())
+                        new = Result(item.FK_Product.Title, item.FK_Product.Slug, item.FK_Product.FK_Shop.Slug,
+                                     item.FK_Product.Image, item.get_total_item_price())
                         Order_List.append(new)
                         length -= 1
                     else:
@@ -4539,19 +4533,18 @@ def CartView(request):
         response_data['list'] = Order_List
         return JsonResponse(response_data)
 
-# ----------------------------------------------------- End Ajax Functions Sections ------------------------------------------------
 
+# ----------------------------------------------------- End Ajax Functions Sections ------------------------------------------------
 
 
 # ------------------------------------------------------------ Campaign Sections ---------------------------------------------------
 
 # Manage Campaign List
 def ManageCampaignList(request):
-
     # Check User Status
-    if request.user.is_authenticated :
+    if request.user.is_authenticated:
 
-        #Get User Info
+        # Get User Info
         user = User.objects.all()
         # Get User Profile
         profile = Profile.objects.all()
@@ -4561,54 +4554,54 @@ def ManageCampaignList(request):
         options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
         navbar = Option_Meta.objects.filter(Title='nav_menu_items')
-        #-----------------------------------------------------------------------
+        # -----------------------------------------------------------------------
         # Get All User Copuns
-        allusercampaign = Campaign.objects.filter(DiscountStatus = '0', Available = True, Publish = True)
+        allusercampaign = Campaign.objects.filter(DiscountStatus='0', Available=True, Publish=True)
 
         context = {
-            'Users':user,
-            'Profile':profile,
+            'Users': user,
+            'Profile': profile,
             'Wallet': wallets,
             'Options': options,
-            'MenuList':navbar,
-            'AllUserCupons':allusercampaign,
-            'ShowAlart':False,
+            'MenuList': navbar,
+            'AllUserCupons': allusercampaign,
+            'ShowAlart': False,
         }
 
         return render(request, 'nakhll_market/profile/pages/managecampaignlist.html', context)
 
     else:
 
-        #Get User Info
+        # Get User Info
         user = User.objects.all()
         # Get User Profile
         profile = Profile.objects.all()
         # Get Wallet Inverntory
         wallets = Wallet.objects.all()
         # Get Menu Item
-        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+        options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
 
         context = {
-            'Users':user,
-            'Profile':profile,
+            'Users': user,
+            'Profile': profile,
             'Wallet': wallets,
             'Options': options,
-            'MenuList':navbar,
+            'MenuList': navbar,
         }
-        
+
         return render(request, 'registration/login.html', context)
 
-# ---------------------------------------------------------- End Campaign Sections --------------------------------------------------
 
+# ---------------------------------------------------------- End Campaign Sections --------------------------------------------------
 
 
 # --------------------------------------------------------- Message Filter Sections ------------------------------------------------
 
 # Message Filter
 def MessageFilter(request):
-    if request.user.is_authenticated :
+    if request.user.is_authenticated:
         if request.method == 'POST':
             # Get All Message
             User_Message_List = []
@@ -4616,12 +4609,13 @@ def MessageFilter(request):
             set_status = '0'
             S_Date = None
             E_Date = None
+
             # Build Message Class
             class MessageClass:
                 def __init__(self, item, status):
                     self.Message = item
                     self.Status = status
-        
+
             try:
                 StartDate = request.POST["filter_start"]
             except:
@@ -4647,7 +4641,7 @@ def MessageFilter(request):
                     GEnd = jdatetime.JalaliToGregorian(JEnd.year, JEnd.month, JEnd.day)
                     Str_GStart = "%d-%d-%d" % (GStart.gyear, GStart.gmonth, GStart.gday)
                     Str_GEnd = "%d-%d-%d" % (GEnd.gyear, GEnd.gmonth, GEnd.gday)
-                    messages = Message.objects.filter(Type = True, Date__range = [Str_GStart, Str_GEnd])
+                    messages = Message.objects.filter(Type=True, Date__range=[Str_GStart, Str_GEnd])
                     for msg_item in messages:
                         for item in msg_item.FK_Users.all():
                             if item.FK_User == request.user:
@@ -4663,7 +4657,7 @@ def MessageFilter(request):
                                     new = MessageClass(msg_item, item.SeenStatus)
                                     User_Message_List.append(new)
                 else:
-                    messages = Message.objects.filter(Type = True)
+                    messages = Message.objects.filter(Type=True)
                     for msg_item in messages:
                         for item in msg_item.FK_Users.all():
                             if item.FK_User == request.user:
@@ -4684,24 +4678,24 @@ def MessageFilter(request):
             else:
                 return redirect("nakhll_market:Message")
 
-        # ----------------------------------------------------------------------
+            # ----------------------------------------------------------------------
             # Get User Info
             this_profile = Profile.objects.get(FK_User=request.user)
             this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
-            options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+            options = Option_Meta.objects.filter(Title='index_page_menu_items')
             # Get Nav Bar Menu Item
-            navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-            
+            navbar = Option_Meta.objects.filter(Title='nav_menu_items')
+
             context = {
-                'This_User_Profile':this_profile,
+                'This_User_Profile': this_profile,
                 'This_User_Inverntory': this_inverntory,
                 'Options': options,
-                'MenuList':navbar,
-                'Messages':User_Message_List,
-                'Status':set_status,
-                'Start':S_Date,
-                'End':E_Date,
+                'MenuList': navbar,
+                'Messages': User_Message_List,
+                'Status': set_status,
+                'Start': S_Date,
+                'End': E_Date,
             }
 
             return render(request, 'nakhll_market/profile/pages/message.html', context)
@@ -4710,6 +4704,7 @@ def MessageFilter(request):
 
         return redirect("auth:login")
 
+
 # --------------------------------------------------------------- End Sections ------------------------------------------------------
 
 
@@ -4717,7 +4712,7 @@ def MessageFilter(request):
 
 # Manage Factor Filter
 def ManageFactorFilter(request):
-    if request.user.is_authenticated :
+    if request.user.is_authenticated:
         if request.method == 'POST':
             # Get Status
             set_status = '6'
@@ -4752,7 +4747,7 @@ def ManageFactorFilter(request):
                 Customer = ''
 
             if (((StartDate != '') and (EndDate != '')) or (Status != '') or (Check_Out != '') or (Customer != '')):
-                factors = Factor.objects.filter(PaymentStatus = True, Publish = True).order_by('-OrderDate')
+                factors = Factor.objects.filter(PaymentStatus=True, Publish=True).order_by('-OrderDate')
                 if (StartDate != '') and (EndDate != ''):
                     Start = StartDate.split('-')
                     End = EndDate.split('-')
@@ -4762,7 +4757,7 @@ def ManageFactorFilter(request):
                     GEnd = jdatetime.JalaliToGregorian(JEnd.year, JEnd.month, JEnd.day)
                     Str_GStart = "%d-%d-%d" % (GStart.gyear, GStart.gmonth, GStart.gday)
                     Str_GEnd = "%d-%d-%d" % (GEnd.gyear, GEnd.gmonth, GEnd.gday)
-                    factors = factors.filter(OrderDate__range = [Str_GStart, Str_GEnd])
+                    factors = factors.filter(OrderDate__range=[Str_GStart, Str_GEnd])
                     S_Date = StartDate
                     E_Date = EndDate
                 # get user list
@@ -4772,18 +4767,18 @@ def ManageFactorFilter(request):
                 user_list = list(dict.fromkeys(user_list))
 
                 if Status != '6':
-                    factors = factors.filter(OrderStatus = Status)
+                    factors = factors.filter(OrderStatus=Status)
                     set_status = Status
                 if Check_Out != '0':
                     if Check_Out == '1':
-                        factors = factors.filter(Checkout = False)
+                        factors = factors.filter(Checkout=False)
                         set_checkout = Check_Out
                     elif Check_Out == '2':
-                        factors = factors.filter(Checkout = True)
+                        factors = factors.filter(Checkout=True)
                         set_checkout = Check_Out
                 if Customer != '000':
-                    factors = factors.filter(FK_User = User.objects.get(id = Customer))
-                    customer = User.objects.get(id = Customer).username
+                    factors = factors.filter(FK_User=User.objects.get(id=Customer))
+                    customer = User.objects.get(id=Customer).username
             else:
                 return redirect("nakhll_market:ShowAllFactorList")
             # ----------------------------------------------------------------------
@@ -4791,22 +4786,22 @@ def ManageFactorFilter(request):
             this_profile = Profile.objects.get(FK_User=request.user)
             this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
-            options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+            options = Option_Meta.objects.filter(Title='index_page_menu_items')
             # Get Nav Bar Menu Item
-            navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-            
+            navbar = Option_Meta.objects.filter(Title='nav_menu_items')
+
             context = {
-                'This_User_Profile':this_profile,
+                'This_User_Profile': this_profile,
                 'This_User_Inverntory': this_inverntory,
                 'Options': options,
-                'MenuList':navbar,
-                'Factors':factors,
-                'User':user_list,
-                'Status':set_status,
-                'Start':S_Date,
-                'End':E_Date,
-                'CheckOut':set_checkout,
-                'Customer':customer,
+                'MenuList': navbar,
+                'Factors': factors,
+                'User': user_list,
+                'Status': set_status,
+                'Start': S_Date,
+                'End': E_Date,
+                'CheckOut': set_checkout,
+                'Customer': customer,
             }
 
             return render(request, 'nakhll_market/profile/pages/all_factors.html', context)
@@ -4815,15 +4810,15 @@ def ManageFactorFilter(request):
     else:
         return redirect("auth:login")
 
-# --------------------------------------------------------------- End Sections ------------------------------------------------------
 
+# --------------------------------------------------------------- End Sections ------------------------------------------------------
 
 
 # ------------------------------------------------------ Manage Factor Filter Sections -----------------------------------------------
 
 # Alert Filter
 def AlertFilter(request):
-    if request.user.is_authenticated :
+    if request.user.is_authenticated:
         if request.method == 'POST':
             # Get Status
             set_checkout = '0'
@@ -4852,7 +4847,7 @@ def AlertFilter(request):
                 Customer = ''
 
             if (((StartDate != '') and (EndDate != '')) or (Check_Out != '') or (Customer != '')):
-                alerts = Alert.objects.filter(Seen = False).order_by('-DateCreate')
+                alerts = Alert.objects.filter(Seen=False).order_by('-DateCreate')
                 if (StartDate != '') and (EndDate != ''):
                     Start = StartDate.split('-')
                     End = EndDate.split('-')
@@ -4862,7 +4857,7 @@ def AlertFilter(request):
                     GEnd = jdatetime.JalaliToGregorian(JEnd.year, JEnd.month, JEnd.day)
                     Str_GStart = "%d-%d-%d" % (GStart.gyear, GStart.gmonth, GStart.gday)
                     Str_GEnd = "%d-%d-%d" % (GEnd.gyear, GEnd.gmonth, GEnd.gday)
-                    alerts = alerts.filter(DateCreate__range = [Str_GStart, Str_GEnd])
+                    alerts = alerts.filter(DateCreate__range=[Str_GStart, Str_GEnd])
                     S_Date = StartDate
                     E_Date = EndDate
                 # get user list
@@ -4871,11 +4866,11 @@ def AlertFilter(request):
                     user_list.append(item.FK_User)
                 user_list = list(dict.fromkeys(user_list))
                 if Check_Out != '000':
-                    alerts = alerts.filter(Part = Check_Out)
+                    alerts = alerts.filter(Part=Check_Out)
                     set_checkout = Check_Out
                 if Customer != '000':
-                    alerts = alerts.filter(FK_User = User.objects.get(id = Customer))
-                    customer = User.objects.get(id = Customer).username
+                    alerts = alerts.filter(FK_User=User.objects.get(id=Customer))
+                    customer = User.objects.get(id=Customer).username
             else:
                 return redirect("nakhll_market:Alert")
             # ----------------------------------------------------------------------
@@ -4883,21 +4878,21 @@ def AlertFilter(request):
             this_profile = Profile.objects.get(FK_User=request.user)
             this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
-            options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+            options = Option_Meta.objects.filter(Title='index_page_menu_items')
             # Get Nav Bar Menu Item
-            navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-            
+            navbar = Option_Meta.objects.filter(Title='nav_menu_items')
+
             context = {
-                'This_User_Profile':this_profile,
+                'This_User_Profile': this_profile,
                 'This_User_Inverntory': this_inverntory,
                 'Options': options,
-                'MenuList':navbar,
-                'Alert':alerts,
-                'User':user_list,
-                'Start':S_Date,
-                'End':E_Date,
-                'CheckOut':set_checkout,
-                'Customer':customer,
+                'MenuList': navbar,
+                'Alert': alerts,
+                'User': user_list,
+                'Start': S_Date,
+                'End': E_Date,
+                'CheckOut': set_checkout,
+                'Customer': customer,
             }
 
             return render(request, 'nakhll_market/profile/pages/alert.html', context)
@@ -4906,16 +4901,15 @@ def AlertFilter(request):
     else:
         return redirect("auth:login")
 
-# --------------------------------------------------------------- End Sections ------------------------------------------------------
 
+# --------------------------------------------------------------- End Sections ------------------------------------------------------
 
 
 # ------------------------------------------------------------- Erroe Sections ------------------------------------------------------
 # Error 500
 def error_500(request, error_text):
-
     context = {
-        'error':error_text,
+        'error': error_text,
     }
 
     return render(request, '500.html', context)
