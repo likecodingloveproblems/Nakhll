@@ -69,6 +69,7 @@ from .forms import Login, CheckEmail
 from nakhll.settings import KAVENEGAR_KEY
 
 from Iran import data
+from django.core.paginator import Paginator
 # Profile Page And Sub Pages
 #---------------------------------------------------------------------------------------------------------------------------------
 
@@ -4306,6 +4307,11 @@ def ShowAllFactorList(request):
         #-----------------------------------------------------------------------
         # Get All Factor
         factors = Factor.objects.filter(PaymentStatus = True, Publish = True).order_by('-OrderDate')
+        # Paginate Profiles
+        factors_paginator = Paginator (factors, 20)
+        page = request.GET.get('page')
+
+        factors = factors_paginator.get_page(page)
         # get factors user
         user_factor = User.objects\
             .filter(UserFactor__PaymentStatus=True, UserFactor__Publish=True)\
