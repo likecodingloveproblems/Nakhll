@@ -21,25 +21,40 @@ import json
 import os
 from Iran import data
 
-try:
-    # ## zarin pal
-    # MERCHANT= os.environ.get('ZARIN_MERCHANT')
-    # client = Client('https://www.zarinpal.com/pg/services/WebGate/wsdl')
-    # email = os.environ.get('ZARIN_EMAIL')  # Optional
+MERCHANT= os.environ.get('ZARIN_MERCHANT', None)
+client = Client('https://www.zarinpal.com/pg/services/WebGate/wsdl', None)
+email = os.environ.get('ZARIN_EMAIL', None)  # Optional
+PIN = os.environ.get('PEC_PIN')
+CallbackURL = format(os.environ.get('CALLBACKURL')) # Important: need to edit for realy server.
 
-    ## pec
-    PIN = os.environ.get('PEC_PIN')
+# TODO we must handle exceptions of SOAP connections
+def get_sale_serivce():
     saleService = Client('https://pec.shaparak.ir/NewIPGServices/Sale/SaleService.asmx?wsdl')
-    confirmService = Client('https://pec.shaparak.ir/NewIPGServices/Confirm/ConfirmService.asmx?wsdl')
-    reverseService = Client('https://pec.shaparak.ir/NewIPGServices/Reverse/ReversalService.asmx?wsdl')
-    ClientSaleRequestData = saleService.get_type('ns0:ClientSaleRequestData')
-    ClientConfirmRequestData = confirmService.get_type('ns0:ClientConfirmRequestData')
-    ClientReversalRequestData = reverseService.get_type('ns0:ClientReversalRequestData')
+    return saleService
 
-    # GENERAL
-    CallbackURL = format(os.environ.get('CALLBACKURL')) # Important: need to edit for realy server.
-except:
-    print('PEC IS NOT CENNECTED...')
+def get_confirm_service():
+    confirmService = Client('https://pec.shaparak.ir/NewIPGServices/Confirm/ConfirmService.asmx?wsdl')
+    return confirmService
+
+def get_reverse_service():
+    reverseService = Client('https://pec.shaparak.ir/NewIPGServices/Reverse/ReversalService.asmx?wsdl')
+    return reverseService
+
+def get_client_sale_request_data():
+    saleService = get_sale_serivce()
+    ClientSaleRequestData = saleService.get_type('ns0:ClientSaleRequestData')
+    return ClientSaleRequestData
+
+def get_client_confirm_request_data():
+    confirmService = get_confirm_service()
+    ClientConfirmRequestData = confirmService.get_type('ns0:ClientConfirmRequestData')
+    return ClientConfirmRequestData
+
+def get_client_reversal_request_data():
+    reverseService = get_reverse_service()
+    ClientReversalRequestData = reverseService.get_type('ns0:ClientReversalRequestData')
+    return ClientReversalRequestData
+
 # ------------------------------------------------------ Compaing Functions ----------------------------------------------------
 
 # check First Buy
@@ -417,7 +432,9 @@ def send_request(request, factor, amount, mobile, bank_port):
         if bank_port == 'pay_pec':
             pecOrder = PecOrder(AdditionalData=description, Originator=mobile, Amount=int(amount), FactorNumber=factor.FactorNumber)
             pecOrder.save()
+            ClientSaleRequestData = get_client_sale_request_data()
             requestData = ClientSaleRequestData(LoginAccount=PIN, Amount=int(amount), OrderId=pecOrder.id, CallBackUrl=CallbackURL, AdditionalData=description, Originator=mobile)
+            saleService = get_sale_serivce()
             result = saleService.service.SalePaymentRequest(requestData)
             pecOrder.Message = result['Message']
             pecOrder.Token = result['Token']
@@ -442,6 +459,9 @@ def send_request(request, factor, amount, mobile, bank_port):
 
 
 def reverseTransaction(PIN, Token, OrderId):
+    reverseService = get_reverse_service()
+    ClientReversalRequestData = get_client_reversal_request_data()
+    ClientReversalRequestData = get_client_reversal_request_data()
     requestData = ClientReversalRequestData(LoginAccount=PIN, Token=Token)
     res = reverseService.service.ReversalRequest(requestData)
     try:
@@ -514,6 +534,8 @@ def verify(request):
         message=""
         if int(status) == 0 and float(RRN) > 0 and int(factor.TotalPrice) == int(Amount):
             # transaction is correct
+            confirmService = get_confirm_service()
+            ClientConfirmRequestData = get_client_confirm_request_data()
             requestData = ClientConfirmRequestData(LoginAccount=PIN, Token=Token)
             result = confirmService.service.ConfirmPayment(requestData)
             try:
