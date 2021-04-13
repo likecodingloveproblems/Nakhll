@@ -38,7 +38,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">خطا ...</h5>
+        <h5 class="modal-title" id="exampleModalLabel" style="color:red;">خطا ...</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -51,6 +51,25 @@
       </div>
     </div>
   </div>
+</div>
+
+<div class="modal fade" id="myModaladd" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">اطلاعیه</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+            </div>
+            <div class="modal-body" id="text_add">
+
+            </div>
+            <div class="modal-footer" id="modal-footer-err">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <section id="brdcmb">
@@ -141,6 +160,9 @@
                                                             }
                                                             $(".numbersprice").digits();
                                                             $("#checkajax").hide();
+                                                            $('#text_add').html('<p>به موجودی سبد خرید اضافه گردید.</p>');
+                                                            $("#checkajax").hide();
+                                                            $('#myModaladd').modal('show');
                                                         }else{  
                                                             $('#text_err').html('<p>موجودی محصول کمتر از درخواست شماست.</p>');
                                                             $("#checkajax").hide();
@@ -185,9 +207,12 @@
                                                         }
                                                         $(".numbersprice").digits();
                                                         $("#checkajax").hide();
+                                                        $('#text_add').html('<p>موجودی سبد خرید کاهش یافت.</p>');
+                                                        $('#myModaladd').modal('show');
                                                         }
                                                         else{
                                                             location.reload();
+                                                            
                                                         }
                                                     }else{  
                                                         $("#checkajax").hide();
