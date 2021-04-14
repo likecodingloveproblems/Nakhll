@@ -66,9 +66,11 @@ INSTALLED_APPS = [
     'compressor',
     'mathfilters',
     'instagram',
+    'django_prometheus',
 ]
 
 MIDDLEWARE = [
+    'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -78,6 +80,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'admin_reorder.middleware.ModelAdminReorder',
     'middlewares.track_url_history.TrackUrlHistory',
+    'django_prometheus.middleware.PrometheusAfterMiddleware',
 ]
 
 ADMIN_REORDER = (
