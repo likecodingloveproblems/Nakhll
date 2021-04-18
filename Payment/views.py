@@ -164,7 +164,7 @@ def show_cart(request):
     else:
         # i = request.path
         # return redirect('/login/?next=' + i)
-        return ("auth:login")
+        return redirect("auth:login")
 
 
 class check_product_send_status:
