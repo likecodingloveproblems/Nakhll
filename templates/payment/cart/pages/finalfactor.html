@@ -59,27 +59,6 @@
   </div>
 </div>
 
-<div class="modal fade" role="dialog" id="delivery_delay">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">تاخیر ارسال کالا</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <p class="text-center">سلام خدمت همه همراهان وفادار بازار نخل</p>
-        <p class="text-center">در سال جدید تنی سالم و جیبی پر پول رو براتون آرزومندیم.</p>
-        <p class="text-center text-success">جونم براتون بگه با توجه به تعطیلات نوروزی تمامی ارسال‌ها بعد تعطیلات <span class="font-weight-bold">روز 14 فروردین </span> خدمت تون ارسال میشه.</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal">خروج</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <section id="brdcmb">
     <div class="container">
             <div class="row">
@@ -99,14 +78,6 @@
 </section>
 
 <script>
-    $(window).on('load',function(){
-        var delayMs = 1000; // delay in milliseconds
-    
-        setTimeout(function(){
-            $('#delivery_delay').modal('show');
-        }, delayMs);
-    });    
-
     function printDiv(id) {
       var printContents = document.getElementById(id).innerHTML;
       var originalContents = document.body.innerHTML;
