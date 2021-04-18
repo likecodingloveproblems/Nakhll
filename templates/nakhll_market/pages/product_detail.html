@@ -84,14 +84,49 @@
         </div>
     </div>
 </section>
-
-<section id="prod-top">
+ {% comment %}
+  nt show massage  {% endcomment %}
+<section id="prod-top" >
     <div class="container">
-        <div class="alarm-section">
+        <div class="alarm-section" >
             <div class="row">
 
                 {% if ShowAlart %}
-                <div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">
+                 {% comment %} <div class="modal hide fade" id="myModal">
+                    <div class="modal-header">
+                        <a class="close" data-dismiss="modal">×</a>
+                        <h3>Modal header</h3>
+                    </div>
+                    <div class="modal-body">
+                        <p>One fine body…</p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn">Close</a>
+                        <a href="#" class="btn btn-primary">Save changes</a>
+                    </div>
+                </div>  {% endcomment %}
+
+                  <div class="modal fade" tabindex="-1" role="dialog" id="myModal">
+                                                  <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                      <div class="modal-header" dir="rtl">
+                                                      <h4 class="modal-title">اطلاعیه</h4>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                        
+                                                      </div>
+                                                      <div class="modal-body">
+                                                        <p>
+                                                        {{AlartMessage}}
+                                                        </p>
+                                                      </div>
+                                                      <div class="modal-footer">
+                                                        <button type="button" class="btn btn-default" data-dismiss="modal">بستن</button>
+                                                        
+                                                      </div>
+                                                    </div><!-- /.modal-content -->
+                                                  </div><!-- /.modal-dialog -->
+                                                </div>  
+                {% comment %} <div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">
                     <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
                         <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
                         <p>
@@ -101,7 +136,7 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                </div>
+                </div> {% endcomment %}
                 {% endif %}
 
             </div>
@@ -300,8 +335,8 @@
                                         <!-- <div class="view-count">
                                             <p><i class="fad fa-eye"></i> : {{View_Count}}</p>
                                         </div> -->
-                                        <form action="{% url "Payment:AddProductToCartWithAttrPrice" Product.ID %}"  method="POST">
-                                        {% csrf_token %}
+                                        <form action="{% url "Payment:AddProductToCartWithAttrPrice" Product.ID %}"  method="POST" id="myForm">
+                                         {% csrf_token %}
                                             {% if AttrPrice.count != 0 %}<p>ویژگی های انتخابی</p>{% endif %}
                                             <ul class="attr-list-price">
                                                 {% for item in AttrPrice %}  
@@ -329,8 +364,57 @@
                                                         <button class="btn btn-default" data-dir="dwn" type="button">-</button>
                                                     </span>
                                                 </div> -->
+                                                {% comment %}
+                                                 nt button click add produact is here
+                                                  {% endcomment %}
+                                                {% if Product.Status != '4' %}
+                                                <button type="submit" onclick="btnClickAddToCard()"  class="btn-add-prod"> <i class="fas fa-cart-plus"></i> افزودن به سبد خرید</button> 
                                                 
-                                                {% if Product.Status != '4' %}<button type="submit" class="btn-add-prod"> <i class="fas fa-cart-plus"></i> افزودن به سبد خرید</button>{% endif %}
+
+                                                {% comment %} <div class="modal fade" tabindex="-1" role="dialog" id="myModal">
+                                                  <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                      <div class="modal-header" dir="rtl">
+                                                      <h4 class="modal-title">اطلاعیه</h4>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                        
+                                                      </div>
+                                                      <div class="modal-body">
+                                                        <p>محصول مورد نظر به سبد خرید اضافه گردید.</p>
+                                                      </div>
+                                                      <div class="modal-footer">
+                                                        <button type="button" class="btn btn-default" data-dismiss="modal">بستن</button>
+                                                        
+                                                      </div>
+                                                    </div><!-- /.modal-content -->
+                                                  </div><!-- /.modal-dialog -->
+                                                </div><!-- /.modal --> {% endcomment %}
+                                                {% comment %} <div class="modal fade" id="myModal" role="dialog" dir="rtl">
+                                                    <div class="modal-dialog" >
+    
+                                                      <!-- Modal content-->
+                                                      <div class="modal-content" >
+                                                        <div class="modal-header" >
+                                                          <h4 class="modal-title">اطلاعیه</h4>
+                                                          <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                          
+                                                        </div>
+                                                        <div class="modal-body">
+                                                          <p>محصول به سبد خرید اضافه گردید.</p>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                          <button type="button" class="btn btn-default" data-dismiss="modal">بستن</button>
+                                                        </div>
+                                                      </div>
+      
+                                                    </div>
+                                                  </div>
+  
+                                                </div> {% endcomment %}
+
+                                                
+                                                
+                                                {% endif %}
                                                 {% comment %} {% if Product.FK_Shop.Slug == 's-a-tahami'%}  
                                                     <div class="alert alert-warning alert-add-to-carts-tahami" role="alert">
                                                         لطفا قبل‌از سفارش و تائید نهایی صورت حساب بااین شماره 03432476561 تماس ‌گرفته و از موجود بودن کالا اطمینان حاصل کنید.
@@ -563,8 +647,35 @@
         <div class="clearfix"></div>
     </section>
 
+<script type="text/javascript">
+    $(window).on('load', function() {
+        $('#myModal').modal('show');
+    });
+</script>
 
 <script>
+    {% comment %} 
+    nt function javascript {% endcomment %}
+
+    
+     
+    
+
+    
+    
+    {% comment %} $('#myModal').on('hidden.bs.modal', function (e) {
+
+     // do something...
+     $('#myForm').submit();
+     
+     }) {% endcomment %}
+
+    {% comment %} $('#myForm').on('submit', function(e){
+     $('#myModal').modal('show');
+     
+      e.preventDefault(); 
+    });{% endcomment %}
+    
     $("#tcopy").click(function () {
         var dummy = document.createElement('input'),
             text = window.location.href;

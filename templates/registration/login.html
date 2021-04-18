@@ -5,45 +5,64 @@
 {% block header %}
 {% include "nakhll_market/parents/headermain.html" %}
 {% endblock %}
-    <title>بازار نخل | ورود</title>
+<title>بازار نخل | ورود</title>
 {% analytical_head_bottom %}</head>
 <body id="login-page">
+ <div class="login-sec login-page-whole-div">
+        <div class="blue-thick-line-top"></div>
+        <div class="login-page-whole-content">
+            <h5>ورود به سایت</h5>
+            {% include 'registration/messages.html' %}
+     
 
-<div class="login-sec login-page-whole-div">
-    <div class="blue-thick-line-top"></div>
-    <div class="login-page-whole-content">
-    <h5>ورود به سایت</h5>
-    {% include 'registration/messages.html' %}
-    <form id="login-form" method="POST">
-        {% csrf_token %}
-        {% if form.non_field_errors %}
-        <div class="alert alert-danger" role="alert">
-            {{ form.non_field_errors }}
+   
+            <form id="login-form" method="POST">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+             <div class="alert alert-danger" role="alert">
+               {{ form.non_field_errors }}
         </div>
-        {% endif %}
+            {% endif %}
         <div class="input-login-modal input-mob-login login-page-main-input-login-mob">
             <div class="before-input-icon">
                 <i class="fal fa-phone fix-before-input-icon-place"></i>
             </div>
             <div class="main-input-login">
                 {{ form.mobile_number }}
-            </div>
+                
+            </div>           
         </div>
-        {% if form.mobile_number.errors %}
+
+         {% if form.mobile_number.errors %}
+        
             <ul>
             {% for error in form.mobile_number.errors %}
+            
                 <li><strong class='text-danger text-sm'>{{ error|escape }}</strong></li>
             {% endfor %}
             </ul>
-        {% endif %}
-        <div class="input-login-modal input-password-login">
+         {% endif %}
+        
+       
+        
+       
+       
+            <div class="input-login-modal input-password-login">
             <div class="before-input-icon">
                 <i class="fal fa-lock-alt fix-before-input-icon-place"></i>
             </div>
             <div class="main-input-login">
                 {{ form.password }}
             </div>
+            
+            <div class="after-input-icon">
+             <i class="fal fa-eye fix-before-input-icon-place " id="showPassword" onclick="FunctionShow(this)"></i>
+
+            </div>
         </div>
+       
+        </div>
+        
         <div id="captchaStyle">
             <body onload="Captcha();">
                 <div class="capt">
@@ -68,28 +87,83 @@
                 ورود
             </button>
         </div>
-    </form>
-    </div>
-    <div class="hr-line-full"></div>
-    <div class="login-page-whole-content login-page-footer">
+     </form>
+     <div class="hr-line-full"></div>
+     <div class="login-page-whole-content login-page-footer">
         <span>عضو جدید هستید؟</span> <a href="{% url "auth:register-mobile" %}">ثبت نام کنید</a>
-    </div>
-
+     </div>
+     </div>
+     
+    
 
 
 
     <script>
+     const togglePassword = document.querySelector('#showPassword');
+     const password = document.querySelector('#id_password');
+     togglePassword.addEventListener('click', function (e) {
+     // toggle the type attribute
+     const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+     password.setAttribute('type', type);
+     // toggle the eye slash icon
+     this.classList.toggle('fa-eye-slash');
+        });
+
+
+
+     {% comment %} function FunctionShow(a){
+        
+        
+        let x = document.getElementById("showPassword");
+        let y = document.getElementById("id_password");
+        if(y.type === "password"){
+            y.type = "text";
+            
+
+        } else {
+            y.type = "password";
+            
+        }
+     } {% endcomment %}
+
+
+
+     {% comment %} function FunctionShow(x) {
+     x.classList.toggle("fa-thumbs-down");
+     var y = document.getElementById("passwordfild");
+     if (y.type === "password") {
+       y.type = "text";
+      } else {
+       y.type = "password";
+     }
+     } {% endcomment %}
+
+
+     {% comment %} const showpasswordhand=document.querySelector('.showPassword')
+     const passwordfild=document.querySelector('.passwordfild')
+
+     function ShowPassword() {
+     var x = document.getElementById("id_password");
+      if (x.type === "password") {
+       x.type = "text";
+       } else {
+       x.type = "password";
+      }
+     } {% endcomment %}
+
+
+     showpasswordhand.addEventListener('click',handeltoggleinput)
     
-    let loginBtnEl = document.querySelector('#login-button');
-    let txtInputCaptcha = document.querySelector('#txtInput');
+     let loginBtnEl = document.querySelector('#login-button');
+     let txtInputCaptcha = document.querySelector('#txtInput');
      window.addEventListener('DOMContentLoaded', function () {
          loginBtnEl.setAttribute('disabled',true);
          loginBtnEl.style.backgroundColor='gray';
 
      })
  
- txtInputCaptcha.addEventListener('input', updateValue);
-    function updateValue(e){
+     txtInputCaptcha.addEventListener('input', updateValue);
+     function updateValue(e){
          let value = e.target.value;
          if(value.length > 6){
               var string1 = removeSpaces(document.getElementById('mainCaptcha').value);
@@ -107,7 +181,7 @@
      }
    
 
- function Captcha(){
+     function Captcha(){
      var alpha = new Array('0','1','2','3','4','5','6','7','8','9');
      var i;
      for (i=0;i<6;i++){
@@ -133,42 +207,42 @@
      }else{        
           loginBtnEl.style.disabled = true;
           }
-function removeSpaces(string){
+     function removeSpaces(string){
      return string.split(' ').join('');
-}
+     }
 
 
 
 
     </script>
 
-<style>
-.capt{
-display: flex;
+  <style>
+  .capt{
+  display: flex;
 	flex-direction: row;
 	flex-wrap: nowrap;
 	justify-content: center;
 	align-items: center;
 	align-content: center;
 
-}
-#captchaStyle{
-background:#e8f0fe;
-margin:10px;
-padding:10px
-}
+   }
+  #captchaStyle{
+  background:#e8f0fe;
+  margin:10px;
+  padding:10px
+  }
 
 
 
-#mainCaptcha{
+  #mainCaptcha{
 	position: static;
 	left : 60px;
 	top: 5px;
     text-decoration: overline line-through underline;
 	
-}
+  }
 
-#refresh{
+  #refresh{
 	position:static;
 	left:230px;
 	width:30px;
@@ -177,19 +251,20 @@ padding:10px
     font-size:24px;
     margin:10px
 
-}
+  }
 
-#txtInput, #Button1{
+  #txtInput, #Button1{
 	position: static;
 	left:40px;
 	bottom: 40px;
-}
+  }
 
-</style>
+  </style>
 
 
 
 
     
-</div>
-{% analytical_body_bottom %}</body>
+ </div>
+ {% analytical_body_bottom %}
+</body>

@@ -63,7 +63,7 @@ def Check_Is_First(user_id):
     class ResultClass:
         def __init__(self,  message, status):
             self.Message = message
-            self.Status = status
+            self.Status = status 
 
     # Get User
     this_user = User.objects.get(id = user_id)
@@ -950,8 +950,16 @@ def AddProductToCartWithAttrPrice(request, ID):
                     if len(price_attribute_list) == 0:
                         if this_order_items.filter(FK_AttrPrice = None).exists():
                             this_item = this_order_items.get(FK_AttrPrice = None)
-                            this_item.ProductCount += 1
-                            this_item.save() 
+                            if(this_item.ProductCount <= this_product.Inventory):
+                                this_item.ProductCount += 1
+                                this_item.save()
+                            else:
+                                return redirect('nakhll_market:Re_ProductsDetail',
+                                shop_slug = this_product.FK_Shop.Slug,
+                                product_slug = this_product.Slug,
+                                status = True,
+                                msg ='.فروشنده بیش از این تعداد قادر به تامین  کالا نمی باشد')
+
                         else:
                             this_item = FactorPost.objects.create(FK_Product = this_product, FK_User = request.user)
                             this_order.FK_FactorPost.add(this_item)
@@ -1075,7 +1083,7 @@ def cansel_factor_product (request, ID):
                 item.FK_Product.Inventory += item.ProductCount
                 item.FK_Product.save()
             item.save()
-        # get this factor status
+        # get this factor statuss
         this_factor_status = True
         for item in this_factor.FK_FactorPost.all():
             if item.ProductStatus != '0':
@@ -1095,6 +1103,7 @@ def cansel_factor_product (request, ID):
 
 
 # Show Send Info For User
+#صفحه اولللللللللللللللل
 def send_factor(request, ID, status = None, msg = None):
     if request.user.is_authenticated:
         if request.method == 'POST':
@@ -1196,6 +1205,8 @@ def send_factor(request, ID, status = None, msg = None):
                 'Start_Day':start_day,
                 'ShowAlart':show,
                 'AlartMessage':message,
+                'barcode':barcode,
+
             }
 
             return render(request, 'nakhll_market/profile/pages/sendfactor.html', context)
