@@ -79,7 +79,7 @@ class AuthenticationForm(forms.Form):
     )
     remember_me = forms.BooleanField(required=False, widget=CheckboxInput)
 
-    captcha = ReCaptchaField()
+    # captcha = ReCaptchaField()
 
     error_messages = error_messages
 
