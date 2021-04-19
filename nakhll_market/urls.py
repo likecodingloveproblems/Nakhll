@@ -17,41 +17,6 @@ app_name = 'nakhll_market'
 urlpatterns = [
     url(r'^sitemap\.xml/$', sitemap, {'sitemaps' : sitemaps } , name='sitemap'),
     url(r'^robots\.txt/$', TemplateView.as_view(template_name="robots.txt", content_type='text/plain')),
-    #----------------------------------------------- Login Path ----------------------------------------------
-    # Session Path <----->
-    path('set-session', views.set_session, name = 'set_session'),
-    # Login Page Path
-    # path('account/login/', views.accountlogin, name='AccountLogin'),
-    # Login To Account Path
-    path('login-to-account/', views.login_to_account, name = 'login_to_account'), 
-    # Logout Path
-    re_path(r'^account/logout/$', views.logout, name='AccountLogout'),
-    # Register Path
-    # path('account/register/<str:mobile_number>/', views.Register, name='auth:register-mobile'),
-    # Show Change Password Path
-    re_path(r'^change_password/$', views.ShowChangePassword, name='ShowChangePasswordPage'),
-    # Show Change Password Offline Page
-    re_path(r'^change_password/off/$', views.ShowChangePasswordOff, name='ShowChangePasswordOff'),
-    # Change Password Offline Path
-    re_path(r'^change_password/offline/$', views.ChangePasswordOffline, name='ChangePasswordOffline'),
-    # Change Password Path
-    re_path(r'^change_password/changing$', views.ChangePassword, name='ChangePassword'),
-    # Show Get Phone Number Page
-    re_path(r'^forgetpassword/$', views.ShowGetPhoneNumber, name='ShowGetPhoneNumber'),
-    
-    path('account/codesetvalid/<str:mobileNumber>/', views.codesetvalid, name='codesetvalid'),
-    # Get Registeri Code
-    # re_path(r'^account/register/$', views.GetRegisteriCode, name='GetRegisteriCode'),
-    # Get Code Path
-    re_path(r'^get_phonenumber/get_user_code/$', views.GetCode, name='GetCode'),
-    # Get Code Path
-    # re_path(r'^get_phonenumber/get_user_code/<str:code>$', views.GetUserCode, name='GetUserCode'),
-    # ------------------------------------------------------ End ---------------------------------------------------
-
-
-
-
-
 
     # ------------------------------------------------- Coupun Section ----------------------------------------------
     # Shop Coupon--------------------------------------
