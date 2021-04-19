@@ -7,6 +7,8 @@ from django.contrib.auth import (
     authenticate,
 )
 from django.utils.translation import gettext_lazy as _
+from captcha.fields import ReCaptchaField
+from captcha.widgets import ReCaptchaV2Invisible
 
 '''
 validators 
@@ -76,6 +78,8 @@ class AuthenticationForm(forms.Form):
         })
     )
     remember_me = forms.BooleanField(required=False, widget=CheckboxInput)
+
+    captcha = ReCaptchaField()
 
     error_messages = error_messages
 

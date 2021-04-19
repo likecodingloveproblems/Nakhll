@@ -1,6 +1,5 @@
 {% load i18n static %}
 {% load analytical %}
-{% load analytical %}
 
 {% block header %}
 {% include "nakhll_market/parents/headermain.html" %}
@@ -63,14 +62,10 @@
        
         </div>
         
-        <div id="captchaStyle">
-            <body onload="Captcha();">
-                <div class="capt">
-                    <h2 type="text" id="mainCaptcha"></h2>
-                    <p><i class="fas fa-repeat" id="refresh" onclick="Captcha();"></i></p>
-                </div>
-                <input type="text" id="txtInput" maxlength="7" />    
-            {% analytical_body_bottom %}</body>
+        <div class="m-2">
+            <div>
+                {{form.captcha}}
+            </div> 
         </div>
         <div class="under-inputs">
             <div class="remember-checkbox">

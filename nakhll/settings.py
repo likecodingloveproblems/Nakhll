@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'compressor',
     'mathfilters',
     'instagram',
+    'captcha',
     'django_prometheus',
 ]
 
@@ -300,3 +301,7 @@ GOOGLE_ANALYTICS_PROPERTY_ID = 'UA-189302977-1'
 GOOGLE_ANALYTICS_GTAG_PROPERTY_ID = 'UA-189302977-1'
 GOOGLE_ANALYTICS_JS_PROPERTY_ID = 'UA-189302977-1'
 IDENTITY_FUNCTION = lambda user: user.id
+
+RECAPTCHA_PUBLIC_KEY = os.environ.get('RECAPTCHA_PUBLIC_KEY')
+RECAPTCHA_PRIVATE_KEY = os.environ.get('RECAPTCHA_PRIVATE_KEY')
+RECAPTCHA_REQUIRED_SCORE = 0.85
