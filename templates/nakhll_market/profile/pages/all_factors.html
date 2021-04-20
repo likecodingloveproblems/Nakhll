@@ -186,9 +186,8 @@
                                     <div class="col-xl-5 col-lg-5 col-md-5 col-sm-7 col-7">
                                         <div class="input-group mb-3">
                                             <div class="input-group-prepend factor-profile-input-group-prepend">
-                                                <span class="input-group-text factor-profile-input-group-text" id="basic-addon1">نام خریدار</span>
                                             </div>
-                                            <select class="form-control factor-profile-custom-select" name="customer_name" id="inputGroupSelect01" aria-label="Username"
+                                            <select  data-placeholder="حجره ها" class="chosen-select-rtl form-control factor-profile-custom-select" name="customer_name" id="inputGroupSelect01" aria-label="Username"
                                             aria-describedby="basic-addon1">
                                                 <option value="000" {% if Customer == '000' %}selected{% endif %}>همه</option>
                                                 {% for item in User %}
