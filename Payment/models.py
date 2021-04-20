@@ -303,8 +303,8 @@ class Coupon(models.Model):
         ('1','حجره ای'),
     )
     DiscountStatus=models.CharField(verbose_name='نوع نخفیف', max_length=1, choices=DISCOUNT_TYPE, blank=True)
-    MinimumAmount=models.CharField(verbose_name='حداقل مبلغ خرید', max_length=15, blank=True, default='0')
-    MaximumAmount=models.CharField(verbose_name='حداکثر مبلغ خرید', max_length=15, blank=True, default='0')
+    MinimumAmount=models.BigIntegerField(verbose_name='حداقل مبلغ خرید', blank=True, default=0)
+    MaximumAmount=models.BigIntegerField(verbose_name='حداکثر مبلغ خرید', blank=True, default=0)
     NumberOfUse=models.PositiveSmallIntegerField(verbose_name='دفعات مجاز استفاده', default=1)
     TextRequest=models.TextField(verbose_name='متن پیام دعوت نامه', blank=True)
     FK_InvitationShops=models.ManyToManyField('Invitation', verbose_name='حجره های دعوت شده', related_name='Coupon_Invitation_Shop', blank=True)
