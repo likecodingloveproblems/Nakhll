@@ -43,7 +43,8 @@ urlpatterns = [
     path('management/coupun/edit/<int:id>/save', management_coupon_views.SaveEditManagementCoupon, name='SaveEditManagementCoupon'),  
     # Check Coupon When Show Cart Path
     path('management/coupun/check-coupon-show-cart/<uuid:ID>/', management_coupon_views.CheckCouponWhenShowCart, name='CheckCouponWhenShowCart'),
-
+    # get user by full name
+    path('management/coupon/get_user_full_name', management_coupon_views.get_user_from_full_name, name='get_user_full_name'),
     # Check Copun Path
     path('profile/check/copun_code/', profileviews.CheckCopun, name='CheckCopun'),
     # ------------------------------------------------------ End ---------------------------------------------------

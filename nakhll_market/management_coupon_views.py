@@ -7,8 +7,11 @@ from datetime import datetime, date
 import jdatetime
 import threading
 
-
-
+from django.contrib.admin.views.decorators import staff_member_required
+from django.db.models.functions import Concat
+from django.db.models import Value
+from django.core import serializers
+from django.db.models import Q
 from django.contrib.auth.models import User
 from .models import Alert, Product, Profile, Shop, Category, Option_Meta, Market, SubMarket, Message, User_Message_Status, Alert
 from Payment.models import Coupon, Wallet, Factor
@@ -354,7 +357,24 @@ def EditManagementCoupon(request, id):
     else:
         return redirect("auth:login")
 
-
+@staff_member_required
+def get_user_from_full_name(request):
+    full_name = request.GET.get('full_name')
+    if full_name:
+        users = User.objects.\
+            annotate(full_name=Concat('first_name', Value(' '), 'last_name')).\
+            filter(full_name__contains=full_name).\
+            values_list('full_name', flat=True)
+        response = {
+            'status':200,
+            'result':list(users),
+        }
+    else:
+        response = {
+            'status':404,
+            'result':None,
+        }
+    return JsonResponse(response)
 
 # Delete Management Coupon
 def DeleteManagementCoupon(request, id):
