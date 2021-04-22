@@ -117,8 +117,11 @@
                                 <div class="form-group col-md-12 shop-coupon-list">
                                     <label for="inputCopun_Shops"> حجره ها </label>
                                     <select data-placeholder="حجره ها" multiple class="chosen-select-rtl form-control" id="Shops_Select" name="copun_shops" tabindex="14">
-                                        {% for item in AllShops %}
-                                            <option {% if item.Status %}selected{% endif %} value="{{item.Item.ID}}">{{item.Item.Title}}</option>
+                                        {% for item in copun_shops %}
+                                            <option selected value="{{item.ID}}">{{item.Title}}</option>
+                                        {% endfor %}
+                                        {% for item in other_shops %}
+                                            <option selected value="{{item.ID}}">{{item.Title}}</option>
                                         {% endfor %}
                                     </select>
                                     <button type="button" class="btn-all-sel btn btn-warning chosen-toggle deselect">حذف انتخاب</button>
@@ -132,8 +135,11 @@
                                 <div class="form-group col-md-12 product-coupon-list">
                                     <label for="inputCopun_Products"> محصولات </label>
                                     <select data-placeholder="محصولات" multiple class="chosen-select-rtl form-control" id="inputCopun_Products" name="copun_products" tabindex="14">
-                                        {% for item in AllProducts %}
-                                            <option {% if item.Status %}selected{% endif %} value="{{item.Item.ID}}">{{item.Item.Title}}</option>
+                                        {% for item in copun_product %}
+                                            <option selected value="{{item.ID}}">{{item.Title}}</option>
+                                        {% endfor %}
+                                        {% for item in other_product %}
+                                            <option value="{{item.ID}}">{{item.Title}}</option>
                                         {% endfor %}
                                     </select>
                                     <button type="button" class="btn-all-sel btn btn-warning chosen-toggle deselect">حذف انتخاب</button>
@@ -158,8 +164,11 @@
                                     <div class="form-group col-md-12 users-coupon-list">
                                         <label for="inputCopun_Users"> کاربران </label>
                                         <select data-placeholder="کاربران" multiple class="chosen-select-rtl form-control" id="inputCopun_Users" name="copun_users" tabindex="14">
-                                            {% for item in AllUsers %}
-                                                <option {% if item.Status %}selected{% endif %} value="{{item.Item.id}}">{{item.Item.first_name}} {{item.Item.last_name}}</option>
+                                            {% for user in coupon_user %}
+                                                <option selected value="{{user.id}}">{{user.first_name}} {{user.last_name}}</option>
+                                            {% endfor %}
+                                            {% for user in other_user %}
+                                                <option value="{{user.id}}">{{user.first_name}} {{user.last_name}}</option>
                                             {% endfor %}
                                         </select>
                                         <br>
@@ -175,8 +184,11 @@
                                     <div class="form-group col-md-12 category-coupon-list">
                                         <label for="inputCopun_Users"> دسته بندی </label>
                                         <select data-placeholder="دسته بندی" multiple class="chosen-select-rtl form-control" id="inputCopun_Categories" name="copun_categories" tabindex="14">
-                                            {% for item in AllCategories %}
-                                                <option {% if item.Status %}selected{% endif %} value="{{item.Item.id}}">{{item.Item.Title}}</option>
+                                            {% for item in copun_category %}
+                                                <option selected value="{{item.id}}">{{item.Title}}</option>
+                                            {% endfor %}
+                                            {% for item in other_category %}
+                                                <option value="{{item.id}}">{{item.Title}}</option>
                                             {% endfor %}
                                         </select>
                                         <small><span class="Riyal">دسته بندی</span> های مورد نظر خور را اینجا وارد نمایید.</small>

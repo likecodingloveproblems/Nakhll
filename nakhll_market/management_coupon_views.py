@@ -7,8 +7,11 @@ from datetime import datetime, date
 import jdatetime
 import threading
 
-
-
+from django.contrib.admin.views.decorators import staff_member_required
+from django.db.models.functions import Concat
+from django.db.models import Value
+from django.core import serializers
+from django.db.models import Q
 from django.contrib.auth.models import User
 from .models import Alert, Product, Profile, Shop, Category, Option_Meta, Market, SubMarket, Message, User_Message_Status, Alert
 from Payment.models import Coupon, Wallet, Factor
@@ -315,51 +318,14 @@ def EditManagementCoupon(request, id):
                 def __init__(self, item, status):
                     self.Item = item
                     self.Status = status
-
-            User_List = []
-            if coupon.FK_Users.count() != 0:
-                for item in User.objects.filter(is_active = True):
-                    if item in coupon.FK_Users.all():
-                        User_List.append(Itemclass(item, True))
-                    else:
-                        User_List.append(Itemclass(item, False))
-            else:
-                for item in User.objects.filter(is_active = True):
-                    User_List.append(Itemclass(item, False))
-
-            Shop_List = []
-            if coupon.FK_Shops.count() != 0:
-                for item in Shop.objects.filter(Publish = True, Available = True):
-                    if item in coupon.FK_Shops.all():
-                        Shop_List.append(Itemclass(item, True))
-                    else:
-                        Shop_List.append(Itemclass(item, False))
-            else:
-                for item in Shop.objects.filter(Publish = True, Available = True):
-                    Shop_List.append(Itemclass(item, False))
-
-            Category_List = []
-            if coupon.FK_Categories.count() != 0:
-                for item in Category.objects.filter(Publish = True):
-                    if item in coupon.FK_Categories.all():
-                        Category_List.append(Itemclass(item, True))
-                    else:
-                        Category_List.append(Itemclass(item, False))
-            else:
-                for item in Category.objects.filter(Publish = True):
-                    Category_List.append(Itemclass(item, False))
-
-            Product_List = []
-            if coupon.FK_Products.count() != 0:
-                for item in Product.objects.filter(Publish = True, Available = True):
-                    if item in coupon.FK_Products.all():
-                        Product_List.append(Itemclass(item, True))
-                    else:
-                        Product_List.append(Itemclass(item, False))
-            else:
-                for item in Product.objects.filter(Publish = True, Available = True):
-                    Product_List.append(Itemclass(item, False))
-            # -------------------------------------------------------------------------------
+            coupon_user = coupon.FK_Users.all()
+            other_user = User.objects.exclude(id__in=coupon_user.values('id'))
+            coupon_shop = coupon.FK_Shops.all()
+            other_shop = Shop.objects.exclude(ID__in=coupon_shop.values('ID'))
+            coupon_product = coupon.FK_Products.all()
+            other_product = Product.objects.exclude(ID__in=coupon_product.values('ID'))
+            coupon_category = coupon.FK_Categories.all()
+            other_category = Category.objects.exclude(id__in=coupon_category.values('id'))
             # show market list
             MarketList = []
             for item in Market.objects.filter(Publish = True):
@@ -368,26 +334,20 @@ def EditManagementCoupon(request, id):
             SubMarketList = []
             for item in SubMarket.objects.filter(Publish = True):
                 SubMarketList.append(Itemclass(item, False))
-            # show shop lits
-            ShopList = []
-            for item in Shop.objects.filter(Publish = True, Available = True):
-                ShopList.append(Itemclass(item, False))
-            # show category lits
-            CategoryList = []
-            for item in Category.objects.filter(Publish = True):
-                CategoryList.append(Itemclass(item, False))
 
             context = {
                 'This_User_Profile':this_profile,
                 'This_User_Inverntory': this_inverntory,
                 'Options': options,
                 'MenuList':navbar,
-                'AllUsers':User_List,
-                'AllProducts':Product_List,
-                'AllShops':Shop_List,
-                'AllCategories':Category_List,
-                'Categories':CategoryList,
-                'Shops':ShopList,
+                'coupon_user':coupon_user,
+                'coupon_shop':coupon_shop,
+                'coupon_product':coupon_product,
+                'coupon_category':coupon_category,
+                'other_user':other_user,
+                'other_shop':other_shop,
+                'other_product':other_product,
+                'other_category':other_category,
                 'SubMarkets':SubMarketList,
                 'Markets':MarketList,
                 'UserCoupon':coupon.id,
@@ -397,7 +357,24 @@ def EditManagementCoupon(request, id):
     else:
         return redirect("auth:login")
 
-
+@staff_member_required
+def get_user_from_full_name(request):
+    full_name = request.GET.get('full_name')
+    if full_name:
+        users = User.objects.\
+            annotate(full_name=Concat('first_name', Value(' '), 'last_name')).\
+            filter(full_name__contains=full_name).\
+            values_list('full_name', flat=True)
+        response = {
+            'status':200,
+            'result':list(users),
+        }
+    else:
+        response = {
+            'status':404,
+            'result':None,
+        }
+    return JsonResponse(response)
 
 # Delete Management Coupon
 def DeleteManagementCoupon(request, id):
