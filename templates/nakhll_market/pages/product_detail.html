@@ -216,16 +216,16 @@
                                         <li>راسته : 
                                             <a href="{% url "nakhll_market:SubMarkets" Product.FK_SubMarket.Slug %}">{{Product.FK_SubMarket.Title}}</a>
                                         </li>
-                                        <!-- <li>تگ ها : 
+                                        {% comment %} <li>تگ ها : 
                                             {% for tag in Product.FK_Tag.all %} 
                                                 {% if forloop.counter != 6 %}
                                                     <span><a href="/search/tag/{{tag.Slug}}"><h5>#{{tag.Title}}</h5></a></span>
                                                 {% endif %}
                                             {% endfor %}
-                                        </li> -->
-                                        <!-- <li>تعداد فروش : 
+                                        </li> 
+                                        <li>تعداد فروش : 
                                             <span>{{Sell_Count}}</span>
-                                        </li> -->
+                                        </li>  {% endcomment %}
                                         <li>محدوده ارسال : 
                                             {% if Product.PostRangeType == '1' %} 
                                                 <span>سراسر کشور</span>
