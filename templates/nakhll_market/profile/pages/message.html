@@ -1,7 +1,6 @@
 {% load jformat %}
 {% load analytical %}
 {% load i18n static %}
-{% load analytical %}
 
 {% block header %}
     {% include "nakhll_market/parents/headermain.html" %}
@@ -161,7 +160,7 @@
                                     <div class="col-xl-4 col-lg-4 col-md-6 col-sm-7 col-6">
                                         <div class="input-group mb-3">
                                             <div class="input-group-prepend message-profile-input-group-prepend">
-                                                <label class="input-group-text message-profile-input-group-text for="
+                                                <label class="input-group-text message-profile-input-group-text" for="
                                                     inputGroupSelect01">وضعیت</label>
                                             </div>
                                             <select class="custom-select message-profile-custom-select" name="status"
@@ -196,43 +195,43 @@
                                 </thead>
 
                                 <tbody class="code">
-                                    {% for item in Messages %}
+                                    {% for item in messages %}
                                         <tr>
-                                            <td title="{{item.Message.Title}}">{{item.Message.Title}}</td>
+                                            <td title="{{item.Title}}">{{item.Title}}</td>
                                             <td class="message-table-text-col">
-                                                {{item.Message.Text}}
+                                                {{item.Text}}
                                             </td>
-                                            <td>{{item.Message.FK_Sender.first_name}} {{item.Message.FK_Sender.last_name}}
+                                            <td>{{item.FK_Sender.first_name}} {{item.FK_Sender.last_name}}
                                             </td>
-                                            <td>{{item.Message.Date|jformat:'%Y/%m/%d'}}</td>
-                                            {% if item.Status %}
+                                            <td>{{item.Date|jformat:'%Y/%m/%d'}}</td>
+                                            {% if item.seen_status %}
                                             <td class="seen">خوانده شده</td>
                                             {% else %}
-                                            <td class="not-seen" id="notseen-{{item.Message.id}}">خوانده نشده</td>
+                                            <td class="not-seen" id="notseen-{{item.id}}">خوانده نشده</td>
                                             {% endif %}
-                                            <td class="pointer eye-for-show" id="{{item.Message.id}}"><a
-                                                    data-toggle="modal" data-target=".id-{{item.Message.id}}"><i class="fad fa-eye"></i></td>
+                                            <td class="pointer eye-for-show" id="{{item.id}}"><a
+                                                    data-toggle="modal" data-target=".id-{{item.id}}"><i class="fad fa-eye"></i></td>
                                         </tr>
-                                        <div class="modal fade id-{{item.Message.id}}" tabindex="-1" role="dialog"
+                                        <div class="modal fade id-{{item.id}}" tabindex="-1" role="dialog"
                                             aria-labelledby="..." aria-hidden="true">
                                             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
                                                 role="document">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title message-title-in-modal" id="{{item.Message.id}}">
-                                                            {{item.Message.Title}}</h5>
+                                                        <h5 class="modal-title message-title-in-modal" id="{{item.id}}">
+                                                            {{item.Title}}</h5>
                                                         <button type="button" class="close message-title-in-modal"
                                                             data-dismiss="modal" aria-label="Close">
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        {{item.Message.Text}}
+                                                        {{item.Text}}
                                                     </div>
                                                         <div class="modal-footer footer-in-message-modal">
                                                             <p class="message-modal-sender-info"> ارسال شده توسط <a href="#">
-                                                                    {{item.Message.FK_Sender.first_name}}
-                                                                    {{item.Message.FK_Sender.last_name}} </a>
+                                                                    {{item.FK_Sender.first_name}}
+                                                                    {{item.FK_Sender.last_name}} </a>
                                                             </p>
                                                             <div class="message-modal-btns">
                                                                 <!-- <button type="button" class="btn btn-primary"> <a

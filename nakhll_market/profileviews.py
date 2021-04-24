@@ -31,6 +31,7 @@ from braces.views import LoginRequiredMixin
 
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
+from django.db.models import F
 
 from .models import Tag
 from .models import Market
@@ -253,7 +254,7 @@ class ProfileWallet(LoginRequiredMixin, TemplateView):
 #         return redirect("auth:login")
 
 # # Get User Message
-def ProfileMessage(request, status=None, start=None, end=None):
+def ProfileMessage(request):
     # Check User Status
     if request.user.is_authenticated:
         this_profile = Profile.objects.get(FK_User=request.user)
@@ -263,56 +264,19 @@ def ProfileMessage(request, status=None, start=None, end=None):
         # Get Nav Bar Menu Item
         navbar = Option_Meta.objects.filter(Title='nav_menu_items')
         # ------------------------------------------------------------------
-        # Get All Message
-        User_Message_List = []
-
-        # Build Message Class
-        class MessageClass:
-            def __init__(self, item, status):
-                self.Message = item
-                self.Status = status
-
-        if (status == None) and (start == None) and (end == None):
-            # Search In All Message
-            messages = Message.objects.filter(Type=True)
-            for msg_item in messages:
-                for item in msg_item.FK_Users.all():
-                    if item.FK_User == request.user:
-                        new = MessageClass(msg_item, item.SeenStatus)
-                        User_Message_List.append(new)
-
-        elif (start != '') and (end != ''):
-            messages = Message.objects.filter(Type=True, Date__range=[start, end])
-            for msg_item in messages:
-                for item in msg_item.FK_Users.all():
-                    if item.FK_User == request.user:
-                        if status == '1':
-                            if item.SeenStatus == False:
-                                new = MessageClass(msg_item, item.SeenStatus)
-                                User_Message_List.append(new)
-                        elif status == '2':
-                            if item.SeenStatus == True:
-                                new = MessageClass(msg_item, item.SeenStatus)
-                                User_Message_List.append(new)
-                        else:
-                            new = MessageClass(msg_item, item.SeenStatus)
-                            User_Message_List.append(new)
-
-        # Get Message Create Date
-        def GetDate(item):
-            return item.Message.Date
-
-        User_Message_List.sort(reverse=True, key=GetDate)
-
+        messages = Message.objects.\
+            filter(Type=True, FK_Users__FK_User=request.user).\
+                annotate(seen_status = F('FK_Users__SeenStatus')).\
+                    order_by('-Date')
+                    
         context = {
             'This_User_Profile': this_profile,
             'This_User_Inverntory': this_inverntory,
             'Options': options,
             'MenuList': navbar,
-            'Messages': User_Message_List,
+            'messages':messages,
             'Status': '0',
         }
-
         return render(request, 'nakhll_market/profile/pages/message.html', context)
     else:
         return redirect("auth:login")
@@ -4603,10 +4567,13 @@ def ManageCampaignList(request):
 def MessageFilter(request):
     if request.user.is_authenticated:
         if request.method == 'POST':
+            SEEN_STATUS = {
+                1: False,
+                2: True,
+            }
             # Get All Message
             User_Message_List = []
             # Get Status
-            set_status = '0'
             S_Date = None
             E_Date = None
 
@@ -4632,6 +4599,8 @@ def MessageFilter(request):
                 Status = ''
 
             if (((StartDate != '') and (EndDate != '')) or (Status != '')):
+                Status = int(Status)
+                messages = Message.objects.filter(Type = True)
                 if (StartDate != '') and (EndDate != ''):
                     Start = StartDate.split('-')
                     End = EndDate.split('-')
@@ -4641,37 +4610,20 @@ def MessageFilter(request):
                     GEnd = jdatetime.JalaliToGregorian(JEnd.year, JEnd.month, JEnd.day)
                     Str_GStart = "%d-%d-%d" % (GStart.gyear, GStart.gmonth, GStart.gday)
                     Str_GEnd = "%d-%d-%d" % (GEnd.gyear, GEnd.gmonth, GEnd.gday)
-                    messages = Message.objects.filter(Type=True, Date__range=[Str_GStart, Str_GEnd])
-                    for msg_item in messages:
-                        for item in msg_item.FK_Users.all():
-                            if item.FK_User == request.user:
-                                if Status == '1':
-                                    if item.SeenStatus == False:
-                                        new = MessageClass(msg_item, item.SeenStatus)
-                                        User_Message_List.append(new)
-                                elif Status == '2':
-                                    if item.SeenStatus == True:
-                                        new = MessageClass(msg_item, item.SeenStatus)
-                                        User_Message_List.append(new)
-                                else:
-                                    new = MessageClass(msg_item, item.SeenStatus)
-                                    User_Message_List.append(new)
+                    messages = messages.filter(Date__range=[Str_GStart, Str_GEnd])
+                    
+                if Status:
+                    messages = messages.\
+                        filter(FK_Users__FK_User=request.user).\
+                            annotate(seen_status = F('FK_Users__SeenStatus')).\
+                                filter(seen_status = SEEN_STATUS[Status]).\
+                                    order_by('-Date')
                 else:
-                    messages = Message.objects.filter(Type=True)
-                    for msg_item in messages:
-                        for item in msg_item.FK_Users.all():
-                            if item.FK_User == request.user:
-                                if Status == '1':
-                                    if item.SeenStatus == False:
-                                        new = MessageClass(msg_item, item.SeenStatus)
-                                        User_Message_List.append(new)
-                                elif Status == '2':
-                                    if item.SeenStatus == True:
-                                        new = MessageClass(msg_item, item.SeenStatus)
-                                        User_Message_List.append(new)
-                                else:
-                                    new = MessageClass(msg_item, item.SeenStatus)
-                                    User_Message_List.append(new)
+                    # status = 0, all
+                    messages = messages.\
+                        filter(FK_Users__FK_User=request.user).\
+                            annotate(seen_status = F('FK_Users__SeenStatus')).\
+                                order_by('-Date')
                 S_Date = StartDate
                 E_Date = EndDate
                 set_status = Status
@@ -4692,7 +4644,7 @@ def MessageFilter(request):
                 'This_User_Inverntory': this_inverntory,
                 'Options': options,
                 'MenuList': navbar,
-                'Messages': User_Message_List,
+                'messages': messages,
                 'Status': set_status,
                 'Start': S_Date,
                 'End': E_Date,
