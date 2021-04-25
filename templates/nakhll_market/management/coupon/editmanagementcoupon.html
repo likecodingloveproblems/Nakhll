@@ -117,11 +117,11 @@
                                 <div class="form-group col-md-12 shop-coupon-list">
                                     <label for="inputCopun_Shops"> حجره ها </label>
                                     <select data-placeholder="حجره ها" multiple class="chosen-select-rtl form-control" id="Shops_Select" name="copun_shops" tabindex="14">
-                                        {% for item in copun_shops %}
+                                        {% for item in copun_shop %}
                                             <option selected value="{{item.ID}}">{{item.Title}}</option>
                                         {% endfor %}
-                                        {% for item in other_shops %}
-                                            <option selected value="{{item.ID}}">{{item.Title}}</option>
+                                        {% for item in other_shop %}
+                                            <option value="{{item.ID}}">{{item.Title}}</option>
                                         {% endfor %}
                                     </select>
                                     <button type="button" class="btn-all-sel btn btn-warning chosen-toggle deselect">حذف انتخاب</button>
