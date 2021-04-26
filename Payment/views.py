@@ -1169,6 +1169,7 @@ def send_factor(request, ID, status = None, msg = None):
                 status = True,
                 msg = 'فیلد های یارکد پستی، هزینه ارسال، نام ارسال کننده، نوع ارسال، تاریخ ارسال و وارد کردن محصولات ارسال شده اجباری می با شد!')
         else:
+            barcode = None
             this_profile = Profile.objects.get(FK_User=request.user)
             this_inverntory = request.user.WalletManager.Inverntory
             # Get Menu Item
@@ -1206,7 +1207,6 @@ def send_factor(request, ID, status = None, msg = None):
                 'ShowAlart':show,
                 'AlartMessage':message,
                 'barcode':barcode,
-
             }
 
             return render(request, 'nakhll_market/profile/pages/sendfactor.html', context)
