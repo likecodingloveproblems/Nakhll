@@ -22,6 +22,14 @@
       "django": true
     },
     {
+      "name": "Django: ipython",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/manage.py",
+      "args": ["shell", "-i", "ipython"],
+      "django": true
+    },
+    {
       "name": "Django: Make migrations",
       "type": "python",
       "request": "launch",
