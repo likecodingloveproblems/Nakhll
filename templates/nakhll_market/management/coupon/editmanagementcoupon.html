@@ -7,6 +7,8 @@
 {% block header %}
     {% include "nakhll_market/parents/headermain.html" %}
 {% endblock %}
+{% comment %} <link href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="Stylesheet"></link>
+<link rel="stylesheet" href="/resources/demos/style.css"> {% endcomment %}
 
     <title>بازار نخل | ویرایش کوپن</title>
 {% analytical_head_bottom %}</head>
@@ -163,14 +165,14 @@
                                 <div class="form-row">
                                     <div class="form-group col-md-12 users-coupon-list">
                                         <label for="inputCopun_Users"> کاربران </label>
-                                        <select data-placeholder="کاربران" multiple class="chosen-select-rtl form-control" id="inputCopun_Users" name="copun_users" tabindex="14">
+                                        <select type:text data-placeholder="کاربران" multiple class="chosen-select-rtl form-control" id="inputCopun_Users" id="inputCopun_Users" name="copun_users" tabindex="14">
                                             {% for user in coupon_user %}
                                                 <option selected value="{{user.id}}">{{user.first_name}} {{user.last_name}}</option>
                                             {% endfor %}
                                             {% for user in other_user %}
                                                 <option value="{{user.id}}">{{user.first_name}} {{user.last_name}}</option>
                                             {% endfor %}
-                                        </select>
+                                        </select> 
                                         <br>
                                         <small>اگر می خواهید <span class="Riyal">کاربر خاصی</span> از این کوپن استفاده کند، اسم اون شخص را اینجا وارد نمایید.</small>
                                         <br>
@@ -242,7 +244,37 @@
             return false;
         }
     })
-</script>
+{% comment %} </script>
+<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+  <script>
+    function get_full_name(full_name){
+        return (
+            $.ajax({
+            url:"http://51.195.53.3:88/management/coupon/get_user_full_name?full_name="+full_name,
+            success:function(data){
+                resul = data;
+            }
+        })
+    )
+    }
+    $(document).ready(function () {
+        $('#inputCopun_Users').keyup(function () { 
+            input_full_name = $("#inputCopun_Users")[0].value;
+            if (input_full_name.length > 2) {
+                get_full_name(input_full_name).done(
+                    function(res) {
+                        $( function() {
+                            $( "#inputCopun_Users" ).autocomplete({
+                            source: res.result
+                            });
+                        } );
+                    }
+                )
+            }
+        });
+    });
+</script> {% endcomment %}
 
 {% block footer-section %}
     {% include "nakhll_market/parents/footer-section.html" %}
