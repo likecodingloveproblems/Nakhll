@@ -350,8 +350,11 @@ urlpatterns = [
     # ----------------- Shop ----------------
     # Add New Shop
     path('profile/shop-manager/add/shop', profileviews.add_new_shop, name='Shop_Manager_AddNewShop'),
+    path('profile/shop-manager/add/store', profileviews.CreateStore.as_view(), name='ShopManager_CreateStore'),
     # Edit Shop Info In Shop Managment
+    # TODO: make it class based by using UpdateStore
     path('profile/shop-manager/edit/shop/<slug:shop_slug>', profileviews.edit_shop_info, name='Shop_Manager_EditShop'),
+    # path('profile/shop-manager/update/store/<slug:shop_slug>', profileviews.UpdateStore.as_view(), name='ShopManager_UpdateStore') 
     # --------------- End --------------------
 
    
