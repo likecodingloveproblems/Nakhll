@@ -192,7 +192,8 @@
                 <div class="dashboard dashboard-padding">
                     <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12 top-of-shops">
-                            <h3> حجره ها {% if UserUnpublishedUser.count == 0 %} <a href="{% url "nakhll_market:Shop_Manager_AddNewShop" %}" class="add-new-inprofile">افزودن حجره</a>{% endif %}</h3>
+                            {% comment %} <h3> حجره ها {% if UserUnpublishedUser.count == 0 %} <a href="{% url "nakhll_market:Shop_Manager_AddNewShop" %}" class="add-new-inprofile">افزودن حجره</a>{% endif %}</h3> {% endcomment %}
+                            <h3> حجره ها {% if UserUnpublishedUser.count == 0 %} <a href="{% url "nakhll_market:ShopManager_CreateStore" %}" class="add-new-inprofile">افزودن حجره</a>{% endif %}</h3>
                         </div>
                     </div>
 
