@@ -29,6 +29,20 @@ from django.contrib.auth.decorators import user_passes_test
 from django.views.generic import TemplateView, View
 from braces.views import LoginRequiredMixin
 
+from django.views.generic.edit import (
+    CreateView,
+    UpdateView,
+    DeleteView,
+)
+
+from django.views.generic.detail import (
+    DetailView,
+)
+
+from django.views.generic.list import (
+    ListView,
+)
+
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
 from django.db.models import F
@@ -66,7 +80,11 @@ from Payment.models import Wallet, Transaction, Factor, FactorPost, Coupon, Camp
 
 from Ticketing.models import Ticketing, TicketingMessage, Complaint
 
-from .forms import Login, CheckEmail
+from .forms import (
+    Login,
+    CheckEmail,
+    StoreForm
+)
 from nakhll.settings import KAVENEGAR_KEY
 
 from Iran import data
@@ -710,7 +728,67 @@ def add_user_bank_account_info(request):
     else:
         return redirect("auth:login")
 
+# TODO: we are working here! add CRUD 
+class CreateStore(LoginRequiredMixin, CreateView):
+    template_name = 'nakhll_market/profile/pages/store_create.html'
+    form_class = StoreForm
+    redirect_field_name = 'auth:login'
 
+    def get_context_data(self, **kwargs):
+        form = StoreForm()
+        context = super().get_context_data(**kwargs)
+        request = self.request
+        # TODO: query --> get user information
+        profile = Profile.objects.get(FK_User=request.user)
+        inverntory = request.user.WalletManager.Inverntory
+        # TODO: query --> get menu items
+        options = Option_Meta.objects.filter(Title='index_page_menu_items')
+        # TODO: query --> get navbar menu items
+        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
+        # TODO: query --> get all submarkets
+        submarkets = SubMarket.objects.filter(Publish=True)
+
+        context = {
+            'This_User_Profile': profile,
+            'This_User_Inverntory': inverntory,
+            'Options':options,
+            'MenuList':navbar,
+            'Submarkets':submarkets,
+            'form':form
+        }
+
+        return context
+
+    def form_valid(self, form):
+        print(form.cleaned_data)
+        return super().form_valid(form)
+
+class UpdateStore(LoginRequiredMixin, UpdateView):
+    template_name = 'nakhll_market/profile/pages/store_create.html'
+    form_class = StoreForm
+
+    def get_object(self):
+        pass
+
+    def form_valid(self, form):
+        pass
+
+class StoreDetail(LoginRequiredMixin, DetailView):
+    template_name = 'nakhll_market/profile/pages/store_detail'
+
+    def get_object(self):
+        print(self.request)
+        print(self.kwargs)
+        # user_unpubished_shops = Shop.objects.filter(FK_ShopManager=request.user, Publish=False)
+        user = self.request.user
+        # user_shops = Shop.objects.filter(FK_ShopManager=user)
+        return get_object_or_404(Shop, FK_ShopManager=user)
+
+
+# class UpdateStore(LoginRequiredMixin, UpdateView):
+#     pass
+
+# TODO: comment this section later
 # Add New Shop In Shop-Manage
 def add_new_shop(request):
     # Check User Status
