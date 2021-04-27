@@ -26,7 +26,7 @@ from django.contrib.auth.decorators import user_passes_test
 # unnecessary imports - TODO: remove later
 # from django.contrib.auth.mixins import LoginRequiredMixin
 # from django.contrib.auth.mixins import UserPassesTestMixin
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, View
 from braces.views import LoginRequiredMixin
 
 from django.contrib.auth.models import User
@@ -3056,13 +3056,13 @@ def RepalyTicketing(request, ticket_id):
 
 # ---------------------- End Ticketin Section ----------------------
 
-class ProfileAlert(LoginRequiredMixin, TemplateView):
+class ProfileAlert(LoginRequiredMixin, View):
     template_name = 'nakhll_market/profile/pages/alert.html'
     redirect_field_name = 'auth:login'
 
     def get_context_data(self, **kwargs):
         request = self.request
-        context = super().get_context_data(**kwargs)
+        context = {}
         this_profile = Profile.objects.get(FK_User=request.user)
         this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
@@ -3070,16 +3070,92 @@ class ProfileAlert(LoginRequiredMixin, TemplateView):
         # Get Nav Bar Menu Item
         navbar = Option_Meta.objects.filter(Title='nav_menu_items')
         # --------------------------------------------------------------------
-        # get all new alert
-        alert = Alert.objects.filter(Seen=False).order_by('DateCreate')
-
         context['This_User_Profile'] = this_profile
         context['This_User_Inverntory'] = this_inverntory
         context['Options'] = options
         context['MenuList'] = navbar
-        context['Alert'] = alert
-
+        context['seen_status'] = False
         return context
+
+    def get_users(self, alerts):
+        return  set(
+                    alerts.values_list(
+                            'FK_User__id', 
+                            'FK_User__username', 
+                            'FK_User__first_name', 
+                            'FK_User__last_name'
+                            )
+                    )
+
+
+    def get(self, request, *args, **kwargs):
+        # get all new alert
+        context = self.get_context_data()
+        alerts = Alert.objects.filter(Seen=False).order_by('DateCreate')
+        users = self.get_users(alerts)
+        context['Alert'] = alerts
+        context['users'] = users
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        context = self.get_context_data()
+        # Get Status
+        set_checkout = '0'
+        S_Date = None
+        E_Date = None
+        customer = '000'
+
+        StartDate = request.POST.get("date_start", '')
+        EndDate = request.POST.get("date_end", '')
+        Check_Out = request.POST.get("check_out", '')
+        Customer = request.POST.get("customer_name", '')
+        seen_status = request.POST.get('seen_status', '')
+
+        if (((StartDate != '') and (EndDate != '')) or (Check_Out != '') or (Customer != '') or (seen_status != '')):
+            seen_status = bool(seen_status)
+            alerts = Alert.objects.filter(Seen=seen_status).order_by('-DateCreate')
+            if (StartDate != '') and (EndDate != ''):
+                Start = StartDate.split('-')
+                End = EndDate.split('-')
+                JStart = jdatetime.date(int(Start[0]), int(Start[1]), int(Start[2]))
+                JEnd = jdatetime.date(int(End[0]), int(End[1]), int(End[2]))
+                GStart = jdatetime.JalaliToGregorian(JStart.year, JStart.month, JStart.day)
+                GEnd = jdatetime.JalaliToGregorian(JEnd.year, JEnd.month, JEnd.day)
+                Str_GStart = "%d-%d-%d" % (GStart.gyear, GStart.gmonth, GStart.gday)
+                Str_GEnd = "%d-%d-%d" % (GEnd.gyear, GEnd.gmonth, GEnd.gday)
+                alerts = alerts.filter(DateCreate__range=[Str_GStart, Str_GEnd])
+                S_Date = StartDate
+                E_Date = EndDate
+            if Check_Out != '000':
+                alerts = alerts.filter(Part=Check_Out)
+                set_checkout = Check_Out
+            if Customer != '000':
+                alerts = alerts.filter(FK_User=User.objects.get(id=Customer))
+                customer = User.objects.get(id=Customer).username
+            # ----------------------------------------------------------------------
+            # Get User Info
+            this_profile = Profile.objects.get(FK_User=request.user)
+            this_inverntory = request.user.WalletManager.Inverntory
+            # Get Menu Item
+            options = Option_Meta.objects.filter(Title='index_page_menu_items')
+            # Get Nav Bar Menu Item
+            navbar = Option_Meta.objects.filter(Title='nav_menu_items')
+            users = self.get_users(alerts)
+            alertPaginator = Paginator(alerts, 30)
+            page = request.GET.get('page')
+            alerts = alertPaginator.get_page(page)
+            context['Alert'] = alerts
+            context['Start'] = S_Date
+            context['End'] = E_Date
+            context['CheckOut'] = set_checkout
+            context['Customer'] = customer
+            context['seen_status'] =seen_status
+            context['users'] = users
+        else:
+            return redirect('nakhll_market:Alert')
+        return render(request, self.template_name, context)
+
+
 
 
 # Profile Alert
@@ -4764,99 +4840,6 @@ def ManageFactorFilter(request):
 
 
 # --------------------------------------------------------------- End Sections ------------------------------------------------------
-
-
-# ------------------------------------------------------ Manage Factor Filter Sections -----------------------------------------------
-
-# Alert Filter
-def AlertFilter(request):
-    if request.user.is_authenticated:
-        if request.method == 'POST':
-            # Get Status
-            set_checkout = '0'
-            S_Date = None
-            E_Date = None
-            customer = '000'
-
-            try:
-                StartDate = request.POST["date_start"]
-            except:
-                StartDate = ''
-
-            try:
-                EndDate = request.POST["date_end"]
-            except:
-                EndDate = ''
-
-            try:
-                Check_Out = request.POST["check_out"]
-            except:
-                Check_Out = ''
-
-            try:
-                Customer = request.POST["customer_name"]
-            except:
-                Customer = ''
-
-            if (((StartDate != '') and (EndDate != '')) or (Check_Out != '') or (Customer != '')):
-                alerts = Alert.objects.filter(Seen=False).order_by('-DateCreate')
-                if (StartDate != '') and (EndDate != ''):
-                    Start = StartDate.split('-')
-                    End = EndDate.split('-')
-                    JStart = jdatetime.date(int(Start[0]), int(Start[1]), int(Start[2]))
-                    JEnd = jdatetime.date(int(End[0]), int(End[1]), int(End[2]))
-                    GStart = jdatetime.JalaliToGregorian(JStart.year, JStart.month, JStart.day)
-                    GEnd = jdatetime.JalaliToGregorian(JEnd.year, JEnd.month, JEnd.day)
-                    Str_GStart = "%d-%d-%d" % (GStart.gyear, GStart.gmonth, GStart.gday)
-                    Str_GEnd = "%d-%d-%d" % (GEnd.gyear, GEnd.gmonth, GEnd.gday)
-                    alerts = alerts.filter(DateCreate__range=[Str_GStart, Str_GEnd])
-                    S_Date = StartDate
-                    E_Date = EndDate
-                # get user list
-                user_list = []
-                for item in alerts:
-                    user_list.append(item.FK_User)
-                user_list = list(dict.fromkeys(user_list))
-                if Check_Out != '000':
-                    alerts = alerts.filter(Part=Check_Out)
-                    set_checkout = Check_Out
-                if Customer != '000':
-                    alerts = alerts.filter(FK_User=User.objects.get(id=Customer))
-                    customer = User.objects.get(id=Customer).username
-            else:
-                return redirect("nakhll_market:Alert")
-            # ----------------------------------------------------------------------
-            # Get User Info
-            this_profile = Profile.objects.get(FK_User=request.user)
-            this_inverntory = request.user.WalletManager.Inverntory
-            # Get Menu Item
-            options = Option_Meta.objects.filter(Title='index_page_menu_items')
-            # Get Nav Bar Menu Item
-            navbar = Option_Meta.objects.filter(Title='nav_menu_items')
-
-            context = {
-                'This_User_Profile': this_profile,
-                'This_User_Inverntory': this_inverntory,
-                'Options': options,
-                'MenuList': navbar,
-                'Alert': alerts,
-                'User': user_list,
-                'Start': S_Date,
-                'End': E_Date,
-                'CheckOut': set_checkout,
-                'Customer': customer,
-            }
-
-            return render(request, 'nakhll_market/profile/pages/alert.html', context)
-        else:
-            return redirect("nakhll_market:Alert")
-    else:
-        return redirect("auth:login")
-
-
-# --------------------------------------------------------------- End Sections ------------------------------------------------------
-
-
 # ------------------------------------------------------------- Erroe Sections ------------------------------------------------------
 # Error 500
 def error_500(request, error_text):
