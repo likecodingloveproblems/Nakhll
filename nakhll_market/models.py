@@ -399,6 +399,19 @@ class Shop(models.Model):
         blank=True,
         )
 
+    CLOSE_DAYS_STATUS = (
+        (True, 'بسته'),
+        (False, 'باز'),
+    )
+    is_sat_closed=models.BooleanField(verbose_name='شنبه' ,choices=CLOSE_DAYS_STATUS, default=False, blank=True)
+    is_sun_closed=models.BooleanField(verbose_name='یک‌شنبه' ,choices=CLOSE_DAYS_STATUS, default=False, blank=True)
+    is_mon_closed=models.BooleanField(verbose_name='دوشنبه' ,choices=CLOSE_DAYS_STATUS, default=False, blank=True)
+    is_tue_closed=models.BooleanField(verbose_name='سه‌شنبه' ,choices=CLOSE_DAYS_STATUS, default=False, blank=True)
+    is_wed_closed=models.BooleanField(verbose_name='چهارشنبه' ,choices=CLOSE_DAYS_STATUS, default=False, blank=True)
+    is_thu_closed=models.BooleanField(verbose_name='پنج‌شنبه' ,choices=CLOSE_DAYS_STATUS, default=False, blank=True)
+    is_fri_closed=models.BooleanField(verbose_name='جمعه' ,choices=CLOSE_DAYS_STATUS, default=False, blank=True)
+
+
     def __str__(self):
         return "{}".format(self.Title)
 
