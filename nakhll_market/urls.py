@@ -263,8 +263,6 @@ urlpatterns = [
     path('profile/message/filter/', profileviews.MessageFilter, name='Message_Filter'),
     # Show All Alert Path
     path('profile/all-alert/', profileviews.ProfileShowAllAlert, name='ShowAllAlert'),
-    # Alert Filter Path
-    path('profile/alert/filter/', profileviews.AlertFilter, name='AlertFilter'),
     # Show All Factor Path
     path('profile/factor/all/', profileviews.ShowAllFactorList, name='ShowAllFactorList'),
     # Manage Factor Filter Path
