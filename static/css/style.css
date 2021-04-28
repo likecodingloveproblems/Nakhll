@@ -2013,6 +2013,20 @@ header {
     box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.15);
 }
 
+.custom-alart-custom {
+    background: unset;
+    padding: 0 0 3px 0;
+    font-weight: normal;
+    text-align: right;
+    color: #fa0c0c;
+    font-size: 14px;
+    line-height: 1.8;
+    border: none;
+    border-radius: 5px;
+    margin-top: 5px;
+    /* box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.15); */
+}
+
 .custom-alart strong {
     font-size: 18px;
 }
@@ -4788,7 +4802,7 @@ label>code {
 }
 
 .alert-width {
-    width: max-content;
+    width: fit-content;
 }
 
 .rules-inpage small {

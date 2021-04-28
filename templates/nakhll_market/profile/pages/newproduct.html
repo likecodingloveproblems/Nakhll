@@ -122,7 +122,7 @@
                 <div class="row">
                     {% if ShowAlart %}
                     <div class="col-xl-6 xol-lg-6 col-md-6 col-sm-12 col-12">
-                        <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                        <div class="alert alert-warning alert-dismissible fade show س" role="alert">
                             <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
                             <p>
                                 {{AlartMessage}}
@@ -173,11 +173,10 @@
                 <!-- <div id="alert-div-inputproduct-about-persian"></div> -->
 
                 <!-- Category -->
-                <div id="alert-div-inputproduct-category-empty"></div>
-                <div id="alert-div-inputproduct-category-count-limit"></div>
+                
 
                 <!-- Submarket -->
-                <div id="alert-div-inputproduct-submarket-empty"></div>
+                
 
                 <!-- Introduction -->
                 
@@ -193,11 +192,10 @@
                 <div id="alert-div-inputproduct-sell-price-minlength"></div>
                 <!-- <div id="alert-div-inputproduct-real-price-minlength"></div> -->
                 <!-- <div id="alert-div-inputproduct-price-comparison"></div> -->
-                <div id="alert-div-inputproduct-sell-price-empty"></div>
+                
 
                 <!--Off-->
-                <div id="alert-div-inputproduct-off-empty"></div>
-                <div id="alert-div-inputproduct-off-length"></div>
+                
 
                 
 
@@ -205,7 +203,7 @@
                 
 
                
-                <div id="alert-div-inputproduct-weight-comparison"></div>
+                
 
 
                 <!-- Dimension -->
@@ -322,6 +320,8 @@
                                                     <option value="{{shop.id}}">{{shop.Title}}</option>
                                                 {% endfor %}
                                             </select>
+                                                <div id="alert-div-inputproduct-category-empty"></div>
+                                                <div id="alert-div-inputproduct-category-count-limit"></div>
                                         </div>
                                         <div class="form-group col-md-6 submarket-form-group">
                                             <label for="inputSubMarket">راسته محصول <code>*</code></label>
@@ -335,6 +335,7 @@
                                                     <option value="{{shop.ID}}">{{shop.Title}}</option>
                                                 {% endfor %}
                                             </select>
+                                                <div id="alert-div-inputproduct-submarket-empty"></div>
                                         </div>
                                     </div>
                                     <div class="form-row">
@@ -357,6 +358,7 @@
                                             <input type="number" name="prod_Price" class="form-control inputprod_sellprice" pattern="[0-9]{5,}" id="inputprod_sellprice" required>
                                             <p class="digit-to-persian" id="sellprice-toman"></p>
                                             <div id="alert-div-inputproduct-price-digits"></div>
+                                            <div id="alert-div-inputproduct-sell-price-empty"></div>
                                         </div>
                                 
                                         <div class="form-group col-lg-5 col-md-4 col-xs-4 col-9 offamount-formgroup">
@@ -364,6 +366,9 @@
                                             <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="میزان تخفیف محصول را به ریال وارد نمائید."></i>
                                             <input type="number" name="Prodoffamount" class="form-control inputprod_offamount" pattern="[0-9]{5,}" id="inputprod_offamount">
                                             <p class="digit-to-persian" id="offamount-toman"></p>
+                                               
+                                              <div id="alert-div-inputproduct-off-empty"></div>
+                                             <div id="alert-div-inputproduct-off-length"></div>        
                                         </div>
                                         <div class="form-group col-lg-1 col-md-2 col-3 remove-off-formgroup">
                                             <p class="off-question off-yes small-size" id="remove-off">حذف تخفیف</p>
@@ -390,6 +395,7 @@
                                             <input type="number" name="product_packingweight" class="form-control" pattern="[0-9]{1,5}" id="input_packingweight" required>
                                             <p class="digit-to-persian" id="packing-weight"></p>
                                             <div id="alert-div-inputproduct-packing-weight-empty"></div>
+                                            <div id="alert-div-inputproduct-weight-comparison"></div>
 
                                         </div>
                                     </div>
