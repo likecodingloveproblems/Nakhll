@@ -26,7 +26,7 @@ from django.contrib.auth.decorators import user_passes_test
 # unnecessary imports - TODO: remove later
 # from django.contrib.auth.mixins import LoginRequiredMixin
 # from django.contrib.auth.mixins import UserPassesTestMixin
-from django.views.generic import TemplateView, View
+from django.views.generic import TemplateView
 from braces.views import LoginRequiredMixin
 
 from django.contrib.auth.models import User
@@ -66,7 +66,7 @@ from Payment.models import Wallet, Transaction, Factor, FactorPost, Coupon, Camp
 
 from Ticketing.models import Ticketing, TicketingMessage, Complaint
 
-from .forms import Login, CheckEmail
+from .forms import Login, CheckEmail , ProfileForm , MyUserForm 
 from nakhll.settings import KAVENEGAR_KEY
 
 from Iran import data
@@ -157,25 +157,25 @@ class SendMessage:
 
 # ---------------------------------------------------- User Profile Pages ---------------------------------------------------------
 
-# implement class based views
-class ProfileDashboard(LoginRequiredMixin, TemplateView):
-    template_name = 'nakhll_market/profile/pages/profile.html'
-    redirect_field_name = 'auth:login'
+# # implement class based views
+# class ProfileDashboard(LoginRequiredMixin, TemplateView):
+#     template_name = 'nakhll_market/profile/pages/profile.html'
+#     redirect_field_name = 'auth:login'
 
-    def get_context_data(self, **kwargs):
-        this_profile = Profile.objects.get(FK_User=self.request.user)
-        this_inverntory = self.request.user.WalletManager.Inverntory
-        # Get Menu Item
-        options = Option_Meta.objects.filter(Title='index_page_menu_items')
-        # Get Nav Bar Menu Item
-        navbar = Option_Meta.objects.filter(Title='nav_menu_items')
-        # -------------------------------------------------------------------
-        context = super().get_context_data(**kwargs)
-        context['This_User_Profile'] = this_profile
-        context['This_User_Inverntory'] = this_inverntory
-        context['Options'] = options
-        context['MenuList'] = navbar
-        return context
+#     def get_context_data(self, **kwargs):
+#         this_profile = Profile.objects.get(FK_User=self.request.user)
+#         this_inverntory = self.request.user.WalletManager.Inverntory
+#         # Get Menu Item
+#         options = Option_Meta.objects.filter(Title='index_page_menu_items')
+#         # Get Nav Bar Menu Item
+#         navbar = Option_Meta.objects.filter(Title='nav_menu_items')
+#         # -------------------------------------------------------------------
+#         context = super().get_context_data(**kwargs)
+#         context['This_User_Profile'] = this_profile
+#         context['This_User_Inverntory'] = this_inverntory
+#         context['Options'] = options
+#         context['MenuList'] = navbar
+#         return context
 
 
 # Get User Dashboard Info
@@ -203,6 +203,8 @@ class ProfileDashboard(LoginRequiredMixin, TemplateView):
 
 #         return redirect("auth:login")
 
+
+#-------------------------------------------------------------------------------------------------------------------------------------
 # implement class based views
 # Get User Wallet Info And Charge It
 class ProfileWallet(LoginRequiredMixin, TemplateView):
@@ -3056,13 +3058,13 @@ def RepalyTicketing(request, ticket_id):
 
 # ---------------------- End Ticketin Section ----------------------
 
-class ProfileAlert(LoginRequiredMixin, View):
+class ProfileAlert(LoginRequiredMixin, TemplateView):
     template_name = 'nakhll_market/profile/pages/alert.html'
     redirect_field_name = 'auth:login'
 
     def get_context_data(self, **kwargs):
         request = self.request
-        context = {}
+        context = super().get_context_data(**kwargs)
         this_profile = Profile.objects.get(FK_User=request.user)
         this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
@@ -3070,92 +3072,16 @@ class ProfileAlert(LoginRequiredMixin, View):
         # Get Nav Bar Menu Item
         navbar = Option_Meta.objects.filter(Title='nav_menu_items')
         # --------------------------------------------------------------------
+        # get all new alert
+        alert = Alert.objects.filter(Seen=False).order_by('DateCreate')
+
         context['This_User_Profile'] = this_profile
         context['This_User_Inverntory'] = this_inverntory
         context['Options'] = options
         context['MenuList'] = navbar
-        context['seen_status'] = False
+        context['Alert'] = alert
+
         return context
-
-    def get_users(self, alerts):
-        return  set(
-                    alerts.values_list(
-                            'FK_User__id', 
-                            'FK_User__username', 
-                            'FK_User__first_name', 
-                            'FK_User__last_name'
-                            )
-                    )
-
-
-    def get(self, request, *args, **kwargs):
-        # get all new alert
-        context = self.get_context_data()
-        alerts = Alert.objects.filter(Seen=False).order_by('DateCreate')
-        users = self.get_users(alerts)
-        context['Alert'] = alerts
-        context['users'] = users
-        return render(request, self.template_name, context)
-
-    def post(self, request, *args, **kwargs):
-        context = self.get_context_data()
-        # Get Status
-        set_checkout = '0'
-        S_Date = None
-        E_Date = None
-        customer = '000'
-
-        StartDate = request.POST.get("date_start", '')
-        EndDate = request.POST.get("date_end", '')
-        Check_Out = request.POST.get("check_out", '')
-        Customer = request.POST.get("customer_name", '')
-        seen_status = request.POST.get('seen_status', '')
-
-        if (((StartDate != '') and (EndDate != '')) or (Check_Out != '') or (Customer != '') or (seen_status != '')):
-            seen_status = bool(seen_status)
-            alerts = Alert.objects.filter(Seen=seen_status).order_by('-DateCreate')
-            if (StartDate != '') and (EndDate != ''):
-                Start = StartDate.split('-')
-                End = EndDate.split('-')
-                JStart = jdatetime.date(int(Start[0]), int(Start[1]), int(Start[2]))
-                JEnd = jdatetime.date(int(End[0]), int(End[1]), int(End[2]))
-                GStart = jdatetime.JalaliToGregorian(JStart.year, JStart.month, JStart.day)
-                GEnd = jdatetime.JalaliToGregorian(JEnd.year, JEnd.month, JEnd.day)
-                Str_GStart = "%d-%d-%d" % (GStart.gyear, GStart.gmonth, GStart.gday)
-                Str_GEnd = "%d-%d-%d" % (GEnd.gyear, GEnd.gmonth, GEnd.gday)
-                alerts = alerts.filter(DateCreate__range=[Str_GStart, Str_GEnd])
-                S_Date = StartDate
-                E_Date = EndDate
-            if Check_Out != '000':
-                alerts = alerts.filter(Part=Check_Out)
-                set_checkout = Check_Out
-            if Customer != '000':
-                alerts = alerts.filter(FK_User=User.objects.get(id=Customer))
-                customer = User.objects.get(id=Customer).username
-            # ----------------------------------------------------------------------
-            # Get User Info
-            this_profile = Profile.objects.get(FK_User=request.user)
-            this_inverntory = request.user.WalletManager.Inverntory
-            # Get Menu Item
-            options = Option_Meta.objects.filter(Title='index_page_menu_items')
-            # Get Nav Bar Menu Item
-            navbar = Option_Meta.objects.filter(Title='nav_menu_items')
-            users = self.get_users(alerts)
-            alertPaginator = Paginator(alerts, 30)
-            page = request.GET.get('page')
-            alerts = alertPaginator.get_page(page)
-            context['Alert'] = alerts
-            context['Start'] = S_Date
-            context['End'] = E_Date
-            context['CheckOut'] = set_checkout
-            context['Customer'] = customer
-            context['seen_status'] =seen_status
-            context['users'] = users
-        else:
-            return redirect('nakhll_market:Alert')
-        return render(request, self.template_name, context)
-
-
 
 
 # Profile Alert
@@ -3185,199 +3111,232 @@ class ProfileAlert(LoginRequiredMixin, View):
 #         return redirect("auth:login")
 
 
-# Update Profile Values
 # --------------------------------------------------------------------------------------------------------------------------------
 
 # Update Dashboard (User Info) Values
-def UpdateUserDashboard(request):
-    if request.user.is_authenticated:
-        try:
-            # Get Data
-            try:
-                FirstName = request.POST["User_FirstName"]
-            except:
-                FirstName = ''
+# def UpdateUserDashboard(request):
+#     if request.user.is_authenticated:
+#         try:
+#             # Get Data
+#             try:
+#                 FirstName = request.POST["User_FirstName"]
+#             except:
+#                 FirstName = ''
 
-            try:
-                LastName = request.POST["User_LastName"]
-            except:
-                LastName = ''
+#             try:
+#                 LastName = request.POST["User_LastName"]
+#             except:
+#                 LastName = ''
 
-            try:
-                Email = request.POST["User_Email"]
-            except:
-                Email = ''
+#             try:
+#                 Email = request.POST["User_Email"]
+#             except:
+#                 Email = ''
 
-            try:
-                Image = request.FILES["Profile_Image"]
-            except MultiValueDictKeyError:
-                Image = ''
+#             try:
+#                 Image = request.FILES["Profile_Image"]
+#             except MultiValueDictKeyError:
+#                 Image = ''
 
-            try:
-                Bio = request.POST["Profile_Bio"]
-            except:
-                Bio = ''
+#             try:
+#                 Bio = request.POST["Profile_Bio"]
+#             except:
+#                 Bio = ''
 
-            try:
-                BrithDay = request.POST["Profile_BrithDay"]
-            except:
-                BrithDay = ''
+#             try:
+#                 BrithDay = request.POST["Profile_BrithDay"]
+#             except:
+#                 BrithDay = ''
 
-            try:
-                State = request.POST["Profile_State"]
-            except:
-                State = ''
+#             try:
+#                 State = request.POST["Profile_State"]
+#             except:
+#                 State = ''
 
-            try:
-                BigCity = request.POST["Profile_BigCity"]
-            except:
-                BigCity = ''
+#             try:
+#                 BigCity = request.POST["Profile_BigCity"]
+#             except:
+#                 BigCity = ''
 
-            try:
-                City = request.POST["Profile_City"]
-            except:
-                City = ''
+#             try:
+#                 City = request.POST["Profile_City"]
+#             except:
+#                 City = ''
 
-            try:
-                ZipCode = request.POST["Profile_ZipCode"]
-            except:
-                ZipCode = ''
+#             try:
+#                 ZipCode = request.POST["Profile_ZipCode"]
+#             except:
+#                 ZipCode = ''
 
-            try:
-                PhoneNumber = request.POST["Profile_PhoneNumber"]
-            except:
-                PhoneNumber = ''
+#             try:
+#                 PhoneNumber = request.POST["Profile_PhoneNumber"]
+#             except:
+#                 PhoneNumber = ''
 
-            try:
-                Address = request.POST["Profile_Address"]
-            except:
-                Address = ''
+#             try:
+#                 Address = request.POST["Profile_Address"]
+#             except:
+#                 Address = ''
 
-            try:
-                CityPerCode = request.POST["Profile_CityPerCode"]
-            except:
-                CityPerCode = ''
+#             try:
+#                 CityPerCode = request.POST["Profile_CityPerCode"]
+#             except:
+#                 CityPerCode = ''
 
-            try:
-                SexState = request.POST["Profile_SexState"]
-            except:
-                SexState = 'انتخاب جنسیت'
+#             try:
+#                 SexState = request.POST["Profile_SexState"]
+#             except:
+#                 SexState = 'انتخاب جنسیت'
 
-            if SexState == 'انتخاب جنسیت':
-                Sex = '0'
-            elif SexState == 'زن':
-                Sex = '1'
-            elif SexState == 'مرد':
-                Sex = '2'
-            elif SexState == 'سایر':
-                Sex = '3'
+#             if SexState == 'انتخاب جنسیت':
+#                 Sex = '0'
+#             elif SexState == 'زن':
+#                 Sex = '1'
+#             elif SexState == 'مرد':
+#                 Sex = '2'
+#             elif SexState == 'سایر':
+#                 Sex = '3'
 
-            try:
-                TutorialWebsite = request.POST["Profile_TutorialWebsite"]
-            except:
-                TutorialWebsite = 'هیچ کدام'
+#             try:
+#                 TutorialWebsite = request.POST["Profile_TutorialWebsite"]
+#             except:
+#                 TutorialWebsite = 'هیچ کدام'
 
-            if TutorialWebsite == 'موتور های جستجو':
-                ToWeb = '0'
-            elif TutorialWebsite == 'حجره داران':
-                ToWeb = '1'
-            elif TutorialWebsite == 'شبکه های اجتماعی':
-                ToWeb = '2'
-            elif TutorialWebsite == 'کاربران':
-                ToWeb = '3'
-            elif TutorialWebsite == 'رسانه ها':
-                ToWeb = '4'
-            elif TutorialWebsite == 'تبلیغات':
-                ToWeb = '5'
-            elif TutorialWebsite == 'نود ها':
-                ToWeb = '6'
-            elif TutorialWebsite == 'سایر':
-                ToWeb = '7'
-            elif TutorialWebsite == 'هیچ کدام':
-                ToWeb = '8'
-            # -------------------------------------------------------------
-            # Get User
-            this_user = request.user
-            # Get Profile
-            this_profile = get_object_or_404(Profile, FK_User=this_user)
-            # Edit Status
-            edit_user = False
-            edit_profile = False
-            # Get User State, BigCity, City Title
-            state = ''
-            bigcity = ''
-            city = ''
-            for i in data:
-                if (i['divisionType'] == 1) and (i['id'] == int(State)):
-                    state = i['name']
-                if (i['divisionType'] == 2) and (i['id'] == int(BigCity)):
-                    bigcity = i['name']
-                if (i['divisionType'] == 3) and (i['id'] == int(City)):
-                    if i['name'] == 'مرکزی':
-                        for j in data:
-                            if (j['divisionType'] == 2) and (j['id'] == i['parentCountryDivisionId']):
-                                city = j['name']
-                    else:
-                        city = i['name']
-            # Check Fileds
-            if this_user.first_name != FirstName:
-                this_user.first_name = FirstName
-                edit_user = True
-            if this_user.last_name != LastName:
-                this_user.last_name = LastName
-                edit_user = True
-            if this_user.email != Email:
-                this_user.email = Email
-                edit_user = True
-                if not Newsletters.objects.filter(Email=Email).exists():
-                    New = Newsletters.objects.create(Email=Email)
-            if this_profile.ZipCode != ZipCode:
-                this_profile.ZipCode = ZipCode
-                edit_profile = True
-            if this_profile.Address != Address:
-                this_profile.Address = Address
-                edit_profile = True
-            if this_profile.State != state:
-                this_profile.State = state
-                edit_profile = True
-            if this_profile.BigCity != bigcity:
-                this_profile.BigCity = bigcity
-                edit_profile = True
-            if this_profile.City != city:
-                this_profile.City = city
-                edit_profile = True
-            if this_profile.BrithDay != BrithDay:
-                this_profile.BrithDay = BrithDay
-                edit_profile = True
-            if this_profile.CityPerCode != CityPerCode:
-                this_profile.CityPerCode = CityPerCode
-                edit_profile = True
-            if this_profile.PhoneNumber != PhoneNumber:
-                this_profile.PhoneNumber = PhoneNumber
-                edit_profile = True
-            if this_profile.Bio != Bio:
-                this_profile.Bio = Bio
-                edit_profile = True
-            if this_profile.Sex != Sex:
-                this_profile.Sex = Sex
-                edit_profile = True
-            if this_profile.TutorialWebsite != ToWeb:
-                this_profile.TutorialWebsite = ToWeb
-                edit_profile = True
-            if Image != '':
-                this_profile.Image = Image
-                edit_profile = True
+#             if TutorialWebsite == 'موتور های جستجو':
+#                 ToWeb = '0'
+#             elif TutorialWebsite == 'حجره داران':
+#                 ToWeb = '1'
+#             elif TutorialWebsite == 'شبکه های اجتماعی':
+#                 ToWeb = '2'
+#             elif TutorialWebsite == 'کاربران':
+#                 ToWeb = '3'
+#             elif TutorialWebsite == 'رسانه ها':
+#                 ToWeb = '4'
+#             elif TutorialWebsite == 'تبلیغات':
+#                 ToWeb = '5'
+#             elif TutorialWebsite == 'نود ها':
+#                 ToWeb = '6'
+#             elif TutorialWebsite == 'سایر':
+#                 ToWeb = '7'
+#             elif TutorialWebsite == 'هیچ کدام':
+#                 ToWeb = '8'
+#             # -------------------------------------------------------------
+#             # Get User
+#             this_user = request.user
+#             # Get Profile
+#             this_profile = get_object_or_404(Profile, FK_User=this_user)
+#             # Edit Status
+#             edit_user = False
+#             edit_profile = False
+#             # Get User State, BigCity, City Title
+#             state = ''
+#             bigcity = ''
+#             city = ''
+#             for i in data:
+#                 if (i['divisionType'] == 1) and (i['id'] == int(State)):
+#                     state = i['name']
+#                 if (i['divisionType'] == 2) and (i['id'] == int(BigCity)):
+#                     bigcity = i['name']
+#                 if (i['divisionType'] == 3) and (i['id'] == int(City)):
+#                     if i['name'] == 'مرکزی':
+#                         for j in data:
+#                             if (j['divisionType'] == 2) and (j['id'] == i['parentCountryDivisionId']):
+#                                 city = j['name']
+#                     else:
+#                         city = i['name']
+#             # Check Fileds
+#             if this_user.first_name != FirstName:
+#                 this_user.first_name = FirstName
+#                 edit_user = True
+#             if this_user.last_name != LastName:
+#                 this_user.last_name = LastName
+#                 edit_user = True
+#             if this_user.email != Email:
+#                 this_user.email = Email
+#                 edit_user = True
+#                 if not Newsletters.objects.filter(Email=Email).exists():
+#                     New = Newsletters.objects.create(Email=Email)
+#             if this_profile.ZipCode != ZipCode:
+#                 this_profile.ZipCode = ZipCode
+#                 edit_profile = True
+#             if this_profile.Address != Address:
+#                 this_profile.Address = Address
+#                 edit_profile = True
+#             if this_profile.State != state:
+#                 this_profile.State = state
+#                 edit_profile = True
+#             if this_profile.BigCity != bigcity:
+#                 this_profile.BigCity = bigcity
+#                 edit_profile = True
+#             if this_profile.City != city:
+#                 this_profile.City = city
+#                 edit_profile = True
+#             if this_profile.BrithDay != BrithDay:
+#                 this_profile.BrithDay = BrithDay
+#                 edit_profile = True
+#             if this_profile.CityPerCode != CityPerCode:
+#                 this_profile.CityPerCode = CityPerCode
+#                 edit_profile = True
+#             if this_profile.PhoneNumber != PhoneNumber:
+#                 this_profile.PhoneNumber = PhoneNumber
+#                 edit_profile = True
+#             if this_profile.Bio != Bio:
+#                 this_profile.Bio = Bio
+#                 edit_profile = True
+#             if this_profile.Sex != Sex:
+#                 this_profile.Sex = Sex
+#                 edit_profile = True
+#             if this_profile.TutorialWebsite != ToWeb:
+#                 this_profile.TutorialWebsite = ToWeb
+#                 edit_profile = True
+#             if Image != '':
+#                 this_profile.Image = Image
+#                 edit_profile = True
 
-            if edit_user:
-                this_user.save()
-            if edit_profile:
-                this_profile.save()
-            # -----------------------------------------
-            return redirect("nakhll_market:Dashboard")
-        except Exception as e:
-            return redirect("nakhll_market:error_500", error_text=str(e))
-    else:
-        return redirect("auth:login")
+#             if edit_user:
+#                 this_user.save()
+#             if edit_profile:
+#                 this_profile.save()
+#             # -----------------------------------------
+#             return redirect("nakhll_market:Dashboard")
+#         except Exception as e:
+#             return redirect("nakhll_market:error_500", error_text=str(e))
+#     else:
+#         return redirect("auth:login")
+
+class UpdateUserDashboard(TemplateView):
+    template_name = "nakhll_market/profile/pages/profile.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Get Menu Item
+        options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+        # Get Nav Bar Menu Item
+        navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+        context['Options'] = options
+        context['MenuList'] = navbar
+        return context
+
+    def get(self, request):
+        context = self.get_context_data()
+        context['profile_form'] = ProfileForm(instance=request.user.User_Profile)
+        context['user_form'] = MyUserForm(instance=request.user)
+        return render(request, self.template_name, context)
+        
+    def post(self, request):
+        profile_form = ProfileForm(request.POST, instance=request.user.User_Profile)
+        user_form = MyUserForm(request.POST , instance=request.user)
+        if profile_form.is_valid() and user_form.is_valid():
+            profile_form.save()
+            user_form.save()
+
+        else:
+            profile_form = ProfileForm(instance=request.user.User_Profile)
+        context = {
+            'profile_form' : profile_form,
+            'user_form' : user_form,
+            }
+        return render(request ,'nakhll_market/profile/pages/profile.html' ,context)
 
 
 # --------------------------------------- Add Connect Us Message ----------------------------------------
@@ -4353,7 +4312,8 @@ def ShowAllFactorList(request):
             .filter(UserFactor__PaymentStatus=True, UserFactor__Publish=True) \
             .distinct() \
             .order_by('-UserFactor__OrderDate')
-
+        #get all shop
+        shop=Shop.objects.all()
         context = {
             'This_User_Profile': this_profile,
             'This_User_Inverntory': this_inverntory,
@@ -4361,6 +4321,7 @@ def ShowAllFactorList(request):
             'MenuList': navbar,
             'Factors': factors,
             'User': user_factor,
+            'shop':shop,
         }
         return render(request, 'nakhll_market/profile/pages/all_factors.html', context)
     else:
@@ -4748,7 +4709,7 @@ def ManageFactorFilter(request):
             S_Date = None
             E_Date = None
             customer = '000'
-
+            shop='111'
             try:
                 StartDate = request.POST["date_start"]
             except:
@@ -4772,9 +4733,12 @@ def ManageFactorFilter(request):
             try:
                 Customer = request.POST["customer_name"]
             except:
-                Customer = ''
-
-            if (((StartDate != '') and (EndDate != '')) or (Status != '') or (Check_Out != '') or (Customer != '')):
+                Customer = '000'
+            try:
+                shop_id = request.POST["shop_name"]
+            except:
+                shop_id = '111'
+            if (((StartDate != '') and (EndDate != '')) or (Status != '') or (Check_Out != '') or (Customer != '') or (shop_id !='')):
                 factors = Factor.objects.filter(PaymentStatus=True, Publish=True).order_by('-OrderDate')
                 if (StartDate != '') and (EndDate != ''):
                     Start = StartDate.split('-')
@@ -4788,11 +4752,6 @@ def ManageFactorFilter(request):
                     factors = factors.filter(OrderDate__range=[Str_GStart, Str_GEnd])
                     S_Date = StartDate
                     E_Date = EndDate
-                # get user list
-                user_list = []
-                for item in factors:
-                    user_list.append(item.FK_User)
-                user_list = list(dict.fromkeys(user_list))
 
                 if Status != '6':
                     factors = factors.filter(OrderStatus=Status)
@@ -4804,9 +4763,18 @@ def ManageFactorFilter(request):
                     elif Check_Out == '2':
                         factors = factors.filter(Checkout=True)
                         set_checkout = Check_Out
+                if shop_id != '111':
+                    factors = factors.filter(FK_FactorPost__FK_Product__FK_Shop=shop_id)
+
                 if Customer != '000':
                     factors = factors.filter(FK_User=User.objects.get(id=Customer))
                     customer = User.objects.get(id=Customer).username
+                # get user list
+                user_list = []
+                for item in factors:
+                    user_list.append(item.FK_User)
+                user_list = list(dict.fromkeys(user_list))
+
             else:
                 return redirect("nakhll_market:ShowAllFactorList")
             # ----------------------------------------------------------------------

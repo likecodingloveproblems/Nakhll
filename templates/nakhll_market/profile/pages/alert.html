@@ -100,7 +100,7 @@
                             <div class="dashboard-filters filter-size">
                                 <h4>فیلتر</h4>
                             </div>
-                            <form method="POST" action="{% url "nakhll_market:Alert" %}">
+                            <form method="POST" action="{% url "nakhll_market:AlertFilter" %}">
                                 {% csrf_token %}
                                 <div class="row">
                                     <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12  alert-profile-first-col-for-margin">
@@ -137,7 +137,7 @@
                                     <div class="col-xl-5 col-lg-5 col-md-6 col-sm-12 col-12 alert-profile-input-group-col">
                                         <div class="input-group mb-3">
                                             <div class="input-group-prepend alert-profile-input-group-prepend">
-                                                <label class="input-group-text alert-profile-input-group-text" for="inputGroupSelect01">عنوان</label>
+                                                <label class="input-group-text alert-profile-input-group-text for="inputGroupSelect01">عنوان</label>
                                             </div>
                                             <select class="custom-select alert-profile-custom-select" name="check_out" id="inputGroupSelect01">
                                                 <option value="000" {% if CheckOut == '000' %}selected{% endif %}>همه</option>
@@ -182,21 +182,9 @@
                                             <select class="form-control alert-profile-custom-select" name="customer_name" id="inputGroupSelect01" aria-label="Username"
                                             aria-describedby="basic-addon1">
                                                 <option value="000" {% if Customer == '000' %}selected{% endif %}>همه</option>
-                                                {% for item in users %}
-                                                    <option value="{{item.0}}" {% if Customer == item.1 %}selected{% endif %}>{{item.2}} {{item.3}}</option>
+                                                {% for item in Alert %}
+                                                    <option value="{{item.FK_User.id}}" {% if Customer == item.FK_User.username %}selected{% endif %}>{{item.FK_User.first_name}} {{item.FK_User.last_name}}</option>
                                                 {% endfor %}
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-5 col-lg-5 col-md-6 col-sm-12 col-12">
-                                        <div class="input-group mb-3">
-                                            <div class="input-group-prepend alert-profile-input-group-prepend">
-                                                <span class="input-group-text alert-profile-input-group-text" id="basic-addon2">وضعیت بررسی</span>
-                                            </div>
-                                            <select class="form-control alert-profile-custom-select" name="seen_status" id="inputGroupSelect01" aria-label="seen_status"
-                                            aria-describedby="basic-addon1">
-                                                <option value="0" {% if seen_status == False %}selected{% endif %}>بررسی نشده</option>
-                                                <option value="1" {% if seen_status %} selected {% endif %}>بررسی شده</option>
                                             </select>
                                         </div>
                                     </div>
@@ -205,6 +193,7 @@
                                         <button>جستجو</button>
                                     </div>
                                 </div>
+                            </form>
                             <br>
                             <div class="hr-line-under-dashboard"></div>
 
@@ -364,31 +353,6 @@
                                     {% endfor %}
                                 </tbody>
                             </table>
-                            <div class="col-12">
-                                <div class="row pagerow">
-                                    <nav aria-label="Page navigation example">
-                                        <ul class="pagination">
-                                            {% if Alert.has_previous %}
-                                                <li class="page-item"><button class="page-link" formaction="{% url "nakhll_market:Alert" %}?page=1">اولی</a></li>
-                                                <li class="page-item"><button class="page-link" formaction="{% url "nakhll_market:Alert" %}?page={{Alert.previous_page_number}}">قبلی</a></li>
-                                            {% endif %}
-                                            {% for num in Alert.paginator.page_range %}
-                                                {% if num == Alert.number %}
-                                                    <li class="page-item"><button class="page-link" formaction="{% url "nakhll_market:Alert" %}?page={{num}}"><strong>{{num}}</strong></a></li>
-                                                {% elif num > Alert.number|add:'-3' and num < Alert.number|add:'3' %}
-                                                    <li class="page-item"><button class="page-link" formaction="{% url "nakhll_market:Alert" %}?page={{num}}">{{num}}</a></li>
-                                                {% endif %}
-                                            {% endfor %}
-                                            {% if Alert.has_next %}
-                                                <li class="page-item"><button class="page-link" formaction="{% url "nakhll_market:Alert" %}?page={{Alert.next_page_number}}">بعدی</a></li>
-                                                <li class="page-item"><button class="page-link" formaction="{% url "nakhll_market:Alert" %}?page={{Alert.paginator.num_pages}}">آخری</a></li>
-                                            {% endif %}
-                                        </ul>
-                                    </nav>
-                                </div>
-                            </div>
-                            </form>
-
                         </div>
                     </div>
                 </div>
