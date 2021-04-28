@@ -157,16 +157,12 @@
                 <div id="alert-div-inputproduct-img-empty"></div>
 
                 <!-- Title -->
-                <div id="alert-div-inputproduct-title-empty"></div>
-                <div id="alert-div-inputproduct-title-minlength"></div>
-                <div id="alert-div-inputproduct-title-maxlength"></div>
+                
                 <!-- <div id="alert-div-inputproduct-title-valid-chars"></div> -->
                 <!-- <div id="alert-div-inputproduct-title-persian"></div> -->
 
                 <!-- Slug -->
-                <div id="alert-div-inputproduct-slug-empty"></div>
-                <div id="alert-div-inputproduct-slug-english"></div>
-                <div id="alert-div-inputproduct-slug-dup"></div>
+                
 
                 <!-- Shop -->
                 <div id="alert-div-inputproduct-shop-empty"></div>
@@ -184,7 +180,7 @@
                 <div id="alert-div-inputproduct-submarket-empty"></div>
 
                 <!-- Introduction -->
-                <div id="alert-div-inputproduct-bio-empty"></div>
+                
                 <!-- <div id="alert-div-inputproduct-intro-valid-chars"></div> -->
                 <!-- <div id="alert-div-inputproduct-introduction-persian"></div> -->
 
@@ -193,7 +189,7 @@
                 <!-- <div id="alert-div-inputproduct-story-persian"></div> -->
 
                 <!-- Real & Sell Price -->
-                <div id="alert-div-inputproduct-price-digits"></div>
+                
                 <div id="alert-div-inputproduct-sell-price-minlength"></div>
                 <!-- <div id="alert-div-inputproduct-real-price-minlength"></div> -->
                 <!-- <div id="alert-div-inputproduct-price-comparison"></div> -->
@@ -203,27 +199,26 @@
                 <div id="alert-div-inputproduct-off-empty"></div>
                 <div id="alert-div-inputproduct-off-length"></div>
 
-                <!-- Pure Weight -->
-                <div id="alert-div-inputproduct-pure-weight-empty"></div>
+                
 
                 <!-- Packing Weight -->
-                <div id="alert-div-inputproduct-packing-weight-empty"></div>
+                
 
-                <div id="alert-div-inputproduct-weight-digits"></div>
+               
                 <div id="alert-div-inputproduct-weight-comparison"></div>
 
 
                 <!-- Dimension -->
-                <div id="alert-div-inputproduct-length-dimension-empty"></div>
+                
 
                 <!-- Product Width -->
-                <div id="alert-div-inputproduct-width-dimension-empty"></div>
+                
 
                 <!-- Product Height -->
-                <div id="alert-div-inputproduct-height-dimension-empty"></div>
+                
 
 
-                <div id="alert-div-inputproduct-dimension-digits"></div>
+                
                 
                 <!-- Product Send Area -->
                 <div id="alert-div-inputproduct-send-area-limit"></div>
@@ -232,9 +227,7 @@
                 <div id="alert-div-inputproduct-send-area-exception-limit"></div>
 
                 <!-- Product Available Count -->
-                <div id="alert-div-inputproduct-available-count-empty"></div>
-                <div id="alert-div-inputproduct-available-count-digits"></div>
-                <div id="alert-div-inputproduct-available-count-zero-value"></div>
+                
 
                 <!-- System Error -->
                 <div id="alert-div-system-error"></div>
@@ -287,6 +280,9 @@
                                             <label for="inputprod_title">عنوان محصول <code>*</code></label>
                                             <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="عنوان باید فارسی و حداکثر 170 کاراکتر باشد."></i>
                                             <input type="text" name="prod_title" class="form-control" id="inputprod_title" minlength="2" maxlength="170" required>
+                                            <div id="alert-div-inputproduct-title-empty"></div>
+                                            <div id="alert-div-inputproduct-title-minlength"></div>
+                                            <div id="alert-div-inputproduct-title-maxlength"></div>
                                         </div>
                                     </div>
                                     <div class="form-row">
@@ -294,6 +290,9 @@
                                             <label for="inputslugProd">شناسه محصول <code>*</code></label>
                                             <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title='شناسه محصول باید شامل حروف انگلیسی کوچک، خط تیره ("_" یا "-") و بدون فاصله باشد.'></i>
                                             <input type="text" name="slugProd" class="form-control" id="inputslugProd" pattern="[a-z0-9\-_]{2,}" required>
+                                            <div id="alert-div-inputproduct-slug-empty"></div>
+                                            <div id="alert-div-inputproduct-slug-english"></div>
+                                            <div id="alert-div-inputproduct-slug-dup"></div>
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label for="inpuShop">حجره <code>*</code></label>
@@ -310,6 +309,7 @@
                                             <label for="inputProdBio">معرفی محصول <code>*</code></label>
                                             <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="معرفی مختصری از محصول خود تا حداکثر 200 کاراکتر وارد نمایید."></i>
                                             <textarea name="ProdBio" maxlength="200" class="form-control" id="inputProdBio" rows="1"></textarea>
+                                            <div id="alert-div-inputproduct-bio-empty"></div>
                                         </div>  
                                     </div>
                                     <div class="form-row">
@@ -356,6 +356,7 @@
                                             <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="قیمت را به ریال وارد نمایید."></i>
                                             <input type="number" name="prod_Price" class="form-control inputprod_sellprice" pattern="[0-9]{5,}" id="inputprod_sellprice" required>
                                             <p class="digit-to-persian" id="sellprice-toman"></p>
+                                            <div id="alert-div-inputproduct-price-digits"></div>
                                         </div>
                                 
                                         <div class="form-group col-lg-5 col-md-4 col-xs-4 col-9 offamount-formgroup">
@@ -377,7 +378,10 @@
                                         <label for="input_netweight">وزن خالص محصول <code>*</code></label>
                                         <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="وزن خالص محصول را به صورت گرم وارد نمایید - اگر قادر به محاسبه وزن خالص نیستید در این فیلد 0 وارد کنید "></i>
                                             <input type="number" name="product_netweight" class="form-control" pattern="[0-9]{1,6}" id="input_netweight" required>
-                                            <p class="digit-to-persian" id="pure-weight"></p>
+                                           
+                                            <!-- Pure Weight -->
+                                            <div id="alert-div-inputproduct-pure-weight-empty"></div>
+                                             <div id="alert-div-inputproduct-weight-digits"></div>
                                         </div>
     
                                         <div class="form-group col-md-6">
@@ -385,6 +389,8 @@
                                         <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="وزن محصول با بسته بندی را به صورت گرم وارد نمایید."></i>
                                             <input type="number" name="product_packingweight" class="form-control" pattern="[0-9]{1,5}" id="input_packingweight" required>
                                             <p class="digit-to-persian" id="packing-weight"></p>
+                                            <div id="alert-div-inputproduct-packing-weight-empty"></div>
+
                                         </div>
                                     </div>
     
@@ -395,6 +401,11 @@
                                         <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="طول بسته بندی محصول را به صورت سانتی متر وارد نمایید."></i>
                                             <input type="number" name="product_lengthwithpackaging" class="form-control" pattern="[0-9]{1,4}" id="input_lengthwithpackaging" required>
                                             <p class="digit-to-persian" id="length-dimension"></p>
+                                            <div id="alert-div-inputproduct-dimension-digits"></div>
+                                            <div id="alert-div-inputproduct-length-dimension-empty"></div>
+                                            <div id="alert-div-inputproduct-width-dimension-empty"></div>
+                                            <div id="alert-div-inputproduct-height-dimension-empty"></div>
+
                                         </div>
     
                                         <div class="form-group col-md-4">
@@ -402,6 +413,7 @@
                                         <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="عرض بسته بندی محصول را به صورت سانتی متر وارد نمایید."></i>
                                             <input type="number" name="product_widthwithpackaging" class="form-control" pattern="[0-9]{1,4}" id="input_widthwithpackaging" required>
                                             <p class="digit-to-persian" id="width-dimension"></p>
+                                            
                                         </div>
     
                                         <div class="form-group col-md-4">
@@ -409,6 +421,7 @@
                                         <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="ارتفاع بسته بندی محصول را به صورت سانتی متر وارد نمایید."></i>
                                             <input type="number" name="product_heightwithpackaging" class="form-control" pattern="[0-9]{1,4}" id="input_heightwithpackaging" required>
                                             <p class="digit-to-persian" id="height-dimension"></p>
+                                            
                                         </div>
                                     </div>
 
@@ -421,6 +434,9 @@
                                                 <option>شهرستانی</option>
                                                 <option>شهری</option>
                                             </select>
+                                            <div id="alert-div-inputproduct-available-count-empty"></div>
+                                            <div id="alert-div-inputproduct-available-count-digits"></div>
+                                            <div id="alert-div-inputproduct-available-count-zero-value"></div> 
                                         </div>
                                         <div class="form-group col-md-4" id="detail-now-box">
                                             <label for="product_Status">وضعیت محصول<code>*</code></label>
@@ -435,6 +451,7 @@
                                             <label for="product_available_count">تعداد موجودی <code>*</code></label>
                                             <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="تعداد موجودی خود در انبار را میتوانید در این قسمت وارد کنید."></i>
                                             <input type="text" name="product_available_count" class="form-control" id="prod_num_in_store" maxlength="2">
+                                                                       
                                         </div>
                                     </div>
 

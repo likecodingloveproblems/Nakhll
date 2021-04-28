@@ -374,7 +374,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
             $("#alert-div-inputproduct-title-minlength").show();
             $(this).prop("minLength", 2);
             $("html, body").animate({ 
-                scrollTop: 220 
+                
             }, "slow");
         }
         else {
@@ -434,7 +434,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                     $("#alert-div-inputproduct-slug-english").show();
                     $("#inputslugProd").addClass("inputshopempty");
                     $("html, body").animate({ 
-                        scrollTop: 220 
+                       
                     }, "slow");
                 }
             }
@@ -458,7 +458,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
 				$(this).addClass("inputshopempty");
 				$("#alert-div-inputproduct-slug-english").show();
 				$("html, body").animate({ 
-					scrollTop: 220 
+					
 				}, "slow");
 				return false;
 			}
@@ -480,7 +480,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
 						$("#alert-div-inputproduct-slug-english").show();
 						$("#inputslugProd").addClass("inputshopempty");
 						$("html, body").animate({ 
-							scrollTop: 220 
+						
 						}, "slow");
 						return false;
 					}
@@ -598,7 +598,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                 $("#alert-div-inputproduct-price-digits").show();
                 $(this).addClass("inputshopempty");
                 $("html, body").animate({ 
-                    scrollTop: 220 
+                
                 }, "slow");
                 return false;
             }
@@ -615,7 +615,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                 $("#alert-div-inputproduct-off-length").show();
                 $(this).addClass("inputshopempty");
                 $("html, body").animate({ 
-                    scrollTop: 220 
+                   
                 }, "slow");
             }
             else {
@@ -662,7 +662,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                         $("#alert-div-inputproduct-price-digits").show();
                         $(".inputprod_sellprice").addClass("inputshopempty");	
                         $("html, body").animate({ 
-                            scrollTop: 220 
+                         
                         }, "slow");
                         return false;
                     }
@@ -815,7 +815,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                     $("#alert-div-inputproduct-price-digits").show();
                     $(".inputprod_sellprice").addClass("inputshopempty");
                     $("html, body").animate({ 
-                        scrollTop: 220 
+                   
                     }, "slow");
                 }
             }
@@ -859,6 +859,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
         $("#input_netweight").on('focusout', function () {
             if ($(this).val() === '') {
                 $(this).addClass("inputshopempty");
+                
                 $("#alert-div-inputproduct-pure-weight-empty").show();
                 $("#alert-div-inputproduct-weight-comparison").hide();
             }
@@ -866,7 +867,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                 $("#alert-div-inputproduct-weight-comparison").show();
                 $(this).addClass("inputshopempty");
                 $("html, body").animate({ 
-                    scrollTop: 220 
+                    
                 }, "slow");
             }
             else {
@@ -880,6 +881,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
         })
         $("#input_netweight").on("keypress", function (event) {
             var ew = event.which;
+            
             if (48 <= ew && ew <= 57) {
                 $("#alert-div-inputproduct-weight-digits").hide()
                 return true;
@@ -891,7 +893,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                 $("#alert-div-inputproduct-weight-digits").show();
                 $(this).addClass("inputshopempty");
                 $("html, body").animate({ 
-                    scrollTop: 220 
+                  
                 }, "slow");
                 return false;
             }
@@ -916,7 +918,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                         $("#alert-div-inputproduct-weight-digits").show();
                         $("#input_netweight").addClass("inputshopempty");	
                         $("html, body").animate({ 
-                            scrollTop: 220 
+                          
                         }, "slow");
                         return false;
                     }
@@ -971,7 +973,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                     $("#alert-div-inputproduct-weight-digits").show();
                     $("#input_netweight").addClass("inputshopempty");
                     $("html, body").animate({ 
-                        scrollTop: 220 
+                        
                     }, "slow");
                 }
             }
@@ -988,7 +990,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                 $("#alert-div-inputproduct-weight-comparison").show();
                 $(this).addClass("inputshopempty");
                 $("html, body").animate({ 
-                    scrollTop: 220 
+                     
                 }, "slow");
             }
             else {
@@ -1013,7 +1015,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                 $("#alert-div-inputproduct-weight-digits").show();
                 $(this).addClass("inputshopempty");
                 $("html, body").animate({ 
-                    scrollTop: 220 
+                
                 }, "slow");
                 return false;
             }
@@ -1037,7 +1039,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                         $("#alert-div-inputproduct-weight-digits").show();
                         $("#input_packingweight").addClass("inputshopempty");	
                         $("html, body").animate({ 
-                            scrollTop: 220 
+                            
                         }, "slow");
                         return false;
                     }
@@ -1077,7 +1079,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                     $("#alert-div-inputproduct-weight-digits").show();
                     $("#input_packingweight").addClass("inputshopempty");
                     $("html, body").animate({ 
-                        scrollTop: 220 
+                       
                     }, "slow");
                 }
             }
@@ -1109,7 +1111,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                 $("#alert-div-inputproduct-dimension-digits").show();
                 $(this).addClass("inputshopempty");
                 $("html, body").animate({ 
-                    scrollTop: 220 
+                   
                 }, "slow");
                 return false;
             }
@@ -1133,7 +1135,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                         $("#alert-div-inputproduct-dimension-digits").show();
                         $("#input_lengthwithpackaging").addClass("inputshopempty");	
                         $("html, body").animate({ 
-                            scrollTop: 220 
+                             
                         }, "slow");
                         return false;
                     }
@@ -1175,7 +1177,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                     $("#alert-div-inputproduct-dimension-digits").show();
                     $("#input_lengthwithpackaging").addClass("inputshopempty");
                     $("html, body").animate({ 
-                        scrollTop: 220 
+                       
                     }, "slow");
                 }
             }
@@ -1207,7 +1209,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                 $("#alert-div-inputproduct-dimension-digits").show();
                 $(this).addClass("inputshopempty");
                 $("html, body").animate({ 
-                    scrollTop: 220 
+                    
                 }, "slow");
                 return false;
             }
@@ -1231,7 +1233,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                         $("#alert-div-inputproduct-dimension-digits").show();
                         $("#input_widthwithpackaging").addClass("inputshopempty");	
                         $("html, body").animate({ 
-                            scrollTop: 220 
+                            
                         }, "slow");
                         return false;
                     }
@@ -1273,7 +1275,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                     $("#alert-div-inputproduct-dimension-digits").show();
                     $("#input_widthwithpackaging").addClass("inputshopempty");
                     $("html, body").animate({ 
-                        scrollTop: 220 
+                        
                     }, "slow");
                 }
             }
@@ -1305,7 +1307,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                 $("#alert-div-inputproduct-dimension-digits").show();
                 $(this).addClass("inputshopempty");
                 $("html, body").animate({ 
-                    scrollTop: 220 
+                   
                 }, "slow");
                 return false;
             }
@@ -1329,7 +1331,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                         $("#alert-div-inputproduct-dimension-digits").show();
                         $("#input_heightwithpackaging").addClass("inputshopempty");
                         $("html, body").animate({ 
-                            scrollTop: 220 
+                            
                         }, "slow");
                         return false;
                     }
@@ -1371,7 +1373,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                     $("#alert-div-inputproduct-dimension-digits").show();
                     $("#input_heightwithpackaging").addClass("inputshopempty");
                     $("html, body").animate({ 
-                        scrollTop: 220 
+                       
                     }, "slow");
                 }
             }
@@ -1390,7 +1392,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                 $("#alert-div-inputproduct-available-count-digits").hide();
                 $(this).addClass("inputshopempty");
                 $("html, body").animate({ 
-                    scrollTop: 220 
+                    
                 }, "slow");
             }
             else {
@@ -1420,7 +1422,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                     $("#alert-div-inputproduct-available-count-digits").show();
                     $("#prod_num_in_store").addClass("inputshopempty");
                     $("html, body").animate({ 
-                        scrollTop: 220 
+                        
                     }, "slow");
                 }
             }
@@ -1438,7 +1440,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                 $("#alert-div-inputproduct-available-count-digits").show();
                 $(this).addClass("inputshopempty");
                 $("html, body").animate({ 
-                    scrollTop: 220 
+                    
                 }, "slow");
                 return false;
             }
@@ -1462,7 +1464,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                         $("#alert-div-inputproduct-available-count-digits").show();
                         $("#prod_num_in_store").addClass("inputshopempty");
                         $("html, body").animate({ 
-                            scrollTop: 220 
+                            
                         }, "slow");
                         return false;
                     }
@@ -2015,7 +2017,7 @@ checkProductFields = function () {
         }
     if(!checks) {
         $("html, body").animate({
-            scrollTop: 220 
+            
         }, "slow");
     }
     return checks;
@@ -2132,7 +2134,7 @@ checkValidInputsMakeSomeFields = function () {
             }
             if(!checks) {
                 $("html, body").animate({
-                    scrollTop: 220 
+                    
                 }, "slow");
             }
             return checks;
