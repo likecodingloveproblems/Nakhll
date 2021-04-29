@@ -46,6 +46,7 @@ body {
     background: #F5F5F5;
     height: 100%;
     text-align: right;
+    overflow-x: hidden !important;
 }
 
 .irs {
@@ -6861,7 +6862,8 @@ ul.optional-attr-question-list li {
     margin-right: auto;
     max-width: 100% !important;
     height: auto;
-}
+    max-height: 355px;
+}   
 
 .card-carousel {
     display: flex;

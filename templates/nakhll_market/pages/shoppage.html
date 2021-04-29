@@ -252,8 +252,8 @@
                         </div>
                         <div class="row whole-products-of-shop">
                             {% for item in Products %}
-                                <div class="col-xl-3 col-md-3">
-                                    <div class="prod-sec">
+                                <div class="col-xl-4 col-md-4 col-sm-12">
+                                    <div class="prod-sec" style="width:90%">
                                         <a href="{% url "nakhll_market:ProductsDetail" Shop.Slug item.Slug %}"><img class="prodimg" src="{{item.Image_thumbnail_url}}" alt="prodname"></a>
                                         <a href="{% url "nakhll_market:ProductsDetail" Shop.Slug item.Slug %}"><h3>{{item.Title |truncatechars:47}}</h3></a>
                                         
@@ -518,7 +518,7 @@
                             pricehandle = '<span class="empty">ناموجود</span>';
                         }
                         
-                        $(".whole-products-of-shop").append('<div class="col-xl-3 col-md-3">' +
+                        $(".whole-products-of-shop").append('<div class="col-xl-4 col-md-3">' +
                             '<div class="prod-sec">' +
                                 '<a href="' + selectedproductURL + '"><img class="prodimg" src="'+ selectedproduct.Image_medium_url +'" alt="prodname"></a>' +
                                 '<a href="' + selectedproductURL + '"><h3>' + selectedproduct.Title + '</h3></a>' +
