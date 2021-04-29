@@ -359,7 +359,7 @@ $("#alert-div-inputproduct-available-count-zero-value").html('<div class="col-xl
 $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
     '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
     // '<i class="far fa-exclamation-circle"></i>' +
-    '<p>خطا! صفحه را رفرش کرده مجددا سعی کنید.</p>' +
+    '<p></p>' +
     '</div></div>');
 
     //Img Event
