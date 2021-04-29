@@ -46,6 +46,7 @@ body {
     background: #F5F5F5;
     height: 100%;
     text-align: right;
+    overflow-x: hidden !important;
 }
 
 .irs {
