@@ -253,18 +253,18 @@
                     </div>
 
                     <div id="alert-div-inputshop-img-empty"></div>
-                    <div id="alert-div-inputshop-title-empty"></div>
+                    
                     <div id="alert-div-inputshop-title-minlength"></div>
                     <div id="alert-div-inputshop-title-maxlength"></div>
                     <!-- <div id="alert-div-inputshop-title-valid-chars"></div> -->
                     <!-- <div id="alert-div-inputshop-title-persian"></div> -->
                     <!-- <div id="alert-div-inputshop-about-valid-chars"></div> -->
-                    <div id="alert-div-inputshop-state-unknown"></div>
-                    <div id="alert-div-inputshop-bigcity-unknown"></div>
-                    <div id="alert-div-inputshop-city-unknown"></div>
+                    
+                    
+                    
                     <div id="alert-div-inputshop-Bio-maxlength"></div>
                     <!-- <div id="alert-div-inputshop-bio-valid-chars"></div> -->
-                    <div id="alert-div-inputshop-submarket-unknown"></div>
+                    
                     <div id="alert-div-inputshop-submarket-limit-count"></div>
                     <div id="alert-div-inputshop-week-holidays-all"></div>
                     <div id="alert-div-system-error"></div>
@@ -281,6 +281,7 @@
                                         <label for="inputshop_title">عنوان حجره</label>
                                         <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="عنوان باید فارسی و حداکثر 70 کاراکتر باشد."></i>
                                         <input type="text" value="{{UserShop.Title}}" name="Shop_Title" class="form-control" id="inputshop_title" minlength="2" maxlength="70" required>
+                                    <div id="alert-div-inputshop-title-empty"></div>
                                     </div>
                                     
                                     <div class="form-group col-md-6">
@@ -467,6 +468,7 @@
                                             <option value="31">چهارمحال وبختیاری</option>
                                             <option value="32">البرز</option>
                                         </select>
+                                        <div id="alert-div-inputshop-state-unknown"></div>
                                     </div>
                                     
                                     <div class="form-group col-md-6 bigcity-form-group">
@@ -477,6 +479,7 @@
                                         <select name="Shop_BigCity" class="chosen-select-rtl form-control choose-bigcity-chosen" id="inputshopBigCity">
                                             <option value="0">شهرستان خود را انتخاب نمائید...</option>
                                         </select>
+                                        <div id="alert-div-inputshop-bigcity-unknown"></div>
                                     </div>
                                 </div>
 
@@ -489,6 +492,7 @@
                                         <select name="Shop_City" class="chosen-select-rtl form-control choose-city-chosen" id="inputshopCity">
                                             <option value="0">شهر خود را انتخاب نمائید...</option>
                                         </select>
+                                        <div id="alert-div-inputshop-city-unknown"></div>
                                     </div>
                                 <script>
                                     var selectedState;
@@ -624,6 +628,7 @@
                                                 <option value="{{item.SubMarket.ID}}" {% if item.Status %}selected{% endif %}>{{item.SubMarket.Title}}</option>
                                             {% endfor %}
                                         </select>
+                                        <div id="alert-div-inputshop-submarket-unknown"></div>
                                     </div>
                                 </div>
 

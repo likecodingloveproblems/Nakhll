@@ -47,141 +47,141 @@ $("#alert-div-system-error").hide();
 
 //Img
 $("#alert-div-inputshop-img-empty").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-	'<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-	'<i class="far fa-exclamation-circle"></i>' +
+	'<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+	
 	'<p>یک عکس برای حجره باید انتخاب شود.</p>' +
 	'</div></div>');
 //Img2
 $("#alert-div-image-newShop").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-	'<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-	'<i class="far fa-exclamation-circle"></i>' +
+	'<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+	
 	'<p>عکس کارت ملی باید انتخاب شود.</p>' +
 	'</div></div>');
 
 //Title
 $("#alert-div-inputshop-title-empty").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-	'<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-	'<i class="far fa-exclamation-circle"></i>' +
+	'<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+	
 	'<p>عنوان حجره نمیتواند خالی باشد.</p>' +
 	'</div></div>');
 
 // $("#alert-div-inputshop-title-valid-chars").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-// 	'<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-// 	'<i class="far fa-exclamation-circle"></i>' +
+// 	'<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+// 	
 // 	'<p>در عنوان حجره از کاراکترهای غیر مجاز استفاده شده است.</p>' +
 // 	'</div></div>');
 
 // $("#alert-div-inputshop-title-persian").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-// 	'<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-// 	'<i class="far fa-exclamation-circle"></i>' +
+// 	'<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+// 	
 // 	'<p>برای عنوان فقط از حروف فارسی و اعداد میتوانید استفاده کنید.</p>' +
 // 	'</div></div>');
 
 $("#alert-div-inputshop-title-minlength").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-	'<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-	'<i class="far fa-exclamation-circle"></i>' +
+	'<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+	
 	'<p>عنوان حجره باید از 2 کارکتر بیشتر باشد.</p>' +
 	'</div></div>');
 
 $("#alert-div-inputshop-title-maxlength").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-	'<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-	'<i class="far fa-exclamation-circle"></i>' +
+	'<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+	
 	'<p>عنوان حجره نباید از 70 کارکتر بیشتر باشد.</p>' +
 	'</div></div>');
 
 //Slug
 $("#alert-div-inputshop-slug-empty").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-	'<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-	'<i class="far fa-exclamation-circle"></i>' +
+	'<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+	
 	'<p>وارد کردن شناسه حجره الزامی است.</p>' +
 	'</div></div>');
 
 $("#alert-div-inputshop-slug-english").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-	'<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-	'<i class="far fa-exclamation-circle"></i>' +
+	'<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+	
 	'<p>شناسه حجره باید شامل حروف انگلیسی کوچک، خط تیره ("-") و بدون فاصله باشد.</p>' +
 	'</div></div>');
 
 $("#alert-div-inputshop-slug-dup").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-	'<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-	'<i class="far fa-exclamation-circle"></i>' +
+	'<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+	
 	'<p>این شناسه حجره تکراری میباشد.</p>' +
 	'</div></div>');
 
 
 // About
 // $("#alert-div-inputshop-about-valid-chars").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-// 	'<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-// 	'<i class="far fa-exclamation-circle"></i>' +
+// 	'<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+// 	
 // 	'<p>در درباره حجره از کاراکترهای غیر مجاز استفاده شده است.</p>' +
 // 	'</div></div>');
 
 // State
 $("#alert-div-inputshop-state-unknown").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-	'<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-	'<i class="far fa-exclamation-circle"></i>' +
+	'<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+	
 	'<p>استان خود را باید مشخص کنید.</p>' +
 	'</div></div>');
 
 //BigCity
 $("#alert-div-inputshop-bigcity-unknown").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-	'<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-	'<i class="far fa-exclamation-circle"></i>' +
+	'<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+	
 	'<p>شهرستان خود را باید مشخص کنید.</p>' +
 	'</div></div>');
 
 //City
 $("#alert-div-inputshop-city-unknown").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-	'<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-	'<i class="far fa-exclamation-circle"></i>' +
+	'<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+	
 	'<p>شهر خود را باید مشخص کنید.</p>' +
 	'</div></div>');
 
 //Submarket
 $("#alert-div-inputshop-submarket-unknown").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-	'<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-	'<i class="far fa-exclamation-circle"></i>' +
+	'<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+	
 	'<p>مشخص کردن راسته حجره الزامی است.</p>' +
 	'</div></div>');
 
 $("#alert-div-inputshop-submarket-limit-count").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-	'<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-	'<i class="far fa-exclamation-circle"></i>' +
+	'<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+	
 	'<p>تعداد راسته های حجره نمیتواند بیش از 7 مورد باشد.</p>' +
 	'</div></div>');
 
 //Bio
 $("#alert-div-inputshop-Bio-maxlength").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-	'<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-	'<i class="far fa-exclamation-circle"></i>' +
+	'<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+	
 	'<p>معرفی حجره دار نباید از 200 کارکتر بیشتر باشد.</p>' +
 	'</div></div>');
 
 // $("#alert-div-inputshop-bio-valid-chars").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-// 	'<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-// 	'<i class="far fa-exclamation-circle"></i>' +
+// 	'<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+// 	
 // 	'<p>در فیلد معرفی حجره دار از کاراکترهای غیر مجاز استفاده شده است.</p>' +
 // 	'</div></div>');
 
 
 //Week Holidays
 $("#alert-div-inputshop-week-holidays-all").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-	'<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-	'<i class="far fa-exclamation-circle"></i>' +
+	'<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+	
 	'<p>حجره نمیتواند هر روز هفته تعطیل باشد.</p>' +
 	'</div></div>');
 
 //Rules
 $("#alert-div-inputshop-rules-disagree").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-	'<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-	'<i class="far fa-exclamation-circle"></i>' +
+	'<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+	
 	'<p>برای ساخت حجره موافقت با قوانین قرارداد و ضوابط الزامی میباشد.</p>' +
 	'</div></div>');
 
 //System Error
 $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-	'<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-	'<i class="far fa-exclamation-circle"></i>' +
+	'<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+	
 	'<p>خطا! صفحه را رفرش کرده مجددا سعی کنید.</p>' +
 	'</div></div>');
 
