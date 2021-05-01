@@ -316,31 +316,30 @@
 
                     </div>
 
-                    <div id="alert-div-inputshop-img-empty"></div>
+                    
 
-                    <div id="alert-div-inputshop-title-empty"></div>
+                    
                     <div id="alert-div-inputshop-title-minlength"></div>
                     <div id="alert-div-inputshop-title-maxlength"></div>
                     <!-- <div id="alert-div-inputshop-title-valid-chars"></div> -->
                     <!-- <div id="alert-div-inputshop-title-persian"></div> -->
 
-                    <div id="alert-div-inputshop-slug-empty"></div>
+                    
                     <div id="alert-div-inputshop-slug-english"></div>
                     <div id="alert-div-inputshop-slug-dup"></div>
-                    <div id="alert-div-image-newShop"></div>
-
+                    
                     <!-- <div id="alert-div-inputshop-about-valid-chars"></div> -->
 
-                    <div id="alert-div-inputshop-state-unknown"></div>
+                    
 
-                    <div id="alert-div-inputshop-bigcity-unknown"></div>
+                    
 
-                    <div id="alert-div-inputshop-city-unknown"></div>
+                    
 
                     <div id="alert-div-inputshop-Bio-maxlength"></div>
                     <!-- <div id="alert-div-inputshop-bio-valid-chars"></div> -->
 
-                    <div id="alert-div-inputshop-submarket-unknown"></div>
+                    
                     <div id="alert-div-inputshop-submarket-limit-count"></div>
 
                     <div id="alert-div-inputshop-week-holidays-all"></div>
@@ -355,7 +354,7 @@
                     <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
                         <div class="dashboard" id="new-shop-section">
 
-                            <h4>ثبت حجره</h4>
+                            <h4> ثبت حجره</h4>
 
                             <form id="new-shop-form" method="POST" enctype="multipart/form-data" action="{% url "
                                 nakhll_market:Shop_Manager_AddNewShop" %}">
@@ -369,6 +368,7 @@
                                             title="عنوان باید فارسی و حداکثر 70 کاراکتر باشد."></i>
                                         <input type="text" name="Shop_Title" class="form-control" id="inputshop_title"
                                             minlength="2" maxlength="70" required placeholder="نام حجره خود را وارد نمایید">
+                                    <div id="alert-div-inputshop-title-empty"></div>
                                     </div>
 
                                     <div class="form-group col-md-6">
@@ -378,6 +378,7 @@
                                             title='شناسه حجره باید شامل حروف انگلیسی کوچک، خط تیره ("-") و بدون فاصله باشد.'></i>
                                         <input type="text" name="Shop_Slug" class="form-control" id="inputslugshop"
                                             pattern="[a-z0-9\-_]{2,}" placeholder="لینک حجره خود را به انگلیسی وارد نمایید">
+                                    <div id="alert-div-inputshop-slug-empty"></div>
                                     </div>
                                 </div>
                                 <div class="form-row">
@@ -391,6 +392,7 @@
                                                 class="form-control choose-pic-input-name choose-pic-input-hojre"
                                                 disabled placeholder="عکس حجره خود را بارگذاری نمایید">
                                         </label>
+                                        <div id="alert-div-inputshop-img-empty"></div>
                                         <br>
                                         <img class="rounded cropper-rounded " id="avatar"
                                             style="float:right;margin-right:3%" src="{% static "images/image_upload.jpg" %}" alt="avatar" data-toggle="tooltip"
@@ -407,9 +409,11 @@
                                                 class="form-control choose-pic-input-name choose-pic-input" disabled
                                                 placeholder="آپلود عکس">
                                         </label>
+                                        <div id="alert-div-image-newShop"></div>
                                         <br>
                                         <img class="rounded cropper-rounded " id="avatarMeli"
                                             style="float:left;margin-left:3%" src="{% static "images/image_upload.jpg" %}" alt="avatar" data-toggle="tooltip" title="انتخاب عکس ">
+                                        
 
                                     </div>
                                 </div>
@@ -589,6 +593,7 @@
                                             <option value="31">چهارمحال وبختیاری</option>
                                             <option value="32">البرز</option>
                                         </select>
+                                        <div id="alert-div-inputshop-state-unknown"></div>
                                     </div>
 
                                     <div class="form-group col-md-6 bigcity-form-group">
@@ -601,6 +606,7 @@
                                             id="inputshopBigCity">
                                             <option value="0">شهرستان خود را انتخاب نمائید...</option>
                                         </select>
+                                        <div id="alert-div-inputshop-bigcity-unknown"></div>
                                     </div>
                                 </div>
                                 <div class="form-row shop-place">
@@ -614,6 +620,7 @@
                                             id="inputshopCity">
                                             <option value="0">شهر خود را انتخاب نمائید...</option>
                                         </select>
+                                        <div id="alert-div-inputshop-city-unknown"></div>
                                     </div>
                                     <script>
                                         var selectedState;
@@ -728,6 +735,7 @@
                                             <option value="{{item.ID}}">{{item.Title}}</option>
                                             {% endfor %}
                                         </select>
+                                        <div id="alert-div-inputshop-submarket-unknown"></div>
                                     </div>
 
                                     <div class="form-group col-md-12">
