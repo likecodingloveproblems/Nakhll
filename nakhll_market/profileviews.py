@@ -71,6 +71,8 @@ from nakhll.settings import KAVENEGAR_KEY
 
 from Iran import data
 from django.core.paginator import Paginator
+from braces.views import StaffuserRequiredMixin
+from django.views import View
 
 
 # Profile Page And Sub Pages
@@ -4290,16 +4292,25 @@ def CheckCopun(request):
 # --------------------------------------------------------- All Factor Sections --------------------------------------------------
 
 # Show All Factor List
-def ShowAllFactorList(request):
-    # Check User Status
-    if request.user.is_authenticated:
+class ShowAllFactorList(LoginRequiredMixin, StaffuserRequiredMixin, View):
+    template_name = 'nakhll_market/profile/pages/all_factors.html'
+
+    def get_context_data(self, request):
         this_profile = Profile.objects.get(FK_User=request.user)
         this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
         navbar = Option_Meta.objects.filter(Title='nav_menu_items')
-        # -----------------------------------------------------------------------
+        return {
+            'This_User_Profile': this_profile,
+            'This_User_Inverntory': this_inverntory,
+            'Options': options,
+            'MenuList': navbar,
+        }
+
+    def get(self, request, *args, **kwargs): 
+        context = self.get_context_data(request)
         # Get All Factor
         factors = Factor.objects.filter(PaymentStatus=True, Publish=True).order_by('-OrderDate')
         # Paginate Profiles
@@ -4314,18 +4325,104 @@ def ShowAllFactorList(request):
             .order_by('-UserFactor__OrderDate')
         #get all shop
         shop=Shop.objects.all()
-        context = {
-            'This_User_Profile': this_profile,
-            'This_User_Inverntory': this_inverntory,
-            'Options': options,
-            'MenuList': navbar,
-            'Factors': factors,
-            'User': user_factor,
-            'shop':shop,
-        }
-        return render(request, 'nakhll_market/profile/pages/all_factors.html', context)
-    else:
-        return redirect("auth:login")
+        context['Factors'] = factors
+        context['User'] = user_factor
+        context['shop'] = shop
+
+        return render(request, self.template_name, context)
+    
+    def post(self, request, *args, **kwargs):
+        context = self.get_context_data(request)
+        # Get Status
+        set_status = '6'
+        set_checkout = '0'
+        S_Date = None
+        E_Date = None
+        customer = '000'
+        shop='111'
+        try:
+            StartDate = request.POST["date_start"]
+        except:
+            StartDate = ''
+
+        try:
+            EndDate = request.POST["date_end"]
+        except:
+            EndDate = ''
+
+        try:
+            Status = request.POST["status"]
+        except:
+            Status = ''
+
+        try:
+            Check_Out = request.POST["check_out"]
+        except:
+            Check_Out = ''
+
+        try:
+            Customer = request.POST.getlist("customer_name")
+        except:
+            Customer = ['000']
+        try:
+            shop_id = request.POST.getlist("shop_name")
+        except:
+            shop_id = ['111']
+        if (((StartDate != '') and (EndDate != '')) or (Status != '') or (Check_Out != '') or (Customer != '') or (shop_id !='')):
+            factors = Factor.objects.filter(PaymentStatus=True, Publish=True).order_by('-OrderDate')
+            if (StartDate != '') and (EndDate != ''):
+                Start = StartDate.split('-')
+                End = EndDate.split('-')
+                JStart = jdatetime.date(int(Start[0]), int(Start[1]), int(Start[2]))
+                JEnd = jdatetime.date(int(End[0]), int(End[1]), int(End[2]))
+                GStart = jdatetime.JalaliToGregorian(JStart.year, JStart.month, JStart.day)
+                GEnd = jdatetime.JalaliToGregorian(JEnd.year, JEnd.month, JEnd.day)
+                Str_GStart = "%d-%d-%d" % (GStart.gyear, GStart.gmonth, GStart.gday)
+                Str_GEnd = "%d-%d-%d" % (GEnd.gyear, GEnd.gmonth, GEnd.gday)
+                factors = factors.filter(OrderDate__range=[Str_GStart, Str_GEnd])
+                S_Date = StartDate
+                E_Date = EndDate
+
+            if Status != '6':
+                factors = factors.filter(OrderStatus=Status)
+                set_status = Status
+            if Check_Out != '0':
+                if Check_Out == '1':
+                    factors = factors.filter(Checkout=False)
+                    set_checkout = Check_Out
+                elif Check_Out == '2':
+                    factors = factors.filter(Checkout=True)
+                    set_checkout = Check_Out
+            if not '111' in shop_id:
+                factors = factors.filter(FK_FactorPost__FK_Product__FK_Shop__Slug__in=shop_id).distinct()
+
+            if not '000' in Customer:
+                customers = User.objects.filter(id__in=Customer)
+                factors = factors.filter(FK_User__in=customers)
+            # get user list
+            users = User.objects.filter(is_active=True)
+            #get all shop
+            shop = Shop.objects.all()
+            # Paginate Profiles
+            factors_paginator = Paginator(factors, 20)
+            page = request.GET.get('page')
+
+            factors = factors_paginator.get_page(page)
+
+            context['Factors'] = factors
+            context['User'] = users
+            context['Status'] = set_status
+            context['Start'] = S_Date
+            context['End'] = E_Date
+            context['CheckOut'] = set_checkout
+            context['Customer'] = customers
+            context['shop'] = shop
+            context['shop_id'] = shop_id
+            
+            return render(request, self.template_name, context)
+        else:
+            return redirect("nakhll_market:ShowAllFactorList")
+
 
 
 # Show Factor Item

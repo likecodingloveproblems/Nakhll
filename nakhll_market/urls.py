@@ -264,9 +264,7 @@ urlpatterns = [
     # Show All Alert Path
     path('profile/all-alert/', profileviews.ProfileShowAllAlert, name='ShowAllAlert'),
     # Show All Factor Path
-    path('profile/factor/all/', profileviews.ShowAllFactorList, name='ShowAllFactorList'),
-    # Manage Factor Filter Path
-    path('profile/factor/all/filter/', profileviews.ManageFactorFilter, name='ManageFactorFilter'),
+    path('profile/factor/all/', profileviews.ShowAllFactorList.as_view(), name='ShowAllFactorList'),
     # Show Factor Item Path
     path('profile/factor/all/show_item/<uuid:ID>/', profileviews.ShowFactorItem, name='ShowFactorItem'),
     # Show Factor Item For Shop Path
