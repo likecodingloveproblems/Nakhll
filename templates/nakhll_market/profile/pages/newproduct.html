@@ -122,7 +122,7 @@
                 <div class="row">
                     {% if ShowAlart %}
                     <div class="col-xl-6 xol-lg-6 col-md-6 col-sm-12 col-12">
-                        <div class="alert alert-warning alert-dismissible fade show custom-alart" role="alert">
+                        <div class="alert alert-warning alert-dismissible fade show س" role="alert">
                             <i class="far fa-exclamation-circle"></i><strong>اطلاعیه</strong>
                             <p>
                                 {{AlartMessage}}
@@ -165,7 +165,7 @@
                 
 
                 <!-- Shop -->
-                <div id="alert-div-inputproduct-shop-empty"></div>
+                
 
                 <!-- About -->
                 <!-- <div id="alert-div-inputproduct-about-empty"></div> -->
@@ -173,11 +173,10 @@
                 <!-- <div id="alert-div-inputproduct-about-persian"></div> -->
 
                 <!-- Category -->
-                <div id="alert-div-inputproduct-category-empty"></div>
-                <div id="alert-div-inputproduct-category-count-limit"></div>
+                
 
                 <!-- Submarket -->
-                <div id="alert-div-inputproduct-submarket-empty"></div>
+                
 
                 <!-- Introduction -->
                 
@@ -190,14 +189,13 @@
 
                 <!-- Real & Sell Price -->
                 
-                <div id="alert-div-inputproduct-sell-price-minlength"></div>
+                
                 <!-- <div id="alert-div-inputproduct-real-price-minlength"></div> -->
                 <!-- <div id="alert-div-inputproduct-price-comparison"></div> -->
-                <div id="alert-div-inputproduct-sell-price-empty"></div>
+                
 
                 <!--Off-->
-                <div id="alert-div-inputproduct-off-empty"></div>
-                <div id="alert-div-inputproduct-off-length"></div>
+                
 
                 
 
@@ -205,7 +203,7 @@
                 
 
                
-                <div id="alert-div-inputproduct-weight-comparison"></div>
+                
 
 
                 <!-- Dimension -->
@@ -221,10 +219,10 @@
                 
                 
                 <!-- Product Send Area -->
-                <div id="alert-div-inputproduct-send-area-limit"></div>
+                
 
                 <!-- Product Send Area Exception -->
-                <div id="alert-div-inputproduct-send-area-exception-limit"></div>
+                
 
                 <!-- Product Available Count -->
                 
@@ -302,6 +300,7 @@
                                                     <option value="{{shop.ID}}">{{shop.Title}}</option>
                                                 {% endfor %}
                                             </select>
+                                            <div id="alert-div-inputproduct-shop-empty"></div>
                                         </div>
                                     </div>
                                     <div class="form-row">
@@ -322,6 +321,8 @@
                                                     <option value="{{shop.id}}">{{shop.Title}}</option>
                                                 {% endfor %}
                                             </select>
+                                                <div id="alert-div-inputproduct-category-empty"></div>
+                                                <div id="alert-div-inputproduct-category-count-limit"></div>
                                         </div>
                                         <div class="form-group col-md-6 submarket-form-group">
                                             <label for="inputSubMarket">راسته محصول <code>*</code></label>
@@ -335,6 +336,7 @@
                                                     <option value="{{shop.ID}}">{{shop.Title}}</option>
                                                 {% endfor %}
                                             </select>
+                                                <div id="alert-div-inputproduct-submarket-empty"></div>
                                         </div>
                                     </div>
                                     <div class="form-row">
@@ -357,6 +359,8 @@
                                             <input type="number" name="prod_Price" class="form-control inputprod_sellprice" pattern="[0-9]{5,}" id="inputprod_sellprice" required>
                                             <p class="digit-to-persian" id="sellprice-toman"></p>
                                             <div id="alert-div-inputproduct-price-digits"></div>
+                                            <div id="alert-div-inputproduct-sell-price-empty"></div>
+                                            <div id="alert-div-inputproduct-sell-price-minlength"></div>
                                         </div>
                                 
                                         <div class="form-group col-lg-5 col-md-4 col-xs-4 col-9 offamount-formgroup">
@@ -364,6 +368,9 @@
                                             <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="میزان تخفیف محصول را به ریال وارد نمائید."></i>
                                             <input type="number" name="Prodoffamount" class="form-control inputprod_offamount" pattern="[0-9]{5,}" id="inputprod_offamount">
                                             <p class="digit-to-persian" id="offamount-toman"></p>
+                                               
+                                              <div id="alert-div-inputproduct-off-empty"></div>
+                                             <div id="alert-div-inputproduct-off-length"></div>        
                                         </div>
                                         <div class="form-group col-lg-1 col-md-2 col-3 remove-off-formgroup">
                                             <p class="off-question off-yes small-size" id="remove-off">حذف تخفیف</p>
@@ -390,6 +397,7 @@
                                             <input type="number" name="product_packingweight" class="form-control" pattern="[0-9]{1,5}" id="input_packingweight" required>
                                             <p class="digit-to-persian" id="packing-weight"></p>
                                             <div id="alert-div-inputproduct-packing-weight-empty"></div>
+                                            <div id="alert-div-inputproduct-weight-comparison"></div>
 
                                         </div>
                                     </div>
@@ -403,8 +411,8 @@
                                             <p class="digit-to-persian" id="length-dimension"></p>
                                             <div id="alert-div-inputproduct-dimension-digits"></div>
                                             <div id="alert-div-inputproduct-length-dimension-empty"></div>
-                                            <div id="alert-div-inputproduct-width-dimension-empty"></div>
-                                            <div id="alert-div-inputproduct-height-dimension-empty"></div>
+                                            
+                                            
 
                                         </div>
     
@@ -413,6 +421,7 @@
                                         <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="عرض بسته بندی محصول را به صورت سانتی متر وارد نمایید."></i>
                                             <input type="number" name="product_widthwithpackaging" class="form-control" pattern="[0-9]{1,4}" id="input_widthwithpackaging" required>
                                             <p class="digit-to-persian" id="width-dimension"></p>
+                                            <div id="alert-div-inputproduct-width-dimension-empty"></div>
                                             
                                         </div>
     
@@ -421,12 +430,13 @@
                                         <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="ارتفاع بسته بندی محصول را به صورت سانتی متر وارد نمایید."></i>
                                             <input type="number" name="product_heightwithpackaging" class="form-control" pattern="[0-9]{1,4}" id="input_heightwithpackaging" required>
                                             <p class="digit-to-persian" id="height-dimension"></p>
+                                            <div id="alert-div-inputproduct-height-dimension-empty"></div>
                                             
                                         </div>
                                     </div>
 
                                     <div class="form-row">
-                                        <div class="form-group col-md-6">
+                                        <div class="form-group col-md-4">
                                             <label for="PostRangeType">محدوده ارسال</label>
                                             <select id="PostRangeType" name="ProdRange" class="form-control">
                                                 <option selected>سراسر کشور</option>
@@ -434,9 +444,8 @@
                                                 <option>شهرستانی</option>
                                                 <option>شهری</option>
                                             </select>
-                                            <div id="alert-div-inputproduct-available-count-empty"></div>
-                                            <div id="alert-div-inputproduct-available-count-digits"></div>
-                                            <div id="alert-div-inputproduct-available-count-zero-value"></div> 
+                                            <div id="alert-div-inputproduct-send-area-limit"></div>
+                                            <div id="alert-div-inputproduct-send-area-exception-limit"></div>
                                         </div>
                                         <div class="form-group col-md-4" id="detail-now-box">
                                             <label for="product_Status">وضعیت محصول<code>*</code></label>
@@ -447,11 +456,13 @@
                                                 <option>موجود نیست</option>
                                             </select>
                                         </div>
-                                        <div class="form-group col-md-2" id="detail-num-box">
+                                        <div class="form-group col-md-4" id="detail-num-box">
                                             <label for="product_available_count">تعداد موجودی <code>*</code></label>
                                             <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="تعداد موجودی خود در انبار را میتوانید در این قسمت وارد کنید."></i>
                                             <input type="text" name="product_available_count" class="form-control" id="prod_num_in_store" maxlength="2">
-                                                                       
+                                            <div id="alert-div-inputproduct-available-count-empty"></div>
+                                            <div id="alert-div-inputproduct-available-count-digits"></div>
+                                            <div id="alert-div-inputproduct-available-count-zero-value"></div>                       
                                         </div>
                                     </div>
 
@@ -839,7 +850,7 @@
                         
                         <div class="dashboard" id="attribute-box-section">
                             <form id="attribute-product-form">
-                                <h5>ثبت ویژگی محصول</h5>
+                                <h5>مشخصات محصول</h5>
                                 <div class="row">
                                     <div class="col-xl-11">
                                         <div class="form-row">
@@ -1359,6 +1370,7 @@
         //  $progress.show();
           $alert.removeClass('alert-success alert-warning');
           canvas.toBlob(function (blob) {
+              //console.log('result=====>', blob)
               new Compressor(blob, {
                           quality: 0.6,
                           maxWidth:900,
@@ -1373,78 +1385,76 @@
                                 //console.log('base64data=====>', base64data)
                                   //checkActiveCrop.src = base64data;
                                   // $('#avatar').val(base64data);
-                                  form_Data.append('gallery_image', result, 'avatar.jpg');
-                                  formData.append('product_id', ProductID);
-
-                                  //files = [...form_Data];
+                               
                                   //console.log('dfvdsfvdfv',...form_Data)
+                                  formData.append('gallery_image', result, 'avatar.jpg');
+          
+                                  formData.append('product_id', ProductID);
+                                  var crf_token = $('input[name=csrfmiddlewaretoken]').val();
+                                  $(".progress-hide").show();
+                                  $.ajax (
+                                          {
+                                              url: '{% url "restapi:web_product_add_imagetogallery" %}',
+                                              method:"post",
+                                              data: formData,
+                                              contentType: false,
+                                              processData: false,
+                                              headers:{"X-CSRFToken": crf_token},
+                                              xhr: function () {
+                                              var xhr = new XMLHttpRequest();
+                                              xhr.upload.onprogress = function (e) {
+                                                  var percent = '0';
+                                                  var percentage = '0%';
+                                                  
+                                                  if (e.lengthComputable) {
+                                                      percent = Math.round((e.loaded / e.total) * 100);
+                                                      percentage = percent + '%';
+                                                      $(".progress-bar").width(percentage).attr('aria-valuenow', percent).text(percentage);
+                                                  }
+                                              };
+                                              
+                                              return xhr;
+                                          },
+                                              success: function (json, status) {
+                                                  $("#input2").prop('disabled', false);
+                                                  $("#label-of-gallery").css('cursor', 'pointer');
+                                                  $("#avatar2").fadeTo('fast', 1);
+                                                  $(".progress-hide").hide();
+                                                  $(".progress-bar").width('0%').attr('aria-valuenow', 0).text('0%');
+                                                  $("#loaderDiv3").hide();
+                                                  if (json.status)
+                                                  {
+                                                      $(".product-gallery-pics").prepend('<div val="' + json.id + '" class="col-xl-3 prod-gallery-pic-box">' +
+                                                              '<div class="box-gallery-img-section gallery-img-show">' +
+                                                                  '<img src="'+ canvas.toDataURL() +'" alt="عکس محصول">' +
+                                                                  '<div class="item-gallery-option">' +
+                                                                      '<a href="' + json.image + '" id="show-image-gallery-product" title="مشاهده" target="_blank"><i class="fas fa-eye"></i></a>' +
+                                                                      '<button val="' + json.id + '" class="delete-prod-pic" href="#" id="delete-image-gallery-product"  title="حذف"><i class="fas fa-minus-circle"></i></button>' +
+                                                                  '</div>' +
+                                                              '</div>' +
+                                                          '</div>');
+                                                  }
+                                                  else {
+                                                      console.log(json.message);
+                                                  }
+                                              },
+                                              error: function (xhr, erstatus) {
+                                                  $(".progress-bar").width('0%').attr('aria-valuenow', 0).text('0%');
+                                                  $("#loaderDiv3").hide();
+                                                  $(".progress-hide").hide();
+                                                  $("#label-of-gallery").css('cursor', 'pointer');
+                                                  console.log(xhr);
+                                                  console.log(xhr.responseJSON);
+                                                  console.log(xhr.responseJSON.status);
+                                                  console.log(xhr.responseJSON.message);
+                                                  console.log(erstatus);
+                                              }
+                                          }
+                                      )
                             }
                         },
                     });
-          //formData.append('gallery_image', blob, 'avatar.jpg');
-          
-        //formData.append('product_id', ProductID);
-        var crf_token = $('input[name=csrfmiddlewaretoken]').val();
-        $(".progress-hide").show();
-        $.ajax (
-                {
-                    url: '{% url "restapi:web_product_add_imagetogallery" %}',
-                    method:"post",
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    headers:{"X-CSRFToken": crf_token},
-                    xhr: function () {
-                    var xhr = new XMLHttpRequest();
-                    xhr.upload.onprogress = function (e) {
-                        var percent = '0';
-                        var percentage = '0%';
-                        
-                        if (e.lengthComputable) {
-                            percent = Math.round((e.loaded / e.total) * 100);
-                            percentage = percent + '%';
-                            $(".progress-bar").width(percentage).attr('aria-valuenow', percent).text(percentage);
-                        }
-                    };
-                    
-                    return xhr;
-                },
-                    success: function (json, status) {
-                        $("#input2").prop('disabled', false);
-                        $("#label-of-gallery").css('cursor', 'pointer');
-                        $("#avatar2").fadeTo('fast', 1);
-                        $(".progress-hide").hide();
-                        $(".progress-bar").width('0%').attr('aria-valuenow', 0).text('0%');
-                        $("#loaderDiv3").hide();
-                        if (json.status)
-                        {
-                            $(".product-gallery-pics").prepend('<div val="' + json.id + '" class="col-xl-3 prod-gallery-pic-box">' +
-                                    '<div class="box-gallery-img-section gallery-img-show">' +
-                                        '<img src="'+ canvas.toDataURL() +'" alt="عکس محصول">' +
-                                        '<div class="item-gallery-option">' +
-                                            '<a href="' + json.image + '" id="show-image-gallery-product" title="مشاهده" target="_blank"><i class="fas fa-eye"></i></a>' +
-                                            '<button val="' + json.id + '" class="delete-prod-pic" href="#" id="delete-image-gallery-product"  title="حذف"><i class="fas fa-minus-circle"></i></button>' +
-                                        '</div>' +
-                                    '</div>' +
-                                '</div>');
-                        }
-                        else {
-                            console.log(json.message);
-                        }
-                    },
-                    error: function (xhr, erstatus) {
-                        $(".progress-bar").width('0%').attr('aria-valuenow', 0).text('0%');
-                        $("#loaderDiv3").hide();
-                        $(".progress-hide").hide();
-                        $("#label-of-gallery").css('cursor', 'pointer');
-                        console.log(xhr);
-                        console.log(xhr.responseJSON);
-                        console.log(xhr.responseJSON.status);
-                        console.log(xhr.responseJSON.message);
-                        console.log(erstatus);
-                    }
-                }
-            )
+
         });
         }
       });
@@ -1617,12 +1627,12 @@
     })
     $(".submit-and-accept").on('click', function(e) {
         e.preventDefault();
-        $(".submit-product-btn").addClass("send-button-disabled disabled");
+        
         submitProduct();
     })
     
     var SlugDup = false;
-    $("#inputslugProd").on("input", function () {
+    $("#inputslugProd").on("blur", function () {
         setTimeout(function(){
         var ProductSlug = $("#inputslugProd").val();
         if(ProductSlug !== '') {
