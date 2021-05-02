@@ -248,7 +248,7 @@
                                                 <input type="text" class="form-control choose-pic-input-name" disabled placeholder="آپلود عکس">
                                             </div>
                                             <br>
-                                            <img class="rounded cropper-rounded " id="avatar" src="{% static "images/image_upload.jpg" %}" alt="avatar"  data-toggle="tooltip" title="انتخاب عکس ">
+                                            <img class="rounded col-sm-12 col-md-4 col-xl-4" id="avatar" src="{% static "images/image_upload.jpg" %}" alt="avatar"  data-toggle="tooltip" title="انتخاب عکس ">
                                         </label>
                                     </div>
                                     <div class="alert cropper-alert" role="alert"></div>
@@ -1245,8 +1245,9 @@
 
       $modal.on('shown.bs.modal', function () {
         cropper = new Cropper(image, {
-          aspectRatio: 1,
+          aspectRatio: 16 / 9,
           viewMode: 3,
+          
         });
       }).on('hidden.bs.modal', function () {
         cropper.destroy();
@@ -1340,7 +1341,7 @@
 
       $modal.on('shown.bs.modal', function () {
         cropper = new Cropper(image, {
-          aspectRatio: 1,
+            aspectRatio: 16 / 9,
           viewMode: 3,
         });
       }).on('hidden.bs.modal', function () {
