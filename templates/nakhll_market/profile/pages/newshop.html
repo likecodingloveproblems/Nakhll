@@ -1042,20 +1042,20 @@
                 $alert.removeClass('alert-success alert-warning');
 
                 canvas.toBlob(function (blob) {
-                      console.log('blob==>', blob)
-                    //   // //console.log(' checkActiveCrop.src =====>',  checkActiveCrop.src )
+                      //console.log('blob==>', blob)
+                     //console.log(' checkActiveCrop.src =====>',  checkActiveCrop.src )
                       new Compressor(blob, {
                           quality: 0.6,
                           maxWidth:900,
                           maxHeight: 900,
                           convertSize: 5000,
                           success(result) {
-                              console.log('result=====>', result)
+                              //console.log('result=====>', result)
                               var reader = new FileReader();
                               reader.readAsDataURL(result);
                               reader.onloadend = function () {
                                   var base64data = reader.result;
-                                //   // //console.log('base64data=====>', base64data)
+                                 //console.log('base64data=====>', base64data)
                                   checkActiveCrop.src = base64data;
                                   // $('#avatar').val(base64data);
                                   form_Data.append(nameImage, result, 'avatar.jpg');
@@ -1199,8 +1199,29 @@
                 canvas.toBlob(function (blob) {
                     //   console.log('blob', blob)
                     formData.append('gallery_image', blob, 'avatar.jpg');
+                    new Compressor(blob, {
+                        quality: 0.6,
+                        maxWidth:900,
+                        maxHeight: 900,
+                        convertSize: 5000,
+                        success(result) {
+                            console.log('result=====>', result)
+                            var reader = new FileReader();
+                            reader.readAsDataURL(result);
+                            reader.onloadend = function () {
+                                var base64data = reader.result;
+                              //console.log('base64data=====>', base64data)
+                                //checkActiveCrop.src = base64data;
+                                // $('#avatar').val(base64data);
+                                form_Data.append('gallery_image', result, 'avatar.jpg');
+                                formData.append('shop_id', ShopID);
+                                //files = [...form_Data];
+                                //console.log('dfvdsfvdfv',...form_Data)
+                          }
+                      },
+                  });
 
-                    formData.append('shop_id', ShopID);
+
                     var crf_token = $('input[name=csrfmiddlewaretoken]').val();
                     $(".progress-hide").show();
                     $.ajax(

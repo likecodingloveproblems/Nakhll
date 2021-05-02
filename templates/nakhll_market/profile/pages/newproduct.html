@@ -1342,6 +1342,7 @@
         //  $progress.show();
           $alert.removeClass('alert-success alert-warning');
           canvas.toBlob(function (blob) {
+              //console.log('result=====>', blob)
               new Compressor(blob, {
                           quality: 0.6,
                           maxWidth:900,
@@ -1356,78 +1357,76 @@
                                 //console.log('base64data=====>', base64data)
                                   //checkActiveCrop.src = base64data;
                                   // $('#avatar').val(base64data);
-                                  form_Data.append('gallery_image', result, 'avatar.jpg');
-                                  formData.append('product_id', ProductID);
-
-                                  //files = [...form_Data];
+                               
                                   //console.log('dfvdsfvdfv',...form_Data)
+                                  formData.append('gallery_image', result, 'avatar.jpg');
+          
+                                  formData.append('product_id', ProductID);
+                                  var crf_token = $('input[name=csrfmiddlewaretoken]').val();
+                                  $(".progress-hide").show();
+                                  $.ajax (
+                                          {
+                                              url: '{% url "restapi:web_product_add_imagetogallery" %}',
+                                              method:"post",
+                                              data: formData,
+                                              contentType: false,
+                                              processData: false,
+                                              headers:{"X-CSRFToken": crf_token},
+                                              xhr: function () {
+                                              var xhr = new XMLHttpRequest();
+                                              xhr.upload.onprogress = function (e) {
+                                                  var percent = '0';
+                                                  var percentage = '0%';
+                                                  
+                                                  if (e.lengthComputable) {
+                                                      percent = Math.round((e.loaded / e.total) * 100);
+                                                      percentage = percent + '%';
+                                                      $(".progress-bar").width(percentage).attr('aria-valuenow', percent).text(percentage);
+                                                  }
+                                              };
+                                              
+                                              return xhr;
+                                          },
+                                              success: function (json, status) {
+                                                  $("#input2").prop('disabled', false);
+                                                  $("#label-of-gallery").css('cursor', 'pointer');
+                                                  $("#avatar2").fadeTo('fast', 1);
+                                                  $(".progress-hide").hide();
+                                                  $(".progress-bar").width('0%').attr('aria-valuenow', 0).text('0%');
+                                                  $("#loaderDiv3").hide();
+                                                  if (json.status)
+                                                  {
+                                                      $(".product-gallery-pics").prepend('<div val="' + json.id + '" class="col-xl-3 prod-gallery-pic-box">' +
+                                                              '<div class="box-gallery-img-section gallery-img-show">' +
+                                                                  '<img src="'+ canvas.toDataURL() +'" alt="عکس محصول">' +
+                                                                  '<div class="item-gallery-option">' +
+                                                                      '<a href="' + json.image + '" id="show-image-gallery-product" title="مشاهده" target="_blank"><i class="fas fa-eye"></i></a>' +
+                                                                      '<button val="' + json.id + '" class="delete-prod-pic" href="#" id="delete-image-gallery-product"  title="حذف"><i class="fas fa-minus-circle"></i></button>' +
+                                                                  '</div>' +
+                                                              '</div>' +
+                                                          '</div>');
+                                                  }
+                                                  else {
+                                                      console.log(json.message);
+                                                  }
+                                              },
+                                              error: function (xhr, erstatus) {
+                                                  $(".progress-bar").width('0%').attr('aria-valuenow', 0).text('0%');
+                                                  $("#loaderDiv3").hide();
+                                                  $(".progress-hide").hide();
+                                                  $("#label-of-gallery").css('cursor', 'pointer');
+                                                  console.log(xhr);
+                                                  console.log(xhr.responseJSON);
+                                                  console.log(xhr.responseJSON.status);
+                                                  console.log(xhr.responseJSON.message);
+                                                  console.log(erstatus);
+                                              }
+                                          }
+                                      )
                             }
                         },
                     });
-          //formData.append('gallery_image', blob, 'avatar.jpg');
-          
-        //formData.append('product_id', ProductID);
-        var crf_token = $('input[name=csrfmiddlewaretoken]').val();
-        $(".progress-hide").show();
-        $.ajax (
-                {
-                    url: '{% url "restapi:web_product_add_imagetogallery" %}',
-                    method:"post",
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    headers:{"X-CSRFToken": crf_token},
-                    xhr: function () {
-                    var xhr = new XMLHttpRequest();
-                    xhr.upload.onprogress = function (e) {
-                        var percent = '0';
-                        var percentage = '0%';
-                        
-                        if (e.lengthComputable) {
-                            percent = Math.round((e.loaded / e.total) * 100);
-                            percentage = percent + '%';
-                            $(".progress-bar").width(percentage).attr('aria-valuenow', percent).text(percentage);
-                        }
-                    };
-                    
-                    return xhr;
-                },
-                    success: function (json, status) {
-                        $("#input2").prop('disabled', false);
-                        $("#label-of-gallery").css('cursor', 'pointer');
-                        $("#avatar2").fadeTo('fast', 1);
-                        $(".progress-hide").hide();
-                        $(".progress-bar").width('0%').attr('aria-valuenow', 0).text('0%');
-                        $("#loaderDiv3").hide();
-                        if (json.status)
-                        {
-                            $(".product-gallery-pics").prepend('<div val="' + json.id + '" class="col-xl-3 prod-gallery-pic-box">' +
-                                    '<div class="box-gallery-img-section gallery-img-show">' +
-                                        '<img src="'+ canvas.toDataURL() +'" alt="عکس محصول">' +
-                                        '<div class="item-gallery-option">' +
-                                            '<a href="' + json.image + '" id="show-image-gallery-product" title="مشاهده" target="_blank"><i class="fas fa-eye"></i></a>' +
-                                            '<button val="' + json.id + '" class="delete-prod-pic" href="#" id="delete-image-gallery-product"  title="حذف"><i class="fas fa-minus-circle"></i></button>' +
-                                        '</div>' +
-                                    '</div>' +
-                                '</div>');
-                        }
-                        else {
-                            console.log(json.message);
-                        }
-                    },
-                    error: function (xhr, erstatus) {
-                        $(".progress-bar").width('0%').attr('aria-valuenow', 0).text('0%');
-                        $("#loaderDiv3").hide();
-                        $(".progress-hide").hide();
-                        $("#label-of-gallery").css('cursor', 'pointer');
-                        console.log(xhr);
-                        console.log(xhr.responseJSON);
-                        console.log(xhr.responseJSON.status);
-                        console.log(xhr.responseJSON.message);
-                        console.log(erstatus);
-                    }
-                }
-            )
+
         });
         }
       });

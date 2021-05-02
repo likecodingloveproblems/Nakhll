@@ -6847,7 +6847,8 @@ ul.optional-attr-question-list li {
     margin-right: auto;
     max-width: 100% !important;
     height: auto;
-}
+    max-height: 355px;
+}   
 
 .card-carousel {
     display: flex;
