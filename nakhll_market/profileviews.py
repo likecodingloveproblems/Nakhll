@@ -3060,13 +3060,36 @@ def RepalyTicketing(request, ticket_id):
 
 # ---------------------- End Ticketin Section ----------------------
 
-class ProfileAlert(LoginRequiredMixin, TemplateView):
+class ProfileAlert(LoginRequiredMixin, StaffuserRequiredMixin, View):
     template_name = 'nakhll_market/profile/pages/alert.html'
     redirect_field_name = 'auth:login'
 
-    def get_context_data(self, **kwargs):
+    def get_creator_users(self, alerts):
+        return  User.objects.filter(
+            pk__in=Alert.objects.values_list('FK_User__id', flat=True),
+            is_active=True,
+        )
+
+    def get_staff_users(self, alerts):
+        return  User.objects.filter(
+            pk__in=Alert.objects.values_list('FK_User__id', flat=True),
+            is_active=True,
+            is_staff=True,
+        )
+
+    def paginate(self, request, alerts):
+        number_of_item = 30
+        alertPaginator = Paginator(alerts, number_of_item)
+        page = request.GET.get('page')
+        alerts = alertPaginator.get_page(page)
+        return alerts
+
+    def get_users_by_id(self, items):
+        items = list(filter(lambda item: item.isdigit(), items))
+        return User.objects.filter(pk__in=items)
+
+    def get_context_data(self, request, context, **kwargs):
         request = self.request
-        context = super().get_context_data(**kwargs)
         this_profile = Profile.objects.get(FK_User=request.user)
         this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
@@ -3074,17 +3097,79 @@ class ProfileAlert(LoginRequiredMixin, TemplateView):
         # Get Nav Bar Menu Item
         navbar = Option_Meta.objects.filter(Title='nav_menu_items')
         # --------------------------------------------------------------------
-        # get all new alert
-        alert = Alert.objects.filter(Seen=False).order_by('DateCreate')
-
         context['This_User_Profile'] = this_profile
         context['This_User_Inverntory'] = this_inverntory
         context['Options'] = options
         context['MenuList'] = navbar
-        context['Alert'] = alert
-
+        context['users'] = self.get_creator_users(context['Alert'])
+        context['staffs'] = self.get_staff_users(context['Alert'])
+        context['Alert'] = self.paginate(request, context['Alert'])
         return context
 
+    def get(self, request, *args, **kwargs):
+        # get all new alert
+        context = {}
+        alerts = Alert.objects.filter(Seen=False).order_by('DateCreate')
+        context['seen_status'] = False
+        context['Alert'] = alerts
+        context = self.get_context_data(request, context)
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        # Get Status
+        context = {}
+        set_checkout = '0'
+        S_Date = None
+        E_Date = None
+        customer = '000'
+
+        StartDate = request.POST.get("date_start", '')
+        EndDate = request.POST.get("date_end", '')
+        Check_Out = request.POST.get("check_out", '0')
+        seen_status = request.POST.get('seen_status', '000')
+        selected_users = request.POST.getlist("selected_users", ['000'])
+        selected_staffs = request.POST.getlist("selected_staffs", ['000'])
+
+        if (((StartDate != '') and (EndDate != '')) or
+            (Check_Out != '') or 
+            (selected_users != '') or 
+            (seen_status != '') or 
+            (selected_staffs != '')):
+            alerts = Alert.objects.order_by('-DateCreate')
+            if (StartDate != '') and (EndDate != ''):
+                Start = StartDate.split('-')
+                End = EndDate.split('-')
+                JStart = jdatetime.date(int(Start[0]), int(Start[1]), int(Start[2]))
+                JEnd = jdatetime.date(int(End[0]), int(End[1]), int(End[2]))
+                GStart = jdatetime.JalaliToGregorian(JStart.year, JStart.month, JStart.day)
+                GEnd = jdatetime.JalaliToGregorian(JEnd.year, JEnd.month, JEnd.day)
+                Str_GStart = "%d-%d-%d" % (GStart.gyear, GStart.gmonth, GStart.gday)
+                Str_GEnd = "%d-%d-%d" % (GEnd.gyear, GEnd.gmonth, GEnd.gday)
+                alerts = alerts.filter(DateCreate__range=[Str_GStart, Str_GEnd])
+                S_Date = StartDate
+                E_Date = EndDate
+            if Check_Out != '000':
+                alerts = alerts.filter(Part=Check_Out)
+                set_checkout = Check_Out
+            if not '000' in selected_users:
+                alerts = alerts.filter(FK_User__in=User.objects.filter(id__in=selected_users))
+            if not '000' in selected_staffs:
+                alerts = alerts.filter(FK_User__in=User.objects.filter(id__in=selected_staffs))
+            if seen_status != '000':
+                seen_status = int(seen_status)
+                alerts = alerts.filter(Seen = seen_status)
+
+            context['Alert'] = alerts
+            context['Start'] = S_Date
+            context['End'] = E_Date
+            context['CheckOut'] = set_checkout
+            context['seen_status'] = seen_status
+            context['selected_users'] = self.get_users_by_id(selected_users)
+            context['selected_staffs'] = self.get_users_by_id(selected_staffs)
+            context = self.get_context_data(request, context)
+            return render(request, self.template_name, context)
+        else:
+            return redirect('nakhll_market:Alert')
 
 # Profile Alert
 # def ProfileAlert(request):
