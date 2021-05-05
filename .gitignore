@@ -5,3 +5,5 @@ media/*
 *.py[cod]
 venv/*
 .env*
+.vscode/*
+.idea/*
