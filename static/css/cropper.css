@@ -19,18 +19,95 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  height: 60vh !important;
 }
 
-.cropper-container img {
-  display: block;
-  height: 100%;
-  image-orientation: 0deg;
-  max-height: none !important;
-  max-width: none !important;
-  min-height: 0 !important;
-  min-width: 0 !important;
-  width: 100%;
+/* Extra small devices (phones, 540px and down) */
+@media only screen and (min-width: 540px) {
+  .cropper-container img {
+    display: block;
+    height: 74vh !important;
+    image-orientation: 0deg;
+    max-height: none !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    min-width: 0 !important;
+    /* width: 100% !important; */
+  }
 }
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+  .cropper-container img {
+    display: block;
+    height: 62.5vh !important;
+    image-orientation: 0deg;
+    max-height: none !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    min-width: 0 !important;
+    /* width: 100% !important; */
+  }
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+  .cropper-container img {
+    display: block;
+    height: 120vh !important;
+    image-orientation: 0deg;
+    max-height: none !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    min-width: 0 !important;
+    /* width: 100% !important; */
+  };
+  .cropper-canvas {
+height: 140%;
+  }
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+  .cropper-container img {
+    display: block;
+    height: 61vh !important;
+    image-orientation: 0deg;
+    max-height: none !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    min-width: 0 !important;
+    /* width: 100% !important; */
+  }
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+  .cropper-container img {
+    display: block;
+    height: 60vh !important;
+    image-orientation: 0deg;
+    max-height: none !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    min-width: 0 !important;
+    /* width: 100% !important; */
+  }
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+  .cropper-container img {
+    display: block;
+    height: 60vh !important;
+    image-orientation: 0deg;
+    max-height: none !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    min-width: 0 !important;
+    /* width: 100% !important; */
+  };
+}
+
 
 .cropper-wrap-box,
 .cropper-canvas,
@@ -43,10 +120,15 @@
   right: 0;
   top: 0;
 }
+.img-container {
+  height: 60vh;
+
+}
 
 .cropper-wrap-box,
 .cropper-canvas {
   overflow: hidden;
+  height: 111% !important;
 }
 
 .cropper-drag-box {
@@ -279,7 +361,7 @@
 
 .cropper-hide {
   display: block;
-  height: 0;
+  height: 100%;
   position: absolute;
   width: 0;
 }

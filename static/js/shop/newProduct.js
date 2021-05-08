@@ -94,201 +94,203 @@ $("#alert-div-system-error").hide();
 
 //Img
 $("#alert-div-inputproduct-img-empty").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-	'<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-	'<i class="far fa-exclamation-circle"></i>' +
+	'<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+	// '<i class="far fa-exclamation-circle"></i>' 
+    
 	'<p>یک عکس برای محصول باید انتخاب شود.</p>' +
 	'</div></div>');
 
 //Title
 $("#alert-div-inputproduct-title-empty").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-	'<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-	'<i class="far fa-exclamation-circle"></i>' +
+	'<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+	// '<i class="far fa-exclamation-circle"></i>' 
+    
 	'<p>وارد کردن عنوان محصول الزامی است.</p>' +
     '</div></div>');
     
 $("#alert-div-inputproduct-title-minlength").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-	'<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-	'<i class="far fa-exclamation-circle"></i>' +
+	'<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+	// '<i class="far fa-exclamation-circle"></i>' +
 	'<p>عنوان محصول باید از 2 کارکتر بیشتر باشد.</p>' +
 	'</div></div>');
 
 $("#alert-div-inputproduct-title-maxlength").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>عنوان محصول نمیتواند بیشتر از 170 کاراکتر باشد.</p>' +
     '</div></div>');
 
 // $("#alert-div-inputproduct-title-valid-chars").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-//     '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-//     '<i class="far fa-exclamation-circle"></i>' +
+//     '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    '<i class="far fa-exclamation-circle"></i>' +
 //     '<p>در عنوان محصول از کاراکترهای غیر مجاز استفاده شده است.</p>' +
 //     '</div></div>');
 // $("#alert-div-inputproduct-title-persian").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-// 	'<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-// 	'<i class="far fa-exclamation-circle"></i>' +
+// 	'<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+	'<i class="far fa-exclamation-circle"></i>' +
 // 	'<p>برای عنوان فقط از حروف فارسی، خط تیره ("-")، پرانتز و اعداد میتوانید استفاده کنید.</p>' +
 // 	'</div></div>');
 
 //Slug
 $("#alert-div-inputproduct-slug-empty").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-	'<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-	'<i class="far fa-exclamation-circle"></i>' +
+	'<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+	// '<i class="far fa-exclamation-circle"></i>' +
 	'<p>وارد کردن شناسه محصول الزامی است.</p>' +
 	'</div></div>');
 
 $("#alert-div-inputproduct-slug-english").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-	'<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-	'<i class="far fa-exclamation-circle"></i>' +
+	'<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+	// '<i class="far fa-exclamation-circle"></i>' +
 	'<p>شناسه محصول باید شامل حروف انگلیسی کوچک،، اعداد، خط تیره ("-") و بدون فاصله باشد.</p>' +
 	'</div></div>');
 
 $("#alert-div-inputproduct-slug-dup").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-	'<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-	'<i class="far fa-exclamation-circle"></i>' +
+	'<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+	// '<i class="far fa-exclamation-circle"></i>' +
 	'<p>این شناسه محصول تکراری میباشد.</p>' +
     '</div></div>');
     
 //Shop
 $("#alert-div-inputproduct-shop-empty").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>حجره محصول خود را باید مشخص کنید.</p>' +
     '</div></div>');
 
 //About
 // $("#alert-div-inputproduct-about-empty").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-//     '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-//     '<i class="far fa-exclamation-circle"></i>' +
+//     '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    '<i class="far fa-exclamation-circle"></i>' +
 //     '<p>درباره محصول نمیتواند خالی باشد.</p>' +
 //     '</div></div>');
     
 // $("#alert-div-inputproduct-about-valid-chars").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-//     '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-//     '<i class="far fa-exclamation-circle"></i>' +
+//     '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    '<i class="far fa-exclamation-circle"></i>' +
 //     '<p>در درباره محصول از کاراکترهای غیر مجاز استفاده شده است.</p>' +
 //     '</div></div>');
 
 
 // $("#alert-div-inputproduct-about-persian").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-// 	'<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-// 	'<i class="far fa-exclamation-circle"></i>' +
+// 	'<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+	'<i class="far fa-exclamation-circle"></i>' +
 // 	'<p>درباره محصول باید فارسی باشد</p>' +
 // 	'</div></div>');
 
 //Category
 $("#alert-div-inputproduct-category-empty").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>دسته بندی محصول خود را باید مشخص کنید.</p>' +
     '</div></div>');
 
 $("#alert-div-inputproduct-category-count-limit").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>محصول نمیتواند در بیش از 10 دسته بندی قرار بگیرد.</p>' +
     '</div></div>');
 
 //ُSubmarket
 $("#alert-div-inputproduct-submarket-empty").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>راسته محصول خود را باید مشخص کنید.</p>' +
     '</div></div>');
 
 //Introduction
 $("#alert-div-inputproduct-bio-empty").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>معرفی محصول نمیتواند خالی باشد.</p>' +
     '</div></div>');
 // $("#alert-div-inputproduct-intro-valid-chars").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-//     '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-//     '<i class="far fa-exclamation-circle"></i>' +
+//     '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    '<i class="far fa-exclamation-circle"></i>' +
 //     '<p>در معرفی محصول از کاراکترهای غیر مجاز استفاده شده است.</p>' +
 //     '</div></div>');
 $("#alert-div-inputproduct-bio-maxlength").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>معرفی محصول نمیتواند بیش از 200 کاراکتر باشد.</p>' +
     '</div></div>');
 
 //Story
 // $("#alert-div-inputproduct-story-valid-chars").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-//     '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-//     '<i class="far fa-exclamation-circle"></i>' +
+//     '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    '<i class="far fa-exclamation-circle"></i>' +
 //     '<p>در داستان محصول از کاراکترهای غیر مجاز استفاده شده است.</p>' +
 //     '</div></div>');
 
 // //Real & Sell Price
 $("#alert-div-inputproduct-price-digits").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>برای قیمت فقط از اعداد باید استفاده کنید.</p>' +
     '</div></div>');
 
 // $("#alert-div-inputproduct-price-comparison").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-//     '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-//     '<i class="far fa-exclamation-circle"></i>' +
+//     '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    '<i class="far fa-exclamation-circle"></i>' +
 //     '<p>قیمت فروش باید کمتر از قیمت واقعی باشد.</p>' +
 //     '</div></div>');
 
 //Sell Price
 $("#alert-div-inputproduct-sell-price-empty").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>مشخص کردن قیمت فروش محصول الزامی است.</p>' +
     '</div></div>');
 
 $("#alert-div-inputproduct-sell-price-minlength").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>قیمت فروش باید از 2 رقم بیشتر باشد.</p>' +
     '</div></div>');
 
 // //Real Price
 // $("#alert-div-inputproduct-real-price-minlength").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-//     '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-//     '<i class="far fa-exclamation-circle"></i>' +
+//     '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    '<i class="far fa-exclamation-circle"></i>' +
 //     '<p>قیمت واقعی باید از 5 رقم بیشتر باشد.</p>' +
 //     '</div></div>');
 
 //Off
 $("#alert-div-inputproduct-off-empty").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>تخفیف روی محصول اعمال شده اما مقداری برای آن مقرر نگردیده است. در صورتی که محصول شامل تخفیف نمیشود گزینه "حذف تخفیف" را انتخاب کنید.</p>' +
     '</div></div>');
 
 $("#alert-div-inputproduct-off-length").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>میزان تخفیف بایستی از 1 تومان به بالا باشد.</p>' +
     '</div></div>')
 
 //Pure Weight
 $("#alert-div-inputproduct-pure-weight-empty").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>مشخص کردن وزن خالص محصول الزامی است.</p>' +
     '</div></div>');
 
 //Packing Weight
 $("#alert-div-inputproduct-packing-weight-empty").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>مشخص کردن وزن بسته بندی محصول الزامی است.</p>' +
     '</div></div>');
 
 
 $("#alert-div-inputproduct-weight-digits").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>فقط از اعداد برای مشخص کردن وزن استفاده نمائید.</p>' +
     '</div></div>');
 
 $("#alert-div-inputproduct-weight-comparison").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>وزن خالص محصول باید کمتر از وزن محصول با بسته بندی باشد.</p>' +
     '</div></div>');
 
@@ -296,68 +298,68 @@ $("#alert-div-inputproduct-weight-comparison").html('<div class="col-xl-12 xol-l
 //Product Dimension
 //Product Length
 $("#alert-div-inputproduct-length-dimension-empty").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>مشخص کردن طول بسته بندی محصول الزامی است.</p>' +
     '</div></div>');
 //Product Width
 $("#alert-div-inputproduct-width-dimension-empty").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>مشخص کردن عرض بسته بندی محصول الزامی است.</p>' +
     '</div></div>');
 //Product Height
 $("#alert-div-inputproduct-height-dimension-empty").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>مشخص کردن ارتفاع بسته بندی محصول الزامی است.</p>' +
     '</div></div>');
 
 
 $("#alert-div-inputproduct-dimension-digits").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>فقط از اعداد برای مشخص کردن ابعاد استفاده نمائید.</p>' +
     '</div></div>');
 
 //Product Send Area
 $("#alert-div-inputproduct-send-area-limit").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>تعداد موارد منتخب در "انتخاب محدوده ارسال محصول" بیش از حد مجاز است.</p>' +
     '</div></div>');
 
 //Product Send Area Exception
 $("#alert-div-inputproduct-send-area-exception-limit").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>تعداد موارد منتخب در "انتخاب استثناء محدوده ارسال محصول" بیش از حد مجاز است.</p>' +
     '</div></div>');
 
 //Product Available Count
 $("#alert-div-inputproduct-available-count-empty").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>"تعداد موجودی" نمیتواند خالی باشد.</p>' +
     '</div></div>');
 
 $("#alert-div-inputproduct-available-count-digits").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>فقط از اعداد برای وارد کردن موجودی استفاده نمائید.</p>' +
     '</div></div>');
 
 $("#alert-div-inputproduct-available-count-zero-value").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>تعداد موجودی نمیتواند صفر باشد. در صورتی که محصول مورد نظر موجود نمیباشد "وضعیت محصول" را "موجود نیست" انتخاب نمائید.</p>' +
     '</div></div>');
 
 //System Error
 $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
-    '<p>خطا! صفحه را رفرش کرده مجددا سعی کنید.</p>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
+    '<p></p>' +
     '</div></div>');
 
     //Img Event
@@ -374,7 +376,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
             $("#alert-div-inputproduct-title-minlength").show();
             $(this).prop("minLength", 2);
             $("html, body").animate({ 
-                scrollTop: 220 
+                
             }, "slow");
         }
         else {
@@ -434,7 +436,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                     $("#alert-div-inputproduct-slug-english").show();
                     $("#inputslugProd").addClass("inputshopempty");
                     $("html, body").animate({ 
-                        scrollTop: 220 
+                       
                     }, "slow");
                 }
             }
@@ -458,7 +460,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
 				$(this).addClass("inputshopempty");
 				$("#alert-div-inputproduct-slug-english").show();
 				$("html, body").animate({ 
-					scrollTop: 220 
+					
 				}, "slow");
 				return false;
 			}
@@ -480,7 +482,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
 						$("#alert-div-inputproduct-slug-english").show();
 						$("#inputslugProd").addClass("inputshopempty");
 						$("html, body").animate({ 
-							scrollTop: 220 
+						
 						}, "slow");
 						return false;
 					}
@@ -598,7 +600,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                 $("#alert-div-inputproduct-price-digits").show();
                 $(this).addClass("inputshopempty");
                 $("html, body").animate({ 
-                    scrollTop: 220 
+                
                 }, "slow");
                 return false;
             }
@@ -615,7 +617,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                 $("#alert-div-inputproduct-off-length").show();
                 $(this).addClass("inputshopempty");
                 $("html, body").animate({ 
-                    scrollTop: 220 
+                   
                 }, "slow");
             }
             else {
@@ -662,7 +664,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                         $("#alert-div-inputproduct-price-digits").show();
                         $(".inputprod_sellprice").addClass("inputshopempty");	
                         $("html, body").animate({ 
-                            scrollTop: 220 
+                         
                         }, "slow");
                         return false;
                     }
@@ -815,7 +817,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                     $("#alert-div-inputproduct-price-digits").show();
                     $(".inputprod_sellprice").addClass("inputshopempty");
                     $("html, body").animate({ 
-                        scrollTop: 220 
+                   
                     }, "slow");
                 }
             }
@@ -859,6 +861,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
         $("#input_netweight").on('focusout', function () {
             if ($(this).val() === '') {
                 $(this).addClass("inputshopempty");
+                
                 $("#alert-div-inputproduct-pure-weight-empty").show();
                 $("#alert-div-inputproduct-weight-comparison").hide();
             }
@@ -866,7 +869,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                 $("#alert-div-inputproduct-weight-comparison").show();
                 $(this).addClass("inputshopempty");
                 $("html, body").animate({ 
-                    scrollTop: 220 
+                    
                 }, "slow");
             }
             else {
@@ -880,6 +883,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
         })
         $("#input_netweight").on("keypress", function (event) {
             var ew = event.which;
+            
             if (48 <= ew && ew <= 57) {
                 $("#alert-div-inputproduct-weight-digits").hide()
                 return true;
@@ -891,7 +895,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                 $("#alert-div-inputproduct-weight-digits").show();
                 $(this).addClass("inputshopempty");
                 $("html, body").animate({ 
-                    scrollTop: 220 
+                  
                 }, "slow");
                 return false;
             }
@@ -916,7 +920,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                         $("#alert-div-inputproduct-weight-digits").show();
                         $("#input_netweight").addClass("inputshopempty");	
                         $("html, body").animate({ 
-                            scrollTop: 220 
+                          
                         }, "slow");
                         return false;
                     }
@@ -971,7 +975,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                     $("#alert-div-inputproduct-weight-digits").show();
                     $("#input_netweight").addClass("inputshopempty");
                     $("html, body").animate({ 
-                        scrollTop: 220 
+                        
                     }, "slow");
                 }
             }
@@ -988,7 +992,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                 $("#alert-div-inputproduct-weight-comparison").show();
                 $(this).addClass("inputshopempty");
                 $("html, body").animate({ 
-                    scrollTop: 220 
+                     
                 }, "slow");
             }
             else {
@@ -1013,7 +1017,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                 $("#alert-div-inputproduct-weight-digits").show();
                 $(this).addClass("inputshopempty");
                 $("html, body").animate({ 
-                    scrollTop: 220 
+                
                 }, "slow");
                 return false;
             }
@@ -1037,7 +1041,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                         $("#alert-div-inputproduct-weight-digits").show();
                         $("#input_packingweight").addClass("inputshopempty");	
                         $("html, body").animate({ 
-                            scrollTop: 220 
+                            
                         }, "slow");
                         return false;
                     }
@@ -1077,7 +1081,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                     $("#alert-div-inputproduct-weight-digits").show();
                     $("#input_packingweight").addClass("inputshopempty");
                     $("html, body").animate({ 
-                        scrollTop: 220 
+                       
                     }, "slow");
                 }
             }
@@ -1109,7 +1113,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                 $("#alert-div-inputproduct-dimension-digits").show();
                 $(this).addClass("inputshopempty");
                 $("html, body").animate({ 
-                    scrollTop: 220 
+                   
                 }, "slow");
                 return false;
             }
@@ -1133,7 +1137,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                         $("#alert-div-inputproduct-dimension-digits").show();
                         $("#input_lengthwithpackaging").addClass("inputshopempty");	
                         $("html, body").animate({ 
-                            scrollTop: 220 
+                             
                         }, "slow");
                         return false;
                     }
@@ -1175,7 +1179,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                     $("#alert-div-inputproduct-dimension-digits").show();
                     $("#input_lengthwithpackaging").addClass("inputshopempty");
                     $("html, body").animate({ 
-                        scrollTop: 220 
+                       
                     }, "slow");
                 }
             }
@@ -1207,7 +1211,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                 $("#alert-div-inputproduct-dimension-digits").show();
                 $(this).addClass("inputshopempty");
                 $("html, body").animate({ 
-                    scrollTop: 220 
+                    
                 }, "slow");
                 return false;
             }
@@ -1231,7 +1235,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                         $("#alert-div-inputproduct-dimension-digits").show();
                         $("#input_widthwithpackaging").addClass("inputshopempty");	
                         $("html, body").animate({ 
-                            scrollTop: 220 
+                            
                         }, "slow");
                         return false;
                     }
@@ -1273,7 +1277,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                     $("#alert-div-inputproduct-dimension-digits").show();
                     $("#input_widthwithpackaging").addClass("inputshopempty");
                     $("html, body").animate({ 
-                        scrollTop: 220 
+                        
                     }, "slow");
                 }
             }
@@ -1305,7 +1309,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                 $("#alert-div-inputproduct-dimension-digits").show();
                 $(this).addClass("inputshopempty");
                 $("html, body").animate({ 
-                    scrollTop: 220 
+                   
                 }, "slow");
                 return false;
             }
@@ -1329,7 +1333,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                         $("#alert-div-inputproduct-dimension-digits").show();
                         $("#input_heightwithpackaging").addClass("inputshopempty");
                         $("html, body").animate({ 
-                            scrollTop: 220 
+                            
                         }, "slow");
                         return false;
                     }
@@ -1371,7 +1375,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                     $("#alert-div-inputproduct-dimension-digits").show();
                     $("#input_heightwithpackaging").addClass("inputshopempty");
                     $("html, body").animate({ 
-                        scrollTop: 220 
+                       
                     }, "slow");
                 }
             }
@@ -1390,7 +1394,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                 $("#alert-div-inputproduct-available-count-digits").hide();
                 $(this).addClass("inputshopempty");
                 $("html, body").animate({ 
-                    scrollTop: 220 
+                    
                 }, "slow");
             }
             else {
@@ -1420,7 +1424,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                     $("#alert-div-inputproduct-available-count-digits").show();
                     $("#prod_num_in_store").addClass("inputshopempty");
                     $("html, body").animate({ 
-                        scrollTop: 220 
+                        
                     }, "slow");
                 }
             }
@@ -1438,7 +1442,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                 $("#alert-div-inputproduct-available-count-digits").show();
                 $(this).addClass("inputshopempty");
                 $("html, body").animate({ 
-                    scrollTop: 220 
+                    
                 }, "slow");
                 return false;
             }
@@ -1462,7 +1466,7 @@ $("#alert-div-system-error").html('<div class="col-xl-12 xol-lg-12 col-md-12 col
                         $("#alert-div-inputproduct-available-count-digits").show();
                         $("#prod_num_in_store").addClass("inputshopempty");
                         $("html, body").animate({ 
-                            scrollTop: 220 
+                            
                         }, "slow");
                         return false;
                     }
@@ -2015,7 +2019,7 @@ checkProductFields = function () {
         }
     if(!checks) {
         $("html, body").animate({
-            scrollTop: 220 
+            
         }, "slow");
     }
     return checks;
@@ -2132,7 +2136,7 @@ checkValidInputsMakeSomeFields = function () {
             }
             if(!checks) {
                 $("html, body").animate({
-                    scrollTop: 220 
+                    
                 }, "slow");
             }
             return checks;

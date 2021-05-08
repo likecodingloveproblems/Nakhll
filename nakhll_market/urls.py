@@ -44,7 +44,7 @@ urlpatterns = [
     # Check Coupon When Show Cart Path
     path('management/coupun/check-coupon-show-cart/<uuid:ID>/', management_coupon_views.CheckCouponWhenShowCart, name='CheckCouponWhenShowCart'),
     # get user by full name
-    path('management/coupon/get_user_full_name', management_coupon_views.get_user_from_full_name, name='get_user_full_name'),
+    #path('management/coupon/get_user_full_name', management_coupon_views.get_user_from_full_name, name='get_user_full_name'),
     # Check Copun Path
     path('profile/check/copun_code/', profileviews.CheckCopun, name='CheckCopun'),
     # ------------------------------------------------------ End ---------------------------------------------------
@@ -237,7 +237,7 @@ urlpatterns = [
     # Dashboard Path
     # path('profile/dashboard/', profileviews.ProfileDashboard, name='Dashboard'),
     # class based view url replaced:
-    path('profile/dashboard/', profileviews.ProfileDashboard.as_view(), name='Dashboard'),
+    path('profile/dashboard/', profileviews.UpdateUserDashboard.as_view(), name='Dashboard'),
     # Wallet Path
     # path('profile/wallet/', profileviews.ProfileWallet, name='Wallet'),
     path('profile/wallet/', profileviews.ProfileWallet.as_view(), name='Wallet'),
@@ -264,9 +264,7 @@ urlpatterns = [
     # Show All Alert Path
     path('profile/all-alert/', profileviews.ProfileShowAllAlert, name='ShowAllAlert'),
     # Show All Factor Path
-    path('profile/factor/all/', profileviews.ShowAllFactorList, name='ShowAllFactorList'),
-    # Manage Factor Filter Path
-    path('profile/factor/all/filter/', profileviews.ManageFactorFilter, name='ManageFactorFilter'),
+    path('profile/factor/all/', profileviews.ShowAllFactorList.as_view(), name='ShowAllFactorList'),
     # Show Factor Item Path
     path('profile/factor/all/show_item/<uuid:ID>/', profileviews.ShowFactorItem, name='ShowFactorItem'),
     # Show Factor Item For Shop Path

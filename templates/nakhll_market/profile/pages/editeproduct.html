@@ -113,12 +113,10 @@
                 {% endif %}
 
                 <!-- Img -->
-                <div id="alert-div-inputproduct-img-empty"></div>
+                
 
                 <!-- Title -->
-                <div id="alert-div-inputproduct-title-empty"></div>
-                <div id="alert-div-inputproduct-title-minlength"></div>
-                <div id="alert-div-inputproduct-title-maxlength"></div>
+                
                 <!-- <div id="alert-div-inputproduct-title-valid-chars"></div> -->
                 <!-- <div id="alert-div-inputproduct-title-persian"></div> -->
 
@@ -128,7 +126,7 @@
                 <!-- <div id="alert-div-inputproduct-slug-dup"></div> -->
 
                 <!-- Shop -->
-                <div id="alert-div-inputproduct-shop-empty"></div>
+                
 
                 <!-- About -->
                 <!-- <div id="alert-div-inputproduct-about-empty"></div> -->
@@ -136,14 +134,13 @@
                 <!-- <div id="alert-div-inputproduct-about-persian"></div> -->
 
                 <!-- Category -->
-                <div id="alert-div-inputproduct-category-empty"></div>
-                <div id="alert-div-inputproduct-category-count-limit"></div>
+                
 
                 <!-- Submarket -->
-                <div id="alert-div-inputproduct-submarket-empty"></div>
+                
 
                 <!-- Introduction -->
-                <div id="alert-div-inputproduct-bio-empty"></div>
+                
                 <!-- <div id="alert-div-inputproduct-intro-valid-chars"></div> -->
                 <!-- <div id="alert-div-inputproduct-introduction-persian"></div> -->
 
@@ -152,42 +149,38 @@
                 <!-- <div id="alert-div-inputproduct-story-persian"></div> -->
 
                 <!-- Real & Sell Price -->
-                <div id="alert-div-inputproduct-price-digits"></div>
-                <div id="alert-div-inputproduct-sell-price-minlength"></div>
+                
                 <!-- <div id="alert-div-inputproduct-real-price-minlength"></div> -->
                 <!-- <div id="alert-div-inputproduct-price-comparison"></div> -->
-                <div id="alert-div-inputproduct-sell-price-empty"></div>
+                
 
                 <!--Off-->
-                <div id="alert-div-inputproduct-off-empty"></div>
+                
 
                 <!-- Pure Weight -->
-                <div id="alert-div-inputproduct-pure-weight-empty"></div>
+                
 
                 <!-- Packing Weight -->
-                <div id="alert-div-inputproduct-packing-weight-empty"></div>
-
-                <div id="alert-div-inputproduct-weight-digits"></div>
-                <div id="alert-div-inputproduct-weight-comparison"></div>
+                
 
 
                 <!-- Dimension -->
-                <div id="alert-div-inputproduct-length-dimension-empty"></div>
+                
 
                 <!-- Product Width -->
-                <div id="alert-div-inputproduct-width-dimension-empty"></div>
+                
 
                 <!-- Product Height -->
-                <div id="alert-div-inputproduct-height-dimension-empty"></div>
+                
 
 
-                <div id="alert-div-inputproduct-dimension-digits"></div>
+                
 
                 <!-- Product Send Area -->
-                <div id="alert-div-inputproduct-send-area-limit"></div>
+                
 
                 <!-- Product Send Area Exception -->
-                <div id="alert-div-inputproduct-send-area-exception-limit"></div>
+                
 
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
@@ -208,6 +201,7 @@
                                                 accept="image/*">
                                             <input type="text" class="form-control choose-pic-input-name" disabled
                                                 placeholder="آپلود عکس">
+                                                <div id="alert-div-inputproduct-img-empty"></div>
                                         </div>
                                         <br>
                                         <img class="rounded cropper-rounded " id="avatar"
@@ -254,6 +248,9 @@
                                         <input type="text" name="prod_title" value="{{Product.Title}}"
                                             class="form-control" id="inputprod_title" minlength="2" maxlength="170"
                                             required>
+                                            <div id="alert-div-inputproduct-title-empty"></div>
+                                            <div id="alert-div-inputproduct-title-minlength"></div>
+                                            <div id="alert-div-inputproduct-title-maxlength"></div>                            
                                     </div>
                                 </div>
 
@@ -277,6 +274,7 @@
                                                 value="{{item.ID}}">{{item.Title}}</option>
                                             {% endfor %}
                                         </select>
+                                        <div id="alert-div-inputproduct-shop-empty"></div>
                                     </div>
                                 </div>
 
@@ -288,6 +286,7 @@
                                         <textarea name="ProdBio" class="form-control" value="{{Product.Bio}}" id="inputProdBio"
                                         maxlength="200" rows="1">{{Product.Bio}}</textarea>
                                     </div>
+                                    <div id="alert-div-inputproduct-bio-empty"></div>
                                 </div>
 
                                 <div class="form-row">
@@ -305,6 +304,8 @@
                                             </option>
                                             {% endfor %}
                                         </select>
+                                        <div id="alert-div-inputproduct-category-empty"></div>
+                                        <div id="alert-div-inputproduct-category-count-limit"></div>
                                     </div>
 
                                     <div class="form-group col-md-6 submarket-form-group">
@@ -322,6 +323,7 @@
                                             <option value="{{item.ID}}">{{item.Title}}</option>
                                         {% endfor %} 
                                         </select>
+                                        <div id="alert-div-inputproduct-submarket-empty"></div>
                                     </div>
                                 </div>
 
@@ -353,8 +355,11 @@
                                             pattern="[0-9]{5,}" class="form-control inputprod_sellprice"
                                             id="inputprod_sellprice" required>
                                         <p class="digit-to-persian" id="sellprice-toman"></p>
+                                        <div id="alert-div-inputproduct-sell-price-empty"></div>
+                                        <div id="alert-div-inputproduct-price-digits"></div>
+                                        <div id="alert-div-inputproduct-sell-price-minlength"></div>
                                     </div>
-
+                                     
                                     <div class="form-group col-lg-6 col-md-6 col-xs-6 col-9 offamount-formgroup">
                                         <label for="inputprod_offamount">میزان تخفیف</label>
                                         <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip"
@@ -369,6 +374,7 @@
                                             {% endif %}
                                             >
                                         <p class="digit-to-persian" id="offamount-toman"></p>
+                                        <div id="alert-div-inputproduct-off-empty"></div>
                                     </div>
                                     <!-- <div class="form-group col-lg-1 col-md-2 col-3 remove-off-formgroup">
                                         <p class="off-question off-yes small-size" id="remove-off">حذف تخفیف</p>
@@ -390,6 +396,7 @@
                                         <input type="text" value="{{Product.Net_Weight}}" name="product_netweight"
                                             class="form-control" pattern="[0-9]{1,6}" id="input_netweight" required>
                                         <p class="digit-to-persian" id="pure-weight"></p>
+                                        <div id="alert-div-inputproduct-pure-weight-empty"></div>
                                     </div>
 
                                     <div class="form-group col-md-6">
@@ -401,6 +408,9 @@
                                             name="product_packingweight" class="form-control" pattern="[0-9]{1,6}"
                                             id="input_packingweight" required>
                                         <p class="digit-to-persian" id="packing-weight"></p>
+                                        <div id="alert-div-inputproduct-packing-weight-empty"></div>
+                                         <div id="alert-div-inputproduct-weight-digits"></div>
+                                         <div id="alert-div-inputproduct-weight-comparison"></div>                         
                                     </div>
                                 </div>
 
@@ -416,6 +426,7 @@
                                             name="product_lengthwithpackaging" class="form-control" pattern="[0-9]{1,4}"
                                             id="input_lengthwithpackaging" required>
                                         <p class="digit-to-persian" id="length-dimension"></p>
+                                        <div id="alert-div-inputproduct-length-dimension-empty"></div>
                                     </div>
 
                                     <div class="form-group col-md-4">
@@ -427,6 +438,7 @@
                                             name="product_widthwithpackaging" class="form-control" pattern="[0-9]{1,4}"
                                             id="input_widthwithpackaging" required>
                                         <p class="digit-to-persian" id="width-dimension"></p>
+                                        <div id="alert-div-inputproduct-width-dimension-empty"></div>
                                     </div>
 
                                     <div class="form-group col-md-4">
@@ -439,6 +451,8 @@
                                             name="product_heightwithpackaging" class="form-control" pattern="[0-9]{1,4}"
                                             id="input_heightwithpackaging" required>
                                         <p class="digit-to-persian" id="height-dimension"></p>
+                                        <div id="alert-div-inputproduct-height-dimension-empty"></div>
+                                        <div id="alert-div-inputproduct-dimension-digits"></div>
                                     </div>
                                 </div>
 
@@ -469,6 +483,8 @@
                                             <option value="4" selected>شهری</option>
                                             {% endif %}
                                         </select>
+                                        <div id="alert-div-inputproduct-send-area-limit"></div>
+                                        <div id="alert-div-inputproduct-send-area-exception-limit"></div>
                                     </div>
 
                                     <div class="form-group col-md-4" id="detail-now-box">
@@ -715,7 +731,7 @@
 
         $modal.on('shown.bs.modal', function () {
             cropper = new Cropper(image, {
-                aspectRatio: 1,
+                aspectRatio: 16 / 9,
                 viewMode: 3,
             });
         }).on('hidden.bs.modal', function () {

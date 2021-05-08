@@ -316,31 +316,30 @@
 
                     </div>
 
-                    <div id="alert-div-inputshop-img-empty"></div>
+                    
 
-                    <div id="alert-div-inputshop-title-empty"></div>
+                    
                     <div id="alert-div-inputshop-title-minlength"></div>
                     <div id="alert-div-inputshop-title-maxlength"></div>
                     <!-- <div id="alert-div-inputshop-title-valid-chars"></div> -->
                     <!-- <div id="alert-div-inputshop-title-persian"></div> -->
 
-                    <div id="alert-div-inputshop-slug-empty"></div>
+                    
                     <div id="alert-div-inputshop-slug-english"></div>
                     <div id="alert-div-inputshop-slug-dup"></div>
-                    <div id="alert-div-image-newShop"></div>
-
+                    
                     <!-- <div id="alert-div-inputshop-about-valid-chars"></div> -->
 
-                    <div id="alert-div-inputshop-state-unknown"></div>
+                    
 
-                    <div id="alert-div-inputshop-bigcity-unknown"></div>
+                    
 
-                    <div id="alert-div-inputshop-city-unknown"></div>
+                    
 
                     <div id="alert-div-inputshop-Bio-maxlength"></div>
                     <!-- <div id="alert-div-inputshop-bio-valid-chars"></div> -->
 
-                    <div id="alert-div-inputshop-submarket-unknown"></div>
+                    
                     <div id="alert-div-inputshop-submarket-limit-count"></div>
 
                     <div id="alert-div-inputshop-week-holidays-all"></div>
@@ -355,7 +354,7 @@
                     <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
                         <div class="dashboard" id="new-shop-section">
 
-                            <h4>ثبت حجره</h4>
+                            <h4> ثبت حجره</h4>
 
                             <form id="new-shop-form" method="POST" enctype="multipart/form-data" action="{% url "
                                 nakhll_market:Shop_Manager_AddNewShop" %}">
@@ -369,6 +368,7 @@
                                             title="عنوان باید فارسی و حداکثر 70 کاراکتر باشد."></i>
                                         <input type="text" name="Shop_Title" class="form-control" id="inputshop_title"
                                             minlength="2" maxlength="70" required placeholder="نام حجره خود را وارد نمایید">
+                                    <div id="alert-div-inputshop-title-empty"></div>
                                     </div>
 
                                     <div class="form-group col-md-6">
@@ -378,6 +378,7 @@
                                             title='شناسه حجره باید شامل حروف انگلیسی کوچک، خط تیره ("-") و بدون فاصله باشد.'></i>
                                         <input type="text" name="Shop_Slug" class="form-control" id="inputslugshop"
                                             pattern="[a-z0-9\-_]{2,}" placeholder="لینک حجره خود را به انگلیسی وارد نمایید">
+                                    <div id="alert-div-inputshop-slug-empty"></div>
                                     </div>
                                 </div>
                                 <div class="form-row">
@@ -391,9 +392,10 @@
                                                 class="form-control choose-pic-input-name choose-pic-input-hojre"
                                                 disabled placeholder="عکس حجره خود را بارگذاری نمایید">
                                         </label>
+                                        <div id="alert-div-inputshop-img-empty"></div>
                                         <br>
                                         <img class="rounded cropper-rounded " id="avatar"
-                                            style="float:right;margin-right:3%" src="{% static "images/image_upload.jpg" %}" alt="avatar" data-toggle="tooltip"
+                                            style="float:left;margin-right:3%" src="{% static "images/image_upload.jpg" %}" alt="avatar" data-toggle="tooltip"
                                             title="انتخاب عکس ">
                                     </div>
                                     <div class="label cropper-label col-xl-6 col-lg-6 col-md-12 col-xs-12 " style="cursor: auto;">
@@ -407,9 +409,11 @@
                                                 class="form-control choose-pic-input-name choose-pic-input" disabled
                                                 placeholder="آپلود عکس">
                                         </label>
+                                        <div id="alert-div-image-newShop"></div>
                                         <br>
                                         <img class="rounded cropper-rounded " id="avatarMeli"
                                             style="float:left;margin-left:3%" src="{% static "images/image_upload.jpg" %}" alt="avatar" data-toggle="tooltip" title="انتخاب عکس ">
+                                        
 
                                     </div>
                                 </div>
@@ -499,7 +503,7 @@
                                                 <label id="label-of-gallery" class="label cropper-label">
                                                     <input type="file" class="sr-only" id="input3" name="image"
                                                         accept="image/*">
-                                                    <img class="rounded cropper-rounded gallery-newShop"
+                                                    <img class="rounded cropper-rounded gallery-newShop col-sm-6 col-md-4 col-xl-12 col-lg-4 col-6"
                                                         style="float: none !important;" id="avatar3" src="{% static "/images/image_upload.jpg" %}" alt="avatar" data-toggle="tooltip"
                                                         title="انتخاب عکس ">
                                                 </label>
@@ -589,6 +593,7 @@
                                             <option value="31">چهارمحال وبختیاری</option>
                                             <option value="32">البرز</option>
                                         </select>
+                                        <div id="alert-div-inputshop-state-unknown"></div>
                                     </div>
 
                                     <div class="form-group col-md-6 bigcity-form-group">
@@ -601,6 +606,7 @@
                                             id="inputshopBigCity">
                                             <option value="0">شهرستان خود را انتخاب نمائید...</option>
                                         </select>
+                                        <div id="alert-div-inputshop-bigcity-unknown"></div>
                                     </div>
                                 </div>
                                 <div class="form-row shop-place">
@@ -614,6 +620,7 @@
                                             id="inputshopCity">
                                             <option value="0">شهر خود را انتخاب نمائید...</option>
                                         </select>
+                                        <div id="alert-div-inputshop-city-unknown"></div>
                                     </div>
                                     <script>
                                         var selectedState;
@@ -728,6 +735,7 @@
                                             <option value="{{item.ID}}">{{item.Title}}</option>
                                             {% endfor %}
                                         </select>
+                                        <div id="alert-div-inputshop-submarket-unknown"></div>
                                     </div>
 
                                     <div class="form-group col-md-12">
@@ -1009,8 +1017,8 @@
 
         $modal.on('shown.bs.modal', function () {
             cropper = new Cropper(image, {
-                aspectRatio: 1,
-                viewMode: 1
+                aspectRatio: 16 / 9,
+                viewMode: 3
             });
 
         }).on('hidden.bs.modal', function () {
@@ -1217,71 +1225,73 @@
                                 formData.append('shop_id', ShopID);
                                 //files = [...form_Data];
                                 //console.log('dfvdsfvdfv',...form_Data)
+                                var crf_token = $('input[name=csrfmiddlewaretoken]').val();
+                                $(".progress-hide").show();
+                                $.ajax(
+                                    {
+                                        url: '{% url "restapi:web_shop_add_imagetogallery" %}',
+                                        method: "post",
+                                        data: formData,
+                                        contentType: false,
+                                        processData: false,
+                                        headers: { "X-CSRFToken": crf_token },
+                                        xhr: function () {
+                                            var xhr = new XMLHttpRequest();
+                                            xhr.upload.onprogress = function (e) {
+                                                var percent = '0';
+                                                var percentage = '0%';
+            
+                                                if (e.lengthComputable) {
+                                                    percent = Math.round((e.loaded / e.total) * 100);
+                                                    percentage = percent + '%';
+                                                    $(".progress-bar").width(percentage).attr('aria-valuenow', percent).text(percentage);
+                                                }
+                                            };
+            
+                                            return xhr;
+                                        },
+                                        success: function (json, status) {
+                                            $("#input2").prop('disabled', false);
+                                            $("#label-of-gallery-banner").css('cursor', 'pointer');
+                                            $("#avatar2").fadeTo('fast', 1);
+                                            $(".progress-hide").hide();
+                                            $(".progress-bar").width('0%').attr('aria-valuenow', 0).text('0%');
+                                            $("#loaderDiv3").hide();
+                                            if (json.status) {
+                                                $(".product-gallery-pics-banner").prepend('<div val="' + json.id + '" class="col-xl-6 col-lg-3 col-md-4 col-sm-6 prod-gallery-pic-box newImage">' +
+                                                    '<div class="box-gallery-img-section gallery-img-show style="width:100%" ">' +
+                                                    '<img src="' + canvas.toDataURL() + '" alt="بنر حجره" style="width:100%">' +
+                                                    '<div class="item-gallery-option">' +
+                                                    '<a href="' + json.image + '" id="show-image-gallery-product" title="مشاهده" target="_blank"><i class="fas fa-eye"></i></a>' +
+                                                    '<button val="' + json.id + '" class="delete-prod-pic" href="#" id="delete-image-gallery-product"  title="حذف"><i class="fas fa-minus-circle"></i></button>' +
+                                                    '</div>' +
+                                                    '</div>' +
+                                                    '</div>');
+                                            }
+                                            else {
+                                                console.log(json.message);
+                                            }
+                                        },
+                                        error: function (xhr, erstatus) {
+                                            $(".progress-bar").width('0%').attr('aria-valuenow', 0).text('0%');
+                                            $("#loaderDiv3").hide();
+                                            $(".progress-hide").hide();
+                                            $("#label-of-gallery-banner").css('cursor', 'pointer');
+                                            console.log(xhr);
+                                            console.log(xhr.responseJSON);
+                                            console.log(xhr.responseJSON.status);
+                                            console.log(xhr.responseJSON.message);
+                                            console.log(erstatus);
+                                        }
+                                    }
+                                )
+                            
                           }
                       },
                   });
 
 
-                    var crf_token = $('input[name=csrfmiddlewaretoken]').val();
-                    $(".progress-hide").show();
-                    $.ajax(
-                        {
-                            url: '{% url "restapi:web_shop_add_imagetogallery" %}',
-                            method: "post",
-                            data: formData,
-                            contentType: false,
-                            processData: false,
-                            headers: { "X-CSRFToken": crf_token },
-                            xhr: function () {
-                                var xhr = new XMLHttpRequest();
-                                xhr.upload.onprogress = function (e) {
-                                    var percent = '0';
-                                    var percentage = '0%';
-
-                                    if (e.lengthComputable) {
-                                        percent = Math.round((e.loaded / e.total) * 100);
-                                        percentage = percent + '%';
-                                        $(".progress-bar").width(percentage).attr('aria-valuenow', percent).text(percentage);
-                                    }
-                                };
-
-                                return xhr;
-                            },
-                            success: function (json, status) {
-                                $("#input2").prop('disabled', false);
-                                $("#label-of-gallery-banner").css('cursor', 'pointer');
-                                $("#avatar2").fadeTo('fast', 1);
-                                $(".progress-hide").hide();
-                                $(".progress-bar").width('0%').attr('aria-valuenow', 0).text('0%');
-                                $("#loaderDiv3").hide();
-                                if (json.status) {
-                                    $(".product-gallery-pics-banner").prepend('<div val="' + json.id + '" class="col-xl-6 col-lg-3 col-md-4 col-sm-6 prod-gallery-pic-box newImage">' +
-                                        '<div class="box-gallery-img-section gallery-img-show style="width:100%" ">' +
-                                        '<img src="' + canvas.toDataURL() + '" alt="بنر حجره" style="width:100%">' +
-                                        '<div class="item-gallery-option">' +
-                                        '<a href="' + json.image + '" id="show-image-gallery-product" title="مشاهده" target="_blank"><i class="fas fa-eye"></i></a>' +
-                                        '<button val="' + json.id + '" class="delete-prod-pic" href="#" id="delete-image-gallery-product"  title="حذف"><i class="fas fa-minus-circle"></i></button>' +
-                                        '</div>' +
-                                        '</div>' +
-                                        '</div>');
-                                }
-                                else {
-                                    console.log(json.message);
-                                }
-                            },
-                            error: function (xhr, erstatus) {
-                                $(".progress-bar").width('0%').attr('aria-valuenow', 0).text('0%');
-                                $("#loaderDiv3").hide();
-                                $(".progress-hide").hide();
-                                $("#label-of-gallery-banner").css('cursor', 'pointer');
-                                console.log(xhr);
-                                console.log(xhr.responseJSON);
-                                console.log(xhr.responseJSON.status);
-                                console.log(xhr.responseJSON.message);
-                                console.log(erstatus);
-                            }
-                        }
-                    )
+                   
                 });
             }
         });
@@ -1861,7 +1871,7 @@
 
         $modal.on('shown.bs.modal', function () {
             cropper = new Cropper(image, {
-                aspectRatio: 1,
+                aspectRatio: 16 / 9,
                 viewMode: 3,
             });
         }).on('hidden.bs.modal', function () {
@@ -1934,7 +1944,7 @@
                                 $("#loaderDiv3").hide();
                                 if (true) {
                                     $(".newImage").remove();
-                                    $(".product-gallery-pics").prepend(listGallery.map((item, index)=> '<div val="' + index + '" class="col-xl-6 col-lg-6 col-md-4 col-sm-6 prod-gallery-pic-box newImage" style="opacity: 1">' +
+                                    $(".product-gallery-pics").prepend(listGallery.map((item, index)=> '<div val="' + index + '" class="col-xl-4 col-lg-4 col-md-4 col-sm-4 prod-gallery-pic-box newImage" style="opacity: 1">' +
                                         '<div class="box-gallery-img-section gallery-img-show">' +
                                         '<img src="' + item.img + '" alt="عکس محصول" style="width:100%;" >' +
                                         '<div class="item-gallery-option">' +

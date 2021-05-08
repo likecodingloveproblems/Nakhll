@@ -1,8 +1,11 @@
 from django import forms
+from django.contrib.auth.forms import UserChangeForm
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
-from .models import Newsletters
+from .models import Newsletters , Profile
+
+
 
 # Login Form
 class Login (forms.Form):
@@ -29,3 +32,114 @@ class CheckEmail (forms.Form):
         if validate_email(email):
             return email
 
+class ProfileForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        profile = kwargs['instance']
+        if profile.NationalCode != '':
+            self.fields['NationalCode'].widget = forms.TextInput(attrs={
+                'class': 'form-control',
+                'type':'number',
+                'type' : 'text',
+                'readonly':True
+            })
+        else:
+            self.fields['NationalCode'].widget = forms.TextInput(attrs={
+                'class': 'form-control',
+                'type':'number',
+                'type' : 'text',
+             })
+
+    class Meta:
+        model= Profile
+        fields= [
+            'Sex',
+            'MobileNumber',
+            'ZipCode',
+            'PhoneNumber',
+            'NationalCode',
+            'Address',
+            'State',
+            'BigCity',
+            'City',
+            'BrithDay',
+            'Bio',
+            'TutorialWebsite',
+            'CountrPreCode',
+            'CityPerCode', 
+            'Image',
+        ]
+        widgets = {
+            'Bio': forms.TextInput(attrs={
+                'class': 'form-control',
+                'type': 'text',
+            }),
+            'Sex': forms.Select(attrs={
+                'class': 'form-control',
+                'type':'text',
+            }),
+            'MobileNumber': forms.TextInput(attrs={
+                'class': 'form-control',
+                'type':'number',
+                'readonly' : 'readonly',
+            }),
+            'BrithDay': forms.TextInput(attrs={
+                 'class': 'form-control',
+                 'type':'text',
+            }),
+            'State': forms.TextInput(attrs={
+                'class': 'form-control',
+                'type':'text',
+            }),
+            'ZipCode': forms.TextInput(attrs={
+                'class': 'form-control',
+                'type':'number',
+            }),
+            'Address': forms.TextInput(attrs={
+                'class': 'form-control',
+                'type':'text',
+            }),
+            'TutorialWebsite': forms.Select(attrs={
+                'class': 'form-control',
+                'type':'text',
+            }),
+            'PhoneNumber': forms.TextInput(attrs={
+                'class': 'form-control',
+                'type':'Number',
+            }),
+            'CityPerCode': forms.TextInput(attrs={
+                'class': 'form-control',
+                'type':'Number',
+            }),
+            'CountrPreCode': forms.TextInput(attrs={
+                'class': 'form-control',
+                'type':'Number',
+            }),
+        }
+
+    def clean_NationalCode(self):
+        national_code = self.cleaned_data['NationalCode'] 
+        return national_code
+     
+class MyUserForm(UserChangeForm):
+    class Meta(UserChangeForm.Meta):
+        fields = ('first_name', 'last_name', 'email')
+        password = None
+        widgets = {
+            'first_name': forms.TextInput(attrs={
+                'placeholder': 'نام',
+                'class': 'form-control',
+                'type': 'text',
+            }),
+            'last_name': forms.TextInput(attrs={
+                'placeholder': 'نام خانوادگی',
+                'class': 'form-control',
+                'type': 'text',
+            }),
+            'email': forms.TextInput(attrs={
+                'placeholder': 'ایمیل',
+                'class': 'form-control',
+                'type': 'email',
+            }),
+        }
