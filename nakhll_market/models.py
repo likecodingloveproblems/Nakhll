@@ -23,7 +23,7 @@ import datetime
 from django.utils.translation import ugettext_lazy as _
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
-
+from Iran import data
 
 
 # Rename Method
@@ -1546,7 +1546,7 @@ class Profile(models.Model):
     BigCity=models.CharField(verbose_name='شهرستان', max_length=50, blank=True)
     City=models.CharField(verbose_name='شهر', max_length=50, blank=True)
     Location=models.CharField(verbose_name='موقعیت مکانی', max_length=150, blank=True, help_text='طول و عرض جغرافیایی')
-    BrithDay=jmodels.jDateField(verbose_name='تاریخ تولد', null=True, auto_now_add=True)
+    BrithDay=jmodels.jDateField(verbose_name='تاریخ تولد', null=True)
     FaxNumber=models.CharField(verbose_name='شماره فکس', max_length=8, blank=True)
     CityPerCode=models.CharField(verbose_name='پیش شماره', max_length=6, blank=True, default='034')
     PhoneNumber=models.CharField(verbose_name='شماره تلفن ثابت', max_length=8, blank=True)
@@ -1637,6 +1637,23 @@ class Profile(models.Model):
     def get_user_products(self):
         return Product.objects.filter(FK_Shop__in = self.get_user_shops(), Publish = True)
 
+    def get_state_name(self):
+        if not self.State.isdigit():
+            return None
+        id = int(self.State)
+        return list(filter(lambda i : i['divisionType'] == 1 and i['id'] == id, data))[0]['name']
+    
+    def get_bigcity_name(self):
+        if not self.BigCity.isdigit():
+            return None
+        id = int(self.BigCity)
+        return list(filter(lambda i : i['divisionType'] == 2 and i['id'] == id, data))[0]['name']
+    
+    def get_city_name(self):
+        if not self.City.isdigit():
+            return None
+        id = int(self.City)
+        return list(filter(lambda i : i['divisionType'] == 3 and i['id'] == id, data))[0]['name']
 
     # Ordering With DateCreate
     class Meta:

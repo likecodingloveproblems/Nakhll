@@ -3391,7 +3391,7 @@ class ProfileAlert(LoginRequiredMixin, StaffuserRequiredMixin, View):
 #     else:
 #         return redirect("auth:login")
 
-class UpdateUserDashboard(TemplateView):
+class UpdateUserDashboard(LoginRequiredMixin, TemplateView):
     template_name = "nakhll_market/profile/pages/profile.html"
 
     def get_context_data(self, **kwargs):
@@ -3411,7 +3411,11 @@ class UpdateUserDashboard(TemplateView):
         return render(request, self.template_name, context)
         
     def post(self, request):
-        profile_form = ProfileForm(request.POST, instance=request.user.User_Profile)
+        profile_form = ProfileForm(
+            data=request.POST,
+            files=request.FILES,
+            instance=request.user.User_Profile
+            )
         user_form = MyUserForm(request.POST , instance=request.user)
         if profile_form.is_valid() and user_form.is_valid():
             profile_form.save()

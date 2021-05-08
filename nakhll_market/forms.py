@@ -33,6 +33,24 @@ class CheckEmail (forms.Form):
             return email
 
 class ProfileForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        profile = kwargs['instance']
+        if profile.NationalCode != '':
+            self.fields['NationalCode'].widget = forms.TextInput(attrs={
+                'class': 'form-control',
+                'type':'number',
+                'type' : 'text',
+                'readonly':True
+            })
+        else:
+            self.fields['NationalCode'].widget = forms.TextInput(attrs={
+                'class': 'form-control',
+                'type':'number',
+                'type' : 'text',
+             })
+
     class Meta:
         model= Profile
         fields= [
@@ -45,11 +63,12 @@ class ProfileForm(forms.ModelForm):
             'State',
             'BigCity',
             'City',
-            #'BrithDay',
+            'BrithDay',
             'Bio',
             'TutorialWebsite',
             'CountrPreCode',
-            'CityPerCode'
+            'CityPerCode', 
+            'Image',
         ]
         widgets = {
             'Bio': forms.TextInput(attrs={
@@ -65,15 +84,9 @@ class ProfileForm(forms.ModelForm):
                 'type':'number',
                 'readonly' : 'readonly',
             }),
-            'NationalCode': forms.TextInput(attrs={
-                'class': 'form-control',
-                'type':'number',
-                'type' : 'text',
-
-            #  }),
-            # 'BrithDay': forms.TextInput(attrs={
-            #      'class': 'form-control',
-            #      'type':'text',
+            'BrithDay': forms.TextInput(attrs={
+                 'class': 'form-control',
+                 'type':'text',
             }),
             'State': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -103,8 +116,11 @@ class ProfileForm(forms.ModelForm):
                 'class': 'form-control',
                 'type':'Number',
             }),
-         }
-       
+        }
+
+    def clean_NationalCode(self):
+        national_code = self.cleaned_data['NationalCode'] 
+        return national_code
      
 class MyUserForm(UserChangeForm):
     class Meta(UserChangeForm.Meta):

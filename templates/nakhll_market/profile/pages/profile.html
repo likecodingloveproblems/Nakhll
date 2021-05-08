@@ -133,7 +133,7 @@
                                     <div class="form-group col-md-6">
                                         <div id="msg"></div>
                                             <label for="file">عکس پروفایل</label>
-                                            <input type="file" name="Profile_Image" class="file file-image-dash" accept="image/*">
+                                            <input type="file" name="Image" class="file file-image-dash" accept="image/*">
                                             <div class="input-group">
                                                 <input type="text" class="form-control input" placeholder="آپلود عکس" id="file">
                                                 <div class="input-group-append">
@@ -141,7 +141,7 @@
                                                 </div>
                                             </div>
                                             <br>
-                                        <img src="https://placehold.it/80x80" id="preview" class="img-thumbnail">
+                                        <img src="/{{profile_form.Image.initial}}" id="preview" class="img-thumbnail">
                                     </div>
                                 </div>
 
@@ -205,7 +205,10 @@
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
                                     <label for="inputState">استان</label>
-                                        <select name="Profile_State" class="chosen-select-rtl form-control choose-state-chosen" id="inputprofState">
+                                        <select name="State" class="chosen-select-rtl form-control choose-state-chosen" id="inputprofState">
+                                            {% if request.user.User_Profile.get_state_name %}
+                                                <option value="{{request.user.User_Profile.State}}" selected>{{request.user.User_Profile.get_state_name}}</option>
+                                            {% endif %}
                                             <option value="0">استان خود را انتخاب نمائید...</option>
                                             <option value="2">مرکزی</option>
                                             <option value="3">خراسان شمالی</option>
@@ -243,14 +246,20 @@
 
                                     <div class="form-group col-md-6">
                                     <label for="inputBigCity">شهرستان</label>
-                                        <select name="Profile_BigCity" class="chosen-select-rtl form-control choose-bigcity-chosen" id="inputprofBigCity">
+                                        <select name="BigCity" class="chosen-select-rtl form-control choose-bigcity-chosen" id="inputprofBigCity">
+                                            {% if request.user.User_Profile.get_bigcity_name %}
+                                                <option value="{{request.user.User_Profile.BigCity}}" selected>{{request.user.User_Profile.get_bigcity_name}}</option>
+                                            {% endif %}
                                             <option value="0">شهرستان خود را انتخاب نمائید...</option>
                                         </select>
                                     </div>
 
                                     <div class="form-group col-md-6">
                                     <label for="inputCity">شهر</label>
-                                        <select  name="Profile_City" class="chosen-select-rtl form-control choose-city-chosen" id="inputprofCity">
+                                        <select  name="City" class="chosen-select-rtl form-control choose-city-chosen" id="inputprofCity">
+                                            {% if request.user.User_Profile.get_city_name %}
+                                                <option value="{{request.user.User_Profile.City}}" selected>{{request.user.User_Profile.get_city_name}}</option>
+                                            {% endif %}
                                             <option value="0">شهر خود را انتخاب نمائید...</option>
                                         </select>
                                     </div>
@@ -373,127 +382,6 @@
                                     <div class="form-group col-md-6">
                                         <label for="inputTutorialWebsite">نحوه آشنایی با سایت</label>
                                            {{profile_form.TutorialWebsite}}
-                                        {% comment %} {% if request.user.User_Profile.TutorialWebsite == '0' %}
-                                            <select profile_form. TutorialWebsite>
-                                                <option selected>موتور های جستجو</option>
-                                                <option>حجره داران</option>
-                                                <option>شبکه های اجتماعی</option>
-                                                <option>کاربران</option>
-                                                <option >رسانه ها</option>
-                                                <option>تبلیغات</option>
-                                                <option>نود ها</option>
-                                                <option>سایر</option>
-                                                <option>هیچ کدام</option>
-                                            </select>
-                                        {% elif request.user.User_Profile.TutorialWebsite == '1' %}
-                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption">
-                                                <option>موتور های جستجو</option>
-                                                <option selected>حجره داران</option>
-                                                <option>شبکه های اجتماعی</option>
-                                                <option>کاربران</option>
-                                                <option >رسانه ها</option>
-                                                <option>تبلیغات</option>
-                                                <option>نود ها</option>
-                                                <option>سایر</option>
-                                                <option>هیچ کدام</option>
-                                            </select>
-                                        {% elif request.user.User_Profile.TutorialWebsite == '2' %} {% endcomment %}
-                                            {% comment %} <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption">
-                                                <option>موتور های جستجو</option>
-                                                <option>حجره داران</option>
-                                                <option selected>شبکه های اجتماعی</option>
-                                                <option>کاربران</option>
-                                                <option >رسانه ها</option>
-                                                <option>تبلیغات</option>
-                                                <option>نود ها</option>
-                                                <option>سایر</option>
-                                                <option>هیچ کدام</option>
-                                            </select>
-                                        {% elif request.user.User_Profile.TutorialWebsite == '3' %}
-                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption">
-                                                <option>موتور های جستجو</option>
-                                                <option>حجره داران</option>
-                                                <option>شبکه های اجتماعی</option>
-                                                <option selected>کاربران</option>
-                                                <option >رسانه ها</option>
-                                                <option>تبلیغات</option>
-                                                <option>نود ها</option>
-                                                <option>سایر</option>
-                                                <option>هیچ کدام</option>
-                                            </select>
-                                        {% elif request.user.User_Profile.TutorialWebsite == '4' %}
-                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption">
-                                                <option>موتور های جستجو</option>
-                                                <option>حجره داران</option>
-                                                <option>شبکه های اجتماعی</option>
-                                                <option>کاربران</option>
-                                                <option selected>رسانه ها</option>
-                                                <option>تبلیغات</option>
-                                                <option>نود ها</option>
-                                                <option>سایر</option>
-                                                <option>هیچ کدام</option>
-                                            </select>
-                                        {% elif request.user.User_Profile.TutorialWebsite == '5' %}
-                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption">
-                                                <option>موتور های جستجو</option>
-                                                <option>حجره داران</option>
-                                                <option>شبکه های اجتماعی</option>
-                                                <option>کاربران</option>
-                                                <option>رسانه ها</option>
-                                                <option selected>تبلیغات</option>
-                                                <option>نود ها</option>
-                                                <option>سایر</option>
-                                                <option>هیچ کدام</option>
-                                            </select>
-                                        {% elif request.user.User_Profile.TutorialWebsite == '6' %}
-                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption">
-                                                <option>موتور های جستجو</option>
-                                                <option>حجره داران</option>
-                                                <option>شبکه های اجتماعی</option>
-                                                <option>کاربران</option>
-                                                <option>رسانه ها</option>
-                                                <option>تبلیغات</option>
-                                                <option selected>نود ها</option>
-                                                <option>سایر</option>
-                                                <option>هیچ کدام</option>
-                                            </select>
-                                        {% elif request.user.User_Profile.TutorialWebsite == '7' %}
-                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption">
-                                                <option>موتور های جستجو</option>
-                                                <option>حجره داران</option>
-                                                <option>شبکه های اجتماعی</option>
-                                                <option>کاربران</option>
-                                                <option>رسانه ها</option>
-                                                <option>تبلیغات</option>
-                                                <option>نود ها</option>
-                                                <option selected>سایر</option>
-                                                <option>هیچ کدام</option>
-                                            </select>
-                                        {% elif request.user.User_Profile.TutorialWebsite == '8' %}
-                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption">
-                                                <option>موتور های جستجو</option>
-                                                <option>حجره داران</option>
-                                                <option>شبکه های اجتماعی</option>
-                                                <option>کاربران</option>
-                                                <option>رسانه ها</option>
-                                                <option>تبلیغات</option>
-                                                <option>نود ها</option>
-                                                <option>سایر</option>
-                                                <option selected>هیچ کدام</option>
-                                            </select>
-                                        {% else %}
-                                            <select id="inputTutorialWebsite" name="Profile_TutorialWebsite" class="form-control selcetoption">
-                                                <option>موتور های جستجو</option>
-                                                <option>حجره داران</option>
-                                                <option>شبکه های اجتماعی</option>
-                                                <option>کاربران</option>
-                                                <option>رسانه ها</option>
-                                                <option>تبلیغات</option>
-                                                <option>نود ها</option>
-                                                <option>سایر</option>
-                                                <option selected>هیچ کدام</option>
-                                            </select>
-                                        {% endif %} {% endcomment %}
                                     </div>
                                 </div>
 
