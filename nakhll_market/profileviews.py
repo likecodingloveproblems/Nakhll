@@ -4451,10 +4451,14 @@ class ShowAllFactorList(LoginRequiredMixin, StaffuserRequiredMixin, View):
 
         try:
             Customer = request.POST.getlist("customer_name")
+            if Customer == []:
+                Customer = ['000']
         except:
             Customer = ['000']
         try:
             shop_id = request.POST.getlist("shop_name")
+            if shop_id == []:
+                shop_id = ['111']
         except:
             shop_id = ['111']
         if (((StartDate != '') and (EndDate != '')) or (Status != '') or (Check_Out != '') or (Customer != '') or (shop_id !='')):
@@ -4488,6 +4492,9 @@ class ShowAllFactorList(LoginRequiredMixin, StaffuserRequiredMixin, View):
             if not '000' in Customer:
                 customers = User.objects.filter(id__in=Customer)
                 factors = factors.filter(FK_User__in=customers)
+                context['Customer'] = customers
+            else:
+                context['Customer'] = Customer
             # get user list
             users = User.objects.filter(is_active=True)
             #get all shop
@@ -4504,7 +4511,6 @@ class ShowAllFactorList(LoginRequiredMixin, StaffuserRequiredMixin, View):
             context['Start'] = S_Date
             context['End'] = E_Date
             context['CheckOut'] = set_checkout
-            context['Customer'] = customers
             context['shop'] = shop
             context['shop_id'] = shop_id
             
