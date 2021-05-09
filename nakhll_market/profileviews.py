@@ -4292,7 +4292,7 @@ def CheckCopun(request):
                                     if copun.MinimumAmount != '0':
                                         if userFactor.get_total_coupon_test(copun.id) >= int(copun.MinimumAmount):
 
-                                            if copun.MaximumAmount != '0':
+                                            if not copun.MaximumAmount in ['0', 0]:
 
                                                 if userFactor.get_total_coupon_test(copun.id) <= int(
                                                         copun.MaximumAmount):
