@@ -126,9 +126,11 @@
                     <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-12">
                         <div class="dashboard"> 
                             <h4>داشبورد</h4>    
-                            <p class="centertext">برای انجام هر گونه تغییرات کلید ویرایش در انتهای همین صفحه را انتخاب کنید</p>
                             <form method="POST">
                                 {% csrf_token %}
+
+                            <p class="centertext">برای انجام هر گونه تغییرات کلید ویرایش  را انتخاب کنید</p>
+                            <button type="submit" class="btn btn-primary mr-auto mb-4">ویرایش اطلاعات</button>
                                 <div class="form-row" id="pic-profile-add">
                                     <div class="form-group col-md-6">
                                         <div id="msg"></div>
@@ -159,7 +161,7 @@
 
                                 <div class="form-row">     
                                     <div class="form-group col-md-4">
-                                        <label for="inputSex">جنسیت</label>
+                                        <label for="inputSex">جنسیت <code>*</code></label>
                                         {{profile_form.Sex}}
                                     </div> 
 
@@ -184,7 +186,7 @@
 
                                 <div class="form-row">     
                                     <div class="form-group col-md-6">
-                                    <label for="inputNationalCode">کد ملی </label>
+                                    <label for="inputNationalCode">کد ملی <code>*</code></label>
                                         <fieldset>
                                           {{profile_form.NationalCode}}   
                                         </fieldset>
@@ -204,8 +206,8 @@
 
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
-                                    <label for="inputState">استان</label>
-                                        <select name="State" class="chosen-select-rtl form-control choose-state-chosen" id="inputprofState">
+                                    <label for="inputState">استان <code>*</code></label>
+                                        <select name="State" class="chosen-select-rtl form-control choose-state-chosen" id="inputprofState" required>
                                             {% if request.user.User_Profile.get_state_name %}
                                                 <option value="{{request.user.User_Profile.State}}" selected>{{request.user.User_Profile.get_state_name}}</option>
                                             {% endif %}
@@ -245,8 +247,8 @@
                                     </div>
 
                                     <div class="form-group col-md-6">
-                                    <label for="inputBigCity">شهرستان</label>
-                                        <select name="BigCity" class="chosen-select-rtl form-control choose-bigcity-chosen" id="inputprofBigCity">
+                                    <label for="inputBigCity">شهرستان <code>*</code></label>
+                                        <select name="BigCity" class="chosen-select-rtl form-control choose-bigcity-chosen" id="inputprofBigCity" required>
                                             {% if request.user.User_Profile.get_bigcity_name %}
                                                 <option value="{{request.user.User_Profile.BigCity}}" selected>{{request.user.User_Profile.get_bigcity_name}}</option>
                                             {% endif %}
@@ -255,8 +257,8 @@
                                     </div>
 
                                     <div class="form-group col-md-6">
-                                    <label for="inputCity">شهر</label>
-                                        <select  name="City" class="chosen-select-rtl form-control choose-city-chosen" id="inputprofCity">
+                                    <label for="inputCity">شهر <code>*</code></label>
+                                        <select  name="City" class="chosen-select-rtl form-control choose-city-chosen" id="inputprofCity" required>
                                             {% if request.user.User_Profile.get_city_name %}
                                                 <option value="{{request.user.User_Profile.City}}" selected>{{request.user.User_Profile.get_city_name}}</option>
                                             {% endif %}
@@ -368,14 +370,14 @@
                                 })
                                 </script>
                                     <div class="form-group col-md-6">
-                                        <label for="inputZipCode">کد پستی</label>
+                                        <label for="inputZipCode">کد پستی <code>*</code></label>
                                           {{profile_form.ZipCode}}
                                     </div>
                                 </div>
 
                                 <div class="form-row">     
                                     <div class="form-group col-md-6">
-                                        <label for="inputAddress">آدرس</label>
+                                        <label for="inputAddress">آدرس <code>*</code></label>
                                           {{profile_form.Address}}
                                     </div>
 
