@@ -23,8 +23,6 @@ import datetime
 from django.utils.translation import ugettext_lazy as _
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
-from Iran import data
-
 
 # Rename Method
 @deconstructible
@@ -1638,23 +1636,22 @@ class Profile(models.Model):
         return Product.objects.filter(FK_Shop__in = self.get_user_shops(), Publish = True)
 
     def get_state_name(self):
-        if not self.State.isdigit():
+        try:
+            return State.objects.get(id=self.State).name
+        except:
             return None
-        id = int(self.State)
-        return list(filter(lambda i : i['divisionType'] == 1 and i['id'] == id, data))[0]['name']
     
     def get_bigcity_name(self):
-        if not self.BigCity.isdigit():
+        try:
+            return BigCity.objects.get(id=self.BigCity).name
+        except:
             return None
-        id = int(self.BigCity)
-        return list(filter(lambda i : i['divisionType'] == 2 and i['id'] == id, data))[0]['name']
-    
-    def get_city_name(self):
-        if not self.City.isdigit():
-            return None
-        id = int(self.City)
-        return list(filter(lambda i : i['divisionType'] == 3 and i['id'] == id, data))[0]['name']
 
+    def get_city_name(self):
+        try:
+            return City.objects.get(id=self.City).name
+        except:
+            return None
     # Ordering With DateCreate
     class Meta:
         ordering = ('ID',)   
@@ -2096,3 +2093,50 @@ class AmazingProduct(models.Model):
 
     def __str__(self):
         return self.product.Title
+
+#----------------------------------------------------------------------------------------------------------------------------------
+
+# State استان
+class State(models.Model):
+    name = models.CharField(verbose_name='نام استان', max_length=127)
+    code = models.IntegerField(verbose_name='کد استان')
+    
+    class Meta:
+        ordering = ('id',)   
+        verbose_name = "استان"
+        verbose_name_plural = "استان ها"
+    
+    def get_bigcities_of_state(self):
+        return self.big_city.all()
+    
+    def get_bigcities_of_state_id_name(self):
+        return self.get_bigcities_of_state().values('name', 'id')
+
+# ‌BigCity شهرستان
+class BigCity(models.Model):
+    name = models.CharField(verbose_name='نام شهرستان', max_length=127)
+    code = models.IntegerField(verbose_name='کد شهرستان')
+    state = models.ForeignKey(State, related_name='big_city', on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ('id',)   
+        verbose_name = "شهرستان"
+        verbose_name_plural = "شهرستان ها"
+
+    def get_cities_of_bigcities(self):
+        return self.city.all()
+
+    def get_cities_of_bigcities_id_name(self):
+        return self.get_cities_of_bigcities().values('id', 'name')
+
+        
+# ‌City شهر
+class City(models.Model):
+    name = models.CharField(verbose_name='نام شهر', max_length=127)
+    code = models.IntegerField(verbose_name='کد شهر')
+    big_city = models.ForeignKey(BigCity, related_name='city', on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ('id',)   
+        verbose_name = "شهر"
+        verbose_name_plural = "شهر ها"

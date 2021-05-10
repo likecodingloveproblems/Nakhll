@@ -3,7 +3,7 @@
 
 <div class="profile-sidebar">
     {% if request.user.is_authenticated %}
-        <img src="{{This_User_Profile.Image_thumbnail_url}}" alt="profile-img">
+        <img src="{{request.user.User_Profile.Image_thumbnail_url}}" alt="profile-img">
     {% endif %}
     <h4>
     {% if request.user.is_authenticated %}

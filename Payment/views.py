@@ -5,7 +5,18 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from nakhll_market import management_coupon_views
-from nakhll_market.models import Shop, Product, Profile, Option_Meta, Newsletters, AttrPrice, Alert
+from nakhll_market.models import (
+    Shop,
+    Product,
+    Profile,
+    Option_Meta,
+    Newsletters,
+    AttrPrice,
+    Alert,
+    State,
+    BigCity,
+    City,
+    )
 from django.utils import timezone
 from .models import Factor, FactorPost ,Wallet,Transaction, PostBarCode, Coupon, Campaign
 from .models import PecOrder, PecTransaction, PecConfirmation, PecReverse
@@ -19,13 +30,15 @@ from zeep import Client
 import threading
 import json
 import os
-from Iran import data
 
 MERCHANT= os.environ.get('ZARIN_MERCHANT', None)
-client = Client('https://www.zarinpal.com/pg/services/WebGate/wsdl', None)
 email = os.environ.get('ZARIN_EMAIL', None)  # Optional
 PIN = os.environ.get('PEC_PIN')
 CallbackURL = format(os.environ.get('CALLBACKURL')) # Important: need to edit for realy server.
+
+def get_client():
+    client = Client('https://www.zarinpal.com/pg/services/WebGate/wsdl', None)
+    return client
 
 # TODO we must handle exceptions of SOAP connections
 def get_sale_serivce():
@@ -236,21 +249,9 @@ def Set_Send_Info(request):
                 return redirect("Payment:cartdetail")
             # ------------------------------------------------------------------------------
             # Get User State, BigCity, City Title
-            state = ''
-            bigcity = ''
-            city = ''
-            for i in data:
-                if (i['divisionType'] == 1) and (i['id'] == int(Factor_State)):
-                    state = i['name']
-                if (i['divisionType'] == 2) and (i['id'] == int(Factor_BigCity)):
-                    bigcity = i['name']
-                if (i['divisionType'] == 3) and (i['id'] == int(Factor_City)):
-                    if i['name'] == 'مرکزی':
-                        for j in data:
-                            if (j['divisionType'] == 2) and (j['id'] == i['parentCountryDivisionId']):
-                                city = j['name']
-                    else:
-                        city = i['name']
+            state = State.objects.get(id=Factor_State).name
+            bigcity = BigCity.objects.get(id=Factor_BigCity).name
+            city = City.objects.get(id=Factor_City).name
             # Set Data To Factor
             factor.MobileNumber = Factor_MobileNumber
             factor.PhoneNumber = Factor_PhoneNumber

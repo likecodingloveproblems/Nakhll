@@ -69,7 +69,6 @@ from Ticketing.models import Ticketing, TicketingMessage, Complaint
 from .forms import Login, CheckEmail , ProfileForm , MyUserForm 
 from nakhll.settings import KAVENEGAR_KEY
 
-from Iran import data
 from django.core.paginator import Paginator
 from braces.views import StaffuserRequiredMixin
 from django.views import View
@@ -4292,7 +4291,7 @@ def CheckCopun(request):
                                     if copun.MinimumAmount != '0':
                                         if userFactor.get_total_coupon_test(copun.id) >= int(copun.MinimumAmount):
 
-                                            if copun.MaximumAmount != '0':
+                                            if not copun.MaximumAmount in ['0', 0]:
 
                                                 if userFactor.get_total_coupon_test(copun.id) <= int(
                                                         copun.MaximumAmount):

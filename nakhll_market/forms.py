@@ -37,18 +37,20 @@ class ProfileForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         profile = kwargs['instance']
-        if profile.NationalCode != '':
+        if not profile.NationalCode in ['', None]:
             self.fields['NationalCode'].widget = forms.TextInput(attrs={
                 'class': 'form-control',
                 'type':'number',
                 'type' : 'text',
-                'readonly':True
+                'readonly': True,
+                'required': True
             })
         else:
             self.fields['NationalCode'].widget = forms.TextInput(attrs={
                 'class': 'form-control',
                 'type':'number',
                 'type' : 'text',
+                'required': True
              })
 
     class Meta:
@@ -78,11 +80,13 @@ class ProfileForm(forms.ModelForm):
             'Sex': forms.Select(attrs={
                 'class': 'form-control',
                 'type':'text',
+                'required':True,
             }),
             'MobileNumber': forms.TextInput(attrs={
                 'class': 'form-control',
                 'type':'number',
                 'readonly' : 'readonly',
+                'required':True,
             }),
             'BrithDay': forms.TextInput(attrs={
                  'class': 'form-control',
@@ -95,10 +99,12 @@ class ProfileForm(forms.ModelForm):
             'ZipCode': forms.TextInput(attrs={
                 'class': 'form-control',
                 'type':'number',
+                'required':True,
             }),
             'Address': forms.TextInput(attrs={
                 'class': 'form-control',
                 'type':'text',
+                'required':True,
             }),
             'TutorialWebsite': forms.Select(attrs={
                 'class': 'form-control',
@@ -107,6 +113,7 @@ class ProfileForm(forms.ModelForm):
             'PhoneNumber': forms.TextInput(attrs={
                 'class': 'form-control',
                 'type':'Number',
+                'required':True,
             }),
             'CityPerCode': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -131,11 +138,13 @@ class MyUserForm(UserChangeForm):
                 'placeholder': 'نام',
                 'class': 'form-control',
                 'type': 'text',
+                'required': True
             }),
             'last_name': forms.TextInput(attrs={
                 'placeholder': 'نام خانوادگی',
                 'class': 'form-control',
                 'type': 'text',
+                'required': True
             }),
             'email': forms.TextInput(attrs={
                 'placeholder': 'ایمیل',
