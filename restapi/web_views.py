@@ -5,10 +5,29 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.contrib.auth.models import User
-from django.core import serializers
 import json
 
-from nakhll_market.models import Profile, Product, Shop, SubMarket, Category, BankAccount, ShopBanner, Attribute, AttrProduct, AttrPrice, ProductBanner, PostRange, Alert, Field, OptinalAttribute, Details
+from nakhll_market.models import (
+    Profile, 
+    Product, 
+    Shop, 
+    SubMarket, 
+    Category, 
+    BankAccount, 
+    ShopBanner, 
+    Attribute, 
+    AttrProduct, 
+    AttrPrice, 
+    ProductBanner, 
+    PostRange, 
+    Alert, 
+    Field, 
+    OptinalAttribute, 
+    Details,
+    State,
+    BigCity,
+    City
+    )
 
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authtoken.models import Token
@@ -22,6 +41,7 @@ from rest_framework.generics import (
     CreateAPIView,
 )
 from .serializers import *
+from django.core import serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import authentication, permissions
@@ -38,8 +58,6 @@ from rest_framework.status import (
     HTTP_500_INTERNAL_SERVER_ERROR
 )
 from rest_framework.response import Response
-from Iran import data
-
 
 # create new shop //req : shop information // res: ({title : 'shop_title' }) OR err
 @csrf_exempt
@@ -1279,18 +1297,8 @@ def get_shop_submarkets(request):
 @permission_classes([IsAuthenticated])
 def get_all_state(request):
     # Build Class
-    class Items:
-        def __init__(self, id, name):
-            self.id = id
-            self.name = name
-        def toJSON(self):
-            return json.dumps(self, default = lambda o: o.__dict__)
-    # Set List
-    result = []
-    for i in data:
-        if i['divisionType'] == 1:
-            new = Items(i['id'], i['name'])
-            result.append(json.loads(new.toJSON()))
+    result = State.objects.only('id', 'name')
+    result = serializers.serialize('json', result)
     return JsonResponse(result, status = HTTP_200_OK, safe = False)
 
 
@@ -1300,23 +1308,9 @@ def get_all_state(request):
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def get_state_bigcity(request):
-        
     this_id = request.POST.get('id')
-    # Build Class
-    class Items:
-        def __init__(self, id, name):
-            self.id = id
-            self.name = name
-        def toJSON(self):
-            return json.dumps(self, default = lambda o: o.__dict__)
-    # Set List
-    result = []
-    for i in data:
-        if (i['divisionType'] == 2) and (i['parentCountryDivisionId'] == int(this_id)):
-            new = Items(i['id'], i['name'])
-            result.append(json.loads(new.toJSON()))
+    result = list(State.objects.get(id=this_id).get_bigcities_of_state_id_name())
     return JsonResponse(result, status = HTTP_200_OK, safe = False)
-
 
 
 # get bigcity`s city //req : request.user// res: data OR err
@@ -1324,26 +1318,8 @@ def get_state_bigcity(request):
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def get_bigcity_city(request):
-
     this_id = request.POST.get('id')
-    # Build Class
-    class Items:
-        def __init__(self, id, name):
-            self.id = id
-            self.name = name
-        def toJSON(self):
-            return json.dumps(self, default = lambda o: o.__dict__)
-    # Set List
-    result = []
-    for i in data:
-        if (i['divisionType'] == 2) and (i['id'] == int(this_id)):
-            name = i['name']
-        if (i['divisionType'] == 3) and (i['parentCountryDivisionId'] == int(this_id)):
-            if i['name'] == 'مرکزی':
-                new = Items(i['id'], name)
-            else:
-                new = Items(i['id'], i['name'])
-            result.append(json.loads(new.toJSON()))
+    result = list(BigCity.objects.get(id=this_id).get_cities_of_bigcities_id_name())
     return JsonResponse(result, status = HTTP_200_OK, safe = False)
 
 
