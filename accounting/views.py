@@ -1,10 +1,11 @@
 from io import BytesIO
-from nakhll_market.models import Profile, Shop
+from nakhll_market.models import Profile, Shop, Product
 from django.http import HttpResponse
 from xlsxwriter.workbook import Workbook
 from django.views import View
 from braces.views import GroupRequiredMixin
 from excel_response import ExcelResponse
+from django.db.models import Count, Sum
 
 
 class ShopManagersInformation(GroupRequiredMixin, View):
@@ -108,3 +109,21 @@ class UserMobile(View):
         return ExcelResponse(
             data=queryset,
             )
+
+class ProductStats(View):
+
+    def get(self, request):
+        queryset = Product.objects\
+            .annotate(sell_count = Count('Factor_Product'))\
+            .annotate(sell_product_count=Sum('Factor_Product__ProductCount'))\
+            .values(
+                'Title', 'Slug', 'FK_SubMarket__Title', 'FK_Shop__Title', 
+                'FK_Shop__Slug', 'FK_Shop__State', 'FK_Shop__BigCity', 'FK_Shop__City',
+                'FK_Shop__Location', 'FK_Shop__Available', 'FK_Shop__Publish', 
+                'FK_Shop__CanselCount','FK_Shop__FK_ShopManager__username', 'sell_count',
+                'sell_product_count', 'Price', 'OldPrice',
+                )
+        
+        return ExcelResponse(
+            data=queryset
+        )
