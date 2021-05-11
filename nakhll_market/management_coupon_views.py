@@ -817,8 +817,21 @@ def AddManagementCopun(request):
                 Copun_NumberOfUse = request.POST["Copun_NumberOfUse"]
             except:
                 Copun_NumberOfUse = None
+            total_max_num_use = request.POST.get('Copun_TotalNumberOfUse', '')
             # check data - and data
-            if ((Copun_Title != None) and (Copun_Title != '')) and ((Copun_DiscountRate != None) and (Copun_DiscountRate != '')) and ((Copun_EndDay != None) and (Copun_EndDay != '')) and ((Copun_SatrtDay != None) and (Copun_SatrtDay != '')) and ((Copun_NumberOfUse != None) and (Copun_NumberOfUse != '')):
+            if (
+                ((Copun_Title != None) and 
+                (Copun_Title != '')) and 
+                ((Copun_DiscountRate != None) and 
+                (Copun_DiscountRate != '')) and 
+                ((Copun_EndDay != None) and 
+                (Copun_EndDay != '')) and 
+                ((Copun_SatrtDay != None) and 
+                (Copun_SatrtDay != '')) and 
+                ((Copun_NumberOfUse != None) and 
+                (Copun_NumberOfUse != '') and
+                (total_max_num_use != ''))
+                ):
                 # check coupon serial
                 status = True
                 while (status):
@@ -850,7 +863,17 @@ def AddManagementCopun(request):
                             return render(request, 'nakhll_market/management/coupon/addmanagecoupon.html', context)
                     else:
                         # create new coupon with random serial
-                        copun = Coupon.objects.create(Title = Copun_Title, FK_Creator = request.user, StartDate = Copun_SatrtDay, EndDate = Copun_EndDay, DiscountRate = Copun_DiscountRate, DiscountStatus = '0', NumberOfUse = Copun_NumberOfUse, DiscountType = Copun_DiscountType)
+                        copun = Coupon.objects.create(
+                            Title = Copun_Title,
+                            FK_Creator = request.user,
+                            StartDate = Copun_SatrtDay,
+                            EndDate = Copun_EndDay,
+                            DiscountRate = Copun_DiscountRate,
+                            DiscountStatus = '0',
+                            DiscountType = Copun_DiscountType,
+                            NumberOfUse = Copun_NumberOfUse,
+                            max_total_number_of_use = total_max_num_use
+                            )
                         status = False
                 # <--- end while --->
                 # add minimum amount
