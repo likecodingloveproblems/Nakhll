@@ -261,13 +261,16 @@ def index(request):
         .values_list('id', flat=True))
     categories = Category.objects\
         .filter(Publish = True, Available = True, FK_SubCategory = None)\
-        .filter(pk__in=random.sample(categories_id, 12))
+        .filter(pk__in=random.sample(categories_id, 12))\
+        .annotate(product_count = Count('ProductCategory'))\
+        .filter(product_count__gt=5)
     # Get All Index Advertising - Buttom
     pubbuttomadvsliders = Slider.objects.filter(Location = 2, Publish = True)
     # Get All Index Advertising - Center
     pubcenteradvsliders = Slider.objects.filter(Location = 3, Publish = True)
     # Get All Shops
-    pubshopsquery = Shop.objects.filter(Publish = True, Available = True)
+    pubshopsquery = Shop.objects.filter(Publish = True, Available = True)\
+        .annotate(product_count = Count('ShopProduct')).filter(product_count__gt=1)
     numpubshops = pubshopsquery.count()
     pubshops = []
     for i in random.sample(range(0, numpubshops), 12):
