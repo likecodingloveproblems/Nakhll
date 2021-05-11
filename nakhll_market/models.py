@@ -1093,6 +1093,9 @@ class Product (models.Model):
                 result.append(newobject)
         return result
 
+    def get_shop_slug(self):
+        return self.FK_Shop.Slug
+
     class Meta:
         ordering = ('DateCreate','Title',)   
         verbose_name = "محصول"

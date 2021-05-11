@@ -324,6 +324,7 @@ class Coupon(models.Model):
     Publish=models.BooleanField(verbose_name='وضعیت انتشار کوپن', choices=PUBLISH_STATUS, default=False)
     FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='تایید کننده', related_name='Coupon_Accept', blank=True, null=True) 
     Log=models.TextField(verbose_name='لاگ', blank=True)
+    max_total_number_of_use=models.IntegerField(verbose_name='تعداد کل استفاده', default=10)
 
     def __str__(self):
         return "{} ({})".format(self.FK_Creator, self.SerialNumber)
@@ -483,7 +484,7 @@ class Factor(models.Model):
         (False,'عدم نمایش اطلاعات شخصی'),
     )
     UserInfo=models.BooleanField(verbose_name='وضعیت نمایش اطلاعات شخصی کاربر', choices=USERINFO_STATUS, default=True)
-    FK_Coupon=models.ForeignKey(Coupon, on_delete=models.SET_NULL, null=True, verbose_name='کد تخفیف', blank=True)
+    FK_Coupon=models.ForeignKey(Coupon, on_delete=models.SET_NULL, null=True, verbose_name='کد تخفیف', blank=True, related_name='Factor')
     DiscountRate=models.PositiveIntegerField(verbose_name='میزان تخفیف', default=0)
     DISCOUNT_TYPE =(
         ('0','بدون کوپن'),

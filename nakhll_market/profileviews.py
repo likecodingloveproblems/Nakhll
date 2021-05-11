@@ -4120,20 +4120,136 @@ def CheckCopun(request):
                 if copun.Available:
 
                     if copun.EndDate >= jdatetime.date.today():
+                        total_number_of_use = Factor.objects.filter(FK_Coupon=copun).count()
+                        if copun.max_total_number_of_use > total_number_of_use:
 
-                        if copun.FK_Users.all().count() != 0:
+                            if copun.FK_Users.all().count() != 0:
 
-                            IsUser = False
+                                IsUser = False
 
-                            for item in copun.FK_Users.all():
+                                for item in copun.FK_Users.all():
 
-                                if item.id == request.user.id:
-                                    IsUser = True
+                                    if item.id == request.user.id:
+                                        IsUser = True
 
-                            if IsUser:
+                                if IsUser:
+
+                                    if Factor.objects.filter(FK_User=request.user, Publish=True, PaymentStatus=True,
+                                                            FK_Coupon=copun).count() < int(copun.NumberOfUse):
+
+                                        # Build Product Class
+                                        class ProductClass:
+                                            def __init__(self, item, status):
+                                                self.Product = item
+                                                self.Status = status
+
+                                        # Coupon Producs List
+                                        Product_List = []
+
+                                        if copun.FK_Shops.all().count() != 0:
+                                            for item in copun.FK_Shops.all():
+                                                for product in Product.objects.filter(Publish=True, FK_Shop=item):
+                                                    New = ProductClass(product, False)
+                                                    Product_List.append(New)
+
+                                        if copun.FK_Products.all().count() != 0:
+                                            for item in copun.FK_Products.all():
+                                                New = ProductClass(item, False)
+                                                Product_List.append(New)
+
+                                        Product_List = list(dict.fromkeys(Product_List))
+
+                                        for factor_item in userFactor.FK_FactorPost.all():
+                                            for item in Product_List:
+                                                if factor_item.FK_Product.ID == item.Product.ID:
+                                                    item.Status = True
+
+                                        # Chechk Coupon
+                                        Check = False
+
+                                        if len(Product_List) != 0:
+                                            for item in Product_List:
+                                                if item.Status == True:
+                                                    Check = True
+                                        else:
+                                            Check = True
+
+                                        if Check:
+                                            if copun.MinimumAmount != '0':
+
+                                                if userFactor.get_total_coupon_test(copun.id) >= int(copun.MinimumAmount):
+
+                                                    if copun.MaximumAmount != '0':
+
+                                                        if userFactor.get_total_coupon_test(copun.id) <= int(
+                                                                copun.MaximumAmount):
+
+                                                            # Add Coupn To Factor
+                                                            userFactor.FK_Coupon = copun
+                                                            userFactor.save()
+
+                                                            response_data[
+                                                                'error'] = 'کد تخفیف برای شما ثبت شد، لطفا تا بارگذاری مجدد صفحه منتظر بمانید...'
+                                                            response_data['status'] = True
+                                                            return JsonResponse(response_data)
+
+                                                        else:
+
+                                                            response_data[
+                                                                'error'] = 'خرید شما از حجره مرتبط با این کد تخفیف بیشتر از میزان تعیین شده (' + copun.MaximumAmount + 'ریال' + ') می باشد.'
+                                                            response_data['status'] = False
+                                                            return JsonResponse(response_data)
+                                                    else:
+
+                                                        # Add Coupn To Factor
+                                                        userFactor.FK_Coupon = copun
+                                                        userFactor.save()
+
+                                                        response_data[
+                                                            'error'] = 'کد تخفیف برای شما ثبت شد، لطفا تا بارگذاری مجدد صفحه منتظر بمانید...'
+                                                        response_data['status'] = True
+                                                        return JsonResponse(response_data)
+
+                                                else:
+
+                                                    response_data[
+                                                        'error'] = 'خرید شما از حجره مرتبط با این کد تخفیف به میزان تعیین شده (' + copun.MinimumAmount + 'ریال' + ') نرسیده است.'
+                                                    response_data['status'] = False
+                                                    return JsonResponse(response_data)
+
+                                            else:
+
+                                                # Add Coupn To Factor
+                                                userFactor.FK_Coupon = copun
+                                                userFactor.save()
+
+                                                response_data[
+                                                    'error'] = 'کد تخفیف برای شما ثبت شد، لطفا تا بارگذاری مجدد صفحه منتظر بمانید...'
+                                                response_data['status'] = True
+                                                return JsonResponse(response_data)
+
+                                        else:
+
+                                            response_data['error'] = 'شما محصولی که شامل این کوپن باشد، ندارید!'
+                                            response_data['status'] = False
+                                            return JsonResponse(response_data)
+
+                                    else:
+
+                                        response_data[
+                                            'error'] = 'تعداد دفعات مجاز استفاده شما از این کد تخفیف تمام شده است!'
+                                        response_data['status'] = False
+                                        return JsonResponse(response_data)
+                                else:
+
+                                    response_data['error'] = 'این کد تخفیف برای شما قابل استفاده نیست.'
+                                    response_data['status'] = False
+                                    return JsonResponse(response_data)
+
+                            else:
 
                                 if Factor.objects.filter(FK_User=request.user, Publish=True, PaymentStatus=True,
-                                                         FK_Coupon=copun).count() < int(copun.NumberOfUse):
+                                                        FK_Coupon=copun).count() < int(copun.NumberOfUse):
 
                                     # Build Product Class
                                     class ProductClass:
@@ -4173,11 +4289,11 @@ def CheckCopun(request):
                                         Check = True
 
                                     if Check:
-                                        if copun.MinimumAmount != '0':
 
+                                        if copun.MinimumAmount != '0':
                                             if userFactor.get_total_coupon_test(copun.id) >= int(copun.MinimumAmount):
 
-                                                if copun.MaximumAmount != '0':
+                                                if not copun.MaximumAmount in ['0', 0]:
 
                                                     if userFactor.get_total_coupon_test(copun.id) <= int(
                                                             copun.MaximumAmount):
@@ -4226,6 +4342,7 @@ def CheckCopun(request):
                                             response_data['status'] = True
                                             return JsonResponse(response_data)
 
+
                                     else:
 
                                         response_data['error'] = 'شما محصولی که شامل این کوپن باشد، ندارید!'
@@ -4235,124 +4352,14 @@ def CheckCopun(request):
                                 else:
 
                                     response_data[
-                                        'error'] = 'تعداد دفعات مجاز استفاده شما از این کد تخفیف تمام شده است!'
+                                        'error'] = 'تعداد دفعات مجاز استفاده از این کد تخفیف برای شما به پایان رسیده است.'
                                     response_data['status'] = False
                                     return JsonResponse(response_data)
-                            else:
-
-                                response_data['error'] = 'این کد تخفیف برای شما قابل استفاده نیست.'
-                                response_data['status'] = False
-                                return JsonResponse(response_data)
 
                         else:
-
-                            if Factor.objects.filter(FK_User=request.user, Publish=True, PaymentStatus=True,
-                                                     FK_Coupon=copun).count() < int(copun.NumberOfUse):
-
-                                # Build Product Class
-                                class ProductClass:
-                                    def __init__(self, item, status):
-                                        self.Product = item
-                                        self.Status = status
-
-                                # Coupon Producs List
-                                Product_List = []
-
-                                if copun.FK_Shops.all().count() != 0:
-                                    for item in copun.FK_Shops.all():
-                                        for product in Product.objects.filter(Publish=True, FK_Shop=item):
-                                            New = ProductClass(product, False)
-                                            Product_List.append(New)
-
-                                if copun.FK_Products.all().count() != 0:
-                                    for item in copun.FK_Products.all():
-                                        New = ProductClass(item, False)
-                                        Product_List.append(New)
-
-                                Product_List = list(dict.fromkeys(Product_List))
-
-                                for factor_item in userFactor.FK_FactorPost.all():
-                                    for item in Product_List:
-                                        if factor_item.FK_Product.ID == item.Product.ID:
-                                            item.Status = True
-
-                                # Chechk Coupon
-                                Check = False
-
-                                if len(Product_List) != 0:
-                                    for item in Product_List:
-                                        if item.Status == True:
-                                            Check = True
-                                else:
-                                    Check = True
-
-                                if Check:
-
-                                    if copun.MinimumAmount != '0':
-                                        if userFactor.get_total_coupon_test(copun.id) >= int(copun.MinimumAmount):
-
-                                            if not copun.MaximumAmount in ['0', 0]:
-
-                                                if userFactor.get_total_coupon_test(copun.id) <= int(
-                                                        copun.MaximumAmount):
-
-                                                    # Add Coupn To Factor
-                                                    userFactor.FK_Coupon = copun
-                                                    userFactor.save()
-
-                                                    response_data[
-                                                        'error'] = 'کد تخفیف برای شما ثبت شد، لطفا تا بارگذاری مجدد صفحه منتظر بمانید...'
-                                                    response_data['status'] = True
-                                                    return JsonResponse(response_data)
-
-                                                else:
-
-                                                    response_data[
-                                                        'error'] = 'خرید شما از حجره مرتبط با این کد تخفیف بیشتر از میزان تعیین شده (' + copun.MaximumAmount + 'ریال' + ') می باشد.'
-                                                    response_data['status'] = False
-                                                    return JsonResponse(response_data)
-                                            else:
-
-                                                # Add Coupn To Factor
-                                                userFactor.FK_Coupon = copun
-                                                userFactor.save()
-
-                                                response_data[
-                                                    'error'] = 'کد تخفیف برای شما ثبت شد، لطفا تا بارگذاری مجدد صفحه منتظر بمانید...'
-                                                response_data['status'] = True
-                                                return JsonResponse(response_data)
-
-                                        else:
-
-                                            response_data[
-                                                'error'] = 'خرید شما از حجره مرتبط با این کد تخفیف به میزان تعیین شده (' + copun.MinimumAmount + 'ریال' + ') نرسیده است.'
-                                            response_data['status'] = False
-                                            return JsonResponse(response_data)
-
-                                    else:
-
-                                        # Add Coupn To Factor
-                                        userFactor.FK_Coupon = copun
-                                        userFactor.save()
-
-                                        response_data[
-                                            'error'] = 'کد تخفیف برای شما ثبت شد، لطفا تا بارگذاری مجدد صفحه منتظر بمانید...'
-                                        response_data['status'] = True
-                                        return JsonResponse(response_data)
-
-
-                                else:
-
-                                    response_data['error'] = 'شما محصولی که شامل این کوپن باشد، ندارید!'
-                                    response_data['status'] = False
-                                    return JsonResponse(response_data)
-
-                            else:
-
-                                response_data[
-                                    'error'] = 'تعداد دفعات مجاز استفاده از این کد تخفیف برای شما به پایان رسیده است.'
-                                response_data['status'] = False
-                                return JsonResponse(response_data)
+                            response_data['error'] = 'این کوپن بیشتر از تعداد مجاز استفاده شده است.'
+                            response_data['status'] = False
+                            return JsonResponse(response_data)
 
                     else:
                         response_data['error'] = 'کد تخفیف منقضی شده است.'
