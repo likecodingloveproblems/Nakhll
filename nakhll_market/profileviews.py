@@ -3626,7 +3626,7 @@ def AddNewComplaint(request):
                                                MobileNumber=Connect_PhoneNumber, Email=Connect_Email, Type='0',
                                                Image=Connect_Image)
             else:
-                msg = Complaint.objects.crete(Title=Connect_Title, Description=Connect_Des,
+                msg = Complaint.objects.create(Title=Connect_Title, Description=Connect_Des,
                                               MobileNumber=Connect_PhoneNumber, Email=Connect_Email, Type='0')
 
             Alert.objects.create(Part='18', FK_User=request.user, Slug=msg.id)
