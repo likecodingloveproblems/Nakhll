@@ -257,13 +257,14 @@ def index(request):
     # Get Index Sliders
     pubsliders = Slider.objects.filter(Location = 1, Publish = True)
     # Get All Categories
-    categories_id = list(Category.objects.filter(Publish = True, Available = True, FK_SubCategory = None)\
-        .values_list('id', flat=True))
     categories = Category.objects\
         .filter(Publish = True, Available = True, FK_SubCategory = None)\
-        .filter(pk__in=random.sample(categories_id, 12))\
         .annotate(product_count = Count('ProductCategory'))\
         .filter(product_count__gt=5)
+    categories_id = list(categories\
+        .values_list('id', flat=True))
+    categories = categories\
+        .filter(pk__in=random.sample(categories_id, 12))
     # Get All Index Advertising - Buttom
     pubbuttomadvsliders = Slider.objects.filter(Location = 2, Publish = True)
     # Get All Index Advertising - Center
