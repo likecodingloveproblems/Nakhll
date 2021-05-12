@@ -5724,9 +5724,9 @@ a.disabled {
 .chosen-disabled {
     opacity: 1 !important;
 }
-.cropper-label img {
+/* .cropper-label img {
     float: left;
-}
+} */
 
 .cropper-rounded {
     float: left;
