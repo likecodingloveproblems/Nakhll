@@ -35,7 +35,7 @@
 
                                 <a href="{% url "nakhll_market:Dashboard" %}" >
                                 <div class="profile-top">
-                                    <img src="{{This_User_Profile.Image_thumbnail_url}}" class="profileimg" alt="profileimg">
+                                    <img src="{{request.user.User_Profile.Image_thumbnail_url}}" class="profileimg" alt="profileimg">
                                     <small>خوش آمدید</small>
                                     <br/>
 
@@ -49,7 +49,7 @@
                                 </a>
                         
                                 <a class="wallet-filled" href="{% url "nakhll_market:Wallet" %}">
-                                    <i class="fal fa-wallet"></i> کیف پول : <span class="numbersprice">{{This_User_Inverntory}}</span> ریال
+                                    <i class="fal fa-wallet"></i> کیف پول : <span class="numbersprice">{{request.user.WalletManager.Inverntory}}</span> ریال
                                 </a>
                                     <div class="dropdown-listmenu">
                                         <a class="dropdown-item" href="{% url "nakhll_market:Dashboard" %}"><i class="fad fa-user"></i> پروفایل </a>

@@ -156,55 +156,6 @@ class SendMessage:
         requests.post(url, params=params)
 
 
-# ---------------------------------------------------- User Profile Pages ---------------------------------------------------------
-
-# # implement class based views
-# class ProfileDashboard(LoginRequiredMixin, TemplateView):
-#     template_name = 'nakhll_market/profile/pages/profile.html'
-#     redirect_field_name = 'auth:login'
-
-#     def get_context_data(self, **kwargs):
-#         this_profile = Profile.objects.get(FK_User=self.request.user)
-#         this_inverntory = self.request.user.WalletManager.Inverntory
-#         # Get Menu Item
-#         options = Option_Meta.objects.filter(Title='index_page_menu_items')
-#         # Get Nav Bar Menu Item
-#         navbar = Option_Meta.objects.filter(Title='nav_menu_items')
-#         # -------------------------------------------------------------------
-#         context = super().get_context_data(**kwargs)
-#         context['This_User_Profile'] = this_profile
-#         context['This_User_Inverntory'] = this_inverntory
-#         context['Options'] = options
-#         context['MenuList'] = navbar
-#         return context
-
-
-# Get User Dashboard Info
-# def ProfileDashboard(request):
-#     # Check User Status
-#     if request.user.is_authenticated :
-#         this_profile = Profile.objects.get(FK_User=request.user)
-#         this_inverntory = request.user.WalletManager.Inverntory
-#         # Get Menu Item
-#         options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
-#         # Get Nav Bar Menu Item
-#         navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-#         # -------------------------------------------------------------------
-
-#         context = {
-#             'This_User_Profile':this_profile,
-#             'This_User_Inverntory': this_inverntory,
-#             'Options': options,
-#             'MenuList':navbar,
-#         }
-
-#         return render(request, 'nakhll_market/profile/pages/profile.html', context)
-
-#     else:
-
-#         return redirect("auth:login")
-
-
 #-------------------------------------------------------------------------------------------------------------------------------------
 # implement class based views
 # Get User Wallet Info And Charge It
@@ -213,8 +164,6 @@ class ProfileWallet(LoginRequiredMixin, TemplateView):
     redirect_field_name = "auth:login"
 
     def get_context_data(self, **kwargs):
-        this_profile = Profile.objects.get(FK_User=self.request.user)
-        this_inverntory = self.request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -222,8 +171,6 @@ class ProfileWallet(LoginRequiredMixin, TemplateView):
         # -------------------------------------------------------------------
 
         context = super().get_context_data(**kwargs)
-        context['This_User_Profile'] = this_profile
-        context['This_User_Inverntory'] = this_inverntory
         context['Options'] = options
         context['MenuList'] = navbar
         context['Message'] = None
@@ -371,8 +318,6 @@ class ProfileReview(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         request = self.request
         context = super().get_context_data(**kwargs)
-        this_profile = Profile.objects.get(FK_User=request.user)
-        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -405,9 +350,6 @@ class ProfileReview(LoginRequiredMixin, TemplateView):
             return item.date
 
         user_comments.sort(reverse=True, key=GetDate)
-
-        context['This_User_Profile'] = this_profile
-        context['This_User_Inverntory'] = this_inverntory
         context['Options'] = options
         context['MenuList'] = navbar
         context['Comments'] = user_comments
@@ -470,7 +412,6 @@ class ProfileShops(LoginRequiredMixin, TemplateView):
         request = self.request
         context = super().get_context_data(**kwargs)
         this_profile = Profile.objects.get(FK_User=request.user)
-        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
@@ -501,8 +442,6 @@ class ProfileShops(LoginRequiredMixin, TemplateView):
         user_unpubished_shops = Shop.objects.filter(FK_ShopManager=request.user, Publish=False)
         # Get All User Products
         user_product_list = this_profile.get_user_products
-        context['This_User_Profile'] = this_profile
-        context['This_User_Inverntory'] = this_inverntory
         context['Options'] = options
         context['MenuList'] = navbar
         context['UserShops'] = user_shop_list
@@ -3089,15 +3028,11 @@ class ProfileAlert(LoginRequiredMixin, StaffuserRequiredMixin, View):
 
     def get_context_data(self, request, context, **kwargs):
         request = self.request
-        this_profile = Profile.objects.get(FK_User=request.user)
-        this_inverntory = request.user.WalletManager.Inverntory
         # Get Menu Item
         options = Option_Meta.objects.filter(Title='index_page_menu_items')
         # Get Nav Bar Menu Item
         navbar = Option_Meta.objects.filter(Title='nav_menu_items')
         # --------------------------------------------------------------------
-        context['This_User_Profile'] = this_profile
-        context['This_User_Inverntory'] = this_inverntory
         context['Options'] = options
         context['MenuList'] = navbar
         context['users'] = self.get_creator_users(context['Alert'])

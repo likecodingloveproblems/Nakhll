@@ -122,7 +122,7 @@
                             </div>
                             <div class="col-md-4">
                                 <label for="inputNationalCode">کد ملی <code>*</code></label>
-                                <input value="{{This_User_Profile.NationalCode}}" type="number" placeholder="کدملی خود را وارد نمایید..."
+                                <input value="{{request.user.User_Profile.NationalCode}}" type="number" placeholder="کدملی خود را وارد نمایید..."
                                     name="Factor_NationalCode" class="form-control" id="inputNationalCode" required>
                             
                             </div>
@@ -166,7 +166,7 @@
                                     <option value="31">چهارمحال وبختیاری</option>
                                     <option value="32">البرز</option>
                                 </select>
-                                <!-- <input value="{{This_User_Profile.State}}" type="text" placeholder="نام استان خود را وارد نمایید..." name="Factor_State" class="form-control" id="inputState" required> -->
+                                <!-- <input value="{{request.user.User_Profile.State}}" type="text" placeholder="نام استان خود را وارد نمایید..." name="Factor_State" class="form-control" id="inputState" required> -->
                             </div>
                             <div class="col-md-4 bigcity-form-group">
                                 <label for="inputBigCity">شهرستان <code>*</code></label>
@@ -176,7 +176,7 @@
                                 <select name="Factor_BigCity" class="chosen-select-rtl form-control choose-bigcity-chosen" id="inputprofBigCity">
                                     <option value="0">شهرستان خود را انتخاب نمائید...</option>
                                 </select>
-                                <!-- <input value="{{This_User_Profile.BigCity}}" type="text" placeholder="نام شهرستان خود را وارد نمایید..." name="Factor_BigCity" class="form-control" id="inputBigCity" required> -->
+                                <!-- <input value="{{request.user.User_Profile.BigCity}}" type="text" placeholder="نام شهرستان خود را وارد نمایید..." name="Factor_BigCity" class="form-control" id="inputBigCity" required> -->
                             </div>
                             <div class="col-md-4 city-form-group">
                                 <label for="inputCity">شهر <code>*</code></label>
@@ -186,7 +186,7 @@
                                 <select name="Factor_City" class="chosen-select-rtl form-control choose-city-chosen" id="inputprofCity">
                                     <option value="0">شهر خود را انتخاب نمائید...</option>
                                 </select>
-                                <!-- <input value="{{This_User_Profile.City}}" type="text" placeholder="نام شهر خود را وارد نمایید..." name="Factor_City" class="form-control" id="inputCity" required> -->
+                                <!-- <input value="{{request.user.User_Profile.City}}" type="text" placeholder="نام شهر خود را وارد نمایید..." name="Factor_City" class="form-control" id="inputCity" required> -->
                                 <script>
                                     var selectedState;
                                     createBigCity = function () { $.ajax (
@@ -318,17 +318,17 @@
                             <div class="col-md-6">
                                 <label for="inputMobileNumber">شماره همراه <code>*</code></label>
                                 <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="شماره همراه شما باید 11 رقم باشد."></i>
-                                <input required value="{{This_User_Profile.MobileNumber}}" type="number" placeholder="632****0939" name="Factor_MobileNumber" pattern="[0-9]{11,11}" class="form-control" id="inputMobileNumber">
+                                <input required value="{{request.user.User_Profile.MobileNumber}}" type="number" placeholder="632****0939" name="Factor_MobileNumber" pattern="[0-9]{11,11}" class="form-control" id="inputMobileNumber">
                             </div>
                             <div class="form-group col-md-4">
                                 <label for="inputPhoneNumber">تلفن ثابت <code>*</code></label>
                                 <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="شماره تلفن ثابت شما باید 8 رقم باشد."></i>
-                                <input value="{{This_User_Profile.PhoneNumber}}" type="number" placeholder="98****33" name="Factor_PhoneNumber" pattern="[0-9]{8,8}" class="form-control" id="inputPhoneNumber">
+                                <input value="{{request.user.User_Profile.PhoneNumber}}" type="number" placeholder="98****33" name="Factor_PhoneNumber" pattern="[0-9]{8,8}" class="form-control" id="inputPhoneNumber">
                             </div>
                             <div class="form-group col-md-2">
                                 <label for="inputCityPerCode">پیش شماره <code>*</code></label>
                                 <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="پیش شماره شهر خود را به صورت اعداد وارد نمایید - پیش شماره شهر باید حداقل 3 رقم باشد."></i>
-                                <input value="{{This_User_Profile.CityPerCode}}" type="number" placeholder="مثال : 034" name="Factor_CityPerCode" pattern="[0-9]{3,6}" class="form-control" id="inputCityPerCode">
+                                <input value="{{request.user.User_Profile.CityPerCode}}" type="number" placeholder="مثال : 034" name="Factor_CityPerCode" pattern="[0-9]{3,6}" class="form-control" id="inputCityPerCode">
                             </div>
                         </div>
                         
@@ -336,14 +336,14 @@
                             <div class="col-md-12">
                                 <label for="inputAddress">آدرس <code>*</code></label>
                                 <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="آدرس محل دریافت مرسوله را وارد نمایید."></i>
-                                <input value="{{This_User_Profile.Address}}" type="text" placeholder="آدرسی که می خواهید مرسوله به آنجا ارسال شود را وارد نمایید..." name="Factor_Address" class="form-control" id="inputAddress" required>
+                                <input value="{{request.user.User_Profile.Address}}" type="text" placeholder="آدرسی که می خواهید مرسوله به آنجا ارسال شود را وارد نمایید..." name="Factor_Address" class="form-control" id="inputAddress" required>
                             </div>
                         </div>
                         <div class="form-row form-group">
                             <div class="col-md-6">
                                 <label for="inputZipCode">کد پستی <code>*</code></label>
                                 <i class="fal fa-info-circle shop-info tooltip-arrow" data-toggle="tooltip" data-placement="left" title="کد پستی شما باید 10 رقم باشد."></i>
-                                <input required value="{{This_User_Profile.ZipCode}}" type="number" placeholder="999*****76" name="Factor_ZipCode" pattern="[0-9]{10,10}" class="form-control" id="inputZipCode">
+                                <input required value="{{request.user.User_Profile.ZipCode}}" type="number" placeholder="999*****76" name="Factor_ZipCode" pattern="[0-9]{10,10}" class="form-control" id="inputZipCode">
                             </div>
                         </div>
                         <strong>هر گونه <span class="Riyal">اشتباه</span> در اطلاعات این فرم متوجه شخص <span class="Riyal">شما</span> می باشد.</strong>
@@ -459,9 +459,9 @@ $(function () {
 
 
 
-    var userprofState = '{{This_User_Profile.State}}';
-    var userprofBigCity = '{{This_User_Profile.BigCity}}';
-    var userprofCity = '{{This_User_Profile.City}}';
+    var userprofState = '{{request.user.User_Profile.State}}';
+    var userprofBigCity = '{{request.user.User_Profile.BigCity}}';
+    var userprofCity = '{{request.user.User_Profile.City}}';
     var findState = false;
     var findBigCity = false;
     var findCity = false;
