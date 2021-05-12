@@ -84,7 +84,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'admin_reorder.middleware.ModelAdminReorder',
-    'middlewares.track_url_history.TrackUrlHistory',
     'django_prometheus.middleware.PrometheusAfterMiddleware',
 ]
 

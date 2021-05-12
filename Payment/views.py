@@ -929,10 +929,9 @@ def unsuccessful(request):
 # Add Product To Cart With Attribute Price Page
 @login_required
 def AddProductToCartWithAttrPrice(request, ID):
-    # Check User Status
+    # Get This Product
+    this_product = get_object_or_404(Product, ID = ID)
     if request.method == 'POST':
-        # Get This Product
-        this_product = get_object_or_404(Product, ID = ID)
         if (this_product.Status != '4') and (this_product.Inventory != 0):
             # Get All Attribute Price
             attrpricelist = request.POST.getlist("attrpriceitem")
@@ -1032,6 +1031,12 @@ def AddProductToCartWithAttrPrice(request, ID):
             status = True,
             msg = 'محصول مدنظر شما در حال حاضر موجود نمی باشد!')
 
+    elif request.method == 'GET':
+        kwargs = {
+            'shop_slug': this_product.get_shop_slug(),
+            'product_slug': this_product.Slug
+        }
+        return redirect(reverse('nakhll_market:ProductsDetail', kwargs=kwargs))
 
 def accept_factor_product(request, ID):
     if request.user.is_authenticated:
