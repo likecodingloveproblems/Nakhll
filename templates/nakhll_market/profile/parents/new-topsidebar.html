@@ -14,7 +14,7 @@
         <h5>
             <img src="https://cdn0.iconfinder.com/data/icons/shopping-and-ecommerce-1/38/Shopping_icons_1_Converted-09-512.png" alt=".">
             {% if request.user.is_authenticated %}
-                کیف پول : <span class="priceline"><span class="numbersprice">{{This_User_Inverntory}}</span></span> ریال
+                کیف پول : <span class="priceline"><span class="numbersprice">{{request.user.WalletManager.Inverntory}}</span></span> ریال
             {% endif %}
         </h5>
     </a>
