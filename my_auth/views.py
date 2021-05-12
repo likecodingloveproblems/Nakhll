@@ -266,11 +266,7 @@ class Login(SuccessURLAllowedHostsMixin, FormView):
 
     def get_redirect_url(self):
         """Return the user-originating redirect URL if it's safe."""
-        # redirect_to = self.request.POST.get(
-        #     self.redirect_field_name,
-        #     self.request.GET.get(self.redirect_field_name, '')
-        # )
-        redirect_to = self.request.session.get('next')
+        redirect_to = self.request.GET.get('next')
         url_is_safe = is_safe_url(
             url=redirect_to,
             allowed_hosts=self.get_success_url_allowed_hosts(),
