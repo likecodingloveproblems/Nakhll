@@ -154,7 +154,7 @@
                                         <input type="radio" id="customRadioInline1" name="pay_status_btn" value="pay_wallet" class="custom-control-input">
                                         <label class="custom-control-label" for="customRadioInline1"></label>
                                         
-                                        <span class="nameradiobox">پرداخت از کیف پول ( موجودی <span class="numbersprice">{{This_User_Inverntory}}</span> ریال )</span>
+                                        <span class="nameradiobox">پرداخت از کیف پول ( موجودی <span class="numbersprice">{{request.user.WalletManager.Inverntory}}</span> ریال )</span>
                                         
                                     </div>
                                     <small class="nameradiobox">پرداخت کل مبلغ صورت حساب از کیف پول</small>
@@ -166,7 +166,7 @@
                                     <div class="custom-control custom-radio custom-control-inline">
                                         <input type="radio" id="radio3" name="radioDisabled" id="customRadioDisabled" class="custom-control-input" disabled>
                                         <label class="custom-control-label" for="customRadioDisabled"></label>
-                                        <span class="nameradiobox">پرداخت از کیف پول ( موجودی <span class="numbersprice">{{This_User_Inverntory}}</span> ریال )</span>
+                                        <span class="nameradiobox">پرداخت از کیف پول ( موجودی <span class="numbersprice">{{request.user.WalletManager.Inverntory}}</span> ریال )</span>
                                     </div>
                                     <small class="nameradiobox">موجودی کیف پول شما کافی نمی باشد.<a href="/cart/detail/"></a></small>
                                     
