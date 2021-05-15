@@ -8,4 +8,5 @@ urlpatterns = [
     path('shop-managers-info/v2/', views.ShopManagersInformationV2.as_view(), name='shop_managers_information-v2'),
     path('user-mobile/', views.UserMobile.as_view(), name='user-mobile'),
     path('product-stats/', views.ProductStats.as_view(), name='product-stats'),
+    path('user_state/' , views.UserState.as_view() , name='user_state'),
 ]
