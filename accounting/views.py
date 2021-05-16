@@ -1,4 +1,6 @@
 from io import BytesIO
+
+from django.db.models.query import QuerySet
 from nakhll_market.models import Profile, Shop, Product
 from django.http import HttpResponse
 from xlsxwriter.workbook import Workbook
@@ -124,6 +126,21 @@ class ProductStats(View):
                 'sell_product_count', 'Price', 'OldPrice',
                 )
         
+        return ExcelResponse(
+            data=queryset
+        )
+
+class UserState(View):
+
+    def get (self , request):
+        queryset =  Profile.objects\
+            .annotate(shop_count=Count('FK_User__ShopManager'))\
+            .values(
+                'MobileNumber', 'NationalCode', 'FK_User__first_name', 'FK_User__last_name' 
+                , 'shop_count'
+                )
+
+
         return ExcelResponse(
             data=queryset
         )
