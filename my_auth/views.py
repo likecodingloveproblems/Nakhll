@@ -1,4 +1,7 @@
+from django.views.generic.base import View
+from Payment.models import Wallet
 from ast import get_docstring
+from nakhll_market.models import Profile
 from my_auth.services import create_user, set_mobile_number_auth_code, set_session_expiration_time, set_user_password_by_mobile_number
 from typing import Any, Dict
 from django import forms, http
@@ -11,11 +14,11 @@ from datetime import timedelta
 from django.http.response import HttpResponse, HttpResponseRedirect
 
 from django.utils import timezone
-from nakhll.settings import REDIRECT_FIELD_NAME, SESSION_COOKIE_AGE
+from nakhll.settings import KAVENEGAR_KEY, REDIRECT_FIELD_NAME, SESSION_COOKIE_AGE
 from django.shortcuts import redirect, resolve_url
 from django.urls.base import reverse, reverse_lazy
 from django.views.generic.edit import FormView
-from django.contrib.auth import login, logout
+from django.contrib.auth import authenticate, login, logout
 
 from sms.sms import Kavenegar
 from my_auth.forms import ApproveCodeForm, AuthenticationForm, ForgetPasswordDataForm, ForgetPasswordMobileForm, RegisterDataForm, RegisterMobileForm
@@ -23,6 +26,11 @@ from nakhll.settings import LOGIN_REDIRECT_URL
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 import logging
+import random
+from django.db import transaction, DatabaseError
+from django.contrib.auth.models import User
+from nakhll_market.models import Profile
+from kavenegar import KavenegarAPI, APIException, HTTPException
 
 logger = logging.getLogger(__name__)
 
@@ -277,3 +285,166 @@ class Login(SuccessURLAllowedHostsMixin, FormView):
 def logout_(request):
     logout(request)
     return redirect(reverse('Profile:index'))
+
+
+
+def get_user_exists(phone_number):
+    return Profile.objects.filter(MobileNumber=phone_number).exists()
+
+def get_user_has_password(user):
+    return user.password != ''
+
+def generate_code():
+    return str(random.randint(100000, 999999))
+
+def get_user_by_phone_number(phone_number):
+    profile = Profile.objects.get(phone_number)
+    return profile.FK_User
+
+def set_code(request):
+    # generate code and set it to session
+    code = generate_code()
+    phone_number = get_phone_number(request)
+    # send code by sms to user
+    params = {
+        'receptor': phone_number,
+        'template': 'nakhl-register',
+        'token': code,
+        'type': 'sms',
+    }
+    try:
+        KavenegarAPI(KAVENEGAR_KEY)\
+            .verify_lookup(params)
+    except APIException as e: 
+        messages.error(request, 'خطایی رخ داده است. لطفا با پشتیبانی تماس بگیرید.')
+        print(e)
+    except HTTPException as e: 
+        messages.error(request, 'خطایی رخ داده است. لطفا با پشتیبانی تماس بگیرید.')
+        print(e)
+    request.session['auth-code'] = code
+
+def create_user_profile(request, phone_number):
+    # check user and profile and wallet for this phone is not set
+    # and do all DB operations transactional
+    try:
+        with transaction.atomic():
+            user = User.objects.create(username=phone_number)
+            profile = Profile.objects.create(MobileNumber=phone_number, FK_User=user)
+            Wallet.objects.create(FK_User=user)
+
+    except DatabaseError as e:
+        # TODO log error 
+        # return a message to the user that it may be has a
+        # record in User or Profile or Wallet, or maybe another reason
+        messages.error(request, 'با عرض پوزش خطایی رخ داده است. لطفا با پشتیبانی ارتباط بگیرید.')
+        return redirect('auth:get-phone')
+
+def get_phone_number(request):
+    return _get_phone_number(request)
+
+def _get_phone_number(requset):
+    return requset.session.get('phone_number')
+
+def get_code(request):
+    return _get_code(request)
+
+def _get_code(request):
+    return request.session.get('auth-code')
+
+class CheckUserIsAuthenticated:
+    redirect_authenticated_user = True
+
+    @method_decorator(sensitive_post_parameters())
+    @method_decorator(csrf_protect)
+    @method_decorator(never_cache)
+    def dispatch(self, request, *args, **kwargs):
+        if self.redirect_authenticated_user and self.request.user.is_authenticated:
+            redirect_to = self.get_success_url()
+            return HttpResponseRedirect(redirect_to)
+        return super().dispatch(request, *args, **kwargs)
+
+
+    def get_success_url(self):
+        url = self.get_redirect_url()
+        return url or resolve_url(LOGIN_REDIRECT_URL)
+
+    def get_redirect_url(self):
+        """Return the user-originating redirect URL if it's safe."""
+        redirect_to = self.request.GET.get('next')
+        url_is_safe = is_safe_url(
+            url=redirect_to,
+            allowed_hosts=self.get_success_url_allowed_hosts(),
+            require_https=self.request.is_secure(),
+        )
+        return redirect_to if url_is_safe else ''
+
+class GetPhone(FormView, CheckUserIsAuthenticated):
+    template_name = 'get-phone.html'
+
+    def set_phone_number(self, phone_number):
+        self._set_phone_number(self, phone_number)
+
+    def _set_phone_number(self, phone_number):
+        self.request.session['phone_number'] = phone_number
+
+    def form_valid(self, form) -> HttpResponse:
+        phone_number = self.cleaned_data.get('phone_number')
+        # set phone number to session
+        # user exists
+        # no -> Register
+        # yes -> check user has password
+        # yes -> no -> LoginCode
+        # yes -> yes -> LoginPassword
+        self.set_phone_number(phone_number)
+        if get_user_exists(phone_number):
+            user = get_user_by_phone_number(phone_number)
+            if get_user_has_password(user):
+                return redirect('auth:login-password')
+            else:
+                set_code()
+                return redirect('auth:login-code')
+        else:
+            # set code
+            set_code()
+            return redirect('auth:register')
+
+class Register(FormView, CheckUserIsAuthenticated):
+    template_name = ''
+
+    def get_form_kwargs(self) -> Dict[str, Any]:
+        return super().get_form_kwargs()
+
+    def form_valid(self, form) -> HttpResponse:
+        phone_number = get_phone_number(self.request)
+        # create user
+        error = create_user_profile(self.request, phone_number)
+        if error:
+            return error
+        # login
+        user = get_user_by_phone_number(phone_number)
+        login(self.request, user)
+        return HttpResponseRedirect(self.get_success_url())
+class LoginPassword(FormView, CheckUserIsAuthenticated):
+
+    def form_valid(self, form) -> HttpResponse:
+        user = get_user_by_phone_number(form.phone_number)
+        login(self.request, user)
+        return HttpResponseRedirect(self.get_success_url())
+
+class LoginCode(FormView, CheckUserIsAuthenticated):
+
+    def __init__(self, **kwargs: Any) -> None:
+        valid_code = get_code(self.request)
+        super().__init__(**kwargs)
+
+    def form_valid(self, form) -> HttpResponse:
+        phone_number = get_phone_number(self.request)
+        user = get_user_by_phone_number(phone_number)
+        login(self.request, user)
+        return HttpResponseRedirect(self.get_success_url())
+
+class GetCode(View, CheckUserIsAuthenticated):
+
+    def post(self, request):
+        set_code(request)
+        return HttpResponseRedirect(request.path)
