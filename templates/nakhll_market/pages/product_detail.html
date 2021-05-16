@@ -189,8 +189,8 @@
                             <div class="row">
                                 <div class="col-xl-7">
                                     <div class="prod-detail">
-                                        <h1>{{Product.Title}}</h1>
-                                        <p>وضعیت محصول : 
+                                        <h1 style="font-size: 20px;">{{Product.Title}}</h1>
+                                        {% comment %} <p>وضعیت محصول : 
                                             <span>
                                                 {% if Product.Status == '1' %}
                                                     <span>آماده در انبار</span>
@@ -202,13 +202,14 @@
                                                     <span class="prod-detail-is-null">موجود نیست</span>
                                                 {% endif %}
                                             </span>
-                                        </p>
+                                        </p> {% endcomment %}
                                         <div class="des-prod">
-                                            <h2 style="font-size:1.2rem">معرفی {{Product.Title}} :</h2>
+                                            <h2 style="font-size:1.2rem;margin-top: 20px;">معرفی محصول :</h2>
+                                           
                                             <p>{{Product.Bio}}</p>
                                         </div>
                                     </div>
-                                    <ul class="list-prod-det margin-top-15px">
+                                    <ul class="list-prod-det margin-top-15px des-prodF">
                                        
                                         <li>بازارچه : 
                                             <a href="{% url "nakhll_market:Markets" %}">{{Product.FK_SubMarket.FK_Market.Title}}</a>
@@ -319,6 +320,7 @@
                                         </li>
                                     </ul>
                                 </div>
+                                
                                 <div class="col-xl-5 pricecard">
                                 <div class="shop-of-product-info-container">
                                                 فروشنده : 
@@ -326,6 +328,7 @@
                                                 {% if Product.FK_Points.all.count != 0 %}
                                                     <div class="shop-rate">
                                                         <i class="fas fa-star"></i>
+                                                        <p>{{Product.Bio}}</p>
                                                         <span>{{ Product.get_point }}</span>
                                                         <span class="people-count-rate">({{ Product.get_point_count }} نفر)</span>
                                                     </div>
@@ -348,9 +351,22 @@
                                                     </li>
                                                 {% endfor %}
                                             </ul>
+                                            <p class="mt-5 mb-5" >وضعیت محصول : 
+                                            <span>
+                                                {% if Product.Status == '1' %}
+                                                    <span style="color:#32d400;">آماده در انبار</span>
+                                                {% elif Product.Status == '2' %}
+                                                    <span style="color:#32d400;">تولید بعد از سفارش</span>
+                                                {% elif Product.Status == '3' %}
+                                                    <span style="color:#32d400;">تولید با سفارش مشتری</span>
+                                                {% elif Product.Status == '4' %}
+                                                    <span class="prod-detail-is-null">موجود نیست</span>
+                                                {% endif %}
+                                            </span>
+                                        </p>
                                             
-                                            {% if Product.OldPrice != 0 %}<div class="org-price"></span class="oldprice-prod">قیمت اصلی: <span> ریال </span> <span class="strikeprice" id="mainprice"> {{Product.OldPrice|currency}} </span></span></div>{% else %}{% endif %}
-                                            <span class="price-prod">قیمت : <span> ریال </span> <span id="mainprice"> {{Product.Price|currency}} </span></span>
+                                            {% if Product.OldPrice != 0 %}<div class="org-price d-flex justify-content-end "></span class="oldprice-prod"> <span class="strikeprice font-size: 25px;" id="mainprice"> {{Product.OldPrice|currency}}</span></span></div>{% else %}{% endif %}
+                                            <span class="price-prod">قیمت : <span> ریال </span> <span class="spanPrice" id="mainprice"> {{Product.Price|currency}} </span></span>
 
                                             <div class="input-group number-spinner add-to-card-div">
                                                 
@@ -440,7 +456,7 @@
                             <div class="row">
                                 <div class="col-xl-12 col-md-12">
                                     <div class="img-baner-prod">
-                                        <img src="{% static "images/product_icons.png" %}" alt="بنر ارسال">
+                                        <img style="width: 90%;" src="{% static "images/product_icons.png" %}" alt="بنر ارسال">
                                     </div>
                                 </div>
                             </div>
