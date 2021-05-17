@@ -130,7 +130,7 @@ def SaveEditManagementCoupon(request, id):
         else:
             return redirect("nakhll_market:EditManagementCoupon", id = copun.id)
     else:
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 # Edite Management Coupon
@@ -355,7 +355,7 @@ def EditManagementCoupon(request, id):
 
             return render(request, 'nakhll_market/management/coupon/editmanagementcoupon.html', context)
     else:
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 # @staff_member_required
 # def get_user_from_full_name(request):
@@ -420,7 +420,7 @@ def DeleteManagementCoupon(request, id):
         return render(request, 'nakhll_market/management/coupon/managecuponlist.html', context)
 
     else:
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 
@@ -689,7 +689,7 @@ def FilterManagementCoupon(request, id):
 
             return render(request, 'nakhll_market/management/coupon/manageaddshopincoupon.html', context)
     else:
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 # add object in coupon
@@ -759,7 +759,7 @@ def AddFilterManagementCoupon(request, id):
         else:
             return redirect("nakhll_market:AddManagementCoupun")
     else:
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 # check coupon serial
@@ -991,7 +991,7 @@ def AddManagementCopun(request):
 
             return render(request, 'nakhll_market/management/coupon/addmanagecoupon.html', context)
     else:
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 
@@ -1022,7 +1022,7 @@ def ManagementCopunList(request):
 
         return render(request, 'nakhll_market/management/coupon/managecuponlist.html', context)
     else:
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 # Check Coupon When Show Cart

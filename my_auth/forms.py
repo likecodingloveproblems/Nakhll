@@ -1,3 +1,4 @@
+from django.forms.formsets import MAX_NUM_FORM_COUNT
 from my_auth.services import get_user_by_mobile_number, mobile_number_is_validated, user_exists_by_mobile_number, validate_mobile_number
 from django.forms.widgets import CheckboxInput
 from django.core.validators import RegexValidator
@@ -379,3 +380,71 @@ class RegisterDataForm(PasswordForm):
         self.registered(mobile_number)
         self.validated_auth_code(mobile_number)
         return self.cleaned_data
+
+
+class GetAuthCode(forms.Form):
+
+    def __init__(self, auth_code, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.auth_code = auth_code
+
+class RegisterForm(GetAuthCode):
+    code = forms.CharField(
+        label=None, 
+        required=True,
+        widget=forms.TextInput(attrs={
+        'placeholder':'کد تایید خود را وارد کنید.',
+        'class': 'input-login',
+        'type': 'number',
+        }),
+    )
+    error_messages = {
+        'invalid-code':'لطفا کد صحیح را وارد نمایید.'
+    }
+
+    def clean_code(self):
+        code = self.cleaned_data['code']
+        if code != self.auth_code:
+            # validation error invalid-code
+            self.invalid_code()
+        return self.cleaned_data['code']
+
+    def invalid_code(self):
+        raise forms.ValidationError(
+            message=self.error_messages['invalid-code'],
+            code='invalid-code',
+        )
+class GetPhoneForm(forms.Form):
+    phone_number = forms.CharField(
+        label=None, 
+        required=True,
+        widget=forms.TextInput(attrs={
+        'placeholder':'شماره همراه خود را وارد کنید',
+        'class': 'input-login',
+        'type': 'number',
+        'pattern': '09[0-9]{9}',
+        }),
+    )
+
+class LoginCodeForm(GetAuthCode):
+    code = forms.CharField(
+        label=None, 
+        required=True,
+        widget=forms.TextInput(attrs={
+        'placeholder':'کد تایید را  وارد کنید',
+        'class': 'input-login',
+        'type': 'number',
+        }),
+    )    
+
+class LoginPasswordForm(forms.Form):
+    password = forms.CharField(
+        label=None, 
+        required=True,
+        widget=forms.TextInput(attrs={
+        'placeholder':'رمز عبور خود را وارد کنید',
+        'class': 'input-login',
+        'type': 'password',
+        }),
+    )
+

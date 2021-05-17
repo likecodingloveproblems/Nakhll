@@ -1599,9 +1599,12 @@ header {
 
 .price-prod span {
     float: left;
-    font-size: 14px;
+    font-size: 18px;
     color: #ec406a;
     margin-right: 2px;
+}
+.spanPrice{
+    font-size: 25px;
 }
 
 .org-price h4 {
@@ -5910,7 +5913,7 @@ a.disabled {
 
 .shop-of-product-info-container {
     width: auto;
-    text-align: center;
+    
     align-items: center;
     margin-top: 35px;
 }

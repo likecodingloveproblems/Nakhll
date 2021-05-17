@@ -129,7 +129,7 @@ def Show_All_User_Info(request):
             HttpResponse('this method is not allowed!', status=405)
 
     else:
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
     # Paginate Profiles
     profilesPaginator = Paginator (profiles, 20)
@@ -169,7 +169,7 @@ def Change_User_Status(request, User_ID):
 
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 # Add New User
 def Add_New_User(request):
@@ -250,7 +250,7 @@ def Add_New_User(request):
             HttpResponse('this method is not allowed!')
 
     else:
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
     return render(request, 'nakhll_market/management/content/add_new_user.html', context)
 
@@ -298,7 +298,7 @@ def Add_New_Shop(request, id):
 
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
     context['ThisUser'] = new_user
     # Get All SubMarkets
@@ -384,7 +384,7 @@ def Add_New_Product(request, shop):
         
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
     # Get This Shop
     context['ThisShop'] = Shop.objects.get(ID = shop)
@@ -462,7 +462,7 @@ def Add_Bank_Account(request, id):
 
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
     return render(request, 'nakhll_market/management/content/add_user_bank_account_info.html', context)
 
@@ -494,7 +494,7 @@ def Show_All_Shoper_User_Info(request):
 
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 # Show User Info In Managment Section
 def Management_Show_User_Info(request, id):
@@ -520,7 +520,7 @@ def Management_Show_User_Info(request, id):
 
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 # Edit User Info In Managment Section
 def Management_Edit_User_Info(request, id):
@@ -599,7 +599,7 @@ def Management_Edit_User_Info(request, id):
 
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 # Content Section ------------------------------------
 
@@ -650,7 +650,7 @@ def Show_All_Content(request):
 
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 # Change Shop Seen Status
 def Change_Shop_Status(request, attribute, id):
@@ -728,7 +728,7 @@ def Change_Shop_Status(request, attribute, id):
 
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 # Show Shop Info
 def Show_Shop_Info(request, id):
@@ -774,7 +774,7 @@ def Show_Shop_Info(request, id):
                                 'message={}'.format(message)))
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 # Change Product Seen Status
 def Change_Product_Seen_Status(request, id):
@@ -795,7 +795,7 @@ def Change_Product_Seen_Status(request, id):
 
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 # Change Product Publish Status
@@ -817,7 +817,7 @@ def Change_Product_Publish_Status(request, id):
 
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 # Change Shop Banner Seen Status
@@ -839,7 +839,7 @@ def Change_Shop_Banner_Seen_Status(request, id):
 
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 # Change Shop Banner Publish Status
@@ -861,7 +861,7 @@ def Change_Shop_Banner_Publish_Status(request, id):
 
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 # Show Product Info
@@ -896,7 +896,7 @@ def Show_Product_Info(request, Product_Slug):
 
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 # Change Product Banner Seen Status
@@ -918,7 +918,7 @@ def Change_Product_Banner_Seen_Status(request, id):
 
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 # Change Product Banner Publish Status
@@ -940,7 +940,7 @@ def Change_Product_Banner_Publish_Status(request, id):
 
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 # Change Product Attribute Status
@@ -962,7 +962,7 @@ def Change_Product_Attribute_Status(request, id):
 
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 # Change Product Attribute Price Status
@@ -984,7 +984,7 @@ def Change_Product_AttrPrice_Status(request, id):
 
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 # Add New Full Shop
@@ -1090,7 +1090,7 @@ def Add_New_Full_Shop(request, msg = None):
 
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 
@@ -1237,7 +1237,7 @@ def Edit_Full_Shop(request, id):
             context['SubMarkets'] = ItemsList
             context['Week'] = week
     else:
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
     return render(request, 'nakhll_market/management/content/edit_full_shop.html', context)
 
@@ -1305,7 +1305,7 @@ def Add_New_Shop_Banner(request, id, msg = None):
 
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 # Add New Shop`s Product
@@ -1431,7 +1431,7 @@ def Add_New_Shop_Product(request, id):
 
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 
@@ -1687,7 +1687,7 @@ def Edit_Full_Product(request, id):
             context['ProExePostRange'] = ExePostRangeList
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
     return render(request, 'nakhll_market/management/content/edit_full_product.html', context)
 
@@ -1742,7 +1742,7 @@ def Add_New_Product_Banner(request, id):
             pass
 
     else:
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
          
     return render(request, 'nakhll_market/management/content/add_new_product_banner.html', context)
 
@@ -1789,7 +1789,7 @@ def Add_New_Product_Attribute(request, id):
             pass
 
     else:
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
     return render(request, 'nakhll_market/management/content/add_new_product_attribute.html', context)
 
@@ -1850,6 +1850,6 @@ def Add_New_Product_AttrPrice(request, id):
             pass
         
     else:
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
     return render(request, 'nakhll_market/management/content/add_new_product_attrprice.html', context)

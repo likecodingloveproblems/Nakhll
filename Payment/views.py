@@ -177,7 +177,7 @@ def show_cart(request):
     else:
         # i = request.path
         # return redirect('/login/?next=' + i)
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 class check_product_send_status:
@@ -319,7 +319,7 @@ def Set_Send_Info(request):
 
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 
@@ -361,7 +361,7 @@ def Pay_Detail(request):
         
         return render(request, 'payment/cart/pages/pay.html', context)
     else:
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 
@@ -403,7 +403,7 @@ def Final_Factor(request):
         else:
             return redirect("Payment:Pay_Detail")
     else:
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 
@@ -456,7 +456,7 @@ def send_request(request, factor, amount, mobile, bank_port):
         
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 def reverseTransaction(PIN, Token, OrderId):
@@ -805,7 +805,7 @@ def add_to_cart(request ,ID):
                 status = True,
                 msg = 'محصول مدنظر شما در حال حاضر موجود نمی باشد!')   
     else:
-       return redirect("auth:login")
+       return redirect("auth:get-phone")
 
 
 
@@ -832,7 +832,7 @@ def remove_from_cart(request, ID):
         else:
             return redirect("Payment:cartdetail")
     else:
-       return redirect("auth:login")
+       return redirect("auth:get-phone")
 
 def remove_single_item_from_cart(request, ID):
     if request.user.is_authenticated:
@@ -868,7 +868,7 @@ def remove_single_item_from_cart(request, ID):
         else:
             return redirect("Payment:cartdetail")
     else:
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 
@@ -896,7 +896,7 @@ def add_single_item_from_cart(request, ID):
         else:
             return redirect("Payment:cartdetail")
     else:
-       return redirect("auth:login")
+       return redirect("auth:get-phone")
 
 
 
@@ -1068,7 +1068,7 @@ def accept_factor_product(request, ID):
             Alert.objects.create(Part = '20', FK_User = request.user, Slug = ID)
         return redirect("Profile:Factor")
     else:
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 
@@ -1105,7 +1105,7 @@ def cansel_factor_product (request, ID):
             Alert.objects.create(Part = '13', FK_User = request.user, Slug = this_factor.ID)
         return redirect("Profile:Factor")
     else:
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 # Show Send Info For User
@@ -1217,7 +1217,7 @@ def send_factor(request, ID, status = None, msg = None):
 
             return render(request, 'nakhll_market/profile/pages/sendfactor.html', context)
     else:
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 def delete_coupon(request,id):
@@ -1233,7 +1233,7 @@ def delete_coupon(request,id):
             factor.save()
         return redirect("Payment:Pay_Detail")
     else:
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 # ---------------------------------------------------- Sell Statistics ---------------------------------------------------------------
 
@@ -1369,7 +1369,7 @@ def send_request_wallet(request):
             else:
                 return redirect("nakhll_market:Wallet")
     else:
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 
