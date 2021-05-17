@@ -16,7 +16,7 @@
             <div class="login-sec register-div register-page-whole-div">
                <div class="blue-thick-line-top"></div>
                <div class="register-page-whole-content">
-                  <h4>{{header}}</h4>
+                  <h4>ورود/ثبت نام </h4>
                </div>
                <div class="col-12">
                   {% include 'registration/messages.html'%}
@@ -34,23 +34,19 @@
                            <i class="fal fa-phone fix-before-input-icon-place"></i>
                         </div>
                         <div class="main-input-login">
-                           {{ form.mobile_number }}
+                           {{ form.phone_number }}
                         </div>
                      </div>
-                     {% if form.mobile_number.errors %}
+                     {% if form.phone_number.errors %}
                         <ul>
-                        {% for error in form.mobile_number.errors %}
+                        {% for error in form.phone_number.errors %}
                            <li><strong class='text-danger text-sm'>{{ error|escape }}</strong></li>
                         {% endfor %}
                         </ul>
                      {% endif %}
                      <div class="register-get-code-btn">
-                        <button id="get-code-button" type="submit" >دریافت کد تایید</button>
+                        <button id="get-code-button" type="submit" >ادامه</button>
                      </div>
-                  </div>
-                  <div class="hr-line-full"></div>
-                  <div class="forgetpassword-mobilenumber-content back-to-login-a">
-                     <a href="{% url "auth:get-phone" %}">بازگشت به صفحه ورود</a>
                   </div>
                </form>
             </div>
