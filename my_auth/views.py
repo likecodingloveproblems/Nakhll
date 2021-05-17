@@ -11,7 +11,7 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from datetime import timedelta
-from django.http.response import HttpResponse, HttpResponseRedirect
+from django.http.response import HttpResponse, HttpResponseRedirect, JsonResponse
 
 from django.utils import timezone
 from nakhll.settings import KAVENEGAR_KEY, REDIRECT_FIELD_NAME, SESSION_COOKIE_AGE
@@ -174,7 +174,7 @@ class RegisterData(FormView):
     """
     template_name = 'registration/register-data.html'
     form_class = RegisterDataForm
-    success_url = reverse_lazy('auth:login')
+    success_url = reverse_lazy('auth:get-phone')
 
     def dispatch(self, request: http.HttpRequest, *args: Any, **kwargs: Any) -> http.HttpResponse:
         if not is_mobile_number_verify_session(request, get_mobile_number_session(request)):
@@ -204,7 +204,7 @@ class ForgetPasswordData(FormView):
     '''
     template_name = 'registration/forget-password-data.html'
     form_class = ForgetPasswordDataForm
-    success_url = reverse_lazy('auth:login')
+    success_url = reverse_lazy('auth:get-phone')
 
     def dispatch(self, request: http.HttpRequest, *args: Any, **kwargs: Any) -> http.HttpResponse:
         if not is_mobile_number_verify_session(request, get_mobile_number_session(request)):
@@ -220,7 +220,6 @@ class ForgetPasswordData(FormView):
         if user:
             update_session_auth_hash(self.request, user)  # Important!
             messages.success(self.request, 'رمز شما با موفقیت تغییر کرد.')
-            self.request.session.pop('auth')
             return super().form_valid(form)
         else:
             messages.error(
@@ -298,12 +297,15 @@ def generate_code():
     return str(random.randint(100000, 999999))
 
 def get_user_by_phone_number(phone_number):
-    profile = Profile.objects.get(phone_number)
+    profile = Profile.objects.get(MobileNumber=phone_number)
     return profile.FK_User
+
+def get_prev_code(request):
+    return request.session.get('auth-code')
 
 def set_code(request):
     # generate code and set it to session
-    code = generate_code()
+    code = get_prev_code(request) or generate_code()
     phone_number = get_phone_number(request)
     # send code by sms to user
     params = {
@@ -351,7 +353,17 @@ def get_code(request):
 def _get_code(request):
     return request.session.get('auth-code')
 
-class CheckUserIsAuthenticated:
+def next_redirect(request, url_name):
+    next = request.GET.get('next')
+    if next:
+        url = '{}?next={}'.format(reverse(url_name), next)
+        request.full_path = url
+    else:
+        url = reverse(url_name)
+        request.full_path = url
+    return HttpResponseRedirect(url)
+
+class CheckUserIsAuthenticated(SuccessURLAllowedHostsMixin):
     redirect_authenticated_user = True
 
     @method_decorator(sensitive_post_parameters())
@@ -378,7 +390,22 @@ class CheckUserIsAuthenticated:
         )
         return redirect_to if url_is_safe else ''
 
-class GetPhone(FormView, CheckUserIsAuthenticated):
+class GetPhoneNumber:
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        kwargs = super().get_context_data(**kwargs)
+        kwargs['phone_number'] = get_phone_number(self.request)
+        return kwargs
+
+class GetAuthCodeAndPhone(GetPhoneNumber):
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['auth_code'] = get_code(self.request)
+        return kwargs
+
+
+class GetPhone(CheckUserIsAuthenticated, FormView):
     template_name = 'registration/get-phone.html'
     form_class = GetPhoneForm
 
@@ -388,7 +415,7 @@ class GetPhone(FormView, CheckUserIsAuthenticated):
     def _set_phone_number(self, phone_number):
         self.request.session['phone_number'] = phone_number
 
-    def form_valid(self, form ) -> HttpResponse:
+    def form_valid(self, form) -> HttpResponse:
         phone_number = form.cleaned_data.get('phone_number')
         # set phone number to session
         # user exists
@@ -400,23 +427,18 @@ class GetPhone(FormView, CheckUserIsAuthenticated):
         if get_user_exists(phone_number):
             user = get_user_by_phone_number(phone_number)
             if get_user_has_password(user):
-                return redirect('auth:login-password')
+                return next_redirect(self.request, 'auth:login-password')
             else:
                 set_code(self.request)
-                return redirect('auth:login-code')
+                return next_redirect(self.request, 'auth:login-code')
         else:
             # set code
             set_code(self.request)
-            return redirect('auth:register')
+            return  next_redirect(self.request, 'auth:register')
 
-class Register(FormView, CheckUserIsAuthenticated):
+class Register(GetAuthCodeAndPhone, CheckUserIsAuthenticated ,FormView):
     template_name = 'registration/register.html'
     form_class = RegisterForm
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs['auth_code'] = get_code(self.request)
-        return kwargs
 
     def form_valid(self, form) -> HttpResponse:
         phone_number = get_phone_number(self.request)
@@ -429,22 +451,19 @@ class Register(FormView, CheckUserIsAuthenticated):
         login(self.request, user)
         return HttpResponseRedirect(self.get_success_url())
 
-class LoginPassword(FormView, CheckUserIsAuthenticated):
+class LoginPassword(GetPhoneNumber, CheckUserIsAuthenticated, FormView):
     template_name = 'registration/loginpassword.html'
     form_class = LoginPasswordForm
 
     def form_valid(self, form) -> HttpResponse:
-        user = get_user_by_phone_number(form.phone_number)
+        phone_number = get_phone_number(self.request)
+        user = get_user_by_phone_number(phone_number)
         login(self.request, user)
         return HttpResponseRedirect(self.get_success_url())
 
-class LoginCode(FormView, CheckUserIsAuthenticated):
+class LoginCode(GetAuthCodeAndPhone, CheckUserIsAuthenticated, FormView):
     template_name = 'registration/logincode.html'
     form_class = LoginCodeForm
-
-    def __init__(self, **kwargs: Any) -> None:
-        valid_code = get_code(self.request)
-        super().__init__(**kwargs)
 
     def form_valid(self, form) -> HttpResponse:
         phone_number = get_phone_number(self.request)
@@ -454,9 +473,7 @@ class LoginCode(FormView, CheckUserIsAuthenticated):
 
 class GetCode(View, CheckUserIsAuthenticated):
 
-    def post(self, request):
+    def get(self, request):
         set_code(request)
-        return HttpResponseRedirect(request.path)
-
-
-
+        url = request.GET.get('next')
+        return JsonResponse({'message': 'کد با موفقیت ارسال گردید'})

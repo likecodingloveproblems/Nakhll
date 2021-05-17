@@ -16,7 +16,7 @@ urlpatterns = [
     path('forget-password-code/', views.ForgetPasswordCode.as_view(), name='forget-password-code'),
     path('forget-password-data/', views.ForgetPasswordData.as_view(), name='forget-password-data'),
     # logout process
-    re_path(r'^logout/$', views.logout, name='logout'),
+    re_path(r'^logout/$', views.logout_, name='logout'),
     # authenticate user
     re_path(r'^get-phone/$', views.GetPhone.as_view(), name='get-phone'),
     re_path(r'^register/$', views.Register.as_view(), name='register'),

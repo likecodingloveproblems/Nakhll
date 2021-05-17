@@ -54,7 +54,7 @@
                         </div>
                     {% else %}
                             <div class="user-top dropdown">
-                                <a href="{% url "auth:login" %}">
+                                <a href="{% url "auth:get-phone" %}">
                                     <img src="{% static "images/user.svg" %}" alt="ناحیه کاربری">
                                     <p> ورود <br> عضویت </p>
                                 </a>
@@ -421,7 +421,7 @@
                         $.ajax(
                             {
                                 type: 'POST',
-                                url: '{% url "auth:login" %}',
+                                url: '{% url "auth:get-phone" %}',
                                 data: {
                                     mobilenumber : MobileNumbers,
                                     password: PasswordUser,
@@ -495,7 +495,7 @@
                                                 $.ajax(
                                                     {
                                                         type: 'POST',
-                                                        url: '{% url "auth:login" %}',
+                                                        url: '{% url "auth:get-phone" %}',
                                                         data: {
                                                             mobilenumber : MobileNumbers,
                                                             password: PasswordUser,

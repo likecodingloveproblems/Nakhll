@@ -381,6 +381,39 @@ class RegisterDataForm(PasswordForm):
         self.validated_auth_code(mobile_number)
         return self.cleaned_data
 
+
+class GetAuthCode(forms.Form):
+
+    def __init__(self, auth_code, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.auth_code = auth_code
+
+class RegisterForm(GetAuthCode):
+    code = forms.CharField(
+        label=None, 
+        required=True,
+        widget=forms.TextInput(attrs={
+        'placeholder':'کد تایید خود را وارد کنید.',
+        'class': 'input-login',
+        'type': 'number',
+        }),
+    )
+    error_messages = {
+        'invalid-code':'لطفا کد صحیح را وارد نمایید.'
+    }
+
+    def clean_code(self):
+        code = self.cleaned_data['code']
+        if code != self.auth_code:
+            # validation error invalid-code
+            self.invalid_code()
+        return self.cleaned_data['code']
+
+    def invalid_code(self):
+        raise forms.ValidationError(
+            message=self.error_messages['invalid-code'],
+            code='invalid-code',
+        )
 class GetPhoneForm(forms.Form):
     phone_number = forms.CharField(
         label=None, 
@@ -389,10 +422,11 @@ class GetPhoneForm(forms.Form):
         'placeholder':'شماره همراه خود را وارد کنید',
         'class': 'input-login',
         'type': 'number',
+        'pattern': '09[0-9]{9}',
         }),
     )
 
-class LoginCodeForm(forms.Form):
+class LoginCodeForm(GetAuthCode):
     code = forms.CharField(
         label=None, 
         required=True,
@@ -401,15 +435,7 @@ class LoginCodeForm(forms.Form):
         'class': 'input-login',
         'type': 'number',
         }),
-    )
-
-    def __init__(self, *args, mobile_number, **kwargs) -> None:
-        super(LoginCodeForm , self).__init__(*args, **kwargs)
-        self.mobile_number_value = mobile_number
-
-    
-        
-    
+    )    
 
 class LoginPasswordForm(forms.Form):
     password = forms.CharField(
@@ -418,25 +444,7 @@ class LoginPasswordForm(forms.Form):
         widget=forms.TextInput(attrs={
         'placeholder':'رمز عبور خود را وارد کنید',
         'class': 'input-login',
-        'type': 'number',
+        'type': 'password',
         }),
     )
 
-
-class RegisterForm(forms.Form):
-    code = forms.CharField(
-        label=None, 
-        required=True,
-        widget=forms.TextInput(attrs={
-        'placeholder':'رمز عبور خود را وارد کنید',
-        'class': 'input-login',
-        'type': 'number',
-        }),
-    )
-
-    def __init__(self, auth_code, **kwargs) -> None:
-        super(RegisterForm, self).__init__(**kwargs)
-        self.auth_code = auth_code
-
-    def clean(self):
-        return self.cleaned_data
