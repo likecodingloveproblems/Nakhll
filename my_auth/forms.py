@@ -1,3 +1,4 @@
+from django.forms.formsets import MAX_NUM_FORM_COUNT
 from my_auth.services import get_user_by_mobile_number, mobile_number_is_validated, user_exists_by_mobile_number, validate_mobile_number
 from django.forms.widgets import CheckboxInput
 from django.core.validators import RegexValidator
@@ -378,4 +379,64 @@ class RegisterDataForm(PasswordForm):
         self.password_inconsistency()
         self.registered(mobile_number)
         self.validated_auth_code(mobile_number)
+        return self.cleaned_data
+
+class GetPhoneForm(forms.Form):
+    phone_number = forms.CharField(
+        label=None, 
+        required=True,
+        widget=forms.TextInput(attrs={
+        'placeholder':'شماره همراه خود را وارد کنید',
+        'class': 'input-login',
+        'type': 'number',
+        }),
+    )
+
+class LoginCodeForm(forms.Form):
+    code = forms.CharField(
+        label=None, 
+        required=True,
+        widget=forms.TextInput(attrs={
+        'placeholder':'کد تایید را  وارد کنید',
+        'class': 'input-login',
+        'type': 'number',
+        }),
+    )
+
+    def __init__(self, *args, mobile_number, **kwargs) -> None:
+        super(LoginCodeForm , self).__init__(*args, **kwargs)
+        self.mobile_number_value = mobile_number
+
+    
+        
+    
+
+class LoginPasswordForm(forms.Form):
+    password = forms.CharField(
+        label=None, 
+        required=True,
+        widget=forms.TextInput(attrs={
+        'placeholder':'رمز عبور خود را وارد کنید',
+        'class': 'input-login',
+        'type': 'number',
+        }),
+    )
+
+
+class RegisterForm(forms.Form):
+    code = forms.CharField(
+        label=None, 
+        required=True,
+        widget=forms.TextInput(attrs={
+        'placeholder':'رمز عبور خود را وارد کنید',
+        'class': 'input-login',
+        'type': 'number',
+        }),
+    )
+
+    def __init__(self, auth_code, **kwargs) -> None:
+        super(RegisterForm, self).__init__(**kwargs)
+        self.auth_code = auth_code
+
+    def clean(self):
         return self.cleaned_data
