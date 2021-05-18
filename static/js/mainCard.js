@@ -37,7 +37,7 @@ var Conclave=(function(){
 		auto:function(){
 			for(i=1;i<=1;++i){
 				$(".holder_bu").delay(4000).trigger('click',"bu"+i).delay(4000);
-				console.log("called");
+				
 			}
 		}
 	};

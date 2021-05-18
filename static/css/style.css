@@ -1431,12 +1431,12 @@ header {
 }
 
 .prod-sec h3 {
-    font-size: 16px;
+    font-size: 13px;
     margin-top: 3px;
 }
 
 .prod-sec span {
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 500;
     color: #ec406a;
 }

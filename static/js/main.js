@@ -173,7 +173,7 @@ $(document).on("click", ".browse", function() {
   });
 
   checkValidChars = function (inputEL) {
-      console.log(inputEL);
+      
     var data = inputEL;
     var charcheck;
     var check = true;
@@ -181,19 +181,19 @@ $(document).on("click", ".browse", function() {
 	{
         charcheck = data.charCodeAt(i);
 		if (32 <= charcheck && charcheck <= 126) {
-            // console.log(data[i] + ': ' + charcheck + ' doroste');
+            
         }
         else if (145 <= charcheck && charcheck <= 152) {
             
         }
         else if ((1578 <= charcheck && charcheck <= 1594) || (1604 <= charcheck && charcheck <= 1608)) {
-            // console.log(data[i] + ': ' + charcheck + ' doroste');
+            
         }
         else if (1610 <= charcheck && charcheck <= 1617){
 
         }
         else if (1632 <= charcheck && charcheck <= 1641) {
-            // console.log(data[i] + ': ' + charcheck + ' doroste');
+           
         }
         else if (1569 <= charcheck && charcheck <= 1577) {
 
@@ -203,7 +203,7 @@ $(document).on("click", ".browse", function() {
         }
 		else {
             check = false;
-            console.log(data[i] + ': ' + charcheck + ' not valid char!');
+          
             // break;
 		}
     }

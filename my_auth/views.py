@@ -461,6 +461,12 @@ class LoginPassword(GetPhoneNumber, CheckUserIsAuthenticated, FormView):
         login(self.request, user)
         return HttpResponseRedirect(self.get_success_url())
 
+    def get_form_kwargs(self) -> Dict[str, Any]:
+        kwargs = super().get_form_kwargs()
+        kwargs['phone_number'] = get_phone_number(self.request)
+        kwargs['request'] = self.request
+        return kwargs
+
 class LoginCode(GetAuthCodeAndPhone, CheckUserIsAuthenticated, FormView):
     template_name = 'registration/logincode.html'
     form_class = LoginCodeForm

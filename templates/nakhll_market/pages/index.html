@@ -13,19 +13,6 @@
 <link rel="stylesheet" href="../../../../static/swiper/css/swiper.min.css">
 <link rel="stylesheet" href="../../../../static/slicknav/slicknav.min.css">
 <link rel="stylesheet" href="../../../../static/css/mainCard.css">
-{% comment %} yektanet {% endcomment %}
-<script>
-	!function (t, e, n) {
-		t.yektanetAnalyticsObject = n, t[n] = t[n] || function () {
-			t[n].q.push(arguments)
-		}, t[n].q = t[n].q || [];
-		var a = new Date, r = a.getFullYear().toString() + "0" + a.getMonth() + "0" + a.getDate() + "0" + a.getHours(),
-			c = e.getElementsByTagName("script")[0], s = e.createElement("script");
-		s.id = "ua-script-lPejcfYM"; s.dataset.analyticsobject = n; s.async = 1; s.type = "text/javascript";
-		s.src = "https://cdn.yektanet.com/rg_woebegone/scripts_v3/lPejcfYM/rg.complete.js?v=" + r, c.parentNode.insertBefore(s, c)
-	}(window, document, "yektanet");
-</script>
-{% comment %} yektanet {% endcomment %}
 {% analytical_head_bottom %}</head>
 <body>{% analytical_body_top %}
     
@@ -37,12 +24,6 @@
 
 </script>
 
-<!-- show context detail that comes from views.py in browser console -->
-{% for item in context_in_list%}
-<script>
-    console.log("{{ item }}")        
-</script>
-{% endfor %}
 
 <div class="loading-index">
     <div class="loadingpage">
@@ -708,7 +689,7 @@ class="sliderAsli" alt="{{slider.Title}}">
     }
     $('.my-card').click(function() {
     $slide = $('.active').width();
-    console.log($('.active').position().left);
+    
     if ($(this).hasClass('next')) {
         $('.card-carousel').stop(false,true).animate({left:'-=' + $slide});
     }else if ($(this).hasClass('prev')) {
