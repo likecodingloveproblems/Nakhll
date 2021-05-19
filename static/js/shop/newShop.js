@@ -244,7 +244,7 @@ $("#inputshop_title").on("paste", function () {
 
 // Slug Events
 $("#inputslugshop").on("focusout", function () {
-	// console.log('testttttttt-outttttttttttt')
+	
 	if ($(this).val() === '') {
 		$(this).addClass("inputshopempty");
 		$("#alert-div-inputshop-slug-empty").show();
@@ -255,7 +255,7 @@ $("#inputslugshop").on("focusout", function () {
 	}
 })
 $("#inputslugshop").on("input", function () {
-	// console.log('inputttttttttttt')
+	
 	if ($(this).val() !== '') {
 		$(this).removeClass("inputshopempty");
 		$("#alert-div-inputshop-slug-empty").hide();
@@ -423,10 +423,7 @@ $("#inputshopBio").on("paste", function () {
 
 checkFormEmptiesForEditShop = function () {
 	var checks = true;
-	// debugger
-	// console.log('document.querySelector', document.querySelector('#avatar').src)
-	// console.log('document.querySelector---includes', document.querySelector('#avatar').src.includes('images/image_upload.jpg'))
-	//Img
+	
 	if ($("#avatar").prop("src").includes('images/image_upload.jpg')) {
 		$("#alert-div-inputshop-img-empty").show();
 		checks = false;

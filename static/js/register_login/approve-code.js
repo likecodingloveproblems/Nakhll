@@ -60,7 +60,7 @@ if (JSON.parse(storage.getItem('countDown'))) {
         countdown(Number(countDownStorage['minutes']), Number(countDownStorage['seconds']));
     } else {
         handleChangeText(elButton, 'ارسال مجدد کد یکبار مصرف');
-        console.log('elButton.hasAttributes', elButton.hasAttributes('disabled'))
+        
         elButton.hasAttributes('disabled') ? handleremovAttr(elButton, 'disabled') : null;
     }
 } else {
