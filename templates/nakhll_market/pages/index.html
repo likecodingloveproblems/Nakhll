@@ -444,7 +444,9 @@ class="sliderAsli" alt="{{slider.Title}}">
             crossorigin="anonymous">
     </script>
     <script>
+    if(AmazingProducts){
         // Set the date we're counting down to
+        
         var Dates = [];
         {% for product in AmazingProducts %}
             Dates.push("{{product.end_date|safe}}")
@@ -476,9 +478,10 @@ class="sliderAsli" alt="{{slider.Title}}">
             document.getElementById("demo").innerHTML = "اتمام تخفیف";
           }
         }, 1000);
+        }
         </script>
 <script >
-consol.time();
+
     $num = $('.my-card').length;
     $even = $num / 2;
     $odd = ($num + 1) / 2;
@@ -515,7 +518,7 @@ consol.time();
     }
 
     });
-consol.timeEnd()
+
 </script>
 <script src="../../../../static/js/jquery.min.js"></script>
 <script src="../../../../static/swiper/js/swiper.min.js"></script>
