@@ -966,7 +966,7 @@
                                         <br>
                                         <div id="loaderDiv3"><div> لطفا منتظر بمانید </div> <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری"></div>
                                     </div>
-                                    <div class="col-xl-3 prod-gallery-pic-box">
+                                    <div class="col-xl-3 col-lg-4 col-md-4 col-sm-12 prod-gallery-pic-box">
                                         <div class="box-gallery-img-section">
                                             <label id="label-of-gallery" class="label cropper-label w-100">
                                                 <input type="file" class="sr-only" id="input2" name="image" accept="image/*">
@@ -1245,8 +1245,12 @@
 
       $modal.on('shown.bs.modal', function () {
         cropper = new Cropper(image, {
-          aspectRatio: 1,
-          viewMode: 3,
+          aspectRatio: 1 / 1,
+          viewMode: 1,
+          zoomOnWheel: false,
+          zoomOnTouch: false,
+          zoomable: false,
+          wheelZoomRatio: false,
         });
       }).on('hidden.bs.modal', function () {
         cropper.destroy();
@@ -1340,8 +1344,12 @@
 
       $modal.on('shown.bs.modal', function () {
         cropper = new Cropper(image, {
-          aspectRatio: 1,
-          viewMode: 3,
+          aspectRatio: 1 / 1,
+          viewMode: 1,
+          zoomOnWheel: false,
+          zoomOnTouch: false,
+          zoomable: false,
+          wheelZoomRatio: false,
         });
       }).on('hidden.bs.modal', function () {
         cropper.destroy();
@@ -1424,7 +1432,7 @@
                                                   $("#loaderDiv3").hide();
                                                   if (json.status)
                                                   {
-                                                      $(".product-gallery-pics").prepend('<div val="' + json.id + '" class="col-xl-3 prod-gallery-pic-box">' +
+                                                      $(".product-gallery-pics").prepend('<div val="' + json.id + '" class="col-xl-3 col-lg-4 col-md-4 col-sm-12 prod-gallery-pic-box">' +
                                                               '<div class="box-gallery-img-section gallery-img-show">' +
                                                                   '<img src="'+ canvas.toDataURL() +'" alt="عکس محصول">' +
                                                                   '<div class="item-gallery-option">' +
