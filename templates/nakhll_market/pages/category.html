@@ -212,6 +212,7 @@
 
 
 <script>
+
     $('#submit-filter').click(function(){
         var price = $('#example_2_input_from').val() +'-'+ $('#example_2_input_to').val();
         var sort = $('#sort_options').find('option:selected').attr('id');
@@ -248,6 +249,7 @@
                 success: function (json) {
                     if (json.status) {
                         if (json.code === '200') {
+                            
                             $('#title-modal-add-to-cart').html(" انجام شد ...");
                             $('#text-modal-add-to-cart').html("<i class='fas fa-check ok-add-cart'></i><br> محصول در سبدخرید شما موجود است، به تعداد آن افزوده شد.");
                             $("#go-to-card").show();

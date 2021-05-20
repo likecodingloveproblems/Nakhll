@@ -1,0 +1,802 @@
+{% block header %}
+
+{% include "nakhll_market/parents/headersite.html" %}
+{% endblock %}
+{% load i18n static %}
+{% load analytical %}
+{% load analytical %}
+
+<meta name="keywords"
+    content="فروشگاه آنلاین نخل ,فروشگاه آنلاین ,خریدوفروش محصول ,خریدوفروش ,داستان حجره داران ,سرزمین نخل ,فروشگاه اینترنتی رایگان ,بازار نخل ,ساخت فروشگاه آنلاین ,پاساژآنلاین ,کسب وکار آنلاین ,سوغات ,بوش بیستون پژو mpn 405 ,مواد شوینده ,سوغات کرمان ,فروشگاه اینترنتی کرمان ,لوازم خانگی">
+<meta name="description"
+    content="بازار نخل، بازاری اجتماعی است که برای رفع نیاز خرید و فروش محصولات با مشارکت فروشنده ها و خریدار ها پدید آمده است">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>بازار نخل | به وسعت یک سرزمین</title>
+<link rel="stylesheet" href="../../../../static/swiper/css/swiper.min.css">
+<link rel="stylesheet" href="../../../../static/slicknav/slicknav.min.css">
+<link rel="stylesheet" href="../../../../static/css/mainCard.css">
+<link rel="manifest" href="/static/images/favicon/site.webmanifest">
+{% comment %} yektanet {% endcomment %}
+<script>
+    ! function (t, e, n) {
+        t.yektanetAnalyticsObject = n, t[n] = t[n] || function () {
+            t[n].q.push(arguments)
+        }, t[n].q = t[n].q || [];
+        var a = new Date,
+            r = a.getFullYear().toString() + "0" + a.getMonth() + "0" + a.getDate() + "0" + a.getHours(),
+            c = e.getElementsByTagName("script")[0],
+            s = e.createElement("script");
+        s.id = "ua-script-lPejcfYM";
+        s.dataset.analyticsobject = n;
+        s.async = 1;
+        s.type = "text/javascript";
+        s.src = "https://cdn.yektanet.com/rg_woebegone/scripts_v3/lPejcfYM/rg.complete.js?v=" + r, c.parentNode
+            .insertBefore(s, c)
+    }(window, document, "yektanet");
+</script>
+<script type="text/javascript" src="./../../../static/js/SlidSeller.js"
+{% comment %} yektanet {% endcomment %}
+{% analytical_head_bottom %}</head>
+
+<body>
+
+    <!-- <script>
+
+    setTimeout(function(){
+        $(".loading-index").remove();
+    }, 1600);
+    window.addEventListener("",function(){
+
+    }
+
+</script> -->
+
+
+
+    <!-- <div class="loading-index">
+    <div class="loadingpage">
+        <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        <p>
+            در حال بارگذاری ...
+        </p>
+    </div>
+</div> -->
+
+
+
+    {% block headertag %}
+    {% include "nakhll_market/parents/new-headertag-section.html" %}
+    {% endblock %}
+    <main>
+
+        {% block headersection %}
+        {% include "nakhll_market/parents/menuheader-section.html" %}
+        {% endblock %}
+        <!-- --------------------------------header slider section----------------------------- -->
+
+        <div class="slidercontanerr">
+            <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-12">
+                <div>
+                    <br>
+                    <div id="myCarousel" class="carousel slide" data-ride="carousel">
+
+
+                        <!-- Wrapper for slides -->
+                        <div class="carousel-inner" role="listbox">
+
+                            {% for slider in Sliders %}
+                            <aside data-target="#mycarousel"
+                                class="carousel-item {% if forloop.first %} active {% endif %}">
+                                <a href="{{slider.URL}}"><img src="{{slider.Image.url}}" class="sliderAsli"
+                                        alt="{{slider.Title}}">
+
+                                    {% if slider.ShowInfo %}
+                                    <div class="carousel-caption">
+                                        <h3>{{slider.Title}}</h3>
+                                        <p>{{slider.Description}}</p>
+                                    </div>
+                                    {% endif %}
+                                </a>
+                            </aside>
+                            {% endfor %}
+
+
+
+                        </div>
+
+
+
+
+                        <a class="right carousel-control btn-controll-right" href="#myCarousel" role="button"
+                            data-slide="next">
+                            <span class="glyphicon glyphicon-chevron-right carousel-control-prev-icon"
+                                aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                        <a class="left carousel-control btn-controll-left" href="#myCarousel" role="button"
+                            data-slide="prev" style="left:0 !important, right: none !important">
+                            <span class="glyphicon glyphicon-chevron-left carousel-control-next-icon"
+                                aria-hidden="true"></span>
+                            <span class="sr-only">Prev</span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <!--fhfgh -->
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 imgCard">
+                <aside><a href="/5select/">
+                        <div class="d-flex">
+                            <img class="imgslidercontainer" src="{% static "images/slide 01-2.jpg" %}" alt="حجره ها"
+                                loading="lazy"></div>
+                    </a>
+                </aside>
+                <div style="display: flex;margin-top: 17px;">
+
+                    <a href="/kyadak/">
+                        <div style="display: flex;margin: 2px;"><img class="imgslidercontainer"
+                                src="{% static "images/slide 02-2.jpg" %}" alt="بازارچه" loading="lazy"></div>
+                    </a>
+                    </a><a href="/galorisoheyl/">
+                        <div style="display: flex;margin: 2px;"><img class="imgslidercontainer"
+                                src="{% static "images/slide 02-1.jpg" %}" alt="بازارچه" loading="lazy"></div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- --------------------------------slider-prod-cat----------------------------- -->
+        {% comment %} <div class="slider-prod-cat">
+            <div class="container-fluid">
+                <!-- <h4><span>دسته بندی محصولات</span></h4> -->
+                <div class="postslidebt">
+                    <section class="autoplay slider sliderbox">
+                        {% for category in Categories %}
+                        <div class="sliderRaste">
+                            <a href="/category/{{category.Slug}}/newest/none/">
+                                <img src="{{category.Image_thumbnail_url}}" alt="{{category.Title}}">
+                                <h2 class="titbox">{{category.Title}}</h2>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </section>
+                </div>
+            </div>
+        </div> {% endcomment %}
+        <!-- -------------------------------seller----------------------------- -->
+
+        <div id="seller">
+            <div class="container">
+                <div class="row name-section-title">
+                    <div class="col-xl-12 col-12">
+                        <h4 class="title-box-vendor-story title-borderbt">
+                            حجره ها
+                        </h4>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="slider-full-width off-slick-slider">
+                            <div class="clearfix"></div>
+                            <div class="slider-full-seller">
+                                <div class="postslidebt">
+                                    <section class="autoplay slider sliderfullseller">
+
+                                        {% for shop in Shops %}
+                                        <div class="boxslider-slick">
+                                            <a href="/{{shop.Slug}}/">
+                                                <img src="{{shop.Image_thumbnail_url}}" alt="{{shop.Title}}"
+                                                    class="seller-img">
+                                                <h2 class="titbox">{{category.Title}}</h2>
+
+                                                <div class="nameseller">
+                                                    <h3>{{shop.Title}}</h3>
+                                                </div>
+                                            </a>
+                                        </div>
+                                        {% endfor %}
+
+                                    </section>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- -------------------------------banner------------------------------ -->
+
+        <section id="two-bannerhome">
+            <div class="container">
+                <div class="row">
+                    {% for adv in CenterAdvertisings %}
+                    <div class="col-xl-6 col-md-6">
+                        <div class="baner-2-slider">
+                            <a href="{{adv.URL}}">
+                                <img src="{{adv.Image.url}}" alt="{{adv.Image.instance.Title}}">
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        <!-- -------------------------------slider-takhfifat-prod----------------------------- -->
+
+
+
+        <!-- -------------------------------three-box-slider----------------------------- -->
+
+        <section id="three-box-slider">
+            <div class="container">
+                <div class="row">
+
+                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-12 col-12 one-slider-col">
+                        <div class="oneslide">
+                            <h3 class="title-borderbt">تخفیفات ویژه</h3>
+
+                            <img src="{{DisProduct.Image_thumbnail_url}}" alt="عکس تخفیفات ویژه" width="175px"
+                                height="175px">
+
+                            <a href="{{DisProduct.get_url}}">
+                                <h2 style="font-size: 1.1rem" class="longtitle">{{DisProduct.Title}}</h2>
+                            </a>
+                            {% if DisProduct.OldPrice != 0 %}
+                            <span class="strikeprice numbersprice takhfif">{{DisProduct.OldPrice}} ریال</span>
+                            {% else %}
+                            {% endif %}
+                            <br>
+                            <span class="priceline numbersprice takhfif">{{DisProduct.Price}} ریال</span>
+
+                        </div>
+                    </div>
+
+                    <div class="col-xl-9 col-lg-9 col-md-8 col-sm-12 col-12 slider-hialf-sec">
+                        <div class="slider-full-width">
+                            <div style="display: flex;flex: 1;justify-content: space-between;">
+                                <h2 style="font-size:1.2rem"><a href="#"></a>جدید ترین محصولات</h2>
+                                <h3 style="font-size:1.1rem"><a href="/product/all/">نمایش همه محصولات</a></h3>
+                            </div>
+
+                            <div class="clearfix"></div>
+                            <div class="slider-full-cat slider-half">
+                                <div class="postslidebt">
+                                    <section class="autoplay slider sliderhalf">
+                                        {% for item in Products %}
+                                        <div class="boxslider-slick products-new">
+                                            <a href="/product/{{item.FK_Shop.Slug}}/{{item.Slug}}/">
+                                                <img src="{{item.Image_thumbnail_url}}" alt="{{item.Title}}"
+                                                    width="175px" height="175px">
+                                                <h2 style="font-size:1rem" class="titbox">{{item.Title}}</h2>
+                                                {% if item.Status != '4' %}<span><span
+                                                        class="numbersprice">{{item.Price}}</span>
+                                                    ریال</span>{% else %}<span class="empty">ناموجود</span>{% endif %}
+                                            </a>
+                                        </div>
+                                        {% endfor %}
+                                    </section>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </section>
+        <!-- -------------------------شگفتانه-------------------------------------- -->
+        {% if AmazingProducts %}
+        <div class="c-swiper-specials--incredible ">
+            <div class="d-md-none"
+                style="color:aliceblue ; font-weight:bold ; margin-right:60px ; font-size : 25px ; margin-top :10px">
+                تخفیف ویژه نخل</div>
+            <section class="icontainer">
+
+                <div class=" d-none d-md-block col-2 col-sm-3 col-md-2">
+                    <img width="100%" src="{% static 'images/shegeftaneh.jpeg' %}" alt="پیشنهاد شگفت‌انگیز">
+
+                    <div class="c-product-box__amazing">
+                        <div style="text-align:center ; color:aliceblue" class="c-product-box__timer">
+                            <span class="timerstyle" id="demo"></span>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="swiper--specials">
+                    <div id="sp-slider" class="swiper-container">
+                        <div class="product-box swiper-wrapper">
+                            {% for product in AmazingProducts %}
+                            <div class="product-item swiper-slide">
+                                <a href="{{product.product.get_url}}"><img src="{{product.product.get_image}}"
+                                        alt="{{product.product.get_image_alt}}"></a>
+                                <a class="title" href="{{product.product.get_url}}">{{product.product.Title}}</a>
+                                <div class="inc-product-price">
+                                    {% if product.product.OldPrice %}
+                                    <div class="del-product-price">
+                                        <del>{{product.product.OldPrice}}</del>
+                                        <div class="c-price__discount-oval">
+                                            <span>{{product.product.get_discounted}}٪</span></div>
+
+                                    </div>
+                                    <div
+                                        style="display:flex ; justify-content : flex-start ; align-items : center ; margin-top : 20px">
+                                        <span class="price">{{product.product.Price}} </span>تومان
+
+                                    </div>
+
+                                    {% else %}
+                                    <span class="price">{{product.product.Price}} </span>تومان
+                                    {% endif %}
+                                </div>
+
+                            </div>
+                            <!--item-->
+                            {% endfor %}
+                        </div>
+                    </div>
+            </section>
+        </div>
+        {% endif %}
+
+        <!-- ---------------------------------- -->
+        <section id="three-box-slider">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 slider-hialf-sec">
+                        <div class="slider-full-width">
+                            <div style="display: flex;flex: 1;justify-content: space-between;">
+                                <h2 style="font-size:1.2rem"><a href="#">محصولات پیشنهادی</a></h2>
+                                <h3 style="font-size:1.1rem"><a href="/product/all/">نمایش همه محصولات</a></h3>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="slider-full-cat slider-half">
+                                <div class="postslidebt">
+                                    <section class="autoplay slider sliderfull">
+                                        {% for item in Productsold %}
+                                        <div class="boxslider-slick">
+                                            <a href="/product/{{item.FK_Shop.Slug}}/{{item.Slug}}/">
+                                                <img src="{{item.Image_thumbnail_url}}" alt="{{item.Title}}"
+                                                    width="175px" height="175px">
+                                                <h2 style="font-size:1rem" class="titbox">{{item.Title}}</h2>
+                                                {% if item.Status != '4' %}<span><span
+                                                        class="numbersprice">{{item.Price}}</span>
+                                                    ریال</span>{% else %}<span class="empty">نا موجود</span>{% endif %}
+                                            </a>
+                                        </div>
+                                        {% endfor %}
+                                    </section>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ------------------------------campain----------------------------- -->
+
+
+
+        <!-- --------------------------------جدید ترین تخفیفات--------------------------- -->
+
+        <section id="three-box-slider">
+            <div class="container">
+                <div class="row">
+
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 slider-hialf-sec">
+                        <div class="slider-full-width off-slider">
+                            <div style="display: flex;flex: 1;justify-content: space-between;">
+                                <h2 style="font-size:1.2rem"><a href="#"></a>جدید ترین تخفیفات</h2>
+                                <h3 style="font-size:1.1rem"><a href="/product/all/">نمایش همه محصولات</a></h3>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="slider-full-seller slider-full-cat">
+                                <div class="postslidebt">
+                                    <section class="autoplay slider sliderfull">
+                                        {% for item in AllDisProduct %}
+                                        <div class="boxslider-slick">
+                                            <a href="/product/{{item.FK_Shop.Slug}}/{{item.Slug}}/">
+                                                <img src="{{item.Image_thumbnail_url}}" alt="{{item.Title}}"
+                                                    width="170px" height="170px">
+                                                <div class="title-off-slider">
+                                                    <h3 style="font-size:1.1rem" class="titbox longtitle">{{item.Title}}
+                                                    </h3>
+                                                </div>
+                                                {% if item.Status != '4' %}
+                                                <span class="off-slider-darsad"> {{ item.get_discounted }}% تخفيف
+                                                </span>
+                                                <div class="single-off-slide-price"><span
+                                                        class="numbersprice price-root">{{item.Price}}</span><span
+                                                        class="numbersprice off-price">{{item.OldPrice}}</span> ریال
+                                                </div>
+                                                {% else %}
+                                                <span class="empty">ناموجود</span>
+                                                {% endif %}
+                                            </a>
+                                        </div>
+                                        {% endfor %}
+                                    </section>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                </div>
+            </div>
+
+        </section>
+
+        <!-- -------------------------------------پایان---------------------------------- -->
+
+
+        <!-- -------------------------------banner-img-top----------------------------- -->
+
+
+
+        <!-- ------------------------------- blog ----------------------------- -->
+
+
+        <!-- ------------------------------- vendor story ----------------------------- -->
+
+    </main>
+
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": "بازار نخل - nakhl",
+            "image": "https://nakhll.com/static/images/Logo%20SVG.svg",
+            "@id": "https://www.nakhll.com",
+            "url": "https://www.nakhll.com",
+            "telephone": "+983432476561",
+            "priceRange": "IRR",
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "بلوار کوثر، ساختمان پارک علم و فناوری شرکت نخل",
+                "addressLocality": "کرمان",
+                "postalCode": "7781922222",
+                "addressCountry": "IR"
+            },
+            "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": 30.2935487,
+                "longitude": 57.0234476
+            },
+            "openingHoursSpecification": {
+                "@type": "OpeningHoursSpecification",
+                "dayOfWeek": [
+                    "Monday",
+                    "Tuesday",
+                    "Wednesday",
+                    "Thursday",
+                    "Saturday",
+                    "Sunday"
+                ],
+                "opens": "08:30",
+                "closes": "16:30"
+            },
+            "sameAs": [
+                "https://www.facebook.com/Nakhll-107761244188761/",
+                "https://www.instagram.com/nakhll1"
+            ]
+        }
+    </script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT" crossorigin="anonymous">
+    </script>
+    <script>
+        // Set the date we're counting down to
+        var Dates = []; {
+            %
+            for product in AmazingProducts %
+        }
+        Dates.push("{{product.end_date|safe}}") {
+            %
+            endfor %
+        }
+        var countDownDate = new Date("{{AmazingProducts.first.end_date|safe}}").getTime(); {
+            %
+            comment %
+        }
+        var countDownDate = new Date("Jan 5, 2021 15:37:25").getTime(); {
+            %
+            endcomment %
+        }
+
+        // Update the count down every 1 second
+        var x = setInterval(function () {
+
+            // Get today's date and time
+            var now = new Date().getTime();
+
+            // Find the distance between now and the count down date
+            var distance = countDownDate - now;
+
+            // Time calculations for days, hours, minutes and seconds
+            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Output the result in an element with id="demo"
+            document.getElementById("demo").innerHTML = `${hours}:${minutes}:${seconds}`;
+
+            // If the count down is over, write some text 
+            if (distance < 0) {
+                clearInterval(x);
+                document.getElementById("demo").innerHTML = "اتمام تخفیف";
+            }
+        }, 1000);
+    </script>
+    <script>
+        $num = $('.my-card').length;
+        $even = $num / 2;
+        $odd = ($num + 1) / 2;
+        if ($num % 2 == 0) {
+            $('.my-card:nth-child(' + $even + ')').addClass('active');
+            $('.my-card:nth-child(' + $even + ')').prev().addClass('prev');
+            $('.my-card:nth-child(' + $even + ')').next().addClass('next');
+        } else {
+            $('.my-card:nth-child(' + $odd + ')').addClass('active');
+            $('.my-card:nth-child(' + $odd + ')').prev().addClass('prev');
+            $('.my-card:nth-child(' + $odd + ')').next().addClass('next');
+        }
+        $('.my-card').click(function () {
+            $slide = $('.active').width();
+            console.log($('.active').position().left);
+            if ($(this).hasClass('next')) {
+                $('.card-carousel').stop(false, true).animate({
+                    left: '-=' + $slide
+                });
+            } else if ($(this).hasClass('prev')) {
+                $('.card-carousel').stop(false, true).animate({
+                    left: '+=' + $slide
+                });
+            }
+            $(this).removeClass('prev next');
+            $(this).siblings().removeClass('prev active next');
+            $(this).addClass('active');
+            $(this).prev().addClass('prev');
+            $(this).next().addClass('next');
+        });
+        // Keyboard nav
+        $('html body').keydown(function (e) {
+            if (e.keyCode == 37) { // left
+                $('.active').prev().trigger('click');
+            } else if (e.keyCode == 39) { // right
+                $('.active').next().trigger('click');
+            }
+
+        });
+    </script>
+    <script src="../../../../static/js/jquery.min.js"></script>
+    <script src="../../../../static/swiper/js/swiper.min.js"></script>
+    <script src="../../../../static/js/script.js"></script>
+    <script src="../../../../static/slicknav/jquery.slicknav.min.js"></script>
+    <script src="../../../../static/js/mainCard.js"></script>
+    <script src="{% static "js/app.js" %}"></script>
+    
+    
+    
+    
+    <script>
+
+        window.addEventListener('DOMContentLoaded', function () {
+            $.ajax({
+                type: 'GET',
+                url: '{% url "nakhll_market:check_user_profile_info" %}',
+                let element = document.querySelector("#headerTop");
+                        let hEl = document.createElement("h1");
+                        // hEl.classList("h1");
+                        hEl.id = "H1";
+                        hEl.textContent = msg;
+
+                        element.appendChild(hEl);
+                            msg
+                        } = json;
+                        console.log(`json==================`, msg)
+                        debugger
+                        let element = document.querySelector("#headerTop");
+                        let hEl = document.createElement("h1");
+                        // hEl.classList("h1");
+                        hEl.id = "H1";
+                        hEl.textContent = msg;
+
+                        element.appendChild(hEl);
+
+                    } else if (json.msg == 'Information Is Not Complete') {
+                        $("#complete-info-modal").modal();
+                        profInfoajax = false;
+                        $(".submit-shop-btn").removeClass("send-button-disabled disabled");
+                    } else {
+                        $("#alert-div-system-error").show();
+                        $(".submit-shop-btn").removeClass("send-button-disabled disabled");
+                        profInfoajax = false;
+                    }
+                },
+                error: function (xhr) {
+                    $("#alert-div-system-error").show();
+                    // //console.log(xhr.status + ": " + xhr.responseText);
+                }
+            });
+
+        })
+    </script>
+   
+    <footer>
+        <div class="container">
+            <div class="row footer-top">
+                <div class=" col-lg-8 col-md-6 col-sm-12 col-12 text-top-footer">
+                    <p> با خدمات بازار نخل در ۷ روز هفته همراه ما باشید.</p>
+                </div>
+                <div class=" col-lg-2 col-md-3 col-sm-6 col-6 call-footer">
+                    <div>
+                        <i class="fal fa-headphones-alt"></i>
+                    </div>
+
+                    <div>
+                        شماره تماس
+                        <br> 034-32476561
+                    </div>
+                </div>
+
+                <div class=" col-lg-2 col-md-3 col-sm-6 col-6 call-footer">
+                    <div>
+                        <i class="fal fa-envelope"></i>
+                    </div>
+
+                    <div>
+                        ایمیل
+                        <br> info@nakhll.com
+                    </div>
+                </div>
+            </div>
+        </div>
+        <section id="footer">
+            <div class="container">
+                <div class="row">
+                    <div class=" col-md-3 col-sm-12 col-12 about-footer">
+                        <div class="logo-info">
+                            <div class="logo-footer">
+                                <img src="{% static "images/Page-1.png" %}" alt="logo">
+                            </div>
+                            <div class="about-footer">
+                                <p>
+                                    رویکرد اصلی بازار نخل زمینه سازی جهت حضور کسب و کار هایی است اصیل و پر معنا در
+                                    سرتاسر ایران، که علاوه بر آن سهم بالایی از تجارب مردم را به خود اختصاص میدهد .
+                                    <a href="/pages/static/aboutus/">بیشتر بخوانید</a>
+                                </p>
+                                <div class="icon-footer">
+                                    <a href="https://www.instagram.com/nakhll1/" target="_blank"><i
+                                            class="fab fa-instagram"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class=" col-md-2 col-sm-12 col-12">
+                        <div class="list-footer">
+                            <h6>فهرست عناوین</h6>
+                            <ul>
+                            <li>
+                                <a href="/pages/static/aboutus/">درباره ما</a>
+                            </li>
+                            <li><a href="/pages/connectus/">تماس با ما</a></li>
+                            <li><a href="/pages/static/aboutus/">درباره ما</a></li>
+                            
+                                
+                            </ul>
+                        </div>
+                    </div>
+                    <div class=" col-md-3 col-sm-12 col-12">
+                        <div class="slider-license-footer ">
+
+                            <div id="myCarousel" class="carousel slide footerslidecarousel" data-ride="carousel"
+                                data-interval="1500">
+
+
+
+                                <!-- The slideshow -->
+                                <div class="slideshow" class="col-xl-3 col-lg-3 col-md-3 col-sm-12 col-12">
+
+
+                                    <div style="background:whitesmoke ; border-radius:10px ; margin-left:10px">
+                                        <img referrerpolicy="origin" id='jxlzfukzrgvjesgtnbqesizp'
+                                            style='cursor:pointer'
+                                            onclick='window.open("https://logo.samandehi.ir/Verify.aspx?id=163029&p=rfthgvkaxlaoobpduiwkpfvl", "Popup","toolbar=no, scrollbars=no, location=no, statusbar=no, menubar=no, resizable=0, width=450, height=630, top=30")'
+                                            alt='logo-samandehi'
+                                            src='https://logo.samandehi.ir/logo.aspx?id=163029&p=nbpdwlbqqftilymaodrfbsiy' />
+                                        
+                                    </div>
+                                    <div style="background:whitesmoke ; border-radius:10px ; margin-left:10px">
+                                        <a referrerpolicy="origin" target="_blank" href="https://trustseal.enamad.ir/?id=135577&amp;Code=4LVJlUntZdqZWSmXWkA1"><img referrerpolicy="origin" src="https://Trustseal.eNamad.ir/logo.aspx?id=135577&amp;Code=4LVJlUntZdqZWSmXWkA1" alt="" style="cursor:pointer" id="4LVJlUntZdqZWSmXWkA1"></a>
+                                    </div>
+                                    <div style="background:whitesmoke ; border-radius:10px ; margin-left:10px">
+                                        <a target="_blank"
+                                            href="http://kerman.irannsr.org/services/trade_unit/319012-%D8%A7%D8%B9%D8%B6%D8%A7%DB%8C-%D8%AD%D9%82%D9%88%D9%82%DB%8C-%D9%86%D9%88%DB%8C%D8%AF-%D8%AA%DB%8C%D9%85%DA%86%D9%87-%D8%AA%D8%AC%D8%A7%D8%B1%D8%AA-%D9%86%DB%8C%D9%84.html?t=%D8%AC%D8%B3%D8%AA%D8%AC%D9%88%DB%8C-%D9%BE%DB%8C%D8%B4%D8%B1%D9%81%D8%AA%D9%87"
+                                            rel="nofollow"><img src="{% static "images/socialcer23.png" %}" alt="senfi"
+                                                style="cursor:pointer"></a>
+                                    </div>
+                                </div>
+
+                                <a class="carousel-control-prev" href="#demo" data-slide="prev">
+                                    <span class="carousel-control-prev-icon"></span>
+                                </a>
+                                <a class="carousel-control-next" href="#demo" data-slide="next">
+                                    <span class="carousel-control-next-icon"></span>
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class=" col-md-3 col-sm-12 col-12">
+                        <div class="newslatter-footer">
+                            <h6>عضویت در خبرنامه</h6>
+
+                            <form class="search-top newslatter" method="POST" action="/addemail/">
+                                {% csrf_token %}
+                                <input type="email" placeholder="آدرس ایمیل خود را وارد کنید ..."
+                                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" name="email" id="email">
+                                <button type="submit" value="Submit" class="submit-search">عضویت</button>
+                            </form>
+                            <div class="loaderDiv" id="loaderfooter">
+                                لطفا منتظر بمانید
+                                <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری">
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="copy-right-footer">
+            <div class="container">
+                <div class="row footercopy">
+                    <div class=" col-lg-11 col-md-10 col-sm-12 col-12">
+                        <p>تمامی خدمات این وب سایت دارای مجوزهای لازم از مراجع مربوطه می باشد و فعالیت های این سایت تابع
+                            قوانین و مقررات جمهوری اسلامی ایران است.</p>
+                    </div>
+                    <div class=" col-lg-1 col-md-2 col-sm-12 col-12"><a href="#">©بازار نخل</a></div>
+                </div>
+            </div>
+        </section>
+
+    </footer>
+
+    <script type="text/javascript">
+        ! function () {
+            function t() {
+                var t = document.createElement("script");
+                t.type = "text/javascript", t.async = !0, localStorage.getItem("rayToken") ? t.src =
+                    "https://app.raychat.io/scripts/js/" + o + "?rid=" + localStorage.getItem("rayToken") + "&href=" +
+                    window.location.href : t.src = "https://app.raychat.io/scripts/js/" + o;
+                var e = document.getElementsByTagName("script")[0];
+                e.parentNode.insertBefore(t, e)
+            }
+            var e = document,
+                a = window,
+                o = "1b3710ed-495e-4794-bbc7-842af6728c48";
+            "complete" == e.readyState ? t() : a.attachEvent ? a.attachEvent("onload", t) : a.addEventListener("load",
+                t, !1)
+        }();
+    </script>
+
+    <body>
+
+        </html>
+
+
+
+        {% block footer %}
+        {% include "nakhll_market/parents/footersite.html" %}
+        {% endblock %}
