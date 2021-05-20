@@ -257,7 +257,7 @@ $("#target").click(function() {
     var bankPort ='{{ bankPort }}'
         $.ajax({
              type:'POST',
-             url:'{% url "Profile:Check_Factor_Inventory" %}',
+             url:'{% url "nakhll_market:Check_Factor_Inventory" %}',
              data:{
                  factor_id: factorID ,
                  csrfmiddlewaretoken: '{{ csrf_token }}' ,
@@ -295,7 +295,7 @@ $("#target-wallet").click(function() {
     var factorID ='{{ Factor.ID }}';
     $.ajax({
         type:'POST',
-        url:'{% url "Profile:Check_Factor_Inventory" %}',
+        url:'{% url "nakhll_market:Check_Factor_Inventory" %}',
         data:{
             factor_id: factorID ,
             csrfmiddlewaretoken: '{{ csrf_token }}' ,
@@ -305,7 +305,7 @@ $("#target-wallet").click(function() {
             if (json.status == true){
                 $.ajax({
                     type:'POST',
-                    url:'{% url "Profile:Pay_Factor_by_wallet" %}',
+                    url:'{% url "nakhll_market:Pay_Factor_by_wallet" %}',
                     data:{
                         factor_id: factorID ,
                         csrfmiddlewaretoken: '{{ csrf_token }}' ,

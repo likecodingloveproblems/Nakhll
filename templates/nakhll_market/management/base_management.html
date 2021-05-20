@@ -693,7 +693,7 @@
                             $.ajax(
                                 {
                                     type: 'GET',
-                                    url: '{% url "Profile:CheckUserMessage" %}',
+                                    url: '{% url "nakhll_market:CheckUserMessage" %}',
                                     success: function (json) {
                                         if(json.status == true)
                                         {

@@ -27,7 +27,7 @@ urlpatterns = [
     url(r'^oauth/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     path('logintowebsite/', admin.site.urls),
     path('accounts/', include('my_auth.urls', namespace='my_auth')),
-    path('', include('nakhll_market.urls', namespace='Profile')),
+    path('', include('nakhll_market.urls', namespace='nakhll_market')),
     url(r'^tinymce/', include('tinymce.urls')),
     url(r'^cart/', include('Payment.urls' , namespace='Payment')),
     url(r'^app/api/', include('restapi.urls' , namespace='restapi')),

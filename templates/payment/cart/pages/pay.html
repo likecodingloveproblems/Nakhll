@@ -217,7 +217,7 @@
                                     e.preventDefault();
                                         $.ajax({
                                             type:'POST',
-                                            url:'{% url "Profile:CheckCopun" %}',
+                                            url:'{% url "nakhll_market:CheckCopun" %}',
                                             data:{
                                                 code: $('#takhfif-code').val(),
                                                 factor : '{{ Factor.FactorNumber |safe }}',
