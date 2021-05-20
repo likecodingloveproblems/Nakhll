@@ -1,5 +1,8 @@
-from nakhll_market.models import AmazingProduct, Slider, Category
-from nakhll_market.serializers import AmazingProductSerializer, SliderSerializer, CategorySerializer
+from nakhll_market.models import AmazingProduct, Product, Shop, Slider, Category
+from nakhll_market.serializers import (
+    AmazingProductSerializer, ProductSerializer, ShopSerializer,
+    SliderSerializer, CategorySerializer
+    )
 from rest_framework import generics, routers, views, viewsets
 from rest_framework import permissions, filters, mixins
 from django.db.models import Q, F, Count
@@ -33,5 +36,51 @@ class AmazingProductViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = [permissions.AllowAny, ]
 
     def get_queryset(self):
-        amazing_products = AmazingProduct.objects.get_amazing_products()
-        return amazing_products
+        return AmazingProduct.objects.get_amazing_products()
+
+class LastCreatedProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = ProductSerializer
+    permission_classes = [permissions.AllowAny, ]
+
+    def get_queryset(self):
+        return Product.objects\
+            .filter(Publish = True, Available = True, OldPrice = '0', Status__in = ['1', '2', '3'])\
+                .order_by('-DateCreate')[:12]
+
+class LastCreatedDiscountedProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = ProductSerializer
+    permission_classes = [permissions.AllowAny, ]
+
+    def get_queryset(self):
+        return Product.objects\
+            .filter(Publish = True, Available = True, Status__in = ['1', '2', '3'])\
+            .exclude(OldPrice='0')\
+            .order_by('-DateCreate')[:16]
+
+class RandomShopsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = ProductSerializer
+    permission_classes = [permissions.AllowAny, ]
+
+    def get_queryset(self):
+        pubshopsquery = Shop.objects.filter(Publish = True, Available = True)\
+            .annotate(product_count = Count('ShopProduct')).filter(product_count__gt=1)
+        numpubshops = pubshopsquery.count()
+        pubshops = []
+        for i in random.sample(range(0, numpubshops), 12):
+            pubshops.append(pubshopsquery[i])
+        return pubshops
+
+class MostDiscountPrecentageProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = ProductSerializer
+    permission_classes = [permissions.AllowAny, ]
+
+    def get_queryset(self):
+        return Product.objects\
+            .get_most_discount_precentage_available_product()
+
+class MostSoldShopsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = ShopSerializer
+    permission_classes = [permissions.AllowAny, ]
+
+    def get_queryset(self):
+        return Shop.objects.most_last_week_sale_shops()

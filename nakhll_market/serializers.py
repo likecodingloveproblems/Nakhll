@@ -29,7 +29,7 @@ class ProductSerializer(serializers.HyperlinkedModelSerializer):
         model = Product
         fields = [
             'Image_thumbnail_url', 'get_url', 'OldPrice', 'Price', 'Slug',
-            'Title', 'Status',
+            'Title', 'Status', 'get_discounted'
         ]
 
 class AmazingProductSerializer(serializers.HyperlinkedModelSerializer):
