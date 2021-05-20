@@ -293,7 +293,57 @@
                                     </div>
                                 </div>
 
-                                <div class="form-row">
+
+<div class="form-row">
+                                    <div class="label cropper-label col-xl-6 col-lg-6 col-md-6 col-xs-12 " style="cursor: auto;">
+                                        <label class="form-group col-md-12">
+                                            <label for="inputslugshop">عکس حجره <code>*</code></label>
+                                            <br>
+                                            <a class="btn btn-primary choose-pic-btn">انتخاب عکس</a>
+                                            <input type="file" class="sr-only input-pic-file" id="input" name="image"accept="image/*">
+                                            <input type="text"
+                                                class="form-control choose-pic-input-name choose-pic-input-hojre"
+                                                disabled placeholder="عکس حجره خود را بارگذاری نمایید">
+                                        </label>
+                                        <div id="alert-div-inputshop-img-empty"></div>
+                                        <br>
+
+                                        {% if UserShop.Image_thumbnail_url %}
+                                            <img class="rounded cropper-rounded " id="avatar" style="float:right;margin-right:3%" src="{{ UserShop.Image_thumbnail_url }}" alt="avatar" data-toggle="tooltip" title="انتخاب عکس ">
+
+                                        {% else %}
+                                             <img class="rounded cropper-rounded " id="avatar"
+                                            style="float:left;margin-right:3%" src="{% static "images/image_upload.jpg" %}" alt="avatar" data-toggle="tooltip"
+                                            title="انتخاب عکس ">
+                                        {% endif %}
+
+                                       
+                                    </div>
+                                    <div class="label cropper-label col-xl-6 col-lg-6 col-md-6 col-xs-12 " style="cursor: auto;">
+                                        <label class="form-group col-md-12">
+                                            <label for="inputslugshop">عکس کارت ملی <code>*</code></label>
+                                            <br>
+                                            <a class="btn btn-primary choose-pic-btn">انتخاب عکس</a>
+                                            <input type="file" class="sr-only input-pic-file2" id="inputMeli"
+                                                name="image" accept="image/*">
+                                            <input type="text"
+                                                class="form-control choose-pic-input-name choose-pic-input" disabled
+                                                placeholder="آپلود عکس">
+                                        </label>
+                                        <div id="alert-div-image-newShop"></div>
+                                        <br>
+                                        {% if UserShop.Image_thumbnailMeli_url %}
+                                        <img class="rounded cropper-rounded " id="avatarMeli" style="float:left;margin-left:3%" src="{{ UserShop.Image_thumbnailMeli_url }}" alt="avatar" data-toggle="tooltip" title="انتخاب عکس ">
+                                        {% else %}
+                                        <img class="rounded cropper-rounded " id="avatarMeli"
+                                            style="float:left;margin-left:3%" src="{% static "images/image_upload.jpg" %}" alt="avatar" data-toggle="tooltip" title="انتخاب عکس ">
+                                        
+                                        {% endif %}
+                                        
+                                    </div>
+                                </div>
+
+                                {% comment %} <div class="form-row">
                                     <div class="label cropper-label w-50" style="cursor: auto;">
                                         <label class="form-group col-md-12">
                                             <label for="inputslugshop">عکس حجره <code>*</code></label>
@@ -327,7 +377,9 @@
                                         <img class="rounded cropper-rounded " id="avatarMeli" style="float:left;margin-left:3%" src="{% static "images/image_upload.jpg" %}" alt="avatar" data-toggle="tooltip" title="انتخاب عکس ">
                                         {% endif %}
                                     </div>
-                                </div>
+                              
+                              
+                                </div> {% endcomment %}
                                 <div class="alert cropper-alert" role="alert"></div>
                                 <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true"
                                     data-keyboard="false" data-backdrop="static">
@@ -342,7 +394,7 @@
                                             </div>
                                             <div class="modal-body" style="padding:15px">
                                                 <div class="img-container cropper-img-container">
-                                                    <img id="image" src="https://avatars0.githubusercontent.com/u/3456749">
+                                                    <img id="image" src="https://avatars0.githubusercontent.com/u/3456749" alt="تصویر">
                                                 </div>
                                             </div>
                                             <div class="modal-footer" id="modal-footer-err" style="box-shadow: 1px -2px 9px #e4e4e4;">
@@ -381,7 +433,7 @@
                                             <div class="box-gallery-img-section">
                                                 <label id="label-of-gallery" class="label cropper-label w-100">
                                                     <input type="file" class="sr-only" id="input3" name="image" accept="image/*">
-                                                    <img class="rounded cropper-rounded gallery-newShop" style="float: none !important;" id="avatar3"
+                                                    <img class="rounded cropper-rounded gallery-newShop col-sm-6 col-md-4 col-xl-12 col-lg-4 col-6" style="float: none !important;" id="avatar3"
                                                         src="{% static "/images/loading.svg" %}" alt="avatar" data-toggle="tooltip"
                                                         title="انتخاب عکس ">
                                                 </label>
@@ -393,7 +445,7 @@
                                             <div class="box-gallery-img-section">
                                                 <label id="label-of-gallery" class="label cropper-label w-100">
                                                     <input type="file" class="sr-only" id="input3" name="image" accept="image/*">
-                                                    <img class="rounded cropper-rounded gallery-newShop" style="float: none !important;" id="avatar3"
+                                                    <img class="rounded cropper-rounded gallery-newShop col-sm-6 col-md-4 col-xl-12 col-lg-4 col-6" style="float: none !important;" id="avatar3"
                                                         src="{% static "/images/image_upload.jpg" %}" alt="avatar" data-toggle="tooltip" title="انتخاب عکس ">
                                                 </label>
                                             </div>
@@ -412,7 +464,7 @@
                                                     </div>
                                                     <div class="modal-body">
                                                         <div class="img-container cropper-img-container">
-                                                            <img id="image3" src="https://avatars0.githubusercontent.com/u/3456749">
+                                                            <img id="image3" src="https://avatars0.githubusercontent.com/u/3456749" alt="avatar">
                                                         </div>
                                                     </div>
                                                     <div class="modal-footer" id="modal-footer-err">
@@ -780,10 +832,14 @@
                 };
 
                 $modal.on('shown.bs.modal', function () {
-                    cropper = new Cropper(image, {
-                        aspectRatio: 16 / 9,
-                        viewMode: 3
-                    });
+                     cropper = new Cropper(image, {
+                aspectRatio: 1 / 1,
+                viewMode: 1,
+                zoomOnWheel: false,
+                zoomOnTouch: false,
+                zoomable: false,
+                wheelZoomRatio: false,
+            });
 
                 }).on('hidden.bs.modal', function () {
                     cropper.destroy();
@@ -1460,9 +1516,13 @@
         });
 
         $modal.on('shown.bs.modal', function () {
-            cropper = new Cropper(image, {
-                aspectRatio: 16 / 9,
-                viewMode: 3,
+             cropper = new Cropper(image, {
+                aspectRatio: 1 / 1,
+                viewMode: 1,
+                zoomOnWheel: false,
+                zoomOnTouch: false,
+                zoomable: false,
+                wheelZoomRatio: false,
             });
         }).on('hidden.bs.modal', function () {
             cropper.destroy();

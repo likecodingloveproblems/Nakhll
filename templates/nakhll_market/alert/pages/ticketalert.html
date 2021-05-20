@@ -101,7 +101,7 @@
                                     <div class="form-ticket">
                                         <h5>پیام ها</h5>
                                         <div class="messages-suppurt">
-                                            <img src="{{ThisTicket.get_importer_profile}}">
+                                            <img src="{{ThisTicket.get_importer_profile}}" alt="تیکت">
                                             <h5>{{ThisTicket.Title}} <span>{{ThisTicket.Date|jformat:'%Y/%m/%d'}}</span></h5>
                                             <p>{{ThisTicket.Description}}</p>
 
@@ -113,7 +113,7 @@
                                             <div class="hr-line-alert"></div>
                                             {% for item in ReplayTicket %}
                                                 <div class="messages-suppurt form-ticket-floats">
-                                                    <img src="{{item.image}}">
+                                                    <img src="{{item.image}}" alt="تصویر">
                                                     <h6>{{item.name}}</h6>
                                                     <span class="ticket-date">{{item.date|jformat:'%Y/%m/%d'}}</span>
                                                     <div class="clearfix"></div>

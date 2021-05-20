@@ -245,7 +245,7 @@
         $("#reply").click(function (e) {
             e.preventDefault();
             if (!replyClicked) {
-                var txt1 = '<div id="reply-comment-div"><div class="blog-post-user-comment"><div class="blog-post-pic-comment"><div class="row"><div class="col-xl-1 col-lg-2 col-md-2 col-sm-2 col-2"><div class="blog-post-user-pic"><img src="{% static "images/user-pic.jpg" %}"></div></div><div class="col-xl-11 col-lg-10 col-md-10 col-sm-10 col-10"><div class="blog-post-comment-input"><div class="form-group"><textarea class="form-control" id="exampleFormControlTextarea1"  rows="2"placeholder="پاسخ خود را اینجا وارد کنید..."></textarea></div></div></div></div></div></div><a href="#"><div class="blog-post-comment-send-button">ارسال</div></a><div class="clearfix"></div></div>'
+                var txt1 = '<div id="reply-comment-div"><div class="blog-post-user-comment"><div class="blog-post-pic-comment"><div class="row"><div class="col-xl-1 col-lg-2 col-md-2 col-sm-2 col-2"><div class="blog-post-user-pic"><img src="{% static "images/user-pic.jpg" %}" alet="تصویر کاربر"></div></div><div class="col-xl-11 col-lg-10 col-md-10 col-sm-10 col-10"><div class="blog-post-comment-input"><div class="form-group"><textarea class="form-control" id="exampleFormControlTextarea1"  rows="2"placeholder="پاسخ خود را اینجا وارد کنید..."></textarea></div></div></div></div></div></div><a href="#"><div class="blog-post-comment-send-button">ارسال</div></a><div class="clearfix"></div></div>'
                 $("#like-count").append(txt1);
                 replyClicked = true;
             }
