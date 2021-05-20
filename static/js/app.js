@@ -3,7 +3,7 @@ if ('serviceWorker' in navigator) {
         .serviceWorker
         .register('static/js/service-worker.js')
         .then(registration => {
-            console.log('SERVICE WORKER REGISTRATION ==>', registration);
+            
             
             var serviceWorker;
             if (registration.installing) {

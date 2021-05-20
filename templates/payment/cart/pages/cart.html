@@ -141,7 +141,7 @@
                                             $("#checkajax").show();
                                                 $.ajax({
                                                     type:'POST',
-                                                    url:'{% url "Profile:Add_Single_Item_From_Cart" %}',
+                                                    url:'{% url "nakhll_market:Add_Single_Item_From_Cart" %}',
                                                     data:{
                                                         item_id:'{{item.ID}}',
                                                         csrfmiddlewaretoken: '{{ csrf_token }}' ,
@@ -188,7 +188,7 @@
                                             $("#checkajax").show();
                                             $.ajax({
                                                 type:'POST',
-                                                url:'{% url "Profile:Remove_Single_Item_From_Cart" %}',
+                                                url:'{% url "nakhll_market:Remove_Single_Item_From_Cart" %}',
                                                 data:{
                                                     item_id:'{{item.ID}}',
                                                     csrfmiddlewaretoken: '{{ csrf_token }}' ,

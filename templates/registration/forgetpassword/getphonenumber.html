@@ -52,7 +52,7 @@
                     </div>
                     <div class="hr-line-full"></div>
                     <div class="forgetpassword-mobilenumber-content back-to-login-a">
-                        <a href="{% url "auth:login" %}">بازگشت به صفحه ورود</a>
+                        <a href="{% url "auth:get-phone" %}">بازگشت به صفحه ورود</a>
                     </div>
                     <!-- <button id="get-code-button" type="submit" >دریافت کد تایید</button> -->
                 </form>
@@ -70,7 +70,7 @@
             $("#loaderDiv").show();
                 $.ajax({
                     type:'POST',
-                    url:'{% url "Profile:GetCode" %}',
+                    url:'{% url "nakhll_market:GetCode" %}',
                     data:{
                         mobilenumber: phonenumber,
                         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
@@ -135,7 +135,7 @@
             e.preventDefault();
                 $.ajax({
                     type:'POST',
-                    url:'{% url "Profile:GetCode" %}',
+                    url:'{% url "nakhll_market:GetCode" %}',
                     data:{
                         mobilenumber: phonenumber,
                         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
@@ -244,7 +244,7 @@
             e.preventDefault();
                 $.ajax({
                     type:'POST',
-                    url:'{% url "Profile:codesetvalid" %}',
+                    url:'{% url "nakhll_market:codesetvalid" %}',
                     data:{
                         mobilenumber:phonenumber,
                         code : $('#code').val(),
@@ -340,7 +340,7 @@
             e.preventDefault();
             $.ajax({
                     type:'POST',
-                    url:'{% url "Profile:ChangePasswordOffline" %}',
+                    url:'{% url "nakhll_market:ChangePasswordOffline" %}',
                     data:{
                         mobilenumber :phonenumber,
                         password :$('#password').val(),
@@ -352,9 +352,9 @@
                         if (json.status == true){
                             $("#passwordinput" ).remove();
                             $('#results').html("<div class='alert-box alert radius' data-alert> رمز شما با موفقیت تغییر کرد"+
-                            "<br><a href='/accounts/login/' class='btn btn-outline-primary'>ورود به سایت </a></div>");
+                            "<br><a href='{% url 'accounts:get-phone' %}' class='btn btn-outline-primary'>ورود به سایت </a></div>");
                             setTimeout(function() {
-                                window.location.replace("/accounts/login/");
+                                window.location.replace("{% url 'accounts:get-phone' %}");
                             }, 8000);
                         }else{
                             $("#loaderDiv").remove(); 

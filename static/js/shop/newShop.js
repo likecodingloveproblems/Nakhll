@@ -203,9 +203,7 @@ $("#inputshop_title").on("focusout", function () {
 		$("#alert-div-inputshop-title-minlength").show();
 		$("#alert-div-inputshop-title-empty").hide();
 		$(this).prop("minLength", 2);
-		$("html, body").animate({
-			scrollTop: 220
-		}, "slow");
+		
 	}
 	else {
 		$("#alert-div-inputshop-title-minlength").hide();
@@ -244,7 +242,7 @@ $("#inputshop_title").on("paste", function () {
 
 // Slug Events
 $("#inputslugshop").on("focusout", function () {
-	// console.log('testttttttt-outttttttttttt')
+	
 	if ($(this).val() === '') {
 		$(this).addClass("inputshopempty");
 		$("#alert-div-inputshop-slug-empty").show();
@@ -255,7 +253,7 @@ $("#inputslugshop").on("focusout", function () {
 	}
 })
 $("#inputslugshop").on("input", function () {
-	// console.log('inputttttttttttt')
+	
 	if ($(this).val() !== '') {
 		$(this).removeClass("inputshopempty");
 		$("#alert-div-inputshop-slug-empty").hide();
@@ -274,9 +272,7 @@ $("#inputslugshop").on("input", function () {
 			$("#inputslugshop").val($("#inputslugshop").val().substr(0, data.length - 1));
 			$("#alert-div-inputshop-slug-english").show();
 			$("#inputslugshop").addClass("inputshopempty");
-			$("html, body").animate({
-				scrollTop: 220
-			}, "slow");
+			
 		}
 	}
 })
@@ -296,9 +292,7 @@ $("#inputslugshop").on("keypress", function (event) {
 	else {
 		$(this).addClass("inputshopempty");
 		$("#alert-div-inputshop-slug-english").show();
-		$("html, body").animate({
-			scrollTop: 220
-		}, "slow");
+		
 		return false;
 	}
 })
@@ -317,9 +311,7 @@ $("#inputslugshop").on("paste drop", function () {
 				$("#inputslugshop").val('');
 				$("#alert-div-inputshop-slug-english").show();
 				$(this).addClass("inputshopempty");
-				$("html, body").animate({
-					scrollTop: 220
-				}, "slow");
+				
 				return false;
 			}
 		}
@@ -423,10 +415,7 @@ $("#inputshopBio").on("paste", function () {
 
 checkFormEmptiesForEditShop = function () {
 	var checks = true;
-	// debugger
-	// console.log('document.querySelector', document.querySelector('#avatar').src)
-	// console.log('document.querySelector---includes', document.querySelector('#avatar').src.includes('images/image_upload.jpg'))
-	//Img
+	
 	if ($("#avatar").prop("src").includes('images/image_upload.jpg')) {
 		$("#alert-div-inputshop-img-empty").show();
 		checks = false;
@@ -568,9 +557,7 @@ clickOnSubmit = function () {
 	$("#alert-div-inputshop-week-holidays-all").hide();
 	var comp = checkFormEmpties();
 	if (!comp) {
-		$("html, body").animate({
-			scrollTop: 220
-		}, "slow");
+		
 		$(".submit-shop-btn").removeClass("send-button-disabled disabled");
 		return false;
 	}
@@ -585,9 +572,7 @@ clickOnEdit = function () {
 	$("#alert-div-inputshop-week-holidays-all").hide();
 	var comp = checkFormEmptiesForEditShop();
 	if (!comp) {
-		$("html, body").animate({
-			scrollTop: 220
-		}, "slow");
+		
 		$(".edit-shop-btn").removeClass("send-button-disabled disabled");
 		return false;
 	}

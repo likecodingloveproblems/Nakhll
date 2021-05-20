@@ -1,0 +1,100 @@
+{% load i18n static %}
+{% load analytical %}
+{% load analytical %}
+
+{% block header %}
+{% include "nakhll_market/parents/headermain.html" %}
+{% endblock %}
+    <title>بازار نخل</title>
+{% analytical_head_bottom %}</head>
+<body id="login-page">
+   <div class="container">
+      <div class="row">
+         <div class="col-xl-12">
+            <div class="login-sec register-div register-page-whole-div">
+               <div class="blue-thick-line-top"></div>
+               <div class="register-page-whole-content">
+                  <h4>ورود</h4>
+               </div>
+               <div class="col-12">
+                    {% include 'registration/messages.html'%}
+                </div>
+                <div class="setform">
+                    <div class="phonesender" style="min-height: 200px">
+                        <div class="get-code-form-part">
+                            <form method="POST" id="codesetvalid">
+                                {% csrf_token %}
+                                <div class="input-login-modal input-mob-forgetpassword">
+                                {% if form.non_field_errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ form.non_field_errors }}
+                                </div>
+                               {% endif %}    
+                                <div class="before-input-icon"> 
+                                    <i class="fal fa-key fix-before-input-icon-place"></i>
+                                </div>
+                                <div class="main-input-login">
+                                    {{ form.code }}
+                                </div>
+                                {% if form.code.errors %}
+                                    <ul>
+                                    {% for error in form.code.errors %}
+                                    <li><strong class='text-danger text-sm'>{{ error|escape }}</strong></li>
+                                    {% endfor %}
+                                    </ul>
+                                {% endif %}
+                                <br>
+                                <div class="login-button-modal submit-code-btn"> 
+                                    <button id="submit-authentication-code" type="submit">بررسی کد فعال سازی</button>
+                                </div>
+                                </div>
+                            </form>
+                                <div class="get-code-by-call">
+                                    <a id="sendCode-btn" class="btn btn-primary btn-sm" href="#">ارسال مجدد کد یکبار مصرف
+                                    </a>
+                                    <script>
+                                    $(document).ready(function(){
+                                        let resend_code = $("#sendCode-btn").click(function(e){
+                                            e.preventDefault();
+                                            $.get( "{% url 'auth:get-code' %}", function(data) {
+                                                alert( data['message'] );
+                                                console.log('sms sent...')
+                                            });
+                                        })
+                                    })
+                                    </script>
+                                    <label class="countDown" id='countDown'style="border: 1px solid #eee;
+                                    border-radius: 4px;
+                                    padding: 6px;
+                                    box-shadow: 1px 1px 3px #100;min-width: 60px;background-color: white;" >00:01</label>
+                                    <script src="/static/js/register_login/approve-code.js"></script>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="get-code-form-part footer-of-submit-code">
+                            <span> شماره {{phone_number}} اشتباه است؟ 
+                                <a href="{% url 'auth:get-phone' %}" class="text-primary font-weight-bold">تغییر شماره همراه</a>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+        <script>
+        function resend_code(){
+            $.post(
+                {% if id == 'register' %}
+                "{% url "auth:register-mobile" %}", 
+                {% else %}
+                "{% url "auth:forget-password-mobile" %}", 
+                {% endif %}
+                {csrfmiddlewaretoken : $("input[name='csrfmiddlewaretoken']")[0].value}
+                )
+            location.reload()
+        }        
+        window.Storage.setItem('countDown', JSON.stringify({ minutes: 1, seconds: 60 }));
+        </script>
+        </div>
+        </div>
+    </div>
+    </div>
+    </div>
+{% analytical_body_bottom %}</body>

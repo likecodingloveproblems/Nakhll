@@ -1,3 +1,4 @@
+from django.forms.formsets import MAX_NUM_FORM_COUNT
 from my_auth.services import get_user_by_mobile_number, mobile_number_is_validated, user_exists_by_mobile_number, validate_mobile_number
 from django.forms.widgets import CheckboxInput
 from django.core.validators import RegexValidator
@@ -379,3 +380,135 @@ class RegisterDataForm(PasswordForm):
         self.registered(mobile_number)
         self.validated_auth_code(mobile_number)
         return self.cleaned_data
+
+
+class GetAuthCode(forms.Form):
+
+    def __init__(self, auth_code, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.auth_code = auth_code
+
+class RegisterForm(GetAuthCode):
+    code = forms.CharField(
+        label=None, 
+        required=True,
+        widget=forms.TextInput(attrs={
+        'placeholder':'کد تایید خود را وارد کنید.',
+        'class': 'input-login',
+        'type': 'number',
+        }),
+    )
+    error_messages = {
+        'invalid-code':'لطفا کد صحیح را وارد نمایید.'
+    }
+
+    def clean_code(self):
+        code = self.cleaned_data['code']
+        if code != self.auth_code:
+            # validation error invalid-code
+            self.invalid_code()
+        return self.cleaned_data['code']
+
+    def invalid_code(self):
+        raise forms.ValidationError(
+            message=self.error_messages['invalid-code'],
+            code='invalid-code',
+        )
+class GetPhoneForm(forms.Form):
+    phone_number = forms.CharField(
+        label=None, 
+        required=True,
+        widget=forms.TextInput(attrs={
+        'placeholder':'شماره همراه خود را وارد کنید',
+        'class': 'input-login',
+        'type': 'number',
+        'pattern': '09[0-9]{9}',
+        }),
+    )
+
+class LoginCodeForm(GetAuthCode):
+    code = forms.CharField(
+        label=None, 
+        required=True,
+        widget=forms.TextInput(attrs={
+        'placeholder':'کد تایید را  وارد کنید',
+        'class': 'input-login',
+        'type': 'number',
+        }),
+    )    
+
+class LoginPasswordForm(forms.Form):
+    password = forms.CharField(
+        label=None, 
+        required=True,
+        widget=forms.TextInput(attrs={
+        'placeholder':'رمز عبور خود را وارد کنید',
+        'class': 'input-login',
+        'type': 'password',
+        }),
+    )
+    error_messages = {
+        'inactive': _("این حساب کاربری غیر فعال است."),
+        'invalid_login': _(
+            "لطفا شماره موبایل و رمز صحیح را وارد فرمایید."
+        ),
+        'not_registered': _(
+            "کاربری با این شماره تماس ثبت نشده است. لطفا ابتدا ثبت نام کنید."
+        ),
+    }
+
+    def __init__(self, request, phone_number, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.phone_number = phone_number
+        self.request = request
+
+    def clean(self):
+        from my_auth.views import get_user_by_phone_number
+        
+        password = self.cleaned_data.get('password')
+        if self.phone_number is not None and password:
+            user = get_user_by_phone_number(self.phone_number)
+            if user:
+                self.user_cache = authenticate(
+                    self.request, username=user.username, password=password)
+                if self.user_cache is None:
+                    # password is not consistent with username
+                    self.get_invalid_login_error()
+                else:
+                    self.confirm_login_allowed(self.user_cache)
+            else:
+                # User by this mobile_number is not registered
+                self.get_user_not_registered_error()
+
+        return self.cleaned_data
+
+    def confirm_login_allowed(self, user):
+        """
+        Controls whether the given User may log in. This is a policy setting,
+        independent of end-user authentication. This default behavior is to
+        allow login by active users, and reject login by inactive users.
+
+        If the given user cannot log in, this method should raise a
+        ``forms.ValidationError``.
+
+        If the given user may log in, this method should return None.
+        """
+        if not user.is_active:
+            raise forms.ValidationError(
+                self.error_messages['inactive'],
+                code='inactive',
+            )
+
+    def get_invalid_login_error(self):
+        raise forms.ValidationError(
+            self.error_messages['invalid_login'],
+            code='invalid_login',
+        )
+
+    def get_user_not_registered_error(self):
+        raise forms.ValidationError(
+            self.error_messages['not_registered'],
+            code='not_registered',
+        )
+
+

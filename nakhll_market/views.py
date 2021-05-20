@@ -1348,7 +1348,7 @@ def AddNewCommentInProduct(request, this_product):
 
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 # Add Replay Comment And Show Message In Product Page
@@ -1391,7 +1391,7 @@ def AddReplayCommentInProduct(request, id):
 
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 # End ---------------------------------------------------------------------------------------------------------------------------------
@@ -1445,7 +1445,7 @@ def AddNewCommentInShop(request, this_shop):
 
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 # Add Replay Comment In Shop Page
@@ -1481,7 +1481,7 @@ def AddReplayCommentInShop(request, id):
 
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 # End ---------------------------------------------------------------------------------------------------------------------------------
@@ -1570,7 +1570,7 @@ def AddNewReviewInProduct(request, this_product):
 
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 # Product Like
@@ -1622,7 +1622,7 @@ def ContentLike(request, id, type):
 
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 # Shop Comment Like
@@ -1648,7 +1648,7 @@ def ShopCommentLike(request, id):
 
     else:
 
-        return redirect("auth:login")
+        return redirect("auth:get-phone")
 
 
 # -------------------------------------------------------------------------------------------------------------------------------

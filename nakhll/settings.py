@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+from django.urls.base import reverse_lazy
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
@@ -18,6 +19,7 @@ from sentry_sdk.integrations.django import DjangoIntegration
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 LOGIN = '/profile/dashboard/'
+LOGIN_URL = reverse_lazy('auth:get-phone')
 LOGIN_REDIRECT_URL = '/profile/dashboard/'
 LOGOUT_REDIRECT_URL = '/'
 REDIRECT_FIELD_NAME = 'next'
@@ -256,7 +258,8 @@ OAUTH2_PROVIDER = {
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
+        # 'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
@@ -310,3 +313,5 @@ RECAPTCHA_PRIVATE_KEY = os.environ.get('RECAPTCHA_PRIVATE_KEY', '')
 RECAPTCHA_REQUIRED_SCORE = 0.85
 if DEBUG:
     SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
+
+SENDSMS_BACKEND = 'sms.backend.SmsBackend'
