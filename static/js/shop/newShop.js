@@ -203,9 +203,7 @@ $("#inputshop_title").on("focusout", function () {
 		$("#alert-div-inputshop-title-minlength").show();
 		$("#alert-div-inputshop-title-empty").hide();
 		$(this).prop("minLength", 2);
-		$("html, body").animate({
-			scrollTop: 220
-		}, "slow");
+		
 	}
 	else {
 		$("#alert-div-inputshop-title-minlength").hide();
@@ -274,9 +272,7 @@ $("#inputslugshop").on("input", function () {
 			$("#inputslugshop").val($("#inputslugshop").val().substr(0, data.length - 1));
 			$("#alert-div-inputshop-slug-english").show();
 			$("#inputslugshop").addClass("inputshopempty");
-			$("html, body").animate({
-				scrollTop: 220
-			}, "slow");
+			
 		}
 	}
 })
@@ -296,9 +292,7 @@ $("#inputslugshop").on("keypress", function (event) {
 	else {
 		$(this).addClass("inputshopempty");
 		$("#alert-div-inputshop-slug-english").show();
-		$("html, body").animate({
-			scrollTop: 220
-		}, "slow");
+		
 		return false;
 	}
 })
@@ -317,9 +311,7 @@ $("#inputslugshop").on("paste drop", function () {
 				$("#inputslugshop").val('');
 				$("#alert-div-inputshop-slug-english").show();
 				$(this).addClass("inputshopempty");
-				$("html, body").animate({
-					scrollTop: 220
-				}, "slow");
+				
 				return false;
 			}
 		}
@@ -565,9 +557,7 @@ clickOnSubmit = function () {
 	$("#alert-div-inputshop-week-holidays-all").hide();
 	var comp = checkFormEmpties();
 	if (!comp) {
-		$("html, body").animate({
-			scrollTop: 220
-		}, "slow");
+		
 		$(".submit-shop-btn").removeClass("send-button-disabled disabled");
 		return false;
 	}
@@ -582,9 +572,7 @@ clickOnEdit = function () {
 	$("#alert-div-inputshop-week-holidays-all").hide();
 	var comp = checkFormEmptiesForEditShop();
 	if (!comp) {
-		$("html, body").animate({
-			scrollTop: 220
-		}, "slow");
+		
 		$(".edit-shop-btn").removeClass("send-button-disabled disabled");
 		return false;
 	}
