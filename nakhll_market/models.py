@@ -243,6 +243,10 @@ class Category(models.Model):
     def __str__(self):
         return "{}".format(self.Title)
 
+    @property
+    def url(self):
+        return '/category/{}/newest/none/'.format(self.Slug)
+
     def is_father(self):
         if self.FK_SubCategory is None:
             return True
@@ -1022,10 +1026,13 @@ class Product (models.Model):
             return url
 
     def get_url(self):
-        return reverse("nakhll_market:ProductsDetail", kwargs={
-            'shop_slug': self.FK_Shop.Slug,
-            'product_slug': self.Slug
-        })
+        try:
+            return reverse("nakhll_market:ProductsDetail", kwargs={
+                'shop_slug': self.FK_Shop.Slug,
+                'product_slug': self.Slug
+            })
+        except:
+            return '/'
 
     def get_point(self):
         try:

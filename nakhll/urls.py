@@ -32,6 +32,9 @@ urlpatterns = [
     url(r'^cart/', include('Payment.urls' , namespace='Payment')),
     url(r'^app/api/', include('restapi.urls' , namespace='restapi')),
     path('accounting/', include('accounting.urls', namespace='accounting')),
+    # api version 1
+    url(r'^api/v1/', include('nakhll_market.api_urls', namespace='nakhll_market_api')),
+    # prometheus
     url('', include('django_prometheus.urls')),
 ]
 
