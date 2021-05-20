@@ -283,7 +283,7 @@ class Login(SuccessURLAllowedHostsMixin, FormView):
 
 def logout_(request):
     logout(request)
-    return redirect(reverse('Profile:index'))
+    return redirect(reverse('nakhll_market:index'))
 
 
 

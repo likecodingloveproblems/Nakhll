@@ -45,21 +45,13 @@
     {% include "nakhll_market/parents/menuheader-section.html" %}
 {% endblock %}
 <!-- --------------------------------header slider section----------------------------- -->
-<!-- <div id="slider-index-top"> -->
-    <!-- <div class="slidertop"> -->
-        <!-- <div class="bd-example"> -->
+
            <div class="slidercontanerr">
 <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-12">
 <div>
 <br>
 <div id="myCarousel" class="carousel slide" data-ride="carousel">
-<!-- Indicators -->
-<!-- <ol class="carousel-indicators">
-<li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-<li data-target="#myCarousel" data-slide-to="1"></li>
-<li data-target="#myCarousel" data-slide-to="2"></li>
-<li data-target="#myCarousel" data-slide-to="3"></li>
-</ol> -->
+
 
 <!-- Wrapper for slides -->
 <div class="carousel-inner" role="listbox">
@@ -79,51 +71,11 @@ class="sliderAsli" alt="{{slider.Title}}">
 </aside>
 {% endfor %}
 
-<!-- https://nakhll.com/media/Pictures/Sliders/axCYdN.jpg -->
-<!-- {{slidr.Image.url}} -->
-<!-- class="sliderAsli " -->
-<!-- changes ends here -->
-<!---start editing here -->
-<!-- <div class="item active">
-<img src="https://nakhll.com/media/Pictures/Sliders/MIRPEh.jpg" alt="Chania" width="460" height="345">
-<!-- <div class="carousel-caption">
-<h3>Chania</h3>
-<p>The atmosphere in Chania has a touch of Florence and Venice.</p>
-</div> -->
-<!-- </div> -->
 
-<!-- <div class="item"> -->
-<!-- <img src="https://nakhll.com/media/Pictures/Sliders/WlEfeq.jpg" alt="Chania" width="460" height=auto> -->
-<!-- <div class="carousel-caption">-->
-<!-- <h3>Chania</h3>
-<p>The atmosphere in Chania has a touch of Florence and Venice.</p> -->
-<!-- </div> -->
-<!-- </div> -->
-
-<!-- <div class="item"> -->
-<!-- <img src="https://nakhll.com/media/Pictures/Sliders/uOR4KA.jpg" alt="Flower" width="460" height="345"> -->
-<!-- <div class="carousel-caption"> -->
-<!-- <h3>Flowers</h3>
-<p>Beautiful flowers in Kolymbari, Crete.</p> -->
-<!-- </div> -->
-<!-- </div> -->
-
-<!-- <div class="item">
-<img src="img_flower2.jpg" alt="Flower" width="460" height="345">
-<div class="carousel-caption">
-<h3>Flowers</h3>
-<p>Beautiful flowers in Kolymbari, Crete.</p>
-</div>
-</div> -->
 
 </div>
 
-<!--right controls -->
 
-<!-- <a class="right carousel-control carousel-control-next" href="#myCarousel" role="button" data-slide="next">
-<span class="glyphicon glyphicon-chevron-right carousel-control-prev-icon" aria-hidden="true"></span>
-<span class="sr-only">Next</span>
-</a> -->
 
 
     <a class="right carousel-control btn-controll-right" href="#myCarousel" role="button" data-slide="next">
@@ -157,9 +109,7 @@ class="sliderAsli" alt="{{slider.Title}}">
         </div>
     </div>
 </div>
-        <!-- </div> -->
-    <!-- </div> -->
-<!-- </div> -->
+
 
 <!-- --------------------------------slider-prod-cat----------------------------- -->
 <div class="slider-prod-cat">
@@ -382,40 +332,6 @@ class="sliderAsli" alt="{{slider.Title}}">
 
 <!-- ------------------------------campain----------------------------- -->
 
- <!-- <section id="cardWitdh">
-    <div class="card-carouselcontainer">
-        <div class="card-carousel">
-            {% for shop in MostSaleShop %}
-            <div class="my-card" style="background-image:url('{{shop.Image_thumbnail_url}}')">
-                <img
-                    src="{{shop.get_managment_image}}"
-                    alt="برای فرزند دلبند شما!" loading="lazy" class="imageCardCarousel">
-                    <h6>حجره دار:{{shop.get_shop_manager_full_name}}</h6>
-                    {% if shop.Bio %}
-                    <h6 class="textMycardCArousel">
-                        {{shop.Bio}}
-                    </h6>
-                    {% endif %}
-                <a href="{{shop.get_url}}">مشاهده حجره</a>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-</section> 
-
-
-
-<div style="position:relative" >
-    <div id="wrapper_bu">
-        <div id="bu1"> Slide 1 </div>
-        <div id="bu2"> Slide 2 </div>
-        <div id="bu3"> Slide 3 </div>
-        <div id="bu4"> Slide 4 </div>
-        <div id="bu5"> Slide 5 </div>
-    
-    </div>
-</div> -->
-
 
 
 <!-- --------------------------------جدید ترین تخفیفات--------------------------- -->
@@ -467,132 +383,19 @@ class="sliderAsli" alt="{{slider.Title}}">
 <!-- -------------------------------------پایان---------------------------------- -->
 
 
-<!--<section id="campain">
-  
-</section>-->
+
 
 
     
 <!-- -------------------------------banner-img-top----------------------------- -->
 
-<!-- <section id="banner-img-top">
-        <div class="container">
-            <div class="row">
-                {% for adv in ButtomAdvertisings %}
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12">
-                        <div class="img-banner-top">
-                            <a href="{{adv.URL}}">
-                                <img src="{{adv.Image.url}}" alt="not found">
-                            </a>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
 
-        </div>
-</section> -->
 
 <!-- ------------------------------- blog ----------------------------- -->
-      <!--          <section id="blog-section">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-xl-12 col-12">
-                                <div class="title-blog">
-                                    <div class="right-title-blog">
-                                        وبلاگ
-                                    </div>
-
-                                    <div class="main-title-blog">
-                                    </div>
-
-                                    <div class="left-title-blog">
-                                        <div>
-                                            <a href="/blog/"> مشاهده تمام محتوا </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            {% for item in Postblog %}
-                                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12">
-                                    <a href="/blog/">
-                                        <div class="post-blog">
-                                            <span class="tag-post">وبلاگ</span>
-                                            <img src="{{item.Index_Image.url}}" alt="{{item.Slug}}">
-                                            <div class="title-single-post">
-                                                <h2 class="title-borderbt">{{item.Title}}</h2>
-                                            </div>
-                                            <div class="des-single-post">
-                                                
-                                                {% autoescape off %}<p>{{item.Summary|truncatechars:150}}</p>{% endautoescape %}
-                                                
-                                            </div>
-                                            <div class="author-single-post">
-                                                <div class="img-author">
-                                                    <img src="{{item.FK_User.User_Profile.Image.url}}" alt="profile" width="45" height="45">
-                                                </div>
-                                                <div class="text-author">
-                                                    <h5>{{item.FK_User.first_name}} {{item.FK_User.last_name}}</h5>
-                                                    <span>{{item.DateCreate}}</span>
-                                                </div>
-                                                <div class="cat-post">
-                                                    <h6></h6>
-                                                </div>
-                                                <div class="clearfix"></div>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </section>
- -->
+   
 
 <!-- ------------------------------- vendor story ----------------------------- -->
-                <!-- <section id="vendorstory">
-                     <div class="container">
-                        <div class="row">
-                            <div class="col-xl-12 col-12">
-                                <h4 class="title-box-vendor-story title-borderbt">
-                                    داستانی برای زندگی
-                                </h4>
-                            </div>
-                        </div>
-                        <div class="row">
-                            {% for vendorstory in Vendorstory %}
-                                <div class="col-xl-6 col-12">
-                                    <a href="/blog/">
-                                        <div class="box-vendor-story">
-                                            <div class="right-vstory">
-                                                {% if vendorstory.Show_Image %}<img src="{{vendorstory.Image_thumbnail_url}}" alt="{{vendorstory.Slug}}">{% else %}<img src="{{vendorstory.FK_Shop.Image_thumbnail_url}}" alt="{{vendorstory.Slug}}">{% endif %}
-                                                <div class="rate-vstory">{{vendorstory.Point}}</div>
-                                            </div>
-                                            <div class="left-vstory">
-                                                <div class="box-des-vstory">
-                                                    <p>
-                                                        {% autoescape off %}{{vendorstory.Summary}}{% endautoescape %}
-                                                        <br>
-                                                        <a href="/blog/" class="more-vstory">ادامه داستان</a>
-                                                    </p>
-                                                </div>
-                                                <h5>{{vendorstory.Title}}</h5>
-                                            </div>
-                                            <div class="clearfix"></div>
-                                        </div>
-                                    </a>
-                                </div>
-                            {% endfor %}
-                        </div>
-                        <div class="row">
-                            <div class="col-xl-12 col-lg-12 text-center">
-                                <a class="more-stories" href="/blog/">بیشتر ...</a>
-                            </div>
-                        </div>
-                    </div>
-                </section> -->
+            
     </main>
 
     <script type="application/ld+json">
@@ -641,7 +444,9 @@ class="sliderAsli" alt="{{slider.Title}}">
             crossorigin="anonymous">
     </script>
     <script>
+    if(AmazingProducts){
         // Set the date we're counting down to
+        
         var Dates = [];
         {% for product in AmazingProducts %}
             Dates.push("{{product.end_date|safe}}")
@@ -673,8 +478,10 @@ class="sliderAsli" alt="{{slider.Title}}">
             document.getElementById("demo").innerHTML = "اتمام تخفیف";
           }
         }, 1000);
+        }
         </script>
 <script >
+
     $num = $('.my-card').length;
     $even = $num / 2;
     $odd = ($num + 1) / 2;

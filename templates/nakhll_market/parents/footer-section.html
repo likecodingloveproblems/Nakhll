@@ -54,15 +54,9 @@
                         <div class="list-footer">
                             <h6>فهرست عناوین</h6>
                             <ul>
-                                {% for item in MenuList %}
-                                    {% if forloop.counter == 3 %}
-                                        <li><a href="/pages/static/{{item.Value_2}}/">{{item.Value_1}}</a></li>
-                                    {% elif forloop.counter == 4 %}
-                                        <li><a href="/pages/static/{{item.Value_2}}/">{{item.Value_1}}</a></li>
-                                    {% elif forloop.counter == 5 %}
-                                        <li><a href="/pages/connectus/">{{item.Value_1}}</a></li>                                                
-                                    {% endif %}
-                                {% endfor %}
+                                <li><a href="/pages/static/rules/">شرایط و ضوابط</a></li>
+                                <li><a href="/pages/static/aboutus/">درباره ما</a></li>
+                                <li><a href="/pages/connectus/">تماس با ما</a></li>
                             </ul>
                         </div>
                     </div>

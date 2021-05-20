@@ -70,7 +70,7 @@
             $("#loaderDiv").show();
                 $.ajax({
                     type:'POST',
-                    url:'{% url "Profile:GetCode" %}',
+                    url:'{% url "nakhll_market:GetCode" %}',
                     data:{
                         mobilenumber: phonenumber,
                         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
@@ -135,7 +135,7 @@
             e.preventDefault();
                 $.ajax({
                     type:'POST',
-                    url:'{% url "Profile:GetCode" %}',
+                    url:'{% url "nakhll_market:GetCode" %}',
                     data:{
                         mobilenumber: phonenumber,
                         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
@@ -244,7 +244,7 @@
             e.preventDefault();
                 $.ajax({
                     type:'POST',
-                    url:'{% url "Profile:codesetvalid" %}',
+                    url:'{% url "nakhll_market:codesetvalid" %}',
                     data:{
                         mobilenumber:phonenumber,
                         code : $('#code').val(),
@@ -340,7 +340,7 @@
             e.preventDefault();
             $.ajax({
                     type:'POST',
-                    url:'{% url "Profile:ChangePasswordOffline" %}',
+                    url:'{% url "nakhll_market:ChangePasswordOffline" %}',
                     data:{
                         mobilenumber :phonenumber,
                         password :$('#password').val(),

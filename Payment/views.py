@@ -1063,10 +1063,10 @@ def accept_factor_product(request, ID):
             this_factor.save()
         # Set Alert
         if Alert.objects.filter(Part = '20', FK_User = request.user, Slug = ID).exists():
-            return redirect("Profile:Factor")
+            return redirect("nakhll_market:Factor")
         else:
             Alert.objects.create(Part = '20', FK_User = request.user, Slug = ID)
-        return redirect("Profile:Factor")
+        return redirect("nakhll_market:Factor")
     else:
         return redirect("auth:get-phone")
 
@@ -1100,10 +1100,10 @@ def cansel_factor_product (request, ID):
             this_factor.save()
         # set alert
         if Alert.objects.filter(Part = '13', FK_User = request.user, Slug = this_factor.ID, Seen = False).exists():
-            return redirect("Profile:Factor")
+            return redirect("nakhll_market:Factor")
         else:
             Alert.objects.create(Part = '13', FK_User = request.user, Slug = this_factor.ID)
-        return redirect("Profile:Factor")
+        return redirect("nakhll_market:Factor")
     else:
         return redirect("auth:get-phone")
 

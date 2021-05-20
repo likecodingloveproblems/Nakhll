@@ -410,7 +410,7 @@ function ajaxCallsend(){
         $("#next-step-factor").addClass("send-button-disabled disabled");
         $.ajax({
             type:'POST',
-            url:'{% url "Profile:Check_Order_Send_Zoon" %}',
+            url:'{% url "nakhll_market:Check_Order_Send_Zoon" %}',
             data:{
                 State: $('#inputprofState option:selected').text() ,
                 BigCity: $('#inputprofBigCity option:selected').text() ,
