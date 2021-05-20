@@ -325,8 +325,7 @@
                     <!-- <div id="alert-div-inputshop-title-persian"></div> -->
 
                     
-                    <div id="alert-div-inputshop-slug-english"></div>
-                    <div id="alert-div-inputshop-slug-dup"></div>
+                    
                     
                     <!-- <div id="alert-div-inputshop-about-valid-chars"></div> -->
 
@@ -379,10 +378,12 @@
                                         <input type="text" name="Shop_Slug" class="form-control" id="inputslugshop"
                                             pattern="[a-z0-9\-_]{2,}" placeholder="لینک حجره خود را به انگلیسی وارد نمایید">
                                     <div id="alert-div-inputshop-slug-empty"></div>
+                                    <div id="alert-div-inputshop-slug-english"></div>
+                    <div id="alert-div-inputshop-slug-dup"></div>
                                     </div>
                                 </div>
                                 <div class="form-row">
-                                    <div class="label cropper-label col-xl-6 col-lg-6 col-md-12 col-xs-12 " style="cursor: auto;">
+                                    <div class="label cropper-label col-xl-6 col-lg-6 col-md-6 col-xs-12 " style="cursor: auto;">
                                         <label class="form-group col-md-12">
                                             <label for="inputslugshop">عکس حجره <code>*</code></label>
                                             <br>
@@ -398,7 +399,7 @@
                                             style="float:left;margin-right:3%" src="{% static "images/image_upload.jpg" %}" alt="avatar" data-toggle="tooltip"
                                             title="انتخاب عکس ">
                                     </div>
-                                    <div class="label cropper-label col-xl-6 col-lg-6 col-md-12 col-xs-12 " style="cursor: auto;">
+                                    <div class="label cropper-label col-xl-6 col-lg-6 col-md-6 col-xs-12 " style="cursor: auto;">
                                         <label class="form-group col-md-12">
                                             <label for="inputslugshop">عکس کارت ملی <code>*</code></label>
                                             <br>
@@ -434,7 +435,7 @@
                                             </div>
                                             <div class="modal-body" style="padding:15px">
                                                 <div class="img-container cropper-img-container">
-                                                    <img id="image"
+                                                    <img id="image" alt="avatar" 
                                                         src="https://avatars0.githubusercontent.com/u/3456749">
                                                 </div>
                                             </div>
@@ -524,7 +525,7 @@
                                                     </div>
                                                     <div class="modal-body">
                                                         <div class="img-container cropper-img-container">
-                                                            <img id="image3"
+                                                            <img id="image3" alt="avatar" 
                                                                 src="https://avatars0.githubusercontent.com/u/3456749">
                                                         </div>
                                                     </div>
@@ -859,7 +860,7 @@
                                                 </div>
                                                 <div class="modal-body">
                                                     <div class="img-container cropper-img-container">
-                                                        <img id="image2"
+                                                        <img id="image2" alt="avatar" 
                                                             src="https://avatars0.githubusercontent.com/u/3456749">
                                                     </div>
                                                 </div>
@@ -1018,7 +1019,11 @@
         $modal.on('shown.bs.modal', function () {
             cropper = new Cropper(image, {
                 aspectRatio: 1 / 1,
-                viewMode: 3
+                viewMode: 1,
+                zoomOnWheel: false,
+                zoomOnTouch: false,
+                zoomable: false,
+                wheelZoomRatio: false,
             });
 
         }).on('hidden.bs.modal', function () {
@@ -1870,10 +1875,14 @@
         });
 
         $modal.on('shown.bs.modal', function () {
-            cropper = new Cropper(image, {
-                aspectRatio: 16 / 9,
-                viewMode: 3,
-            });
+           cropper = new Cropper(image, {
+          aspectRatio: 1 / 1,
+          viewMode: 1,
+          zoomOnWheel: false,
+          zoomOnTouch: false,
+          zoomable: false,
+          wheelZoomRatio: false,
+        });
         }).on('hidden.bs.modal', function () {
             cropper.destroy();
             cropper = null;

@@ -155,7 +155,7 @@
                                         <div class="list-ticket">
                                             <a href="{% url "nakhll_market:TicketinDetail" item.ID %}">
                                                 <div class="item-ticket {% if item.SeenStatus == '0' %}notseenticket{% elif item.SeenStatus == '1' %}activeticket{% elif item.SeenStatus == '2' %}setticket{% elif item.SeenStatus == '3' %}closeticket{% endif %}">
-                                                    <img src="{{request.user.User_Profile.Image_thumbnail_url}}">
+                                                    <img src="{{request.user.User_Profile.Image_thumbnail_url}}" alt="تیکت">
                                                     <h5>{{item.Title}} <span>{{item.Date|jformat:'%Y/%m/%d'}}</span></h5>
                                                     <p>{{item.Description}}</p>
                                                 </div>    
@@ -169,7 +169,7 @@
                                         <h5>{{ThisTicket.Title}}</h5> <span class="ticket-date">{{ThisTicket.Date|jformat:'%Y/%m/%d'}}</span>
                                         <div class="clearfix"></div>
                                             <div class="messages-suppurt">
-                                                <img src="{{ThisUser.Image_thumbnail_url}}">
+                                                <img src="{{ThisUser.Image_thumbnail_url}}" alt="تیکت">
                                                 <p>{{ThisTicket.Description}}</p>
                                                 {% if ThisTicket.Image != '' %}
                                                     <br>
