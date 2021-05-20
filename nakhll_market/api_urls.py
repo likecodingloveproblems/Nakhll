@@ -2,7 +2,7 @@ from django.urls import re_path, include, path
 from nakhll_market.api import (
     AmazingProductViewSet, CategoryViewSet, LastCreatedDiscountedProductsViewSet,
     LastCreatedProductsViewSet, MostDiscountPrecentageProductsViewSet, SliderViewSet,
-    MostSoldShopsViewSet, RandomShopsViewSet
+    MostSoldShopsViewSet, RandomShopsViewSet, RandomProductsViewSet
     )
 from rest_framework import routers
 
@@ -17,6 +17,7 @@ router.register(r'last-created-discounted-products', LastCreatedDiscountedProduc
 router.register(r'most-discount-prec-products', MostDiscountPrecentageProductsViewSet, basename="most-discount-prec-products")
 router.register(r'most-sold-shops', MostSoldShopsViewSet, basename="most-sold-shops")
 router.register(r'random-shops', RandomShopsViewSet, basename="random-shops")
+router.register(r'random-products', RandomProductsViewSet, basename="random-products")
 
 urlpatterns = [
     path('landing/', include(router.urls)),

@@ -1,5 +1,7 @@
 from django.db.models import fields
-from nakhll_market.models import AmazingProduct, Category, Product, Profile, Slider
+from nakhll_market.models import (
+    AmazingProduct, Category, Product, Shop, Slider
+    )
 from rest_framework import serializers
 
 
@@ -19,7 +21,7 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
 
 class ShopSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Category
+        model = Shop
         fields = [
             'Slug', 'Title', 'get_absolute_url', 'Image_thumbnail_url',
         ]
