@@ -787,8 +787,7 @@ def ProductsDetail(request, shop_slug, product_slug, status = None, msg = None):
     most_discount = Product.objects.get_one_most_discount_precenetage_available_product_random()
 
     # other products bought by other user
-    factors = Factor.objects.filter(FK_FactorPost__FK_Product=this_product)
-    other_products = Product.objects.filter(Factor_Product__Factor_Products__in=factors).exclude(ID = this_product.ID).distinct()
+    other_products = Product.objects.filter(Factor_Product__Factor_Products__FK_FactorPost__FK_Product=this_product.ID).exclude(ID = this_product.ID).distinct()
 
 
     context = {
