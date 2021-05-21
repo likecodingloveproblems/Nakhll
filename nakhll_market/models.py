@@ -1050,10 +1050,13 @@ class Product (models.Model):
         return self.FK_Points.all().count()
 
     def get_related_products(self):
-        result = []
-        for item in Product.objects.filter(Available = True, Publish = True, Status__in = ['1', '2', '3'], FK_Category__in = self.FK_Category.all()):
-            result.append(item)
-        return list(dict.fromkeys(result))
+        return Product.objects\
+                .filter(
+                    Available = True,
+                    Publish = True,
+                    Status__in = ['1', '2', '3'],
+                    FK_Category__in = self.FK_Category.all()
+                    ).order_by('?')[:12]
 
     def get_product_categories(self):
         result = []

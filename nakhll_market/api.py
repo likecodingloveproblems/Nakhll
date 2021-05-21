@@ -62,26 +62,25 @@ class RandomShopsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = [permissions.AllowAny, ]
 
     def get_queryset(self):
-        pubshopsquery = Shop.objects.filter(Publish = True, Available = True)\
-            .annotate(product_count = Count('ShopProduct')).filter(product_count__gt=1)
-        numpubshops = pubshopsquery.count()
-        pubshops = []
-        for i in random.sample(range(0, numpubshops), 12):
-            pubshops.append(pubshopsquery[i])
-        return pubshops
+        return Shop.objects\
+            .filter(Publish = True, Available = True)\
+            .annotate(product_count = Count('ShopProduct'))\
+            .filter(product_count__gt=1)\
+            .order_by('?')[:12]
 
 class RandomProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductSerializer
     permission_classes = [permissions.AllowAny, ]
 
     def get_queryset(self):
-        pubproductoldquery = Product.objects\
-            .filter(Publish = True, Available = True, OldPrice = '0', Status__in = ['1', '2', '3'])
-        numpubproductold = pubproductoldquery.count()
-        pubproductold = []
-        for i in random.sample(range(0,numpubproductold), 16):
-            pubproductold.append(pubproductoldquery[i])
-        return pubproductold
+        return Product.objects\
+            .filter(
+                Publish = True,
+                Available = True,
+                OldPrice = '0',
+                Status__in = ['1', '2', '3']
+                )\
+            .order_by('?')[:16]
 
 class MostDiscountPrecentageProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductSerializer
