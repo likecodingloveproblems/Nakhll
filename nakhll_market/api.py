@@ -1,7 +1,10 @@
-from nakhll_market.models import AmazingProduct, Product, Shop, Slider, Category
+from nakhll_market.models import (
+    AmazingProduct, Product, Shop, Slider, Category
+    )
 from nakhll_market.serializers import (
-    AmazingProductSerializer, ProductSerializer, ShopSerializer,
-    SliderSerializer, CategorySerializer
+    AmazingProductSerializer, ProductDetailSerializer,
+    ProductSerializer, ShopSerializer,SliderSerializer,
+    CategorySerializer
     )
 from rest_framework import generics, routers, views, viewsets
 from rest_framework import permissions, filters, mixins
@@ -97,3 +100,25 @@ class MostSoldShopsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def get_queryset(self):
         return Shop.objects.most_last_week_sale_shops()
+
+
+class ProductDetailsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    serializer_class = ProductDetailSerializer
+    permission_classes = [permissions.AllowAny, ]
+    lookup_field = 'Slug'
+    queryset = Product.objects.all()
+
+class ProductsInSameFactorViewSet(generics.ListAPIView):
+    serializer_class = ProductSerializer
+    permission_classes = [permissions.AllowAny, ]
+
+    def get_queryset(self):
+        id = self.kwargs.get('ID')
+        try:
+            product = Product.objects.get(ID=id)
+            return Product.objects\
+                .filter(Factor_Product__Factor_Products__FK_FactorPost__FK_Product=product)\
+                .exclude(ID = product.ID)\
+                .distinct()
+        except:
+            return None
