@@ -88,7 +88,8 @@ class MostDiscountPrecentageProductsViewSet(mixins.ListModelMixin, viewsets.Gene
 
     def get_queryset(self):
         return Product.objects\
-            .get_most_discount_precentage_available_product()
+            .get_most_discount_precentage_available_product()\
+            .order_by('?')[:15]
 
 class MostSoldShopsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ShopSerializer
