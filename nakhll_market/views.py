@@ -737,33 +737,6 @@ class Product_Total_Sell:
             total_sell += item.ProductCount
         return total_sell
 
-
-# Get Related products
-class get_related_products:
-    def run(self, product):
-        # Get Product
-        this_product = product.get_related_products()
-        if len(this_product) > 0:
-            if len(this_product) < 12:
-                return this_product
-            else:
-                # Get Random Product
-                random_related_product = []
-                i = 0
-                while(i < 12):
-                    random_product = random.randint(0, len(this_product))
-                    if random_product == len(this_product):
-                        random_related_product.append(this_product[random_product - 1])
-                        this_product.remove(this_product[random_product - 1])
-                    else:
-                        random_related_product.append(this_product[random_product])
-                        this_product.remove(this_product[random_product])
-                    i += 1
-                return random_related_product
-            return this_product
-
-
-
 # Get Products
 def ProductsDetail(request, shop_slug, product_slug, status = None, msg = None):
     # Get User Info
@@ -794,10 +767,7 @@ def ProductsDetail(request, shop_slug, product_slug, status = None, msg = None):
     # Get All Product Banner
     pubbanner = ProductBanner.objects.filter(FK_Product = this_product, Available = True, Publish = True)
     # Get Related products
-    try:
-        this_product_related = get_related_products().run(this_product)
-    except:
-        this_product_related = []
+    this_product_related = this_product.get_related_products()
     # -----------------------------------------------------------------
     # Get Page View
     # view_count = 
@@ -817,8 +787,7 @@ def ProductsDetail(request, shop_slug, product_slug, status = None, msg = None):
     most_discount = Product.objects.get_one_most_discount_precenetage_available_product_random()
 
     # other products bought by other user
-    factors = Factor.objects.filter(FK_FactorPost__FK_Product=this_product)
-    other_products = Product.objects.filter(Factor_Product__Factor_Products__in=factors).exclude(ID = this_product.ID).distinct()
+    other_products = Product.objects.filter(Factor_Product__Factor_Products__FK_FactorPost__FK_Product=this_product.ID).exclude(ID = this_product.ID).distinct()
 
 
     context = {

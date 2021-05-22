@@ -1,7 +1,10 @@
-from nakhll_market.models import AmazingProduct, Product, Shop, Slider, Category
+from nakhll_market.models import (
+    AmazingProduct, Product, Shop, Slider, Category
+    )
 from nakhll_market.serializers import (
-    AmazingProductSerializer, ProductSerializer, ShopSerializer,
-    SliderSerializer, CategorySerializer
+    AmazingProductSerializer, ProductDetailSerializer,
+    ProductSerializer, ShopSerializer,SliderSerializer,
+    CategorySerializer
     )
 from rest_framework import generics, routers, views, viewsets
 from rest_framework import permissions, filters, mixins
@@ -62,26 +65,25 @@ class RandomShopsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = [permissions.AllowAny, ]
 
     def get_queryset(self):
-        pubshopsquery = Shop.objects.filter(Publish = True, Available = True)\
-            .annotate(product_count = Count('ShopProduct')).filter(product_count__gt=1)
-        numpubshops = pubshopsquery.count()
-        pubshops = []
-        for i in random.sample(range(0, numpubshops), 12):
-            pubshops.append(pubshopsquery[i])
-        return pubshops
+        return Shop.objects\
+            .filter(Publish = True, Available = True)\
+            .annotate(product_count = Count('ShopProduct'))\
+            .filter(product_count__gt=1)\
+            .order_by('?')[:12]
 
 class RandomProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductSerializer
     permission_classes = [permissions.AllowAny, ]
 
     def get_queryset(self):
-        pubproductoldquery = Product.objects\
-            .filter(Publish = True, Available = True, OldPrice = '0', Status__in = ['1', '2', '3'])
-        numpubproductold = pubproductoldquery.count()
-        pubproductold = []
-        for i in random.sample(range(0,numpubproductold), 16):
-            pubproductold.append(pubproductoldquery[i])
-        return pubproductold
+        return Product.objects\
+            .filter(
+                Publish = True,
+                Available = True,
+                OldPrice = '0',
+                Status__in = ['1', '2', '3']
+                )\
+            .order_by('?')[:16]
 
 class MostDiscountPrecentageProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductSerializer
@@ -89,7 +91,8 @@ class MostDiscountPrecentageProductsViewSet(mixins.ListModelMixin, viewsets.Gene
 
     def get_queryset(self):
         return Product.objects\
-            .get_most_discount_precentage_available_product()
+            .get_most_discount_precentage_available_product()\
+            .order_by('?')[:15]
 
 class MostSoldShopsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ShopSerializer
@@ -97,3 +100,25 @@ class MostSoldShopsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def get_queryset(self):
         return Shop.objects.most_last_week_sale_shops()
+
+
+class ProductDetailsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    serializer_class = ProductDetailSerializer
+    permission_classes = [permissions.AllowAny, ]
+    lookup_field = 'Slug'
+    queryset = Product.objects.all()
+
+class ProductsInSameFactorViewSet(generics.ListAPIView):
+    serializer_class = ProductSerializer
+    permission_classes = [permissions.AllowAny, ]
+
+    def get_queryset(self):
+        id = self.kwargs.get('ID')
+        try:
+            product = Product.objects.get(ID=id)
+            return Product.objects\
+                .filter(Factor_Product__Factor_Products__FK_FactorPost__FK_Product=product)\
+                .exclude(ID = product.ID)\
+                .distinct()
+        except:
+            return None
