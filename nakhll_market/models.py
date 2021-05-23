@@ -240,12 +240,60 @@ class Category(models.Model):
     Publish=models.BooleanField(verbose_name='وضعیت انتشار دسته بندی', choices=PUBLISH_STATUS, default=False)
     FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='تایید کننده', related_name='Category_Accept', blank=True, null=True) 
 
-    def __str__(self):
-        return "{}".format(self.Title)
+    @property
+    def title(self):
+        return self.Title
+
+    @title.setter
+    def title(self, value):
+        self.Title = value
+
+    @property
+    def slug(self):
+        return self.Slug
+
+    @slug.setter
+    def slug(self, value):
+        self.Slug = value
+
+    @property
+    def description(self):
+        return self.Description
+
+    @property
+    def image(self):
+        return self.Image
+    
+    @property
+    def image_thumbnail(self):
+        return self.Image_thumbnail_url
+
+    @property
+    def date_created(self):
+        return self.DateCreate
+
+    @property
+    def date_updated(self):
+        return self.DateUpdate
+
+    @property
+    def available(self):
+        return self.Available
+
+    @property
+    def publish(self):
+        return self.Publish
+
+    @property
+    def sub_category(self):
+        return self.FK_SubCategory
 
     @property
     def url(self):
         return '/category/{}/newest/none/'.format(self.Slug)
+
+    def __str__(self):
+        return "{}".format(self.Title)
 
     def is_father(self):
         if self.FK_SubCategory is None:

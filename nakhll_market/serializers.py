@@ -5,28 +5,28 @@ from nakhll_market.models import (
     )
 
 # landing serializers
-class SliderSerializer(serializers.HyperlinkedModelSerializer):
+class SliderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Slider
         fields = [
             'URL', 'Image', 'Title', 'ShowInfo', 'Description', 'Location',
             ]
 
-class CategorySerializer(serializers.HyperlinkedModelSerializer):
+class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = [
-            'Slug', 'Title', 'url', 'Image_thumbnail_url',
+            'slug', 'title', 'url', 'image_thumbnail',
         ]
 
-class ShopSerializer(serializers.HyperlinkedModelSerializer):
+class ShopSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shop
         fields = [
             'Slug', 'Title', 'get_absolute_url', 'Image_thumbnail_url',
         ]
 
-class ProductSerializer(serializers.HyperlinkedModelSerializer):
+class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
@@ -34,7 +34,7 @@ class ProductSerializer(serializers.HyperlinkedModelSerializer):
             'Title', 'Status', 'get_discounted', 'ID'
         ]
 
-class AmazingProductSerializer(serializers.HyperlinkedModelSerializer):
+class AmazingProductSerializer(serializers.ModelSerializer):
     product = ProductSerializer(many=False, read_only=True)
     class Meta:
         model = AmazingProduct
@@ -43,14 +43,14 @@ class AmazingProductSerializer(serializers.HyperlinkedModelSerializer):
         ]
 
 # product page serializer
-class AttributeSerializer(serializers.HyperlinkedModelSerializer):
+class AttributeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attribute
         fields = [
             'Title', 'Unit'
         ]
 
-class AttrProductSerializer(serializers.HyperlinkedModelSerializer):
+class AttrProductSerializer(serializers.ModelSerializer):
     FK_Attribute = AttributeSerializer(many=False, read_only=True)
     class Meta:
         model = AttrProduct
@@ -58,14 +58,14 @@ class AttrProductSerializer(serializers.HyperlinkedModelSerializer):
             'FK_Attribute', 'Value'
         ]
 
-class AttrPriceSerializer(serializers.HyperlinkedModelSerializer):
+class AttrPriceSerializer(serializers.ModelSerializer):
     class Meta:
         model = AttrPrice
         fields = [
             'count', 'Description', 'id', 'Value', 'ExtraPrice', 'Unit',
         ]
 
-class ProductBannerSerializer(serializers.HyperlinkedModelSerializer):
+class ProductBannerSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductBanner
         fields = [
@@ -73,7 +73,7 @@ class ProductBannerSerializer(serializers.HyperlinkedModelSerializer):
         ]
 
 
-class ProductDetailSerializer(serializers.HyperlinkedModelSerializer):
+class ProductDetailSerializer(serializers.ModelSerializer):
     get_related_products = ProductSerializer(many=True, read_only=True)
     Product_Attr = AttrProductSerializer(many=True, read_only=True)
     AttrPrice_Product = AttrPriceSerializer(many=True, read_only=True)
