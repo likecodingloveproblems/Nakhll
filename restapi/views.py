@@ -13,7 +13,7 @@ import threading
 import json
 
 
-from nakhll_market.models import Profile, Product, Shop, SubMarket, Category, BankAccount, ShopBanner, Attribute, AttrProduct, AttrPrice, ProductBanner, User_View, PageViews, PostRange, Message, User_Message_Status, Alert, Field, Newsletters, Message, ShopViews, Date_View
+from nakhll_market.models import Profile, Product, Shop, SubMarket, Category, BankAccount, ShopBanner, Attribute, AttrProduct, AttrPrice, ProductBanner, User_View, PageViews, PostRange, Message, User_Message_Status, Alert, Field, Message
 from Payment.models import Factor, Wallet, FactorPost, Transaction, PostBarCode, Coupon
 
 
@@ -550,19 +550,10 @@ def update_user_profile(request):
     if (User_FirstName != '') and (User_LastName != '') and (User_Email != ''):
 
         if (thisuser.first_name != User_FirstName) or (thisuser.last_name != User_LastName) or (thisuser.email != User_Email):
-
-            if thisuser.email != User_Email:
-                if Newsletters.objects.filter(Email = User_Email).count() == 0:
-                    New = Newsletters(Email = User_Email)
-                    New.save()
-
             thisuser.first_name = User_FirstName
             thisuser.last_name = User_LastName           
             thisuser.email = User_Email
-
             thisuser.save()
-
-            
 
             if (thisprofile.ZipCode != Profile_ZipCode) or\
                 (thisprofile.Address != Profile_Address) or\
@@ -577,46 +568,8 @@ def update_user_profile(request):
                 (thisprofile.Bio != Profile_Bio) or\
                 (thisprofile.Sex != Profile_SexState) or\
                 (thisprofile.TutorialWebsite != Profile_TutorialWebsite):
-                
-                # if thisprofile.MobileNumber != Profile_MobileNumber:
-                #     if Newsletters.objects.filter(MobileNumber = Profile_MobileNumber).count() == 0:
-                #         New = Newsletters(MobileNumber = Profile_MobileNumber)
-                #         New.save()
-
-                # if Profile_SexState == 'انتخاب جنسیت':
-                #     ProfileSex ='0'
-                # elif Profile_SexState == 'زن':
-                #     ProfileSex ='1'
-                # elif Profile_SexState == 'مرد':
-                #     ProfileSex ='2'
-                # elif Profile_SexState == 'سایر':
-                #     ProfileSex ='3'
-
                 ProfileSex = Profile_SexState
-
-
-                # if Profile_TutorialWebsite == 'موتور های جستجو':
-                #     ProfileToWeb ='0'
-                # elif Profile_TutorialWebsite == 'حجره داران':
-                #     ProfileToWeb ='1'
-                # elif Profile_TutorialWebsite == 'شبکه های اجتماعی':
-                #     ProfileToWeb ='2'
-                # elif Profile_TutorialWebsite == 'کاربران':
-                #     ProfileToWeb ='3'
-                # elif Profile_TutorialWebsite == 'رسانه ها':
-                #     ProfileToWeb ='4'
-                # elif Profile_TutorialWebsite == 'تبلیغات':
-                #     ProfileToWeb ='5'
-                # elif Profile_TutorialWebsite == 'نود ها':
-                #     ProfileToWeb ='6'
-                # elif Profile_TutorialWebsite == 'سایر':
-                #     ProfileToWeb ='7'
-                # elif Profile_TutorialWebsite == 'هیچ کدام':
-                #     ProfileToWeb ='8'
-
                 ProfileToWeb = Profile_TutorialWebsite
-
-                # thisprofile.MobileNumber = Profile_MobileNumber
                 thisprofile.ZipCode = Profile_ZipCode
                 thisprofile.Address = Profile_Address
                 thisprofile.State = Profile_State
@@ -664,48 +617,8 @@ def update_user_profile(request):
                 (thisprofile.Bio != Profile_Bio) or\
                 (thisprofile.Sex != Profile_SexState) or\
                 (thisprofile.TutorialWebsite != Profile_TutorialWebsite):
-                
-                # if thisprofile.MobileNumber != Profile_MobileNumber:
-                #     if Newsletters.objects.filter(MobileNumber = Profile_MobileNumber).count() == 0:
-                #         New = Newsletters(MobileNumber = Profile_MobileNumber)
-                #         New.save()
-
-                # if Profile_SexState == 'انتخاب جنسیت':
-                #     ProfileSex ='0'
-                # elif Profile_SexState == 'زن':
-                #     ProfileSex ='1'
-                # elif Profile_SexState == 'مرد':
-                #     ProfileSex ='2'
-                # elif Profile_SexState == 'سایر':
-                #     ProfileSex ='3'
-
                 ProfileSex = Profile_SexState
-
-
-                # if Profile_TutorialWebsite == 'موتور های جستجو':
-                #     ProfileToWeb ='0'
-                # elif Profile_TutorialWebsite == 'حجره داران':
-                #     ProfileToWeb ='1'
-                # elif Profile_TutorialWebsite == 'شبکه های اجتماعی':
-                #     ProfileToWeb ='2'
-                # elif Profile_TutorialWebsite == 'کاربران':
-                #     ProfileToWeb ='3'
-                # elif Profile_TutorialWebsite == 'رسانه ها':
-                #     ProfileToWeb ='4'
-                # elif Profile_TutorialWebsite == 'تبلیغات':
-                #     ProfileToWeb ='5'
-                # elif Profile_TutorialWebsite == 'نود ها':
-                #     ProfileToWeb ='6'
-                # elif Profile_TutorialWebsite == 'سایر':
-                #     ProfileToWeb ='7'
-                # elif Profile_TutorialWebsite == 'هیچ کدام':
-                #     ProfileToWeb ='8'
-
                 ProfileToWeb = Profile_TutorialWebsite
-
-
-
-                # thisprofile.MobileNumber = Profile_MobileNumber
                 thisprofile.ZipCode = Profile_ZipCode
                 thisprofile.Address = Profile_Address
                 thisprofile.State = Profile_State
@@ -2337,232 +2250,6 @@ def add_check_out(request):
             return JsonResponse({'res' : 'عدم دسترسی...'}, status = HTTP_200_OK)
     except Exception as e:
         return JsonResponse({'res' : str(e)}, status = HTTP_400_BAD_REQUEST)
-
-
-
-
-
-
-# get shop view in //req : request.user  // res: data OR err
-
-# Functions
-class get_shop_view_in_seven_day:
-    def run(self, id):
-        # View In Seven Day
-        day_list = []
-        # Get Shop View
-        this_shop = get_object_or_404(ShopViews, FK_Shop = id)
-        # Get To Day
-        to_day = datetime.date.today()
-        # Get View When Index = 0
-        try:
-            day_list.append(this_shop.FK_Date.get(Date = to_day).Count)
-        except:
-            day_list.append('0')
-        # Get View When 1 < Index < 7
-        for i in range(1, 7):
-            try:
-                day_past = datetime.timedelta(days = int(i))
-                this_date = to_day - day_past
-                day_list.append(this_shop.FK_Date.get(Date = this_date).Count)
-            except:
-                day_list.append('0')
-        return day_list
-
-class get_shop_view_in_seven_week:
-    def run(self, id):
-        # View In Seven Day
-        week_list = []
-        # Sum View In This Week
-        sum_view_in_this_week = 0
-        # Get Shop View
-        this_shop = get_object_or_404(ShopViews, FK_Shop = id)
-        # Get To Day
-        to_day = datetime.date.today()
-        # Get View When Index = 0
-        first_start_day_in_week = None
-        first_end_day_in_week = None
-        try:
-            # Get Day In Week
-            if to_day.weekday() == 0:
-                # Set Start Week
-                day_past = datetime.timedelta(days = 2)
-                first_start_day_in_week = to_day - day_past
-                # Set End Week
-                day_past = datetime.timedelta(days = 6)
-                first_end_day_in_week = first_start_day_in_week + day_past
-                # Get View In Range
-                for item in this_shop.FK_Date.filter(Date__range = [first_start_day_in_week, first_end_day_in_week]):
-                    sum_view_in_this_week += int(item.Count)
-                week_list.append(str(sum_view_in_this_week))
-            elif to_day.weekday() == 1:
-                # Set Start Week
-                day_past = datetime.timedelta(days = 3)
-                first_start_day_in_week = to_day - day_past
-                # Set End Week
-                day_past = datetime.timedelta(days = 6)
-                first_end_day_in_week = first_start_day_in_week + day_past
-                # Get View In Range
-                for item in this_shop.FK_Date.filter(Date__range = [first_start_day_in_week, first_end_day_in_week]):
-                    sum_view_in_this_week += int(item.Count)
-                week_list.append(str(sum_view_in_this_week))
-            elif to_day.weekday() == 2:
-                # Set Start Week
-                day_past = datetime.timedelta(days = 4)
-                first_start_day_in_week = to_day - day_past
-                # Set End Week
-                day_past = datetime.timedelta(days = 6)
-                first_end_day_in_week = first_start_day_in_week + day_past
-                # Get View In Range
-                for item in this_shop.FK_Date.filter(Date__range = [first_start_day_in_week, first_end_day_in_week]):
-                    sum_view_in_this_week += int(item.Count)
-                week_list.append(str(sum_view_in_this_week))
-            elif to_day.weekday() == 3:
-                # Set Start Week
-                day_past = datetime.timedelta(days = 5)
-                first_start_day_in_week = to_day - day_past
-                # Set End Week
-                day_past = datetime.timedelta(days = 6)
-                first_end_day_in_week = first_start_day_in_week + day_past
-                # Get View In Range
-                for item in this_shop.FK_Date.filter(Date__range = [first_start_day_in_week, first_end_day_in_week]):
-                    sum_view_in_this_week += int(item.Count)
-                week_list.append(str(sum_view_in_this_week))
-            elif to_day.weekday() == 4:
-                # Set Start Week
-                day_past = datetime.timedelta(days = 6)
-                first_start_day_in_week = to_day - day_past
-                # Set End Week
-                day_past = datetime.timedelta(days = 6)
-                first_end_day_in_week = first_start_day_in_week + day_past
-                # Get View In Range
-                for item in this_shop.FK_Date.filter(Date__range = [first_start_day_in_week, first_end_day_in_week]):
-                    sum_view_in_this_week += int(item.Count)
-                week_list.append(str(sum_view_in_this_week))
-            elif to_day.weekday() == 5:
-                # Set Start Week
-                first_start_day_in_week = to_day
-                # Set End Week
-                day_past = datetime.timedelta(days = 6)
-                first_end_day_in_week = first_start_day_in_week + day_past
-                # Get View In Range
-                for item in this_shop.FK_Date.filter(Date__range = [first_start_day_in_week, first_end_day_in_week]):
-                    sum_view_in_this_week += int(item.Count)
-                week_list.append(str(sum_view_in_this_week))
-            elif to_day.weekday() == 6:
-                # Set Start Week
-                day_past = datetime.timedelta(days = 1)
-                first_start_day_in_week = to_day - day_past
-                # Set End Week
-                day_past = datetime.timedelta(days = 6)
-                first_end_day_in_week = first_start_day_in_week + day_past
-                # Get View In Range
-                for item in this_shop.FK_Date.filter(Date__range = [first_start_day_in_week, first_end_day_in_week]):
-                    sum_view_in_this_week += int(item.Count)
-                week_list.append(str(sum_view_in_this_week))
-        except:
-            week_list.append('0')
-        # Get View When 0 <= Index < 7
-        for i in range(1, 7):
-            # Set Zero
-            sum_view_in_this_week = 0
-            start_day_in_week = None
-            end_day_in_week = None
-            try:
-                # Set Start And End Week
-                day_past = datetime.timedelta(days = (i * 7))
-                start_day_in_week = first_start_day_in_week - day_past
-                end_day_in_week = first_end_day_in_week - day_past
-                # Get View In Range
-                for item in this_shop.FK_Date.filter(Date__range = [start_day_in_week, end_day_in_week]):
-                    sum_view_in_this_week += int(item.Count)
-                week_list.append(str(sum_view_in_this_week))
-            except:
-                week_list.append('0')
-        return week_list
-
-class get_shop_view_in_seven_month:
-    def run(self, id):
-        # View In Seven Day
-        month_list = []
-        # Sum View In This Month
-        sum_view_in_this_month = 0
-        # Set All Month End Day
-        month_end_day = {
-            "January": 31,
-            "February": 29,
-            "March": 31,
-            "April": 30,
-            "May": 31,
-            "June": 30,
-            "July": 31,
-            "August": 31,
-            "September": 30,
-            "October": 31,
-            "November": 30,
-            "December": 31,
-        }
-        # Get Shop View
-        this_shop = get_object_or_404(ShopViews, FK_Shop = id)
-        # Get To Day
-        to_day = datetime.date.today()
-        # Get View When Index = 0
-        try:
-            first_start_day_in_month = "%d-%d-%d" % (to_day.year, to_day.month, 1)
-            first_end_day_in_month = "%d-%d-%d" % (to_day.year, to_day.month, month_end_day[to_day.strftime("%B")])
-            # Get View In Range
-            for item in this_shop.FK_Date.filter(Date__range = [first_start_day_in_month, first_end_day_in_month]):
-                sum_view_in_this_month += int(item.Count)
-            month_list.append(str(sum_view_in_this_month))
-        except:
-            month_list.append('0')
-        # Get View When 0 <= Index < 7
-        for i in range(1, 7):
-            # Set Zero
-            sum_view_in_this_month = 0
-            start_day_in_month = None
-            end_day_in_month = None
-            try:
-                # Set Start And End Month
-                if to_day.month - i == 0:
-                    this_month = 12
-                    this_year = to_day.year - 1
-                elif to_day.month - i < 0:
-                    this_month = 12 - ((to_day.month - i) * -1)
-                    this_year = to_day.year - 1
-                else:
-                    this_month = to_day.month - i
-                    this_year = to_day.year
-                
-                start_day_in_month = "%d-%d-%d" % (this_year, this_month, 1)
-                this_start = datetime.datetime.strptime(start_day_in_month, '%Y-%m-%d')
-                end_day_in_month = "%d-%d-%d" % (this_year, this_month, month_end_day[this_start.strftime("%B")])
-                # Get View In Range
-                for item in this_shop.FK_Date.filter(Date__range = [start_day_in_month, end_day_in_month]):
-                    sum_view_in_this_month += int(item.Count)
-                month_list.append(str(sum_view_in_this_month))
-            except:
-                month_list.append('0')
-        return month_list
-
-@csrf_exempt
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def get_chart(request):
-    try:
-        # User First Shop
-        user_shop = Shop.objects.filter(FK_ShopManager = request.user).order_by('DateCreate')[0]
-        # Set Data
-        day_view_list = user_shop.get_view_in_seven_day()
-        week_view_list = user_shop.get_view_in_seven_week()
-        month_view_list = user_shop.get_view_in_seven_month()
-        return JsonResponse({'days': day_view_list,'weeks': week_view_list,'months': month_view_list}, status = HTTP_200_OK)
-    except:
-        return JsonResponse({'days': ['0', '0', '0', '0', '0', '0', '0'],'weeks': ['0', '0', '0', '0', '0', '0', '0'],'months': ['0', '0', '0', '0', '0', '0', '0']}, status = HTTP_200_OK)
-
-
-
-
 
 # detail Message // res: (User Message Count When Seen = False) OR err
 
