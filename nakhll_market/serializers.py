@@ -62,7 +62,8 @@ class AttrPriceSerializer(serializers.ModelSerializer):
     class Meta:
         model = AttrPrice
         fields = [
-            'count', 'Description', 'id', 'Value', 'ExtraPrice', 'Unit',
+            'Description', 'id', 'Value', 'ExtraPrice', 'Unit',
+            'Available', 'Publish',
         ]
 
 class ProductBannerSerializer(serializers.ModelSerializer):
