@@ -16,7 +16,7 @@
 {% analytical_head_bottom %}</head>
 <body>{% analytical_body_top %}
     
-<script>
+{% comment %} <script>
 
     setTimeout(function(){
         $(".loading-index").remove();
@@ -32,7 +32,7 @@
             در حال بارگذاری ...
         </p>
     </div>
-</div>
+</div> {% endcomment %}
 
 
 
@@ -54,22 +54,7 @@
 
 
 <!-- Wrapper for slides -->
-<div class="carousel-inner" role="listbox">
-
-{% for slider in Sliders %}
-<aside data-target="#mycarousel" class="carousel-item {% if forloop.first %} active {% endif %}">
-<a href="{{slider.URL}}"><img src="{{slider.Image.url}}"
-class="sliderAsli" alt="{{slider.Title}}">
-<!-- https://nakhll.com/media/Pictures/Sliders/MIRPEh.jpg" -->
-{% if slider.ShowInfo %}
-<div class="carousel-caption">
-<h3>{{slider.Title}}</h3>
-<p>{{slider.Description}}</p>
-</div>
-{% endif %}
-</a>
-</aside>
-{% endfor %}
+<div id="mainCarousel" class="carousel-inner" role="listbox">
 
 
 
@@ -112,19 +97,14 @@ class="sliderAsli" alt="{{slider.Title}}">
 
 
 <!-- --------------------------------slider-prod-cat----------------------------- -->
-<div class="slider-prod-cat">
+<div class="slider-prod-cat ">
     <div class="container-fluid">        
         <!-- <h4><span>دسته بندی محصولات</span></h4> -->
         <div class="postslidebt">
-            <section class="autoplay slider sliderbox">
-                {% for category in Categories %}
-                    <div class="sliderRaste">
-                        <a href="/category/{{category.Slug}}/newest/none/">
-                            <img src="{{category.Image_thumbnail_url}}" alt="{{category.Title}}">
-                            <h2 class="titbox">{{category.Title}}</h2>
-                        </a>
-                    </div>
-                {% endfor %}
+            <section id="CategoryList" class="autoplay slider sliderboxLanding">
+                
+                
+
             </section>
         </div>
     </div>
@@ -142,25 +122,13 @@ class="sliderAsli" alt="{{slider.Title}}">
         </div>
         <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                <div class="slider-full-width off-slick-slider">
+                <div  class="slider-full-width off-slick-slider">
                     <div class="clearfix"></div>
                     <div class="slider-full-seller">
                         <div class="postslidebt">
-                            <section class="autoplay slider sliderfullseller">
+                            <section id="randomShops" class="autoplay slider sliderfullsellerLanding">
 
-                                {% for shop in Shops %}
-                                    <div class="boxslider-slick">
-                                        <a href="/{{shop.Slug}}/">
-                                            <img src="{{shop.Image_thumbnail_url}}"  alt="{{shop.Title}}" class="seller-img">
-                                            <h2 class="titbox">{{category.Title}}</h2>
-                                           
-                                            <div class="nameseller">
-                                                <h3>{{shop.Title}}</h3>
-                                            </div>
-                                        </a>
-                                    </div>
-                                {% endfor %}
-
+                                
                             </section>
                             <div class="clearfix"></div>
                         </div>
@@ -176,16 +144,10 @@ class="sliderAsli" alt="{{slider.Title}}">
 
 <section id="two-bannerhome">
     <div class="container">
-        <div class="row">
-           {% for adv in CenterAdvertisings %}
-                <div class="col-xl-6 col-md-6">
-                    <div class="baner-2-slider">
-                        <a href="{{adv.URL}}">
-                            <img src="{{adv.Image.url}}" alt="{{adv.Image.instance.Title}}">
-                        </a>
-                    </div>
-                </div>
-            {% endfor %}
+        <div id="BetweenBanner" class="row">
+        
+         
+
         </div>
     </div>
 </section>
@@ -201,21 +163,9 @@ class="sliderAsli" alt="{{slider.Title}}">
         <div class="row">
 
             <div class="col-xl-3 col-lg-3 col-md-4 col-sm-12 col-12 one-slider-col">
-                <div class="oneslide">
-                    <h3  class="title-borderbt">تخفیفات ویژه</h3>
+                <div id="mostDisProLanding" class="oneslide">
 
-                    <img src="{{DisProduct.Image_thumbnail_url}}" alt="عکس تخفیفات ویژه" width="175px" height="175px">
                     
-                    <a href="{{DisProduct.get_url}}">
-                    <h2 style="font-size: 1.1rem" class="longtitle">{{DisProduct.Title}}</h2>
-                    </a>
-                    {% if DisProduct.OldPrice != 0 %}
-                    <span class="strikeprice numbersprice takhfif">{{DisProduct.OldPrice}} ریال</span>
-                    {% else %}
-                    {% endif %}
-                    <br>
-                    <span class="priceline numbersprice takhfif">{{DisProduct.Price}} ریال</span>
-
                 </div>
             </div>
 
@@ -229,16 +179,10 @@ class="sliderAsli" alt="{{slider.Title}}">
                     <div class="clearfix"></div>
                     <div class="slider-full-cat slider-half">
                         <div class="postslidebt">
-                            <section class="autoplay slider sliderhalf">
-                                {% for item in Products %}
-                                    <div class="boxslider-slick products-new">
-                                        <a href="/product/{{item.FK_Shop.Slug}}/{{item.Slug}}/">
-                                            <img src="{{item.Image_thumbnail_url}}" alt="{{item.Title}}"  width="175px" height="175px" >
-                                            <h2 style="font-size:1rem" class="titbox">{{item.Title}}</h2>
-                                            {% if item.Status != '4' %}<span><span class="numbersprice">{{item.Price}}</span> ریال</span>{% else %}<span class="empty">ناموجود</span>{% endif %}
-                                        </a>
-                                    </div>
-                                {% endfor %}
+                            <section id="lastProduct" class="autoplay slider sliderhalfLanding">
+
+                               
+
                             </section>
                             <div class="clearfix"></div>
                         </div>
@@ -250,7 +194,8 @@ class="sliderAsli" alt="{{slider.Title}}">
     </div>
 </section>
 <!-- -------------------------شگفتانه-------------------------------------- -->
-{% if AmazingProducts %}
+<div id="AmazingProBanner">
+
 <div class="c-swiper-specials--incredible ">
     <div class="d-md-none" style="color:aliceblue ; font-weight:bold ; margin-right:60px ; font-size : 25px ; margin-top :10px">تخفیف ویژه نخل</div>
     <section class="icontainer">
@@ -267,12 +212,15 @@ class="sliderAsli" alt="{{slider.Title}}">
     </div>
         <div class="swiper--specials">
             <div id="sp-slider"  class="swiper-container">
-                <div class="product-box swiper-wrapper" >
-                    {% for product in AmazingProducts %}
+                <div id="ConsectorSlideBanner" class="product-box swiper-wrapper" >
+
+
+                    {% comment %} {% for product in AmazingProducts %}
                         <div class="product-item swiper-slide">
                             <a href="{{product.product.get_url}}"><img src="{{product.product.get_image}}" alt="{{product.product.get_image_alt}}"></a>
                             <a class="title" href="{{product.product.get_url}}">{{product.product.Title}}</a>
                             <div class="inc-product-price">
+
                                 {% if product.product.OldPrice %}
                                 <div class="del-product-price">
                                     <del>{{product.product.OldPrice}}</del>
@@ -290,13 +238,13 @@ class="sliderAsli" alt="{{slider.Title}}">
                             </div>
 
                         </div><!--item-->
-                    {% endfor %}
+                    {% endfor %} {% endcomment %}
             </div>
             </div>
     </section>
 </div>
-{% endif %}
 
+</div>
 <!-- ---------------------------------- -->
 <section id="three-box-slider">
     <div class="container">
@@ -310,16 +258,10 @@ class="sliderAsli" alt="{{slider.Title}}">
                     <div class="clearfix"></div>
                     <div class="slider-full-cat slider-half">
                         <div class="postslidebt">
-                            <section class="autoplay slider sliderfull">
-                                {% for item in Productsold %}
-                                    <div class="boxslider-slick">
-                                        <a href="/product/{{item.FK_Shop.Slug}}/{{item.Slug}}/">
-                                            <img src="{{item.Image_thumbnail_url}}" alt="{{item.Title}}" width="175px" height="175px">
-                                            <h2 style="font-size:1rem" class="titbox">{{item.Title}}</h2>
-                                            {% if item.Status != '4' %}<span><span class="numbersprice">{{item.Price}}</span> ریال</span>{% else %}<span class="empty">نا موجود</span>{% endif %}
-                                        </a>
-                                    </div>
-                                {% endfor %}
+                            <section id="ProposalProduct" class="autoplay slider sliderfullP">
+
+                                
+
                             </section>
                             <div class="clearfix"></div>
                         </div>
@@ -349,8 +291,9 @@ class="sliderAsli" alt="{{slider.Title}}">
                             <div class="clearfix"></div>
                             <div class="slider-full-seller slider-full-cat">
                                 <div class="postslidebt">
-                                    <section class="autoplay slider sliderfull">
-                                {% for item in AllDisProduct %}
+                                    <section id="LastCreatedDiscounted" class="autoplay slider sliderfullLanding">
+
+                                {% comment %} {% for item in AllDisProduct %}
                                     <div class="boxslider-slick">
                                         <a href="/product/{{item.FK_Shop.Slug}}/{{item.Slug}}/">
                                             <img src="{{item.Image_thumbnail_url}}" alt="{{item.Title}}" width="170px" height="170px">
@@ -365,7 +308,7 @@ class="sliderAsli" alt="{{slider.Title}}">
                                             {% endif %}
                                         </a>
                                     </div>
-                                {% endfor %}
+                                {% endfor %} {% endcomment %}
                             </section>
                             <div class="clearfix"></div>
                         </div>
@@ -397,7 +340,521 @@ class="sliderAsli" alt="{{slider.Title}}">
 <!-- ------------------------------- vendor story ----------------------------- -->
             
     </main>
+    
+    <script>
+    
+    $("#AmazingProBanner").hide();
+    $.ajax({
+        type:'GET',
+        url:"/api/v1/landing/amazing-products/",
+        success:function(DataAmazingBanner){
+            
+            for(let i=0;i<DataAmazingBanner.length;i++){
+                
+                 $("#ConsectorSlideBanner").append(`
+                      
+                        <div class="product-item swiper-slide">
+                            <a href="`+DataAmazingBanner[i].product.get_url+`"><img src="`+DataAmazingBanner[i].product.Image_thumbnail_url+`" alt="`+DataAmazingBanner[i].product.Title+`"></a>
+                            <a class="title" href="`+DataAmazingBanner[i].product.get_url+`">`+DataAmazingBanner[i].product.Title+`</a>
+                            <div class="inc-product-price">
 
+                                
+                                <div class="del-product-price">
+                                    <del>`+DataAmazingBanner[i].product.OldPrice+`</del>
+                                    <div class="c-price__discount-oval"><span>`+DataAmazingBanner[i].product.get_discounted+`٪</span></div>
+
+                                </div>
+                                <div style="display:flex ; justify-content : flex-start ; align-items : center ; margin-top : 20px">
+                                    <span class="price">`+DataAmazingBanner[i].product.Price+` </span>تومان
+
+                                </div>
+
+                                
+                            </div>
+
+                        </div>
+                    
+                    `) 
+                $("#AmazingProBanner").show();
+            }
+            if(DataAmazingBanner>2){
+                // Set the date we're counting down to
+        
+                var Dates = [];
+                {% for product in AmazingProducts %}
+                    Dates.push("{{product.end_date|safe}}")
+                {% endfor %}
+                var countDownDate = new Date("{{AmazingProducts.first.end_date|safe}}").getTime();
+                
+                
+                // Update the count down every 1 second
+                var x = setInterval(function() {
+                
+                // Get today's date and time
+                var now = new Date().getTime();
+                    
+                // Find the distance between now and the count down date
+                var distance = countDownDate - now;
+                    
+                // Time calculations for days, hours, minutes and seconds
+                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                    
+                // Output the result in an element with id="demo"
+                document.getElementById("demo").innerHTML = `${hours}:${minutes}:${seconds}`;
+                    
+                // If the count down is over, write some text 
+                if (distance < 0) {
+                    clearInterval(x);
+                    document.getElementById("demo").innerHTML = "اتمام تخفیف";
+                }
+                }, 1000);
+
+
+            }
+          
+        }
+    })
+
+    </script>
+ 
+
+    <script>
+     
+
+                <!-----------------------Category List----------------------->
+    $.ajax({
+         
+        type:'GET',
+        url:"/api/v1/landing/categories/",
+        success:function(dataCategoryList){
+          
+            for(let i=0;i<dataCategoryList.length;i++){
+             <!--سوم اجرا میشه-->
+                $("#CategoryList").append(`
+                 
+                    <div class="sliderRaste">
+                        <a href="`+dataCategoryList[i].url+`">
+                            <img src="`+dataCategoryList[i].image_thumbnail+`" alt="`+dataCategoryList[i].title+`">
+                            <h2 class="titbox">`+dataCategoryList[i].title+`</h2>
+                        </a>
+                    </div>
+                `)
+            }
+            $(".sliderboxLanding").slick({
+                infinite: true,
+                slidesToShow: 8,
+                slidesToScroll: 1,
+                
+                // prevArrow: '<img src="http://uupload.ir/files/5wwj_left-btn.png" />',
+                // nextArrow: '<img src="http://uupload.ir/files/g3zl_right-btn_thumb.png" />',
+                responsive: [{
+                    breakpoint: 1025,
+                    settings: {
+                        slidesToShow: 6,
+                    }
+                }, {
+                    breakpoint: 769,
+                    settings: {
+                        slidesToShow: 4,
+                    }
+                }, {
+                    breakpoint: 480,
+                    settings: {
+                        slidesToShow: 1,
+                    }
+                }]
+            });
+        }
+
+
+     })
+         
+     
+        <!--------mainbanner------->
+    $.ajax({
+          
+        type:'GET',
+        url:"/api/v1/landing/sliders/?search=1",
+        success:function(dataMainBanner){
+            <!--دوم اجرا میشه-->
+           
+           
+            for(let i=0;i<dataMainBanner.length;i++){
+                if(i==0){$("#mainCarousel").append(
+                    `
+                 
+                    <aside data-target="#mycarousel" class="carousel-item  active">
+                    <a href="`+dataMainBanner[i].URL+`"><img src="`+dataMainBanner[i].Image+`"
+                    class="sliderAsli" alt="`+dataMainBanner[i].Title+`">
+                    `+(dataMainBanner.ShowInfo ? `<div class="carousel-caption">
+                    <h3>`+dataMainBanner[i].Title+`</h3>
+                    <p>`+dataMainBanner[i].Description+`</p>
+                    </div>`:``)+`
+                    
+                    </a>
+                    </aside>
+                    
+
+                
+                `)
+      }else{
+            $("#mainCarousel").append(
+                                `
+                            
+                                <aside data-target="#mycarousel" class="carousel-item ">
+                                <a href="`+dataMainBanner[i].URL+`"><img src="`+dataMainBanner[i].Image+`"
+                                class="sliderAsli" alt="`+dataMainBanner[i].Title+`">
+                                `+(dataMainBanner.ShowInfo ? `<div class="carousel-caption">
+                                <h3>`+dataMainBanner[i].Title+`</h3>
+                                <p>`+dataMainBanner[i].Description+`</p>
+                                </div>`:``)+`
+                                
+                                </a>
+                                </aside>
+                                
+
+                            
+                            `)
+
+            }
+                
+
+            }
+        }
+
+
+     })
+    
+
+
+    
+    $.ajax({
+        type:'GET',
+        url:"/api/v1/landing/random-shops/",
+        success:function(dataresult){
+            
+            
+            <!-- چهارم اجرا میشود-->
+            
+                    for (let i = 0; i < dataresult.length; i++) {
+                       $("#randomShops").append(`<div class="boxslider-slick">
+                        <a href="`+dataresult[i].get_absolute_url+`">
+                            <img src="`+dataresult[i].Image_thumbnail_url+`"  alt="`+dataresult[i].Title+`" class="seller-img">
+                            <h2 class="titbox"></h2>
+                                           
+                            <div class="nameseller">
+                                <h3>`+dataresult[i].Title+`</h3>
+                            </div>
+                        </a>
+                    </div>`)
+                    
+
+                    }
+                 $(".sliderfullsellerLanding").slick({
+                infinite: true,
+                slidesToShow: 7,
+                slidesToScroll: 1,
+               
+                
+                // prevArrow: '<img src="http://uupload.ir/files/5wwj_left-btn.png" />',
+                // nextArrow: '<img src="http://uupload.ir/files/g3zl_right-btn_thumb.png" />',
+                responsive: [{
+                    breakpoint: 1025,
+                    settings: {
+                        slidesToShow: 5,
+                    }
+                }, {
+                    breakpoint: 769,
+                    settings: {
+                        slidesToShow: 4,
+                    }
+                }, {
+                    breakpoint: 480,
+                    settings: {
+                        slidesToShow: 1,
+                    }
+                }]
+            });
+        }
+      }) 
+
+
+
+
+
+     
+                    
+      
+    
+
+    $.ajax({
+       type:'GET',
+       url:"/api/v1/landing/last-created-products/",
+       success: function(result){
+                    <!--پنجم اجرا میشود-->
+           
+           for(let i=0;i<result.length;i++){
+              
+           $("#lastProduct").append(`
+            <div>
+           <div class="boxslider-slick products-new">
+                <a href="`+result[i].get_url+`">
+                  <img src="`+result[i].Image_thumbnail_url+`" alt=`+result[i].Title+` width="175px" height="175px" >
+                  <h2 style="font-size:1rem" class="titbox">`+result[i].Title+`</h2>
+                  <span><span class="numbersprice">`+result[i].Price+`</span> ریال</span>
+                </a>
+            </div>
+            </div>`)
+           
+                }  
+
+                 $(".sliderhalfLanding").slick({
+                infinite: true,
+                slidesToShow: 4,
+                slidesToScroll: 1,
+                
+                autoplaySpeed: 3000,
+                // prevArrow: '<img src="http://uupload.ir/files/5wwj_left-btn.png" />',
+                // nextArrow: '<img src="http://uupload.ir/files/g3zl_right-btn_thumb.png" />',
+                responsive: [{
+                    breakpoint: 769,
+                    settings: {
+                        slidesToShow: 3,
+                    }
+                }, {
+                    breakpoint: 480,
+                    settings: {
+                        slidesToShow: 1,
+                    }
+                }]
+            });                         
+       }
+    })
+
+
+    $.ajax({
+         type:'GET',
+       url:"/api/v1/landing/sliders/?search=3",
+       success: function(dataBetweenBanner){
+          for(let i=0;i<dataBetweenBanner.length;i++){
+              
+           $("#BetweenBanner").append(`
+            
+                <div class="col-xl-6 col-md-6">
+                    <div class="baner-2-slider">
+                        <a href="`+dataBetweenBanner[i].URL+`">
+                            <img src="`+dataBetweenBanner[i].Image+`" alt="`+dataBetweenBanner[i].Title+`">
+                        </a>
+                    </div>
+                </div>
+            
+           
+           
+           `)
+          }
+       }
+
+
+
+
+
+    })
+
+    
+    $.ajax({
+       type:'GET',
+       url:"/api/v1/landing/most-discount-prec-products/",
+       success: function(dataMostDisPro){
+           
+            $("#mostDisProLanding").append(`
+            
+            <h3  class="title-borderbt">تخفیفات ویژه</h3>
+
+
+                    <img src="`+dataMostDisPro[0].Image_thumbnail_url+`" alt="عکس تخفیفات ویژه" width="175px" height="175px">
+                    <a href="{{DisProduct.get_url}}">
+                    <h2 style="font-size: 1.1rem" class="longtitle">`+dataMostDisPro[0].Title+`</h2>
+                    </a>
+                    <span class="strikeprice numbersprice takhfif">`+dataMostDisPro[0].OldPrice+` ریال</span>
+                    <br>
+                    <span class="priceline numbersprice takhfif">`+dataMostDisPro[0].Price+` ریال</span> 
+            
+            
+            `)
+
+
+
+
+
+           
+
+
+       }
+
+    })
+
+
+
+    $.ajax({
+        type:'GET',
+        url:"/api/v1/landing/last-created-discounted-products/",
+        success:function(dataLastCD){
+            
+           <!-- ششم اجرا میشود-->
+            
+            for(let i=0;i<dataLastCD.length;i++){
+
+                $("#LastCreatedDiscounted").append(`
+                 
+                    <div class="boxslider-slick">
+                        <a href="`+dataLastCD[i].get_url+`">
+                           <img src="`+dataLastCD[i].Image_thumbnail_url+`" alt="`+dataLastCD[i].Title+`" width="170px" height="170px">
+                           <div class="title-off-slider">
+                               <h3 style="font-size:1.1rem" class="titbox longtitle">`+dataLastCD[i].Title+`</h3>
+                           </div>
+                               <span class="off-slider-darsad"> `+dataLastCD[i].get_discounted+`% تخفيف </span>
+                               <div class="single-off-slide-price"><span class="numbersprice price-root">`+dataLastCD[i].Price+`</span><span class="numbersprice off-price">`+dataLastCD[i].OldPrice+`</span> ریال</div>
+                        </a>
+                    </div>
+
+                
+                `)
+                
+
+            }
+            
+            
+            $(".sliderfullLanding").slick({
+                infinite: true,
+                slidesToShow: 6,
+                slidesToScroll: 1,
+                
+                
+                // prevArrow: '<img src="http://uupload.ir/files/5wwj_left-btn.png" />',
+                // nextArrow: '<img src="http://uupload.ir/files/g3zl_right-btn_thumb.png" />',
+                responsive: [{
+                    breakpoint: 1025,
+                    settings: {
+                        slidesToShow: 5,
+                    }
+                }, {
+                    breakpoint: 769,
+                    settings: {
+                        slidesToShow: 4,
+                    }
+                }, {
+                    breakpoint: 480,
+                    settings: {
+                        slidesToShow: 1,
+                    }
+                }]
+            });
+        }
+
+
+     })
+
+    $.ajax({
+        type:'GET',
+        url:"/api/v1/landing/random-products/",
+        success:function(dataProposalProduct){
+            
+            
+            for(let i=0;i<dataProposalProduct.length;i++){
+                $("#ProposalProduct").append(`
+                
+                                    <div class="boxslider-slick">
+                                        <a href="`+dataProposalProduct[i].get_url+`">
+                                            <img src="`+dataProposalProduct[i].Image_thumbnail_url+`" alt="`+dataProposalProduct[i].Title+`" width="175px" height="175px">
+                                            <h2 style="font-size:1rem" class="titbox">`+dataProposalProduct[i].Title+`</h2>
+                                            <span><span class="numbersprice">`+dataProposalProduct[i].Price+`</span> ریال</span>
+                                        </a>
+                                    </div>
+                `)
+
+
+        }
+        
+        $(".sliderfullP").slick({
+                infinite: true,
+                slidesToShow: 5,
+                slidesToScroll: 1,
+                
+                
+                // prevArrow: '<img src="http://uupload.ir/files/5wwj_left-btn.png" />',
+                // nextArrow: '<img src="http://uupload.ir/files/g3zl_right-btn_thumb.png" />',
+                responsive: [{
+                    breakpoint: 1025,
+                    settings: {
+                        slidesToShow: 5,
+                    }
+                }, {
+                    breakpoint: 769,
+                    settings: {
+                        slidesToShow: 4,
+                    }
+                }, {
+                    breakpoint: 480,
+                    settings: {
+                        slidesToShow: 1,
+                    }
+                }]
+            });
+        
+        
+        }
+        
+    })
+  
+   
+
+
+
+
+   
+    {% comment %} Promise.all([
+    categories_ajax.promise(),
+    main_banner_ajax.promise(),
+    random_shops_ajax.promise(),
+    products_ajax.promise(),
+    discounted_products_ajax.promise(),
+    ]).then((data)=>{
+        slick_rows()
+    })
+   {% endcomment %}
+  
+  </script>
+
+
+
+
+<script src="../../../../static/js/jquery.min.js">
+    
+    </script>
+    <script src="../../../../static/slicknav/jquery.slicknav.min.js"></script>
+   
+     <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT"
+            crossorigin="anonymous">
+            
+    </script>
+  
+  
+   
+   
+    <script src="../../../../static/swiper/js/swiper.min.js">
+    </script>
+   <script src="../../../../static/js/script.js">
+   </script>
+   
+   <script src="../../../../static/js/mainCard.js">
+   </script>
+   <script src="{% static "js/app.js" %}">
+   </script>
+    
     <script type="application/ld+json">
         {
             "@context": "https://schema.org",
@@ -438,94 +895,11 @@ class="sliderAsli" alt="{{slider.Title}}">
             "https://www.instagram.com/nakhll1"
             ]
             }
-    </script>
-     <script src="https://code.jquery.com/jquery-3.3.1.min.js"
-            integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT"
-            crossorigin="anonymous">
-    </script>
-    <script>
-    if(AmazingProducts){
-        // Set the date we're counting down to
-        
-        var Dates = [];
-        {% for product in AmazingProducts %}
-            Dates.push("{{product.end_date|safe}}")
-        {% endfor %}
-        var countDownDate = new Date("{{AmazingProducts.first.end_date|safe}}").getTime();
-        {% comment %} var countDownDate = new Date("Jan 5, 2021 15:37:25").getTime(); {% endcomment %}
-        
-        // Update the count down every 1 second
-        var x = setInterval(function() {
-        
-          // Get today's date and time
-          var now = new Date().getTime();
-            
-          // Find the distance between now and the count down date
-          var distance = countDownDate - now;
-            
-          // Time calculations for days, hours, minutes and seconds
-          var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-          var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-          var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-          var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-            
-          // Output the result in an element with id="demo"
-          document.getElementById("demo").innerHTML = `${hours}:${minutes}:${seconds}`;
-            
-          // If the count down is over, write some text 
-          if (distance < 0) {
-            clearInterval(x);
-            document.getElementById("demo").innerHTML = "اتمام تخفیف";
-          }
-        }, 1000);
-        }
-        </script>
-<script >
+     </script>
 
-    $num = $('.my-card').length;
-    $even = $num / 2;
-    $odd = ($num + 1) / 2;
-    if ($num % 2 == 0) {
-    $('.my-card:nth-child(' + $even +')').addClass('active');
-    $('.my-card:nth-child(' + $even +')').prev().addClass('prev');
-    $('.my-card:nth-child(' + $even +')').next().addClass('next');
-    }else {
-    $('.my-card:nth-child(' + $odd +')').addClass('active');
-    $('.my-card:nth-child(' + $odd +')').prev().addClass('prev');
-    $('.my-card:nth-child(' + $odd +')').next().addClass('next');
-    }
-    $('.my-card').click(function() {
-    $slide = $('.active').width();
-    
-    if ($(this).hasClass('next')) {
-        $('.card-carousel').stop(false,true).animate({left:'-=' + $slide});
-    }else if ($(this).hasClass('prev')) {
-        $('.card-carousel').stop(false,true).animate({left:'+=' + $slide});
-    }
-    $(this).removeClass('prev next');
-    $(this).siblings().removeClass('prev active next');
-    $(this).addClass('active');
-    $(this).prev().addClass('prev');
-    $(this).next().addClass('next');
-    });
-    // Keyboard nav
-    $('html body').keydown(function(e) {
-    if (e.keyCode == 37) {// left
-    $('.active').prev().trigger('click');
-    }
-    else if (e.keyCode == 39) {// right
-        $('.active').next().trigger('click');
-    }
 
-    });
+  
 
-</script>
-<script src="../../../../static/js/jquery.min.js"></script>
-<script src="../../../../static/swiper/js/swiper.min.js"></script>
-<script src="../../../../static/js/script.js"></script>
-<script src="../../../../static/slicknav/jquery.slicknav.min.js"></script>
-<script src="../../../../static/js/mainCard.js"></script>
-<script src="{% static "js/app.js" %}"></script>
 
 
 {% block footer-section %}
