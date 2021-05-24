@@ -1872,31 +1872,6 @@ class Message(models.Model):
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-# Voting (رای گیری) Model
-class Voting(models.Model):
-    VOTE_TYPE =(
-        ('0','بازارچه'),
-        ('1','راسته'),
-        ('2','حجره'),
-        ('3','محصول'),
-    )
-    VoteType=models.CharField(verbose_name='نوع', max_length=1, choices=VOTE_TYPE, default='0')
-    TypeId=models.CharField(verbose_name='شناسه', max_length=150)
-    FK_User=models.ForeignKey(User, verbose_name='کاربر', related_name='Voting_User', on_delete=models.SET_NULL, null=True)
-    Point=models.PositiveIntegerField(verbose_name='امتیاز', default=0)
-
-    # Output Customization Based On UserName (ID)
-    def __str__(self):
-       return "{}".format(self.FK_User)
-
-    # Ordering With DateCreate
-    class Meta:
-        ordering = ('id',)   
-        verbose_name = "رای گیری"
-        verbose_name_plural = "رای گیری ها "
-
-#----------------------------------------------------------------------------------------------------------------------------------
-
 # Pages (برگه ها) Model
 class Pages(models.Model):
     Title=models.CharField(verbose_name='عنوان', max_length=150)
