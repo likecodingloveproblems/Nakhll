@@ -65,11 +65,48 @@ class RandomShopsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = [permissions.AllowAny, ]
 
     def get_queryset(self):
-        return Shop.objects\
-            .filter(Publish = True, Available = True)\
-            .annotate(product_count = Count('ShopProduct'))\
-            .filter(product_count__gt=1)\
-            .order_by('?')[:12]
+        # Shop.objects\
+        # .filter(Publish = True, Available = True)\
+        # .annotate(product_count = Count('ShopProduct'))\
+        # .filter(product_count__gt=1)\
+        # .order_by('?')[:12]
+        sql = '''
+            SELECT 
+                "nakhll_market_shop"."ID",
+                "nakhll_market_shop"."FK_ShopManager_id",
+                "nakhll_market_shop"."Title",
+                "nakhll_market_shop"."Slug",
+                "nakhll_market_shop"."Description",
+                "nakhll_market_shop"."Image",
+                "nakhll_market_shop"."NewImage",
+                "nakhll_market_shop"."ColorCode",
+                "nakhll_market_shop"."Bio",
+                "nakhll_market_shop"."State",
+                "nakhll_market_shop"."BigCity",
+                "nakhll_market_shop"."City",
+                "nakhll_market_shop"."Location",
+                "nakhll_market_shop"."Point",
+                "nakhll_market_shop"."Holidays",
+                "nakhll_market_shop"."DateCreate",
+                "nakhll_market_shop"."DateUpdate",
+                "nakhll_market_shop"."Edite",
+                "nakhll_market_shop"."Available",
+                "nakhll_market_shop"."Publish",
+                "nakhll_market_shop"."FK_User_id",
+                "nakhll_market_shop"."CanselCount",
+                "nakhll_market_shop"."CanselFirstDate",
+                "nakhll_market_shop"."LimitCancellationDate",
+                "nakhll_market_shop"."documents",
+                COUNT("nakhll_market_product"."ID") AS "product_count" 
+            FROM "nakhll_market_shop" 
+            LEFT OUTER JOIN 
+                "nakhll_market_product" ON ("nakhll_market_shop"."ID" = "nakhll_market_product"."FK_Shop_id") 
+            WHERE ("nakhll_market_shop"."Available" AND "nakhll_market_shop"."Publish") 
+            GROUP BY "nakhll_market_shop"."ID" HAVING COUNT("nakhll_market_product"."ID") > 1  
+            ORDER BY RANDOM() 
+            LIMIT 12
+        '''
+        return Shop.objects.raw(sql)
 
 class RandomProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductSerializer

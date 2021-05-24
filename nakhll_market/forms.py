@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserChangeForm
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
-from .models import Newsletters , Profile
+from .models import Profile
 
 
 

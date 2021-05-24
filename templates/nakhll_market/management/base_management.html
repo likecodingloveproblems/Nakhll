@@ -935,7 +935,7 @@
                         <div >
                             <span>عضویت در خبرنامه</span>  
                          
-                            <form class="search-top newslatter" method="POST" action="/addemail/">
+                            <form class="search-top newslatter" method="POST" action="#">
                                 {% csrf_token %}
                                 <input type="email" placeholder="آدرس ایمیل خود را وارد کنید ..." pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" name="email" id="email">
                                 <button type="submit" value="Submit" class="submit-search">عضویت</button>   

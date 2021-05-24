@@ -9,7 +9,6 @@ from django.contrib.auth.models import User
 
 from .models import Shop, Profile, Product, AttrPrice, Alert, BankAccount
 from Payment.models import Factor, FactorPost, Wallet, Transaction, Coupon
-from nakhll_market.models import Newsletters
 import io
 
 from django.http.response import HttpResponse
@@ -462,28 +461,6 @@ def Pay_Factor_by_wallet(request):
         response_data['status'] = False
         response_data['msg'] = 'خطایی رخ داده است مجدد اقدام نمایید یا با پشتیبانی سایت تماس بگیرید.'
         return JsonResponse(response_data)
-
-
-
-
-# Add New Email With Ajax
-def Add_New_Email(request):
-    response_data = {}
-    # Get Email
-    this_email = request.POST.get("email")
-
-    if not Newsletters.objects.filter(Email = this_email).exists():
-        # Add New Data
-        Newsletters.objects.create(Email = this_email)
-        response_data['status'] = True
-        response_data['msg'] = 'Email New Email'
-        return JsonResponse(response_data)
-    else:
-        response_data['status'] = False
-        response_data['msg'] = 'Email Is Exist'
-        return JsonResponse(response_data)
-
-
 
 # Check User Back Account Info With Ajax
 def check_user_bank_account_info(request):

@@ -147,8 +147,6 @@ urlpatterns = [
     path('ajax/check/check-remove-singel-item-inventory/', ajaxviwes.Remove_Single_Item_From_Cart, name='Remove_Single_Item_From_Cart'),
     # Check Factor Inventory With Ajax
     path('ajax/check/pay-factor-by-wallet/', ajaxviwes.Pay_Factor_by_wallet, name='Pay_Factor_by_wallet'),
-    # Add New Email With Ajax
-    path('ajax/add/new-email/', ajaxviwes.Add_New_Email, name='Add_New_Email'),
     # Check User Back Account Info With Ajax
     path('ajax/check/back-account-info/', ajaxviwes.check_user_bank_account_info, name='check_user_bank_account_info'),
     # Add To Cart WithOut Price Attribute With Ajax
@@ -193,8 +191,6 @@ urlpatterns = [
 
 
     #------------------------------------------------ Add Path ------------------------------------------------
-    # # Add User Email To Data Base
-    # url(r'^addemail/$', views.AddEmail, name='AddEmail'),
     # Add Ticket
     path('profile/ticketing/addticket/', profileviews.AddNewTicket, name='AddNewTicket'),
 
