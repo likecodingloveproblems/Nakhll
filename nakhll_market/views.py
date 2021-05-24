@@ -69,7 +69,7 @@ from .models import Pages
 from .models import Alert
 from .models import Field
 from .models import Note
-from .models import PageViews, User_View, ShopViews, Date_View
+from .models import PageViews, User_View, Date_View
 from sms.models import SMS
 from my_auth.models import UserphoneValid
 from Payment.models import Wallet, Factor ,FactorPost, Coupon
@@ -161,77 +161,6 @@ def CheckView(request, obj_slug, obj_type):
     return view_count
 
 
-# Get Shop Number Of Visits
-def Get_Shop_Visits_Count(request, obj_id):
-    try:
-        # Get Page View
-        if ShopViews.objects.filter(FK_Shop_id = obj_id).exists():
-            this_shop = ShopViews.objects.get(FK_Shop_id = obj_id)
-            # Get This IP Info
-            if this_shop.FK_Viewer.filter(User_Ip = visitor_ip_address(request)).exists():
-                # Get This IP 
-                this_ip = this_shop.FK_Viewer.get(User_Ip = visitor_ip_address(request))
-                # Check Date
-                date_format = "%Y-%m-%d"
-                a = datetime.strptime(str(date.today()), date_format)
-                b = datetime.strptime(str(this_ip.DateTime.date()), date_format)
-                delta = a - b
-                # If Delta > 24H
-                if delta.days >= 1:
-                    this_shop.Total_View = str(int(this_shop.Total_View) + 1)
-                    this_ip.DateTime = datetime.now()
-                    this_ip.Total_View = str(int(this_ip.Total_View) + 1)
-                    this_ip.save()
-                    this_shop.save()
-                    # Set Date
-                    if this_shop.FK_Date.filter(Date = date.today()).exists():
-                        this_date = this_shop.FK_Date.get(Date = date.today())
-                        this_date.Count = str(int(this_date.Count) + 1)
-                        this_date.save()
-                    else:
-                        this_date = Date_View.objects.create()
-                        this_shop.FK_Date.add(this_date)
-                    view_count = this_shop.Total_View
-                else:
-                    this_ip.Total_View = str(int(this_ip.Total_View) + 1)
-                    this_ip.save()
-                    # Set Date
-                    if not this_shop.FK_Date.filter(Date = date.today()).exists():
-                        this_date = Date_View.objects.create()
-                        this_shop.FK_Date.add(this_date)
-                    view_count = this_shop.Total_View  
-            else:
-                this_shop.FK_Viewer.add(User_View.objects.create(User_Ip = visitor_ip_address(request)))
-                # Set Date
-                if this_shop.FK_Date.filter(Date = date.today()).exists():
-                    this_date = this_shop.FK_Date.get(Date = date.today())
-                    this_date.Count = str(int(this_date.Count) + 1)
-                    this_date.save()
-                else:
-                    this_date = Date_View.objects.create()
-                    this_shop.FK_Date.add(this_date)
-
-                this_shop.Total_View = str(int(this_shop.Total_View) + 1)
-                this_shop.save()
-                view_count = this_shop.Total_View
-        else:
-            this_shop = ShopViews.objects.create(FK_Shop_id = obj_id)
-            this_shop.FK_Viewer.add(User_View.objects.create(User_Ip = visitor_ip_address(request)))
-            # Set Date
-            if this_shop.FK_Date.filter(Date = date.today()).exists():
-                this_date = this_shop.FK_Date.get(Date = date.today())
-                this_date.Count = str(int(this_date.Count) + 1)
-                this_date.save()
-            else:
-                this_date = Date_View.objects.create()
-                this_shop.FK_Date.add(this_date)
-            view_count = this_shop.Total_View
-        return view_count
-    except:
-        return 'عدم دسترسی'
-        
-
-
 def index(request):
     # Get Menu Item
     options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
@@ -259,20 +188,11 @@ class get_shop_other_info:
             this_shop_subMarket = None
             # Get Shop First SubMarket Market
             this_shop_market = None
-        # ---------------------------------------------------------------------------------
-        # Total Sell
-        # total_sell = 0
-        # # Get All Factor Item Is Product In AllProduct List
-        # for item in FactorPost.objects.filter(FK_Product__in = shop.get_all_products(), ProductStatus__in = ['2', '3']):
-        #     total_sell += item.ProductCount
-        # ----------------------------------------------------------------------------------
-        shop_view = Get_Shop_Visits_Count(request, shop.ID)
 
         # Set Result
         result = {
             "this_shop_subMarket": this_shop_subMarket,
             "this_shop_market":this_shop_market,
-            "view":shop_view,
         }
         return result
 
@@ -377,11 +297,6 @@ def ShopsDetail(request, shop_slug, msg = None):
     this_shop_publish_comments = shop.get_comments()
     # get other info
     other_info = get_shop_other_info().run(request, shop)
-    # Get Total Sell
-    # sell_total = other_info["total_sell"]
-    # Get Page View
-    # view_count = other_info["view"]
-    # -------------------------------------------------------------------
     this_shop_market = other_info["this_shop_market"]
     this_shop_subMarket = other_info["this_shop_subMarket"]
     # -------------------------------------------------------------------

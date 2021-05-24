@@ -24,7 +24,7 @@ from datetime import datetime
 
 # get model
 from django.contrib.auth.models import User
-from nakhll_market.models import Profile, Product, Shop, BankAccount, AttrProduct, ShopViews, Alert, Field, ShopComment, Review, Comment
+from nakhll_market.models import Profile, Product, Shop, BankAccount, AttrProduct, Alert, Field, ShopComment, Review, Comment
 from Payment.models import Factor, FactorPost
 
 # -------------------------------------------------------------------------------------------------------------------------------------
@@ -234,122 +234,6 @@ def get_product_status(this_product):
         return 'منتشر شده'
     else:
         return 'منتشر نشده'
-
-
-# check the seller interaction
-def check_the_seller_interaction(request):
-    try:
-        # chack user access level
-        if request.user.is_superuser:
-            # create io file
-            output = io.BytesIO()
-            # create xlsx
-            workbook = Workbook(output, {'in_memory': True})
-            # get shop order by view
-            shop_view_list = list(ShopViews.objects.all())
-            # get shop view
-            def getview(item):
-                return int(item.Total_View)
-            shop_view_list.sort(reverse = True, key = getview)
-            for item in shop_view_list:
-                try:
-                    if item.FK_Shop.Slug in ['taemirkhodro', 'kadbanoo_99', 'Somayeh-HosseinShahi', 'asale-vahshie-naaab', 'sport_accesories', 'Dehghani-Rice', 'unique_jewellry_mhd', 'grocery-store-Aali', 'ganjinehhomeandorganicproductsspecializedstore', 'fogholade', 'kilim-darestan', 'kosarane', 'ninninaz', 'Atari-namjoo', 'oil-1', 'test_shop', '1369', 'samareh', 'bagh', 'kolbesefid', 'havigh', 'delbaft', 'royastore', 'mobleghalikarmania', 'store', 'kilim-darestan-2', 'celid', 'najma-gallery', 'empt', 'ahonor-gallery', 'hoorfarbadspareparts', 'oil-2', '-asalrabor1', 'nomadic-organic-products', 'howzeh_book_kerman', 'b_u_t', 'galorisoheyl', 'forooshgah-ghods', 'hakim-arab', 'atregilan', 'cellid84', 'mm1363mm', 'reza9876', 'shahrzad', '-asalrabor', 'sismounimahnini-', 'abfaraz', 'fanni_team', '13990414', 'hajghasem', 'cofeeshop']:
-                        print('item id ------------>' + str(item.id))
-                        print(item.FK_Shop.Slug)
-                        worksheet = workbook.add_worksheet(item.FK_Shop.Title)
-                        # set row
-                        row = 0
-                        # get shop data
-                        this_shop_products = item.FK_Shop.get_all_products()
-                        this_shop_products_count = this_shop_products.count()
-                        this_shop_alerts = get_shop_alert(item.FK_Shop)
-                        this_shop_factors = get_shop_factor().run(item.FK_Shop)
-                        # set shop filed
-                        worksheet.write(row, 0, 'نام حجره')
-                        worksheet.write(row, 1, 'نام حجره دار')
-                        worksheet.write(row, 2, 'تاریخ ساخت حجره')
-                        worksheet.write(row, 3, 'تاریخ آخرین بروزرسانی حجره')
-                        worksheet.write(row, 4, 'تعداد محصولات')
-                        worksheet.write(row, 5, 'تعداد محصولات منتشر شده')
-                        worksheet.write(row, 6, 'تعداد تغییرات حجره')
-                        worksheet.write(row, 7, 'فاصله زمانی ساخت حجره تا اولین تغییر')
-                        worksheet.write(row, 8, 'فاصله زمانی ساخت حجره تا آخرین تغییر')
-                        worksheet.write(row, 9, 'میانگین زمانی تغییرات')
-                        worksheet.write(row, 10, 'تعداد تغییرات پذیرفته شده')
-                        worksheet.write(row, 11, 'میزان بازدید حجره')
-                        worksheet.write(row, 12, 'تعداد نظرات حجره')
-                        worksheet.write(row, 13, 'تعداد صورت حساب ها')
-                        worksheet.write(row, 14, 'تعداد صورت حساب ها لغو شده')
-                        # worksheet.write(row, 15, 'میانگین زمانی پاسخ به صورت حساب ها')
-                        worksheet.write(row, 16, 'وضعیت اطلاعات حساب بانکی')
-                        worksheet.write(row, 17, 'آخر ورود کاربر به سایت')
-                        # set shop data
-                        row += 1
-                        worksheet.write(row, 0, item.FK_Shop.Title)
-                        worksheet.write(row, 1, item.FK_Shop.FK_ShopManager.first_name + ' ' + item.FK_Shop.FK_ShopManager.last_name)
-                        worksheet.write(row, 2, str(item.FK_Shop.DateCreate.date()))
-                        worksheet.write(row, 3, str(item.FK_Shop.DateUpdate.date()))
-                        worksheet.write(row, 4, this_shop_products_count)
-                        worksheet.write(row, 5, this_shop_products.filter(Available = True, Publish = True).count())
-                        worksheet.write(row, 6, len(this_shop_alerts))
-                        worksheet.write(row, 7, time_interval_create_until_first_alert(item.FK_Shop, this_shop_alerts))
-                        worksheet.write(row, 8, time_interval_create_until_last_alert(item.FK_Shop, this_shop_alerts, len(this_shop_alerts)))
-                        worksheet.write(row, 9, get_average_time_interval_of_alerts(this_shop_alerts, len(this_shop_alerts)))
-                        worksheet.write(row, 10, get_accepted_alert_count(this_shop_alerts))
-                        worksheet.write(row, 11, int(item.Total_View))
-                        worksheet.write(row, 12, ShopComment.objects.filter(FK_Shop = item.FK_Shop).count())
-                        worksheet.write(row, 13, len(this_shop_factors))
-                        worksheet.write(row, 14, get_shop_factor_cansel(this_shop_factors))
-                        # worksheet.write(row, 15, 'میانگین زمانی پاسخ به صورت حساب ها')
-                        worksheet.write(row, 16, get_shop_bank_account_status(item.FK_Shop))
-                        worksheet.write(row, 17, str(item.FK_Shop.FK_ShopManager.last_login.date()))
-                        # set product field
-                        row += 5
-                        worksheet.write(row, 0, 'نام محصول')
-                        worksheet.write(row, 1, 'تاریخ ساخت محصول')
-                        worksheet.write(row, 2, 'تاریخ آخرین بروزرسانی محصول')
-                        worksheet.write(row, 3, 'تعداد تغییرات')
-                        worksheet.write(row, 4, 'فاصله زمانی ساخت حجره تا اولین تغییر')
-                        worksheet.write(row, 5, 'فاصله زمانی ساخت حجره تا آخرین تغییر')
-                        worksheet.write(row, 6, 'میانگین زمانی تغییرات')
-                        worksheet.write(row, 7, 'تعداد تغییرات پذیرفته شده')
-                        worksheet.write(row, 8, 'تعداد نظرات محصول')
-                        worksheet.write(row, 9, 'تعداد نقد و بررسی محصول')
-                        worksheet.write(row, 10, 'وضعیت انتشار محصول')
-                        # set product data
-                        for product_item in this_shop_products:
-                            # set product data
-                            this_product_alerts = get_product_alert(product_item)
-                            print(this_shop_products_count)
-                            row += 1
-                            worksheet.write(row, 0, product_item.Title)
-                            worksheet.write(row, 1, str(product_item.DateCreate.date()))
-                            worksheet.write(row, 2, str(product_item.DateUpdate.date()))
-                            worksheet.write(row, 3, len(this_product_alerts))
-                            worksheet.write(row, 4, get_product_time_interval_create_until_first_alert(product_item, this_product_alerts))
-                            worksheet.write(row, 5, get_product_time_interval_create_until_last_alert(product_item, this_product_alerts, len(this_product_alerts)))
-                            worksheet.write(row, 6, get_product_average_time_interval_of_alerts(this_product_alerts, len(this_product_alerts)))
-                            worksheet.write(row, 7, get_product_accepted_alert_count(this_product_alerts))
-                            worksheet.write(row, 8, Comment.objects.filter(FK_Product = product_item).count())
-                            worksheet.write(row, 9, Review.objects.filter(FK_Product = product_item).count())
-                            worksheet.write(row, 10, get_product_status(product_item))
-                            this_shop_products_count -= 1
-                except:
-                    continue      
-
-            # get output
-            workbook.close()
-            output.seek(0)
-            response = HttpResponse(output.read(), content_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-            response['Content-Disposition'] = "attachment; filename = " + 'test' + ".xlsx"
-            output.close()
-
-            return response
-        else:
-            return JsonResponse({'status' : False}, status = HTTP_403_FORBIDDEN)
-    except Exception as e:
-        return JsonResponse({'status' : False, 'message' : str(e)}, status = HTTP_500_INTERNAL_SERVER_ERROR)
-
 
 # get factor analyze
 def get_factor_analyze(request):
