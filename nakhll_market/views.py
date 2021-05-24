@@ -66,7 +66,6 @@ from .models import Slider
 from .models import Message
 from .models import Option_Meta
 from .models import Pages
-from .models import Newsletters
 from .models import Alert
 from .models import Field
 from .models import Note

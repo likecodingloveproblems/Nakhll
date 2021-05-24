@@ -1,7 +1,7 @@
 from typing import Dict, Optional
 from django.contrib import admin
 from django.http import HttpRequest, HttpResponse
-from .models import  AmazingProduct, Tag, Market, MarketBanner, SubMarket, SubMarketBanner,BankAccount, Category ,PostRange, Shop, ShopBanner, ShopMovie, Attribute, AttrPrice, AttrProduct, Product, ProductBanner, ProductMovie, Comment, Profile, Review, Survey, Slider, Option_Meta, Message, Newsletters, Pages ,Alert ,Field, User_Message_Status, UserPoint
+from .models import  AmazingProduct, Tag, Market, MarketBanner, SubMarket, SubMarketBanner,BankAccount, Category ,PostRange, Shop, ShopBanner, ShopMovie, Attribute, AttrPrice, AttrProduct, Product, ProductBanner, ProductMovie, Comment, Profile, Review, Survey, Slider, Option_Meta, Message, Pages ,Alert ,Field, User_Message_Status, UserPoint
 from django.contrib import admin
 from django.contrib.auth.models import Permission
 
@@ -177,13 +177,7 @@ class SliderAdmin(admin.ModelAdmin):
 class Option_MetaAdmin(admin.ModelAdmin):
     list_display=('id', 'Title', 'Description', 'Value_1', 'Value_2',)
     ordering=['id','Title','Value_1', 'Value_2',]
-#----------------------------------------------------------------------------------------------------------------------------------
-#Newsletters admin panel
-@admin.register(Newsletters)
-class NewslettersAdmin(admin.ModelAdmin):
-    list_display=('id','Email')
-    search_fields=('Email',)
-    ordering=['id']
+
 #-------------------------------------------------
 #pages admin panel
 @admin.register(Pages)

@@ -1872,23 +1872,6 @@ class Message(models.Model):
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-# Newsletters (خبرنامه) Model
-class Newsletters(models.Model):
-    Email=models.EmailField(verbose_name='ایمیل', blank=True)
-    MobileNumber=models.CharField(verbose_name='شماره موبایل', max_length=11, blank=True)
-
-    # Output Customization Based On User
-    def __str__(self):
-        return "{} - {}".format(self.Email, self.MobileNumber)
-
-    # Ordering With DateCreate
-    class Meta:
-        ordering = ('Email',)
-        verbose_name = "خبرنامه"
-        verbose_name_plural = "خبرنامه ها"
-
-#----------------------------------------------------------------------------------------------------------------------------------
-
 # Voting (رای گیری) Model
 class Voting(models.Model):
     VOTE_TYPE =(

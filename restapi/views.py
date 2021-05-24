@@ -13,7 +13,7 @@ import threading
 import json
 
 
-from nakhll_market.models import Profile, Product, Shop, SubMarket, Category, BankAccount, ShopBanner, Attribute, AttrProduct, AttrPrice, ProductBanner, User_View, PageViews, PostRange, Message, User_Message_Status, Alert, Field, Newsletters, Message, ShopViews, Date_View
+from nakhll_market.models import Profile, Product, Shop, SubMarket, Category, BankAccount, ShopBanner, Attribute, AttrProduct, AttrPrice, ProductBanner, User_View, PageViews, PostRange, Message, User_Message_Status, Alert, Field, Message, ShopViews, Date_View
 from Payment.models import Factor, Wallet, FactorPost, Transaction, PostBarCode, Coupon
 
 
@@ -550,19 +550,10 @@ def update_user_profile(request):
     if (User_FirstName != '') and (User_LastName != '') and (User_Email != ''):
 
         if (thisuser.first_name != User_FirstName) or (thisuser.last_name != User_LastName) or (thisuser.email != User_Email):
-
-            if thisuser.email != User_Email:
-                if Newsletters.objects.filter(Email = User_Email).count() == 0:
-                    New = Newsletters(Email = User_Email)
-                    New.save()
-
             thisuser.first_name = User_FirstName
             thisuser.last_name = User_LastName           
             thisuser.email = User_Email
-
             thisuser.save()
-
-            
 
             if (thisprofile.ZipCode != Profile_ZipCode) or\
                 (thisprofile.Address != Profile_Address) or\
@@ -577,46 +568,8 @@ def update_user_profile(request):
                 (thisprofile.Bio != Profile_Bio) or\
                 (thisprofile.Sex != Profile_SexState) or\
                 (thisprofile.TutorialWebsite != Profile_TutorialWebsite):
-                
-                # if thisprofile.MobileNumber != Profile_MobileNumber:
-                #     if Newsletters.objects.filter(MobileNumber = Profile_MobileNumber).count() == 0:
-                #         New = Newsletters(MobileNumber = Profile_MobileNumber)
-                #         New.save()
-
-                # if Profile_SexState == 'انتخاب جنسیت':
-                #     ProfileSex ='0'
-                # elif Profile_SexState == 'زن':
-                #     ProfileSex ='1'
-                # elif Profile_SexState == 'مرد':
-                #     ProfileSex ='2'
-                # elif Profile_SexState == 'سایر':
-                #     ProfileSex ='3'
-
                 ProfileSex = Profile_SexState
-
-
-                # if Profile_TutorialWebsite == 'موتور های جستجو':
-                #     ProfileToWeb ='0'
-                # elif Profile_TutorialWebsite == 'حجره داران':
-                #     ProfileToWeb ='1'
-                # elif Profile_TutorialWebsite == 'شبکه های اجتماعی':
-                #     ProfileToWeb ='2'
-                # elif Profile_TutorialWebsite == 'کاربران':
-                #     ProfileToWeb ='3'
-                # elif Profile_TutorialWebsite == 'رسانه ها':
-                #     ProfileToWeb ='4'
-                # elif Profile_TutorialWebsite == 'تبلیغات':
-                #     ProfileToWeb ='5'
-                # elif Profile_TutorialWebsite == 'نود ها':
-                #     ProfileToWeb ='6'
-                # elif Profile_TutorialWebsite == 'سایر':
-                #     ProfileToWeb ='7'
-                # elif Profile_TutorialWebsite == 'هیچ کدام':
-                #     ProfileToWeb ='8'
-
                 ProfileToWeb = Profile_TutorialWebsite
-
-                # thisprofile.MobileNumber = Profile_MobileNumber
                 thisprofile.ZipCode = Profile_ZipCode
                 thisprofile.Address = Profile_Address
                 thisprofile.State = Profile_State
@@ -664,48 +617,8 @@ def update_user_profile(request):
                 (thisprofile.Bio != Profile_Bio) or\
                 (thisprofile.Sex != Profile_SexState) or\
                 (thisprofile.TutorialWebsite != Profile_TutorialWebsite):
-                
-                # if thisprofile.MobileNumber != Profile_MobileNumber:
-                #     if Newsletters.objects.filter(MobileNumber = Profile_MobileNumber).count() == 0:
-                #         New = Newsletters(MobileNumber = Profile_MobileNumber)
-                #         New.save()
-
-                # if Profile_SexState == 'انتخاب جنسیت':
-                #     ProfileSex ='0'
-                # elif Profile_SexState == 'زن':
-                #     ProfileSex ='1'
-                # elif Profile_SexState == 'مرد':
-                #     ProfileSex ='2'
-                # elif Profile_SexState == 'سایر':
-                #     ProfileSex ='3'
-
                 ProfileSex = Profile_SexState
-
-
-                # if Profile_TutorialWebsite == 'موتور های جستجو':
-                #     ProfileToWeb ='0'
-                # elif Profile_TutorialWebsite == 'حجره داران':
-                #     ProfileToWeb ='1'
-                # elif Profile_TutorialWebsite == 'شبکه های اجتماعی':
-                #     ProfileToWeb ='2'
-                # elif Profile_TutorialWebsite == 'کاربران':
-                #     ProfileToWeb ='3'
-                # elif Profile_TutorialWebsite == 'رسانه ها':
-                #     ProfileToWeb ='4'
-                # elif Profile_TutorialWebsite == 'تبلیغات':
-                #     ProfileToWeb ='5'
-                # elif Profile_TutorialWebsite == 'نود ها':
-                #     ProfileToWeb ='6'
-                # elif Profile_TutorialWebsite == 'سایر':
-                #     ProfileToWeb ='7'
-                # elif Profile_TutorialWebsite == 'هیچ کدام':
-                #     ProfileToWeb ='8'
-
                 ProfileToWeb = Profile_TutorialWebsite
-
-
-
-                # thisprofile.MobileNumber = Profile_MobileNumber
                 thisprofile.ZipCode = Profile_ZipCode
                 thisprofile.Address = Profile_Address
                 thisprofile.State = Profile_State
