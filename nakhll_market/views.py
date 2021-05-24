@@ -234,90 +234,14 @@ def Get_Shop_Visits_Count(request, obj_id):
 
 
 def index(request):
-    if request.user.is_authenticated:
-        this_profile = get_object_or_404(Profile, FK_User = request.user)
-        this_inverntory = get_object_or_404(Wallet, FK_User = request.user).Inverntory
-    else:
-        this_profile = None
-        this_inverntory = None
     # Get Menu Item
     options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
     # Get Nav Bar Menu Item
     navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-    # ------------------------------------------------------------------------
-    # Get All Products
-    pubproduct = Product.objects.filter(Publish = True, Available = True, OldPrice = '0', Status__in = ['1', '2', '3']).order_by('-DateCreate')[:12]
-    pubproductoldquery = Product.objects.filter(Publish = True, Available = True, OldPrice = '0', Status__in = ['1', '2', '3'])
-    numpubproductold = pubproductoldquery.count()
-    pubproductold = []
-    for i in random.sample(range(0,numpubproductold), 16):
-        pubproductold.append(pubproductoldquery[i])
-    # Get All Discounted Product
-    dis_product = Product.objects.filter(Publish = True, Available = True, Status__in = ['1', '2', '3']).exclude(OldPrice='0').order_by('-DateCreate')[:16]
-    # Get Index Sliders
-    pubsliders = Slider.objects.filter(Location = 1, Publish = True)
-    # Get All Categories
-    categories = Category.objects\
-        .filter(Publish = True, Available = True, FK_SubCategory = None)\
-        .annotate(product_count = Count('ProductCategory'))\
-        .filter(product_count__gt=5)
-    categories_id = list(categories\
-        .values_list('id', flat=True))
-    categories = categories\
-        .filter(pk__in=random.sample(categories_id, 12))
-    # Get All Index Advertising - Buttom
-    pubbuttomadvsliders = Slider.objects.filter(Location = 2, Publish = True)
-    # Get All Index Advertising - Center
-    pubcenteradvsliders = Slider.objects.filter(Location = 3, Publish = True)
-    # Get All Shops
-    pubshopsquery = Shop.objects.filter(Publish = True, Available = True)\
-        .annotate(product_count = Count('ShopProduct')).filter(product_count__gt=1)
-    numpubshops = pubshopsquery.count()
-    pubshops = []
-    for i in random.sample(range(0, numpubshops), 12):
-        pubshops.append(pubshopsquery[i])
-
-    # Discounted Product
-    discounted_product = Product.objects\
-        .get_one_most_discount_precenetage_available_product_random()
-
-    # shop 
-    most_sale_shops = Shop.objects.most_last_week_sale_shops()
-
-    # amazing products
-    amazing_products = AmazingProduct.objects.get_amazing_products()
-
     context = {
-        'This_User_Profile':this_profile,
-        'This_User_Inverntory': this_inverntory,
         'Options': options,
         'MenuList':navbar,                          
-        'Products' : pubproduct,
-        'Productsold':pubproductold,
-        'Sliders':pubsliders,
-        'Categories':categories,
-        'ButtomAdvertisings':pubbuttomadvsliders,
-        'CenterAdvertisings':pubcenteradvsliders,
-        'Shops':pubshops,
-        'DisProduct':discounted_product,
-        'AllDisProduct':dis_product,
-        'MostSaleShop':most_sale_shops,
-        'AmazingProducts':amazing_products,
     }
-
-    # add console.log feature to tell about coming context from back to UI for UI team (only works if we are in debug mode)
-    if settings.DEBUG:
-        full_info = []
-        for key, value in context.items():
-            item_info = [key, value]
-            forbiden_chars = ''''<>[]'''
-            item_info_str = str(item_info)
-            for char in forbiden_chars:
-                item_info_str = item_info_str.replace(char,"")
-            full_info.append(item_info_str)
-        
-        context['context_in_list'] = full_info
-        return render(request, 'nakhll_market/pages/index.html', context)
     
     return render(request, 'nakhll_market/pages/index.html', context)
 
