@@ -67,7 +67,6 @@ INSTALLED_APPS = [
     'imagekit',
     'compressor',
     'mathfilters',
-    'instagram',
     'captcha',
     'django_prometheus',
 ]
