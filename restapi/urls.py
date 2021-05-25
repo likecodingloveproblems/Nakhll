@@ -106,8 +106,6 @@ urlpatterns = [
     path('v1/delete-product-attribute', views.delete_product_attribute, name='delete_product_attribute'),
     path('v1/delete-product-price-attribute', views.delete_product_price_attribute, name='delete_product_price_attribute'),
 
-    # Get First User Shop View Chart
-    url(r'^v1/get-chart/$', views.get_chart , name='get_chart'),
     # Get User Message Count
     url(r'^v1/get-user-message-count/$', views.get_user_message_count , name='get-user-message-count'),
     # Get All User Shops Orders
@@ -178,8 +176,6 @@ urlpatterns = [
     # Get Shop`s Submarkets Api <--------->
     path('get/shop/submarkets/', web_views.get_shop_submarkets, name='get_shop_submarkets'),
     # Analyze Api------------------------------------------------------------------------------------------------------------
-    # # check the seller interaction Api <--------->
-    # path('get/check-the-seller-interaction/', analyzeview.check_the_seller_interaction, name = 'check_the_seller_interaction'),
     # # get factor analyze Api <--------->
     # path('get/factor-analyze/', analyzeview.get_factor_analyze, name = 'get_factor_analyze'),
     # # get top product Api <--------->

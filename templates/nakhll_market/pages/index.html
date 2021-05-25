@@ -15,26 +15,6 @@
 <link rel="stylesheet" href="../../../../static/css/mainCard.css">
 {% analytical_head_bottom %}</head>
 <body>{% analytical_body_top %}
-    
-{% comment %} <script>
-
-    setTimeout(function(){
-        $(".loading-index").remove();
-    }, 1600);
-
-</script>
-
-
-<div class="loading-index">
-    <div class="loadingpage">
-        <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
-        <p>
-            در حال بارگذاری ...
-        </p>
-    </div>
-</div> {% endcomment %}
-
-
 
 {% block headertag %}
     {% include "nakhll_market/parents/new-headertag-section.html" %}
@@ -99,12 +79,8 @@
 <!-- --------------------------------slider-prod-cat----------------------------- -->
 <div class="slider-prod-cat ">
     <div class="container-fluid">        
-        <!-- <h4><span>دسته بندی محصولات</span></h4> -->
         <div class="postslidebt">
             <section id="CategoryList" class="autoplay slider sliderboxLanding">
-                
-                
-
             </section>
         </div>
     </div>
@@ -117,7 +93,6 @@
                 <h4 class="title-box-vendor-story title-borderbt">
                     حجره ها
                 </h4>
-                
             </div>
         </div>
         <div class="row">
@@ -127,8 +102,6 @@
                     <div class="slider-full-seller">
                         <div class="postslidebt">
                             <section id="randomShops" class="autoplay slider sliderfullsellerLanding">
-
-                                
                             </section>
                             <div class="clearfix"></div>
                         </div>
@@ -138,51 +111,33 @@
         </div>
     </div>
 </div>
-
-
 <!-- -------------------------------banner------------------------------ -->
-
 <section id="two-bannerhome">
     <div class="container">
         <div id="BetweenBanner" class="row">
-        
-         
-
         </div>
     </div>
 </section>
-
-<!-- -------------------------------slider-takhfifat-prod----------------------------- -->
-
-
-    
+<!-- -------------------------------slider-takhfifat-prod----------------------------- -->    
 <!-- -------------------------------three-box-slider----------------------------- -->
-
 <section id="three-box-slider">
     <div class="container">
         <div class="row">
 
             <div class="col-xl-3 col-lg-3 col-md-4 col-sm-12 col-12 one-slider-col">
                 <div id="mostDisProLanding" class="oneslide">
-
-                    
                 </div>
             </div>
-
             <div class="col-xl-9 col-lg-9 col-md-8 col-sm-12 col-12 slider-hialf-sec">
                 <div class="slider-full-width">
                 <div style="display: flex;flex: 1;justify-content: space-between;">
                  <h2 style="font-size:1.2rem"><a href="#"></a>جدید ترین محصولات</h2>
                  <h3 style="font-size:1.1rem"><a href="/product/all/">نمایش همه محصولات</a></h3>
                 </div>
-                   
                     <div class="clearfix"></div>
                     <div class="slider-full-cat slider-half">
                         <div class="postslidebt">
                             <section id="lastProduct" class="autoplay slider sliderhalfLanding">
-
-                               
-
                             </section>
                             <div class="clearfix"></div>
                         </div>
@@ -195,7 +150,6 @@
 </section>
 <!-- -------------------------شگفتانه-------------------------------------- -->
 <div id="AmazingProBanner">
-
 <div class="c-swiper-specials--incredible ">
     <div class="d-md-none" style="color:aliceblue ; font-weight:bold ; margin-right:60px ; font-size : 25px ; margin-top :10px">تخفیف ویژه نخل</div>
     <section class="icontainer">
@@ -213,32 +167,6 @@
         <div class="swiper--specials">
             <div id="sp-slider"  class="swiper-container">
                 <div id="ConsectorSlideBanner" class="product-box swiper-wrapper" >
-
-
-                    {% comment %} {% for product in AmazingProducts %}
-                        <div class="product-item swiper-slide">
-                            <a href="{{product.product.get_url}}"><img src="{{product.product.get_image}}" alt="{{product.product.get_image_alt}}"></a>
-                            <a class="title" href="{{product.product.get_url}}">{{product.product.Title}}</a>
-                            <div class="inc-product-price">
-
-                                {% if product.product.OldPrice %}
-                                <div class="del-product-price">
-                                    <del>{{product.product.OldPrice}}</del>
-                                    <div class="c-price__discount-oval"><span>{{product.product.get_discounted}}٪</span></div>
-
-                                </div>
-                                <div style="display:flex ; justify-content : flex-start ; align-items : center ; margin-top : 20px">
-                                    <span class="price">{{product.product.Price}} </span>تومان
-
-                                </div>
-
-                                {% else %}
-                                    <span class="price">{{product.product.Price}} </span>تومان
-                                {% endif %}
-                            </div>
-
-                        </div><!--item-->
-                    {% endfor %} {% endcomment %}
             </div>
             </div>
     </section>
@@ -292,23 +220,6 @@
                             <div class="slider-full-seller slider-full-cat">
                                 <div class="postslidebt">
                                     <section id="LastCreatedDiscounted" class="autoplay slider sliderfullLanding">
-
-                                {% comment %} {% for item in AllDisProduct %}
-                                    <div class="boxslider-slick">
-                                        <a href="/product/{{item.FK_Shop.Slug}}/{{item.Slug}}/">
-                                            <img src="{{item.Image_thumbnail_url}}" alt="{{item.Title}}" width="170px" height="170px">
-                                            <div class="title-off-slider">
-                                                <h3 style="font-size:1.1rem" class="titbox longtitle">{{item.Title}}</h3>
-                                            </div>
-                                            {% if item.Status != '4' %}                              
-                                                <span class="off-slider-darsad"> {{ item.get_discounted }}% تخفيف </span>
-                                                <div class="single-off-slide-price"><span class="numbersprice price-root">{{item.Price}}</span><span class="numbersprice off-price">{{item.OldPrice}}</span> ریال</div>
-                                            {% else %}
-                                                <span class="empty">ناموجود</span>
-                                            {% endif %}
-                                        </a>
-                                    </div>
-                                {% endfor %} {% endcomment %}
                             </section>
                             <div class="clearfix"></div>
                         </div>
@@ -377,16 +288,7 @@
                     `) 
                 $("#AmazingProBanner").show();
             }
-            if(DataAmazingBanner>2){
-                // Set the date we're counting down to
-        
-                var Dates = [];
-                {% for product in AmazingProducts %}
-                    Dates.push("{{product.end_date|safe}}")
-                {% endfor %}
-                var countDownDate = new Date("{{AmazingProducts.first.end_date|safe}}").getTime();
-                
-                
+            if(DataAmazingBanner>2){                
                 // Update the count down every 1 second
                 var x = setInterval(function() {
                 
@@ -557,11 +459,7 @@
                 infinite: true,
                 slidesToShow: 7,
                 slidesToScroll: 1,
-               
-                
-                // prevArrow: '<img src="http://uupload.ir/files/5wwj_left-btn.png" />',
-                // nextArrow: '<img src="http://uupload.ir/files/g3zl_right-btn_thumb.png" />',
-                responsive: [{
+                    responsive: [{
                     breakpoint: 1025,
                     settings: {
                         slidesToShow: 5,
@@ -580,16 +478,6 @@
             });
         }
       }) 
-
-
-
-
-
-     
-                    
-      
-    
-
     $.ajax({
        type:'GET',
        url:"/api/v1/landing/last-created-products/",
@@ -617,8 +505,6 @@
                 slidesToScroll: 1,
                 
                 autoplaySpeed: 3000,
-                // prevArrow: '<img src="http://uupload.ir/files/5wwj_left-btn.png" />',
-                // nextArrow: '<img src="http://uupload.ir/files/g3zl_right-btn_thumb.png" />',
                 responsive: [{
                     breakpoint: 769,
                     settings: {
@@ -675,7 +561,7 @@
 
 
                     <img src="`+dataMostDisPro[0].Image_thumbnail_url+`" alt="عکس تخفیفات ویژه" width="175px" height="175px">
-                    <a href="{{DisProduct.get_url}}">
+                    <a href="`+dataMostDisPro[0].get_url+`">
                     <h2 style="font-size: 1.1rem" class="longtitle">`+dataMostDisPro[0].Title+`</h2>
                     </a>
                     <span class="strikeprice numbersprice takhfif">`+dataMostDisPro[0].OldPrice+` ریال</span>
@@ -684,14 +570,6 @@
             
             
             `)
-
-
-
-
-
-           
-
-
        }
 
     })
@@ -731,11 +609,7 @@
                 infinite: true,
                 slidesToShow: 6,
                 slidesToScroll: 1,
-                
-                
-                // prevArrow: '<img src="http://uupload.ir/files/5wwj_left-btn.png" />',
-                // nextArrow: '<img src="http://uupload.ir/files/g3zl_right-btn_thumb.png" />',
-                responsive: [{
+                    responsive: [{
                     breakpoint: 1025,
                     settings: {
                         slidesToShow: 5,
@@ -774,19 +648,12 @@
                                         </a>
                                     </div>
                 `)
-
-
         }
-        
         $(".sliderfullP").slick({
                 infinite: true,
                 slidesToShow: 5,
                 slidesToScroll: 1,
-                
-                
-                // prevArrow: '<img src="http://uupload.ir/files/5wwj_left-btn.png" />',
-                // nextArrow: '<img src="http://uupload.ir/files/g3zl_right-btn_thumb.png" />',
-                responsive: [{
+                    responsive: [{
                     breakpoint: 1025,
                     settings: {
                         slidesToShow: 5,
@@ -803,29 +670,8 @@
                     }
                 }]
             });
-        
-        
         }
-        
     })
-  
-   
-
-
-
-
-   
-    {% comment %} Promise.all([
-    categories_ajax.promise(),
-    main_banner_ajax.promise(),
-    random_shops_ajax.promise(),
-    products_ajax.promise(),
-    discounted_products_ajax.promise(),
-    ]).then((data)=>{
-        slick_rows()
-    })
-   {% endcomment %}
-  
   </script>
 
 

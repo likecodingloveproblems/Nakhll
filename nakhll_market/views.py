@@ -66,11 +66,10 @@ from .models import Slider
 from .models import Message
 from .models import Option_Meta
 from .models import Pages
-from .models import Newsletters
 from .models import Alert
 from .models import Field
 from .models import Note
-from .models import PageViews, User_View, ShopViews, Date_View
+from .models import PageViews, User_View, Date_View
 from sms.models import SMS
 from my_auth.models import UserphoneValid
 from Payment.models import Wallet, Factor ,FactorPost, Coupon
@@ -162,162 +161,15 @@ def CheckView(request, obj_slug, obj_type):
     return view_count
 
 
-# Get Shop Number Of Visits
-def Get_Shop_Visits_Count(request, obj_id):
-    try:
-        # Get Page View
-        if ShopViews.objects.filter(FK_Shop_id = obj_id).exists():
-            this_shop = ShopViews.objects.get(FK_Shop_id = obj_id)
-            # Get This IP Info
-            if this_shop.FK_Viewer.filter(User_Ip = visitor_ip_address(request)).exists():
-                # Get This IP 
-                this_ip = this_shop.FK_Viewer.get(User_Ip = visitor_ip_address(request))
-                # Check Date
-                date_format = "%Y-%m-%d"
-                a = datetime.strptime(str(date.today()), date_format)
-                b = datetime.strptime(str(this_ip.DateTime.date()), date_format)
-                delta = a - b
-                # If Delta > 24H
-                if delta.days >= 1:
-                    this_shop.Total_View = str(int(this_shop.Total_View) + 1)
-                    this_ip.DateTime = datetime.now()
-                    this_ip.Total_View = str(int(this_ip.Total_View) + 1)
-                    this_ip.save()
-                    this_shop.save()
-                    # Set Date
-                    if this_shop.FK_Date.filter(Date = date.today()).exists():
-                        this_date = this_shop.FK_Date.get(Date = date.today())
-                        this_date.Count = str(int(this_date.Count) + 1)
-                        this_date.save()
-                    else:
-                        this_date = Date_View.objects.create()
-                        this_shop.FK_Date.add(this_date)
-                    view_count = this_shop.Total_View
-                else:
-                    this_ip.Total_View = str(int(this_ip.Total_View) + 1)
-                    this_ip.save()
-                    # Set Date
-                    if not this_shop.FK_Date.filter(Date = date.today()).exists():
-                        this_date = Date_View.objects.create()
-                        this_shop.FK_Date.add(this_date)
-                    view_count = this_shop.Total_View  
-            else:
-                this_shop.FK_Viewer.add(User_View.objects.create(User_Ip = visitor_ip_address(request)))
-                # Set Date
-                if this_shop.FK_Date.filter(Date = date.today()).exists():
-                    this_date = this_shop.FK_Date.get(Date = date.today())
-                    this_date.Count = str(int(this_date.Count) + 1)
-                    this_date.save()
-                else:
-                    this_date = Date_View.objects.create()
-                    this_shop.FK_Date.add(this_date)
-
-                this_shop.Total_View = str(int(this_shop.Total_View) + 1)
-                this_shop.save()
-                view_count = this_shop.Total_View
-        else:
-            this_shop = ShopViews.objects.create(FK_Shop_id = obj_id)
-            this_shop.FK_Viewer.add(User_View.objects.create(User_Ip = visitor_ip_address(request)))
-            # Set Date
-            if this_shop.FK_Date.filter(Date = date.today()).exists():
-                this_date = this_shop.FK_Date.get(Date = date.today())
-                this_date.Count = str(int(this_date.Count) + 1)
-                this_date.save()
-            else:
-                this_date = Date_View.objects.create()
-                this_shop.FK_Date.add(this_date)
-            view_count = this_shop.Total_View
-        return view_count
-    except:
-        return 'عدم دسترسی'
-        
-
-
 def index(request):
-    if request.user.is_authenticated:
-        this_profile = get_object_or_404(Profile, FK_User = request.user)
-        this_inverntory = get_object_or_404(Wallet, FK_User = request.user).Inverntory
-    else:
-        this_profile = None
-        this_inverntory = None
     # Get Menu Item
     options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
     # Get Nav Bar Menu Item
     navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
-    # ------------------------------------------------------------------------
-    # Get All Products
-    pubproduct = Product.objects.filter(Publish = True, Available = True, OldPrice = '0', Status__in = ['1', '2', '3']).order_by('-DateCreate')[:12]
-    pubproductoldquery = Product.objects.filter(Publish = True, Available = True, OldPrice = '0', Status__in = ['1', '2', '3'])
-    numpubproductold = pubproductoldquery.count()
-    pubproductold = []
-    for i in random.sample(range(0,numpubproductold), 16):
-        pubproductold.append(pubproductoldquery[i])
-    # Get All Discounted Product
-    dis_product = Product.objects.filter(Publish = True, Available = True, Status__in = ['1', '2', '3']).exclude(OldPrice='0').order_by('-DateCreate')[:16]
-    # Get Index Sliders
-    pubsliders = Slider.objects.filter(Location = 1, Publish = True)
-    # Get All Categories
-    categories = Category.objects\
-        .filter(Publish = True, Available = True, FK_SubCategory = None)\
-        .annotate(product_count = Count('ProductCategory'))\
-        .filter(product_count__gt=5)
-    categories_id = list(categories\
-        .values_list('id', flat=True))
-    categories = categories\
-        .filter(pk__in=random.sample(categories_id, 12))
-    # Get All Index Advertising - Buttom
-    pubbuttomadvsliders = Slider.objects.filter(Location = 2, Publish = True)
-    # Get All Index Advertising - Center
-    pubcenteradvsliders = Slider.objects.filter(Location = 3, Publish = True)
-    # Get All Shops
-    pubshopsquery = Shop.objects.filter(Publish = True, Available = True)\
-        .annotate(product_count = Count('ShopProduct')).filter(product_count__gt=1)
-    numpubshops = pubshopsquery.count()
-    pubshops = []
-    for i in random.sample(range(0, numpubshops), 12):
-        pubshops.append(pubshopsquery[i])
-
-    # Discounted Product
-    discounted_product = Product.objects\
-        .get_one_most_discount_precenetage_available_product_random()
-
-    # shop 
-    most_sale_shops = Shop.objects.most_last_week_sale_shops()
-
-    # amazing products
-    amazing_products = AmazingProduct.objects.get_amazing_products()
-
     context = {
-        'This_User_Profile':this_profile,
-        'This_User_Inverntory': this_inverntory,
         'Options': options,
         'MenuList':navbar,                          
-        'Products' : pubproduct,
-        'Productsold':pubproductold,
-        'Sliders':pubsliders,
-        'Categories':categories,
-        'ButtomAdvertisings':pubbuttomadvsliders,
-        'CenterAdvertisings':pubcenteradvsliders,
-        'Shops':pubshops,
-        'DisProduct':discounted_product,
-        'AllDisProduct':dis_product,
-        'MostSaleShop':most_sale_shops,
-        'AmazingProducts':amazing_products,
     }
-
-    # add console.log feature to tell about coming context from back to UI for UI team (only works if we are in debug mode)
-    if settings.DEBUG:
-        full_info = []
-        for key, value in context.items():
-            item_info = [key, value]
-            forbiden_chars = ''''<>[]'''
-            item_info_str = str(item_info)
-            for char in forbiden_chars:
-                item_info_str = item_info_str.replace(char,"")
-            full_info.append(item_info_str)
-        
-        context['context_in_list'] = full_info
-        return render(request, 'nakhll_market/pages/index.html', context)
     
     return render(request, 'nakhll_market/pages/index.html', context)
 
@@ -336,20 +188,11 @@ class get_shop_other_info:
             this_shop_subMarket = None
             # Get Shop First SubMarket Market
             this_shop_market = None
-        # ---------------------------------------------------------------------------------
-        # Total Sell
-        # total_sell = 0
-        # # Get All Factor Item Is Product In AllProduct List
-        # for item in FactorPost.objects.filter(FK_Product__in = shop.get_all_products(), ProductStatus__in = ['2', '3']):
-        #     total_sell += item.ProductCount
-        # ----------------------------------------------------------------------------------
-        shop_view = Get_Shop_Visits_Count(request, shop.ID)
 
         # Set Result
         result = {
             "this_shop_subMarket": this_shop_subMarket,
             "this_shop_market":this_shop_market,
-            "view":shop_view,
         }
         return result
 
@@ -454,11 +297,6 @@ def ShopsDetail(request, shop_slug, msg = None):
     this_shop_publish_comments = shop.get_comments()
     # get other info
     other_info = get_shop_other_info().run(request, shop)
-    # Get Total Sell
-    # sell_total = other_info["total_sell"]
-    # Get Page View
-    # view_count = other_info["view"]
-    # -------------------------------------------------------------------
     this_shop_market = other_info["this_shop_market"]
     this_shop_subMarket = other_info["this_shop_subMarket"]
     # -------------------------------------------------------------------

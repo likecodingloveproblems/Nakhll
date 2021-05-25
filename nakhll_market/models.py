@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db.models.aggregates import Sum
+from django.db.models.deletion import SET_DEFAULT
 from my_auth.models import ProfileManager
 from django.db import models
 from django.db.models import F, Q
@@ -214,6 +215,20 @@ class SubMarketBanner (models.Model):
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
+class CategoryManager(models.Manager):
+
+    def get_category(self):
+        categories = Category.objects\
+            .filter(Publish = True, Available = True, FK_SubCategory = None)\
+            .annotate(product_count = Count('ProductCategory'))\
+            .filter(product_count__gt=5)
+        categories_id = list(categories\
+            .values_list('id', flat=True))
+        categories = categories\
+            .filter(pk__in=random.sample(categories_id, 12))
+        return categories
+ 
+    
 # Category (دسته بندی) Model 
 class Category(models.Model):
     Title=models.CharField(verbose_name='عنوان دسته بندی', max_length=150, unique=True, db_index=True)
@@ -391,6 +406,51 @@ class ShopManager(models.Manager):
             .annotate(number_sale=Sum('ShopProduct__Factor_Product__ProductCount'))\
             .order_by('-number_sale')[:5]
 
+    def get_random_shops(self):
+        # Shop.objects\
+        # .filter(Publish = True, Available = True)\
+        # .annotate(product_count = Count('ShopProduct'))\
+        # .filter(product_count__gt=1)\
+        # .order_by('?')[:12]
+        sql = '''
+            SELECT 
+                "nakhll_market_shop"."ID",
+                "nakhll_market_shop"."FK_ShopManager_id",
+                "nakhll_market_shop"."Title",
+                "nakhll_market_shop"."Slug",
+                "nakhll_market_shop"."Description",
+                "nakhll_market_shop"."Image",
+                "nakhll_market_shop"."NewImage",
+                "nakhll_market_shop"."ColorCode",
+                "nakhll_market_shop"."Bio",
+                "nakhll_market_shop"."State",
+                "nakhll_market_shop"."BigCity",
+                "nakhll_market_shop"."City",
+                "nakhll_market_shop"."Location",
+                "nakhll_market_shop"."Point",
+                "nakhll_market_shop"."Holidays",
+                "nakhll_market_shop"."DateCreate",
+                "nakhll_market_shop"."DateUpdate",
+                "nakhll_market_shop"."Edite",
+                "nakhll_market_shop"."Available",
+                "nakhll_market_shop"."Publish",
+                "nakhll_market_shop"."FK_User_id",
+                "nakhll_market_shop"."CanselCount",
+                "nakhll_market_shop"."CanselFirstDate",
+                "nakhll_market_shop"."LimitCancellationDate",
+                "nakhll_market_shop"."documents",
+                COUNT("nakhll_market_product"."ID") AS "product_count" 
+            FROM "nakhll_market_shop" 
+            LEFT OUTER JOIN 
+                "nakhll_market_product" ON ("nakhll_market_shop"."ID" = "nakhll_market_product"."FK_Shop_id") 
+            WHERE ("nakhll_market_shop"."Available" AND "nakhll_market_shop"."Publish") 
+            GROUP BY "nakhll_market_shop"."ID" HAVING COUNT("nakhll_market_product"."ID") > 1  
+            ORDER BY RANDOM() 
+            LIMIT 12
+        '''
+        return Shop.objects.raw(sql)
+
+
 
 # Shop (حجره) Model
 class Shop(models.Model):
@@ -449,14 +509,30 @@ class Shop(models.Model):
         blank=True,
         )
 
+    
+    @property
+    def slug(self):
+        return self.Slug
+
+    @property
+    def title(self):
+        return self.Title
+
+    @property
+    def state(self):
+        return self.State
+
+    
     def __str__(self):
         return "{}".format(self.Title)
 
+    @property
     def get_absolute_url(self):
         return reverse("nakhll_market:ShopsDetail", kwargs={
             'shop_slug': self.Slug
         })
 
+    @property
     def Image_thumbnail_url(self):
         try:
             i = self.Image_thumbnail.url
@@ -504,204 +580,6 @@ class Shop(models.Model):
 
     def get_shop_manager_full_name(self):
         return '{} {}'.format(self.FK_ShopManager.first_name, self.FK_ShopManager.last_name)
-
-    def get_view_in_seven_day(self):
-        # View In Seven Day
-        day_list = []
-        # Get Shop View
-        this_shop = get_object_or_404(ShopViews, FK_Shop = self.ID)
-        # Get To Day
-        to_day = datetime.date.today()
-        # Get View When Index = 0
-        try:
-            day_list.append(this_shop.FK_Date.get(Date = to_day).Count)
-        except:
-            day_list.append('0')
-        # Get View When 1 < Index < 7
-        for i in range(1, 7):
-            try:
-                day_past = datetime.timedelta(days = int(i))
-                this_date = to_day - day_past
-                day_list.append(this_shop.FK_Date.get(Date = this_date).Count)
-            except:
-                day_list.append('0')
-        return day_list
-
-
-    def get_view_in_seven_week(self):
-        # View In Seven Day
-        week_list = []
-        # Sum View In This Week
-        sum_view_in_this_week = 0
-        # Get Shop View
-        this_shop = get_object_or_404(ShopViews, FK_Shop = self.ID)
-        # Get To Day
-        to_day = datetime.date.today()
-        # Get View When Index = 0
-        first_start_day_in_week = None
-        first_end_day_in_week = None
-        try:
-            # Get Day In Week
-            if to_day.weekday() == 0:
-                # Set Start Week
-                day_past = datetime.timedelta(days = 2)
-                first_start_day_in_week = to_day - day_past
-                # Set End Week
-                day_past = datetime.timedelta(days = 6)
-                first_end_day_in_week = first_start_day_in_week + day_past
-                # Get View In Range
-                for item in this_shop.FK_Date.filter(Date__range = [first_start_day_in_week, first_end_day_in_week]):
-                    sum_view_in_this_week += int(item.Count)
-                week_list.append(str(sum_view_in_this_week))
-            elif to_day.weekday() == 1:
-                # Set Start Week
-                day_past = datetime.timedelta(days = 3)
-                first_start_day_in_week = to_day - day_past
-                # Set End Week
-                day_past = datetime.timedelta(days = 6)
-                first_end_day_in_week = first_start_day_in_week + day_past
-                # Get View In Range
-                for item in this_shop.FK_Date.filter(Date__range = [first_start_day_in_week, first_end_day_in_week]):
-                    sum_view_in_this_week += int(item.Count)
-                week_list.append(str(sum_view_in_this_week))
-            elif to_day.weekday() == 2:
-                # Set Start Week
-                day_past = datetime.timedelta(days = 4)
-                first_start_day_in_week = to_day - day_past
-                # Set End Week
-                day_past = datetime.timedelta(days = 6)
-                first_end_day_in_week = first_start_day_in_week + day_past
-                # Get View In Range
-                for item in this_shop.FK_Date.filter(Date__range = [first_start_day_in_week, first_end_day_in_week]):
-                    sum_view_in_this_week += int(item.Count)
-                week_list.append(str(sum_view_in_this_week))
-            elif to_day.weekday() == 3:
-                # Set Start Week
-                day_past = datetime.timedelta(days = 5)
-                first_start_day_in_week = to_day - day_past
-                # Set End Week
-                day_past = datetime.timedelta(days = 6)
-                first_end_day_in_week = first_start_day_in_week + day_past
-                # Get View In Range
-                for item in this_shop.FK_Date.filter(Date__range = [first_start_day_in_week, first_end_day_in_week]):
-                    sum_view_in_this_week += int(item.Count)
-                week_list.append(str(sum_view_in_this_week))
-            elif to_day.weekday() == 4:
-                # Set Start Week
-                day_past = datetime.timedelta(days = 6)
-                first_start_day_in_week = to_day - day_past
-                # Set End Week
-                day_past = datetime.timedelta(days = 6)
-                first_end_day_in_week = first_start_day_in_week + day_past
-                # Get View In Range
-                for item in this_shop.FK_Date.filter(Date__range = [first_start_day_in_week, first_end_day_in_week]):
-                    sum_view_in_this_week += int(item.Count)
-                week_list.append(str(sum_view_in_this_week))
-            elif to_day.weekday() == 5:
-                # Set Start Week
-                first_start_day_in_week = to_day
-                # Set End Week
-                day_past = datetime.timedelta(days = 6)
-                first_end_day_in_week = first_start_day_in_week + day_past
-                # Get View In Range
-                for item in this_shop.FK_Date.filter(Date__range = [first_start_day_in_week, first_end_day_in_week]):
-                    sum_view_in_this_week += int(item.Count)
-                week_list.append(str(sum_view_in_this_week))
-            elif to_day.weekday() == 6:
-                # Set Start Week
-                day_past = datetime.timedelta(days = 1)
-                first_start_day_in_week = to_day - day_past
-                # Set End Week
-                day_past = datetime.timedelta(days = 6)
-                first_end_day_in_week = first_start_day_in_week + day_past
-                # Get View In Range
-                for item in this_shop.FK_Date.filter(Date__range = [first_start_day_in_week, first_end_day_in_week]):
-                    sum_view_in_this_week += int(item.Count)
-                week_list.append(str(sum_view_in_this_week))
-        except:
-            week_list.append('0')
-        # Get View When 0 <= Index < 7
-        for i in range(1, 7):
-            # Set Zero
-            sum_view_in_this_week = 0
-            start_day_in_week = None
-            end_day_in_week = None
-            try:
-                # Set Start And End Week
-                day_past = datetime.timedelta(days = (i * 7))
-                start_day_in_week = first_start_day_in_week - day_past
-                end_day_in_week = first_end_day_in_week - day_past
-                # Get View In Range
-                for item in this_shop.FK_Date.filter(Date__range = [start_day_in_week, end_day_in_week]):
-                    sum_view_in_this_week += int(item.Count)
-                week_list.append(str(sum_view_in_this_week))
-            except:
-                week_list.append('0')
-        return week_list
-
-
-    def get_view_in_seven_month(self):
-        # View In Seven Day
-        month_list = []
-        # Sum View In This Month
-        sum_view_in_this_month = 0
-        # Set All Month End Day
-        month_end_day = {
-            "January": 31,
-            "February": 29,
-            "March": 31,
-            "April": 30,
-            "May": 31,
-            "June": 30,
-            "July": 31,
-            "August": 31,
-            "September": 30,
-            "October": 31,
-            "November": 30,
-            "December": 31,
-        }
-        # Get Shop View
-        this_shop = get_object_or_404(ShopViews, FK_Shop = self.ID)
-        # Get To Day
-        to_day = datetime.date.today()
-        # Get View When Index = 0
-        try:
-            first_start_day_in_month = "%d-%d-%d" % (to_day.year, to_day.month, 1)
-            first_end_day_in_month = "%d-%d-%d" % (to_day.year, to_day.month, month_end_day[to_day.strftime("%B")])
-            # Get View In Range
-            for item in this_shop.FK_Date.filter(Date__range = [first_start_day_in_month, first_end_day_in_month]):
-                sum_view_in_this_month += int(item.Count)
-            month_list.append(str(sum_view_in_this_month))
-        except:
-            month_list.append('0')
-        # Get View When 0 <= Index < 7
-        for i in range(1, 7):
-            # Set Zero
-            sum_view_in_this_month = 0
-            start_day_in_month = None
-            end_day_in_month = None
-            try:
-                # Set Start And End Month
-                if to_day.month - i == 0:
-                    this_month = 12
-                    this_year = to_day.year - 1
-                elif to_day.month - i < 0:
-                    this_month = 12 - ((to_day.month - i) * -1)
-                    this_year = to_day.year - 1
-                else:
-                    this_month = to_day.month - i
-                    this_year = to_day.year
-                
-                start_day_in_month = "%d-%d-%d" % (this_year, this_month, 1)
-                this_start = datetime.datetime.strptime(start_day_in_month, '%Y-%m-%d')
-                end_day_in_month = "%d-%d-%d" % (this_year, this_month, month_end_day[this_start.strftime("%B")])
-                # Get View In Range
-                for item in this_shop.FK_Date.filter(Date__range = [start_day_in_month, end_day_in_month]):
-                    sum_view_in_this_month += int(item.Count)
-                month_list.append(str(sum_view_in_this_month))
-            except:
-                month_list.append('0')
-        return month_list
 
     class Meta:
         ordering = ('DateCreate','Title',)  
@@ -835,6 +713,18 @@ class Attribute(models.Model):
     Publish=models.BooleanField(verbose_name='وضعیت انتشار ویژگی', choices=PUBLISH_STATUS, default=False)
     FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='تایید کننده', related_name='Attribute_Accept', blank=True, null=True) 
 
+    @property
+    def title(self):
+        return self.Title
+
+    @property
+    def unit(self):
+        return self.Unit
+
+
+
+
+
     # Output Customization Based On Title
     def __str__(self):
         if self.Unit != '-':
@@ -866,6 +756,48 @@ class ProductManager(models.Manager):
         random_id = random.randint(0, int(result.count()/10))
         return result[random_id]
 
+    def get_last_created_products(self):
+        return Product.objects\
+            .filter(Publish = True, Available = True, OldPrice = '0', Status__in = ['1', '2', '3'])\
+                .order_by('-DateCreate')[:12]
+
+    def get_last_created_discounted_products(self):
+        return Product.objects\
+            .filter(Publish = True, Available = True, Status__in = ['1', '2', '3'])\
+            .exclude(OldPrice='0')\
+            .order_by('-DateCreate')[:16]
+
+    def get_random_products(self):
+        return Product.objects\
+            .filter(
+                Publish = True,
+                Available = True,
+                OldPrice = '0',
+                Status__in = ['1', '2', '3']
+                )\
+            .order_by('?')[:16]
+
+    def get_most_discount_precentage_products(self):
+        return Product.objects\
+            .get_most_discount_precentage_available_product()\
+            .order_by('?')[:15]
+
+    def get_product_details(self):
+        queryset = Product.objects.all()
+        return queryset
+
+    def get_products_in_same_factor(self):
+        id = self.kwargs.get('ID')
+        try:
+            product = Product.objects.get(ID=id)
+            return Product.objects\
+                .filter(Factor_Product__Factor_Products__FK_FactorPost__FK_Product=product)\
+                .exclude(ID = product.ID)\
+                .distinct()
+        except:
+            return None
+
+        
 # Product (محصول) Model
 class Product (models.Model):
     objects = ProductManager()
@@ -938,6 +870,82 @@ class Product (models.Model):
     FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='تایید کننده', related_name='Product_Accept', blank=True, null=True) 
     FK_Tag=models.ManyToManyField(Tag, verbose_name='تگ ها', related_name='Product_Tag', blank=True)
 
+    @property
+    def image(self):
+        return self.Image
+
+    @property
+    def description(self):
+        return self.Description
+
+    @property
+    def available(self):
+        return self.Available
+
+    @property
+    def publish(self):
+        return self.Publish
+
+    @property
+    def old_price(self):
+        return self.OldPrice
+
+    @property
+    def price(self):
+        return self.Price
+
+    @property
+    def slug(self):
+        return self.Slug
+
+    @property
+    def title(self):
+        return self.Title
+
+    @property
+    def status(self):
+        return self.Status
+
+    @property
+    def id(self):
+        return self.ID
+    
+    @property
+    def net_weghit(self):
+        return self.Net_Weight
+
+    @property
+    def weight_with_packing(self):
+        return self.Weight_With_Packing
+
+    @property
+    def length_with_packing(self):
+        return self.Length_With_Packaging
+
+    @property
+    def width_with_packing(self):
+        return self.Width_With_Packaging
+
+    @property 
+    def height_with_packaging(self):
+        return self.Height_With_Packaging
+
+    @property
+    def story(self):
+        return self.Story
+
+    @property
+    def product_status(self):
+        return self.PRODUCT_STATUS
+
+    @property
+    def post_range(self):
+        return self.FK_PostRange
+
+    @property
+    def exception_post_range(self):
+        return self.FK_ExceptionPostRange
+
     def __str__(self):
         return "{}".format(self.Title)
 
@@ -975,6 +983,7 @@ class Product (models.Model):
             'ID': self.ID
         })
 
+    @property
     def get_discounted(self):
         # Get Discounted
         try:
@@ -1055,7 +1064,7 @@ class Product (models.Model):
     def get_image_alt(self):
         return self.Title
         
-
+    @property
     def Image_thumbnail_url(self):
         try:
             url = self.Image_thumbnail.url
@@ -1073,6 +1082,7 @@ class Product (models.Model):
             url ="https://nakhll.com/media/Pictures/default.jpg"
             return url
 
+    @property
     def get_url(self):
         try:
             return reverse("nakhll_market:ProductsDetail", kwargs={
@@ -1159,6 +1169,8 @@ class Product (models.Model):
         verbose_name = "محصول"
         verbose_name_plural = "محصولات"
 
+    
+
 #----------------------------------------------------------------------------------------------------------------------------------
 
 # AttrProduct (ویژگی محصولات) Model
@@ -1173,6 +1185,12 @@ class AttrProduct(models.Model):
     Available=models.BooleanField(verbose_name='وضعیت نمایش ویژگی محصول', choices=AVAILABLE_STATUS, default=False)
     DateCreate=models.DateTimeField(verbose_name='تاریخ ثبت ویژگی', auto_now_add=True)
     DtatUpdate=models.DateTimeField(verbose_name='تاریخ بروزرسانی ویژگی', auto_now=True)
+    
+    @property
+    def value(self):
+        return self.Value
+
+    
     # Output Customization Based On Title
     def __str__(self):
         return "{}".format(self.Value)
@@ -1211,6 +1229,30 @@ class AttrPrice(models.Model):
     Available=models.BooleanField(verbose_name='وضعیت نمایش ارزش ویژگی محصول', choices=AVAILABLE_STATUS, default=True)
     Publish=models.BooleanField(verbose_name='وضعیت انتشار ارزش ویژگی محصول', choices=PUBLISH_STATUS, default=True)
 
+    @property
+    def description(self):
+        return self.Description
+
+    @property
+    def value(self):
+        return self.Value
+
+    @property
+    def extra_price(self):
+        return self.ExtraPrice
+
+    @property
+    def unit(self):
+        return self.Unit
+
+    @property
+    def available(self):
+        return self.Available
+
+    @property
+    def publish(self):
+        return self.Publish
+    
     # Output Customization Based On Attribute
     def __str__(self):
         return "{}".format(self.FK_Product)
@@ -1335,6 +1377,11 @@ class ProductBanner (models.Model):
     FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='تایید کننده', related_name='Product_Banner_Accept', blank=True, null=True) 
     FK_Tag=models.ManyToManyField(Tag, verbose_name='تگ ها', related_name='Product_Banner_Tag', blank=True)
 
+    @property
+    def image(self):
+        return self.Image
+    
+    
     def Image_thumbnail_url(self):
         try:
             i = self.Image_medium.url
@@ -1413,6 +1460,29 @@ class Comment(models.Model):
     DateCreate=models.DateTimeField(verbose_name='تاریخ ثبت نظر', auto_now_add=True)
     FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='تایید کننده', related_name='Comment_Accept', blank=True, null=True) 
 
+    @property
+    def user(self):
+        return self.FK_UserAdder
+
+    @property
+    def product(self):
+        return self.FK_Product
+
+    @property
+    def description(self):
+        return self.Description
+
+    @property
+    def number_like(self):
+        return self.FK_Like.count()
+
+    @property
+    def reply(self):
+        return self.FK_Pater
+
+    @property
+    def date_create(self):
+        return self.DateCreate
 
     def get_type(self):
         if self.Type:
@@ -1760,6 +1830,13 @@ class Polling(models.Model):
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
+class SliderManager(models.Manager):
+    def get_slider(self):
+        queryset = Slider.objects.filter(Publish=True)
+        return queryset
+
+
+
 # Slider (اسلایدر) Model
 class Slider(models.Model):
     FK_Creator=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='ثبت کننده', related_name='Slider_Create', null=True) 
@@ -1791,6 +1868,31 @@ class Slider(models.Model):
     FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='تایید کننده', related_name='Slider_Accept', blank=True, null=True) 
     BannerBuilder=models.CharField(verbose_name='نام تولید کننده بنر', max_length=120, blank=True)
     BannerURL=models.URLField(verbose_name='لینک تولید کننده بنر', blank=True)
+    
+    @property
+    def url(self):
+        return self.URL
+
+    @property
+    def image(self):
+        return self.Image
+
+    @property
+    def title(self):
+        return self.Title
+
+    @property
+    def show_info(self):
+        return self.ShowInfo
+
+    @property
+    def description(self):
+        return self.Description
+    
+    
+    
+    
+    
     # Output Customization Based On Title
     def __str__(self):
         return "{}".format(self.Title)
@@ -1869,48 +1971,6 @@ class Message(models.Model):
         ordering = ('id',)
         verbose_name = "اعلان"
         verbose_name_plural = "اعلان ها"
-
-#----------------------------------------------------------------------------------------------------------------------------------
-
-# Newsletters (خبرنامه) Model
-class Newsletters(models.Model):
-    Email=models.EmailField(verbose_name='ایمیل', blank=True)
-    MobileNumber=models.CharField(verbose_name='شماره موبایل', max_length=11, blank=True)
-
-    # Output Customization Based On User
-    def __str__(self):
-        return "{} - {}".format(self.Email, self.MobileNumber)
-
-    # Ordering With DateCreate
-    class Meta:
-        ordering = ('Email',)
-        verbose_name = "خبرنامه"
-        verbose_name_plural = "خبرنامه ها"
-
-#----------------------------------------------------------------------------------------------------------------------------------
-
-# Voting (رای گیری) Model
-class Voting(models.Model):
-    VOTE_TYPE =(
-        ('0','بازارچه'),
-        ('1','راسته'),
-        ('2','حجره'),
-        ('3','محصول'),
-    )
-    VoteType=models.CharField(verbose_name='نوع', max_length=1, choices=VOTE_TYPE, default='0')
-    TypeId=models.CharField(verbose_name='شناسه', max_length=150)
-    FK_User=models.ForeignKey(User, verbose_name='کاربر', related_name='Voting_User', on_delete=models.SET_NULL, null=True)
-    Point=models.PositiveIntegerField(verbose_name='امتیاز', default=0)
-
-    # Output Customization Based On UserName (ID)
-    def __str__(self):
-       return "{}".format(self.FK_User)
-
-    # Ordering With DateCreate
-    class Meta:
-        ordering = ('id',)   
-        verbose_name = "رای گیری"
-        verbose_name_plural = "رای گیری ها "
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
@@ -2094,23 +2154,6 @@ class PageViews(models.Model):
         
 #----------------------------------------------------------------------------------------------------------------------------------
 
-# ShopViews (بازدید حجره ها) Model
-class ShopViews(models.Model):
-    FK_Shop = models.ForeignKey(Shop, on_delete = models.SET_NULL, verbose_name = 'حجره', related_name = 'Shop_Views', blank = True, null = True)
-    Total_View = models.CharField(verbose_name = 'میزان کل بازدید', max_length = 15, default = '1')
-    FK_Viewer = models.ManyToManyField(User_View, verbose_name='بازدید کنندگان', related_name='Shop_View_Users', blank = True)
-    FK_Date = models.ManyToManyField(Date_View, verbose_name='بازدید بر اساس تاریخ', related_name='Shop_Date_Views', blank = True) 
-
-    def __str__(self):
-        return "{} - {}".format(self.FK_Shop, self.Total_View)
-
-    class Meta:
-        ordering = ('id',)   
-        verbose_name = "بازدید حجره"
-        verbose_name_plural = "بازدید حجره ها"
-        
-#----------------------------------------------------------------------------------------------------------------------------------
-
 # Point (امتیاز) Model
 class UserPoint (models.Model):
     FK_User = models.ForeignKey(User, verbose_name = 'امتیاز دهنده', related_name = 'point_user', on_delete = models.SET_NULL, null = True)
@@ -2146,6 +2189,14 @@ class AmazingProduct(models.Model):
         )
     start_date = models.DateTimeField(verbose_name='تاریخ شروع')
     end_date = models.DateTimeField(verbose_name='تاریخ پایان')
+
+    @property
+    def start_date_field(self):
+        return self.start_date
+
+    @property
+    def end_date_field(self):
+        return self.end_date
 
     class Meta:
         ordering = ('id',)   

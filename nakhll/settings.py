@@ -67,7 +67,6 @@ INSTALLED_APPS = [
     'imagekit',
     'compressor',
     'mathfilters',
-    'instagram',
     'captcha',
     'django_prometheus',
 ]
@@ -109,7 +108,6 @@ ADMIN_REORDER = (
         'nakhll_market.Slider',
         'nakhll_market.Option_Meta',
         'nakhll_market.Alert',
-        'nakhll_market.Newsletters',
         'nakhll_market.AmazingProduct'
     )},
 

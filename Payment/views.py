@@ -10,7 +10,6 @@ from nakhll_market.models import (
     Product,
     Profile,
     Option_Meta,
-    Newsletters,
     AttrPrice,
     Alert,
     State,

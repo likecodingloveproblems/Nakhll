@@ -50,7 +50,6 @@ from .models import Slider
 from .models import Message
 from .models import User_Message_Status
 from .models import Option_Meta
-from .models import Newsletters 
 from .models import Alert
 from .models import Field 
 
