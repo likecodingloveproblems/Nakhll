@@ -217,7 +217,7 @@ class SubMarketBanner (models.Model):
 
 class CategoryManager(models.Manager):
 
-    def get_category(self):
+    def get_category_publush_avaliable(self):
         categories = Category.objects\
             .filter(Publish = True, Available = True, FK_SubCategory = None)\
             .annotate(product_count = Count('ProductCategory'))\
@@ -231,6 +231,7 @@ class CategoryManager(models.Manager):
     
 # Category (دسته بندی) Model 
 class Category(models.Model):
+    objects = CategoryManager
     Title=models.CharField(verbose_name='عنوان دسته بندی', max_length=150, unique=True, db_index=True)
     Description=models.TextField(verbose_name='درباره دسته بندی', blank=True)
     Image=models.ImageField(verbose_name='عکس دسته بندی', upload_to=PathAndRename('media/Pictures/Categories/'), help_text='عکس دسته بندی را اینجا وارد کنید', blank=True, null=True)
@@ -522,17 +523,24 @@ class Shop(models.Model):
     def state(self):
         return self.State
 
+    @property
+    def url(self):
+        return self.get_absolute_url
+
+    @property
+    def image_thumbnail_url(self):
+        return self.Image_thumbnail_url
+
     
     def __str__(self):
         return "{}".format(self.Title)
 
-    @property
+    
     def get_absolute_url(self):
         return reverse("nakhll_market:ShopsDetail", kwargs={
             'shop_slug': self.Slug
         })
 
-    @property
     def Image_thumbnail_url(self):
         try:
             i = self.Image_thumbnail.url
@@ -721,10 +729,7 @@ class Attribute(models.Model):
     def unit(self):
         return self.Unit
 
-
-
-
-
+        
     # Output Customization Based On Title
     def __str__(self):
         if self.Unit != '-':
@@ -781,10 +786,6 @@ class ProductManager(models.Manager):
         return Product.objects\
             .get_most_discount_precentage_available_product()\
             .order_by('?')[:15]
-
-    def get_product_details(self):
-        queryset = Product.objects.all()
-        return queryset
 
     def get_products_in_same_factor(self):
         id = self.kwargs.get('ID')
@@ -871,6 +872,10 @@ class Product (models.Model):
     FK_Tag=models.ManyToManyField(Tag, verbose_name='تگ ها', related_name='Product_Tag', blank=True)
 
     @property
+    def sub_market(self):
+        return self.FK_SubMarket
+
+    @property
     def image(self):
         return self.Image
 
@@ -946,8 +951,21 @@ class Product (models.Model):
     def exception_post_range(self):
         return self.FK_ExceptionPostRange
 
+    @property
+    def image_thumbnail_url(self):
+        return self.Image_thumbnail_url
+
+    @property
+    def url(self):
+        return self.get_url
+
+    @property
+    def discounted(self):
+        return self.get_discounted
+
     def __str__(self):
         return "{}".format(self.Title)
+
 
     def get_status(self):
         Status = {
@@ -983,7 +1001,6 @@ class Product (models.Model):
             'ID': self.ID
         })
 
-    @property
     def get_discounted(self):
         # Get Discounted
         try:
@@ -1064,7 +1081,6 @@ class Product (models.Model):
     def get_image_alt(self):
         return self.Title
         
-    @property
     def Image_thumbnail_url(self):
         try:
             url = self.Image_thumbnail.url
@@ -1082,7 +1098,6 @@ class Product (models.Model):
             url ="https://nakhll.com/media/Pictures/default.jpg"
             return url
 
-    @property
     def get_url(self):
         try:
             return reverse("nakhll_market:ProductsDetail", kwargs={
@@ -1830,13 +1845,6 @@ class Polling(models.Model):
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-class SliderManager(models.Manager):
-    def get_slider(self):
-        queryset = Slider.objects.filter(Publish=True)
-        return queryset
-
-
-
 # Slider (اسلایدر) Model
 class Slider(models.Model):
     FK_Creator=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='ثبت کننده', related_name='Slider_Create', null=True) 
@@ -1888,10 +1896,10 @@ class Slider(models.Model):
     @property
     def description(self):
         return self.Description
-    
-    
-    
-    
+
+    @property
+    def location(self):
+        return self.Location
     
     # Output Customization Based On Title
     def __str__(self):

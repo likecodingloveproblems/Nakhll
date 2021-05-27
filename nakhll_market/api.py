@@ -4,7 +4,7 @@ from nakhll_market.models import (
 from nakhll_market.serializers import (
     AmazingProductSerializer, ProductDetailSerializer,
     ProductSerializer, ShopSerializer,SliderSerializer,
-    CategorySerializer ,
+    CategorySerializer
     )
 from rest_framework import generics, routers, views, viewsets
 from rest_framework import permissions, filters, mixins
@@ -17,16 +17,15 @@ class SliderViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.AllowAny, ]
     search_fields = ('Location', )
     filter_backends = (filters.SearchFilter,)
+    queryset = Slider.objects.filter(Publish=True)
     
-    def get_queryset(self):
-        return Slider.objects.get_slider()
 
 class CategoryViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = CategorySerializer
     permission_classes = [permissions.AllowAny, ]
 
     def get_queryset(self):
-        return Category.objects.get_category()
+        return Category.objects.get_category_publush_avaliable()
 
 class AmazingProductViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = AmazingProductSerializer
@@ -82,11 +81,9 @@ class ProductDetailsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductDetailSerializer
     permission_classes = [permissions.AllowAny, ]
     lookup_field = 'Slug'
+    queryset = Product.objects.all()
 
-    def get_queryset(self):
-        return Product.objects.get_product_details()
     
-
 class ProductsInSameFactorViewSet(generics.ListAPIView):
     serializer_class = ProductSerializer
     permission_classes = [permissions.AllowAny, ]

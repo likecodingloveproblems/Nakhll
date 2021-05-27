@@ -10,7 +10,7 @@ class SliderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Slider
         fields = [
-            'url', 'image', 'title', 'show_info', 'description', 'Location',
+            'url', 'image', 'title', 'show_info', 'description', 'location',
             ]
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -24,7 +24,7 @@ class ShopSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shop
         fields = [
-            'slug', 'title', 'get_absolute_url', 'Image_thumbnail_url',
+            'slug', 'title', 'url', 'image_thumbnail_url',
             'state'
         ]
 
@@ -32,8 +32,8 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
-            'Image_thumbnail_url', 'get_url', 'old_price', 'price', 'slug',
-            'title', 'status', 'get_discounted', 'id'
+            'image_thumbnail_url', 'url', 'old_price', 'price', 'slug',
+            'title', 'status', 'discounted', 'id'
         ]
 
 class AmazingProductSerializer(serializers.ModelSerializer):
@@ -98,9 +98,9 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'id', 'title', 'image', 'description', 'slug', 'price',
             'available', 'publish', 'get_discounted', 'get_related_products',
             'Product_Attr', 'AttrPrice_Product', 'Product_Banner',
-            'Product_Review', 'net_weight' , 'weight_with_packing' , 
+            'Product_Review', 'net_weghit' , 'weight_with_packing' , 
             'length_with_packing' , 'height_with_packaging' , 'story' , 'width_with_packin','Product_Comment' , 
-            'product_status' , 'exception_post_range' , 'post_range' 
+            'product_status' , 'exception_post_range' , 'post_range' , 'sub_market' 
         
 
         ]

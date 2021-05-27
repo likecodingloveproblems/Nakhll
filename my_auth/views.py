@@ -69,16 +69,6 @@ class GetMobile(FormView):
         return super().get_context_data(**kwargs)
 
 
-class RegisterMobile(GetMobile):
-    context = {
-        'header': 'ثبت نام در سایت',
-        'id': 'register',
-    }
-
-    template_name = 'registration/get-mobile.html'
-    form_class = RegisterMobileForm
-    success_url = reverse_lazy('auth:register-code')
-
 
 class ForgetPasswordMobile(GetMobile):
     context = {
@@ -149,16 +139,6 @@ class ApproveCode(FormView):
             kwargs[item] = self.context[item]
         return super().get_context_data(**kwargs)
 
-
-class RegisterCode(ApproveCode):
-    context = {
-        'header': 'ثبت نام در سایت',
-        'id': 'register',
-    }
-    success_url = reverse_lazy('auth:register-data')
-    empty_mobile_number_url = reverse_lazy('auth:register-mobile')
-
-
 class ForgetPasswordCode(ApproveCode):
     context = {
         'header': 'فراموشی رمز عبور',
@@ -166,36 +146,6 @@ class ForgetPasswordCode(ApproveCode):
     }
     success_url = reverse_lazy('auth:forget-password-data')
     empty_mobile_number_url = reverse_lazy('auth:forget-password-mobile')
-
-
-class RegisterData(FormView):
-    """
-    this function do all registration related tasks
-    """
-    template_name = 'registration/register-data.html'
-    form_class = RegisterDataForm
-    success_url = reverse_lazy('auth:get-phone')
-
-    def dispatch(self, request: http.HttpRequest, *args: Any, **kwargs: Any) -> http.HttpResponse:
-        if not is_mobile_number_verify_session(request, get_mobile_number_session(request)):
-            messages.warning(request, 'لطفا ابتدا شماره موبایل خود را تایید کنید.')
-            return HttpResponseRedirect(reverse('auth:register-mobile'))
-        return super().dispatch(request, *args, **kwargs)
-
-    def form_valid(self, form: RegisterDataForm) -> HttpResponse:
-        mobile_number = get_mobile_number_session(self.request)
-        password = form.cleaned_data.get('password')
-        email = form.cleaned_data.get('email')
-        reference_code = form.cleaned_data.get('reference_code')
-        user, profile, wallet = create_user(
-            self.request, mobile_number, email, password, reference_code)
-        if user and profile and wallet:
-            messages.success(self.request, 'ثبت نام با موفقیت انجام شد.')
-            self.request.session.pop('auth')
-        else:
-            messages.error(
-                self.request, 'خطایی رخ داده است. لطفا با پشتیبانی تماس حاصل فرمایید.')
-        return super().form_valid(form)
 
 
 class ForgetPasswordData(FormView):
@@ -233,53 +183,6 @@ class SuccessURLAllowedHostsMixin:
     def get_success_url_allowed_hosts(self):
         return {self.request.get_host(), *self.success_url_allowed_hosts}
 
-
-class Login(SuccessURLAllowedHostsMixin, FormView):
-    """
-    Display the login form and handle the login action.
-    """
-    template_name = 'registration/login.html'
-    form_class = AuthenticationForm
-    success_url = LOGIN_REDIRECT_URL
-    redirect_authenticated_user = True
-    redirect_field_name = REDIRECT_FIELD_NAME
-
-    @method_decorator(sensitive_post_parameters())
-    @method_decorator(csrf_protect)
-    @method_decorator(never_cache)
-    def dispatch(self, request, *args, **kwargs):
-        if self.redirect_authenticated_user and self.request.user.is_authenticated:
-            redirect_to = self.get_success_url()
-            return HttpResponseRedirect(redirect_to)
-        return super().dispatch(request, *args, **kwargs)
-
-    def form_valid(self, form):
-        '''
-        this function login user
-        '''
-        # check if remember me is set, increase session life time
-        if form.cleaned_data['remember_me']:
-            set_session_expiration_time(
-                self.request,
-                timezone.now() + timedelta(seconds=SESSION_COOKIE_AGE)
-            )
-        login(self.request, form.user_cache)
-        logger.info('request is in form_valid of Login class...')
-        return HttpResponseRedirect(self.get_success_url())
-
-    def get_success_url(self):
-        url = self.get_redirect_url()
-        return url or resolve_url(LOGIN_REDIRECT_URL)
-
-    def get_redirect_url(self):
-        """Return the user-originating redirect URL if it's safe."""
-        redirect_to = self.request.GET.get('next')
-        url_is_safe = is_safe_url(
-            url=redirect_to,
-            allowed_hosts=self.get_success_url_allowed_hosts(),
-            require_https=self.request.is_secure(),
-        )
-        return redirect_to if url_is_safe else ''
 
 def logout_(request):
     logout(request)
