@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db.models.aggregates import Sum
+from django.db.models.deletion import SET_DEFAULT
 from my_auth.models import ProfileManager
 from django.db import models
 from django.db.models import F, Q
@@ -214,6 +215,20 @@ class SubMarketBanner (models.Model):
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
+class CategoryManager(models.Manager):
+
+    def get_category(self):
+        categories = Category.objects\
+            .filter(Publish = True, Available = True, FK_SubCategory = None)\
+            .annotate(product_count = Count('ProductCategory'))\
+            .filter(product_count__gt=5)
+        categories_id = list(categories\
+            .values_list('id', flat=True))
+        categories = categories\
+            .filter(pk__in=random.sample(categories_id, 12))
+        return categories
+ 
+    
 # Category (دسته بندی) Model 
 class Category(models.Model):
     Title=models.CharField(verbose_name='عنوان دسته بندی', max_length=150, unique=True, db_index=True)
@@ -391,6 +406,51 @@ class ShopManager(models.Manager):
             .annotate(number_sale=Sum('ShopProduct__Factor_Product__ProductCount'))\
             .order_by('-number_sale')[:5]
 
+    def get_random_shops(self):
+        # Shop.objects\
+        # .filter(Publish = True, Available = True)\
+        # .annotate(product_count = Count('ShopProduct'))\
+        # .filter(product_count__gt=1)\
+        # .order_by('?')[:12]
+        sql = '''
+            SELECT 
+                "nakhll_market_shop"."ID",
+                "nakhll_market_shop"."FK_ShopManager_id",
+                "nakhll_market_shop"."Title",
+                "nakhll_market_shop"."Slug",
+                "nakhll_market_shop"."Description",
+                "nakhll_market_shop"."Image",
+                "nakhll_market_shop"."NewImage",
+                "nakhll_market_shop"."ColorCode",
+                "nakhll_market_shop"."Bio",
+                "nakhll_market_shop"."State",
+                "nakhll_market_shop"."BigCity",
+                "nakhll_market_shop"."City",
+                "nakhll_market_shop"."Location",
+                "nakhll_market_shop"."Point",
+                "nakhll_market_shop"."Holidays",
+                "nakhll_market_shop"."DateCreate",
+                "nakhll_market_shop"."DateUpdate",
+                "nakhll_market_shop"."Edite",
+                "nakhll_market_shop"."Available",
+                "nakhll_market_shop"."Publish",
+                "nakhll_market_shop"."FK_User_id",
+                "nakhll_market_shop"."CanselCount",
+                "nakhll_market_shop"."CanselFirstDate",
+                "nakhll_market_shop"."LimitCancellationDate",
+                "nakhll_market_shop"."documents",
+                COUNT("nakhll_market_product"."ID") AS "product_count" 
+            FROM "nakhll_market_shop" 
+            LEFT OUTER JOIN 
+                "nakhll_market_product" ON ("nakhll_market_shop"."ID" = "nakhll_market_product"."FK_Shop_id") 
+            WHERE ("nakhll_market_shop"."Available" AND "nakhll_market_shop"."Publish") 
+            GROUP BY "nakhll_market_shop"."ID" HAVING COUNT("nakhll_market_product"."ID") > 1  
+            ORDER BY RANDOM() 
+            LIMIT 12
+        '''
+        return Shop.objects.raw(sql)
+
+
 
 # Shop (حجره) Model
 class Shop(models.Model):
@@ -449,14 +509,30 @@ class Shop(models.Model):
         blank=True,
         )
 
+    
+    @property
+    def slug(self):
+        return self.Slug
+
+    @property
+    def title(self):
+        return self.Title
+
+    @property
+    def state(self):
+        return self.State
+
+    
     def __str__(self):
         return "{}".format(self.Title)
 
+    @property
     def get_absolute_url(self):
         return reverse("nakhll_market:ShopsDetail", kwargs={
             'shop_slug': self.Slug
         })
 
+    @property
     def Image_thumbnail_url(self):
         try:
             i = self.Image_thumbnail.url
@@ -637,6 +713,18 @@ class Attribute(models.Model):
     Publish=models.BooleanField(verbose_name='وضعیت انتشار ویژگی', choices=PUBLISH_STATUS, default=False)
     FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='تایید کننده', related_name='Attribute_Accept', blank=True, null=True) 
 
+    @property
+    def title(self):
+        return self.Title
+
+    @property
+    def unit(self):
+        return self.Unit
+
+
+
+
+
     # Output Customization Based On Title
     def __str__(self):
         if self.Unit != '-':
@@ -668,6 +756,48 @@ class ProductManager(models.Manager):
         random_id = random.randint(0, int(result.count()/10))
         return result[random_id]
 
+    def get_last_created_products(self):
+        return Product.objects\
+            .filter(Publish = True, Available = True, OldPrice = '0', Status__in = ['1', '2', '3'])\
+                .order_by('-DateCreate')[:12]
+
+    def get_last_created_discounted_products(self):
+        return Product.objects\
+            .filter(Publish = True, Available = True, Status__in = ['1', '2', '3'])\
+            .exclude(OldPrice='0')\
+            .order_by('-DateCreate')[:16]
+
+    def get_random_products(self):
+        return Product.objects\
+            .filter(
+                Publish = True,
+                Available = True,
+                OldPrice = '0',
+                Status__in = ['1', '2', '3']
+                )\
+            .order_by('?')[:16]
+
+    def get_most_discount_precentage_products(self):
+        return Product.objects\
+            .get_most_discount_precentage_available_product()\
+            .order_by('?')[:15]
+
+    def get_product_details(self):
+        queryset = Product.objects.all()
+        return queryset
+
+    def get_products_in_same_factor(self):
+        id = self.kwargs.get('ID')
+        try:
+            product = Product.objects.get(ID=id)
+            return Product.objects\
+                .filter(Factor_Product__Factor_Products__FK_FactorPost__FK_Product=product)\
+                .exclude(ID = product.ID)\
+                .distinct()
+        except:
+            return None
+
+        
 # Product (محصول) Model
 class Product (models.Model):
     objects = ProductManager()
@@ -740,6 +870,82 @@ class Product (models.Model):
     FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='تایید کننده', related_name='Product_Accept', blank=True, null=True) 
     FK_Tag=models.ManyToManyField(Tag, verbose_name='تگ ها', related_name='Product_Tag', blank=True)
 
+    @property
+    def image(self):
+        return self.Image
+
+    @property
+    def description(self):
+        return self.Description
+
+    @property
+    def available(self):
+        return self.Available
+
+    @property
+    def publish(self):
+        return self.Publish
+
+    @property
+    def old_price(self):
+        return self.OldPrice
+
+    @property
+    def price(self):
+        return self.Price
+
+    @property
+    def slug(self):
+        return self.Slug
+
+    @property
+    def title(self):
+        return self.Title
+
+    @property
+    def status(self):
+        return self.Status
+
+    @property
+    def id(self):
+        return self.ID
+    
+    @property
+    def net_weghit(self):
+        return self.Net_Weight
+
+    @property
+    def weight_with_packing(self):
+        return self.Weight_With_Packing
+
+    @property
+    def length_with_packing(self):
+        return self.Length_With_Packaging
+
+    @property
+    def width_with_packing(self):
+        return self.Width_With_Packaging
+
+    @property 
+    def height_with_packaging(self):
+        return self.Height_With_Packaging
+
+    @property
+    def story(self):
+        return self.Story
+
+    @property
+    def product_status(self):
+        return self.PRODUCT_STATUS
+
+    @property
+    def post_range(self):
+        return self.FK_PostRange
+
+    @property
+    def exception_post_range(self):
+        return self.FK_ExceptionPostRange
+
     def __str__(self):
         return "{}".format(self.Title)
 
@@ -777,6 +983,7 @@ class Product (models.Model):
             'ID': self.ID
         })
 
+    @property
     def get_discounted(self):
         # Get Discounted
         try:
@@ -857,7 +1064,7 @@ class Product (models.Model):
     def get_image_alt(self):
         return self.Title
         
-
+    @property
     def Image_thumbnail_url(self):
         try:
             url = self.Image_thumbnail.url
@@ -875,6 +1082,7 @@ class Product (models.Model):
             url ="https://nakhll.com/media/Pictures/default.jpg"
             return url
 
+    @property
     def get_url(self):
         try:
             return reverse("nakhll_market:ProductsDetail", kwargs={
@@ -961,6 +1169,8 @@ class Product (models.Model):
         verbose_name = "محصول"
         verbose_name_plural = "محصولات"
 
+    
+
 #----------------------------------------------------------------------------------------------------------------------------------
 
 # AttrProduct (ویژگی محصولات) Model
@@ -975,6 +1185,12 @@ class AttrProduct(models.Model):
     Available=models.BooleanField(verbose_name='وضعیت نمایش ویژگی محصول', choices=AVAILABLE_STATUS, default=False)
     DateCreate=models.DateTimeField(verbose_name='تاریخ ثبت ویژگی', auto_now_add=True)
     DtatUpdate=models.DateTimeField(verbose_name='تاریخ بروزرسانی ویژگی', auto_now=True)
+    
+    @property
+    def value(self):
+        return self.Value
+
+    
     # Output Customization Based On Title
     def __str__(self):
         return "{}".format(self.Value)
@@ -1013,6 +1229,30 @@ class AttrPrice(models.Model):
     Available=models.BooleanField(verbose_name='وضعیت نمایش ارزش ویژگی محصول', choices=AVAILABLE_STATUS, default=True)
     Publish=models.BooleanField(verbose_name='وضعیت انتشار ارزش ویژگی محصول', choices=PUBLISH_STATUS, default=True)
 
+    @property
+    def description(self):
+        return self.Description
+
+    @property
+    def value(self):
+        return self.Value
+
+    @property
+    def extra_price(self):
+        return self.ExtraPrice
+
+    @property
+    def unit(self):
+        return self.Unit
+
+    @property
+    def available(self):
+        return self.Available
+
+    @property
+    def publish(self):
+        return self.Publish
+    
     # Output Customization Based On Attribute
     def __str__(self):
         return "{}".format(self.FK_Product)
@@ -1137,6 +1377,11 @@ class ProductBanner (models.Model):
     FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='تایید کننده', related_name='Product_Banner_Accept', blank=True, null=True) 
     FK_Tag=models.ManyToManyField(Tag, verbose_name='تگ ها', related_name='Product_Banner_Tag', blank=True)
 
+    @property
+    def image(self):
+        return self.Image
+    
+    
     def Image_thumbnail_url(self):
         try:
             i = self.Image_medium.url
@@ -1215,6 +1460,29 @@ class Comment(models.Model):
     DateCreate=models.DateTimeField(verbose_name='تاریخ ثبت نظر', auto_now_add=True)
     FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='تایید کننده', related_name='Comment_Accept', blank=True, null=True) 
 
+    @property
+    def user(self):
+        return self.FK_UserAdder
+
+    @property
+    def product(self):
+        return self.FK_Product
+
+    @property
+    def description(self):
+        return self.Description
+
+    @property
+    def number_like(self):
+        return self.FK_Like.count()
+
+    @property
+    def reply(self):
+        return self.FK_Pater
+
+    @property
+    def date_create(self):
+        return self.DateCreate
 
     def get_type(self):
         if self.Type:
@@ -1562,6 +1830,13 @@ class Polling(models.Model):
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
+class SliderManager(models.Manager):
+    def get_slider(self):
+        queryset = Slider.objects.filter(Publish=True)
+        return queryset
+
+
+
 # Slider (اسلایدر) Model
 class Slider(models.Model):
     FK_Creator=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='ثبت کننده', related_name='Slider_Create', null=True) 
@@ -1593,6 +1868,31 @@ class Slider(models.Model):
     FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='تایید کننده', related_name='Slider_Accept', blank=True, null=True) 
     BannerBuilder=models.CharField(verbose_name='نام تولید کننده بنر', max_length=120, blank=True)
     BannerURL=models.URLField(verbose_name='لینک تولید کننده بنر', blank=True)
+    
+    @property
+    def url(self):
+        return self.URL
+
+    @property
+    def image(self):
+        return self.Image
+
+    @property
+    def title(self):
+        return self.Title
+
+    @property
+    def show_info(self):
+        return self.ShowInfo
+
+    @property
+    def description(self):
+        return self.Description
+    
+    
+    
+    
+    
     # Output Customization Based On Title
     def __str__(self):
         return "{}".format(self.Title)
@@ -1889,6 +2189,14 @@ class AmazingProduct(models.Model):
         )
     start_date = models.DateTimeField(verbose_name='تاریخ شروع')
     end_date = models.DateTimeField(verbose_name='تاریخ پایان')
+
+    @property
+    def start_date_field(self):
+        return self.start_date
+
+    @property
+    def end_date_field(self):
+        return self.end_date
 
     class Meta:
         ordering = ('id',)   
