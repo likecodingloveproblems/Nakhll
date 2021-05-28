@@ -389,11 +389,11 @@
                     `
                  
                     <aside data-target="#mycarousel" class="carousel-item  active">
-                    <a href="`+dataMainBanner[i].URL+`"><img src="`+dataMainBanner[i].Image+`"
-                    class="sliderAsli" alt="`+dataMainBanner[i].Title+`">
-                    `+(dataMainBanner.ShowInfo ? `<div class="carousel-caption">
-                    <h3>`+dataMainBanner[i].Title+`</h3>
-                    <p>`+dataMainBanner[i].Description+`</p>
+                    <a href="`+dataMainBanner[i].url+`"><img src="`+dataMainBanner[i].image+`"
+                    class="sliderAsli" alt="`+dataMainBanner[i].title+`">
+                    `+(dataMainBanner.show_info ? `<div class="carousel-caption">
+                    <h3>`+dataMainBanner[i].title+`</h3>
+                    <p>`+dataMainBanner[i].description+`</p>
                     </div>`:``)+`
                     
                     </a>
@@ -407,11 +407,11 @@
                                 `
                             
                                 <aside data-target="#mycarousel" class="carousel-item ">
-                                <a href="`+dataMainBanner[i].URL+`"><img src="`+dataMainBanner[i].Image+`"
-                                class="sliderAsli" alt="`+dataMainBanner[i].Title+`">
-                                `+(dataMainBanner.ShowInfo ? `<div class="carousel-caption">
-                                <h3>`+dataMainBanner[i].Title+`</h3>
-                                <p>`+dataMainBanner[i].Description+`</p>
+                                <a href="`+dataMainBanner[i].url+`"><img src="`+dataMainBanner[i].image+`"
+                                class="sliderAsli" alt="`+dataMainBanner[i].title+`">
+                                `+(dataMainBanner.show_info ? `<div class="carousel-caption">
+                                <h3>`+dataMainBanner[i].title+`</h3>
+                                <p>`+dataMainBanner[i].description+`</p>
                                 </div>`:``)+`
                                 
                                 </a>
@@ -443,12 +443,12 @@
             
                     for (let i = 0; i < dataresult.length; i++) {
                        $("#randomShops").append(`<div class="boxslider-slick">
-                        <a href="`+dataresult[i].get_absolute_url+`">
-                            <img src="`+dataresult[i].Image_thumbnail_url+`"  alt="`+dataresult[i].Title+`" class="seller-img">
+                        <a href="`+dataresult[i].url+`">
+                            <img src="`+dataresult[i].image_thumbnail_url+`"  alt="`+dataresult[i].title+`" class="seller-img">
                             <h2 class="titbox"></h2>
                                            
                             <div class="nameseller">
-                                <h3>`+dataresult[i].Title+`</h3>
+                                <h3>`+dataresult[i].title+`</h3>
                             </div>
                         </a>
                     </div>`)
@@ -489,10 +489,10 @@
            $("#lastProduct").append(`
             <div>
            <div class="boxslider-slick products-new">
-                <a href="`+result[i].get_url+`">
-                  <img src="`+result[i].Image_thumbnail_url+`" alt=`+result[i].Title+` width="175px" height="175px" >
-                  <h2 style="font-size:1rem" class="titbox">`+result[i].Title+`</h2>
-                  <span><span class="numbersprice">`+result[i].Price+`</span> ریال</span>
+                <a href="`+result[i].url+`">
+                  <img src="`+result[i].image_thumbnail_url+`" alt=`+result[i].title+` width="175px" height="175px" >
+                  <h2 style="font-size:1rem" class="titbox">`+result[i].title+`</h2>
+                  <span><span class="numbersprice">`+result[i].price+`</span> ریال</span>
                 </a>
             </div>
             </div>`)
@@ -531,8 +531,8 @@
             
                 <div class="col-xl-6 col-md-6">
                     <div class="baner-2-slider">
-                        <a href="`+dataBetweenBanner[i].URL+`">
-                            <img src="`+dataBetweenBanner[i].Image+`" alt="`+dataBetweenBanner[i].Title+`">
+                        <a href="`+dataBetweenBanner[i].url+`">
+                            <img src="`+dataBetweenBanner[i].image+`" alt="`+dataBetweenBanner[i].title+`">
                         </a>
                     </div>
                 </div>
@@ -560,13 +560,13 @@
             <h3  class="title-borderbt">تخفیفات ویژه</h3>
 
 
-                    <img src="`+dataMostDisPro[0].Image_thumbnail_url+`" alt="عکس تخفیفات ویژه" width="175px" height="175px">
-                    <a href="`+dataMostDisPro[0].get_url+`">
-                    <h2 style="font-size: 1.1rem" class="longtitle">`+dataMostDisPro[0].Title+`</h2>
+                    <img src="`+dataMostDisPro[0].image_thumbnail_url+`" alt="عکس تخفیفات ویژه" width="175px" height="175px">
+                    <a href="`+dataMostDisPro[0].url+`">
+                    <h2 style="font-size: 1.1rem" class="longtitle">`+dataMostDisPro[0].title+`</h2>
                     </a>
-                    <span class="strikeprice numbersprice takhfif">`+dataMostDisPro[0].OldPrice+` ریال</span>
+                    <span class="strikeprice numbersprice takhfif">`+dataMostDisPro[0].old_price+` ریال</span>
                     <br>
-                    <span class="priceline numbersprice takhfif">`+dataMostDisPro[0].Price+` ریال</span> 
+                    <span class="priceline numbersprice takhfif">`+dataMostDisPro[0].price+` ریال</span> 
             
             
             `)
@@ -588,13 +588,13 @@
                 $("#LastCreatedDiscounted").append(`
                  
                     <div class="boxslider-slick">
-                        <a href="`+dataLastCD[i].get_url+`">
-                           <img src="`+dataLastCD[i].Image_thumbnail_url+`" alt="`+dataLastCD[i].Title+`" width="170px" height="170px">
+                        <a href="`+dataLastCD[i].url+`">
+                           <img src="`+dataLastCD[i].image_thumbnail_url+`" alt="`+dataLastCD[i].title+`" width="170px" height="170px">
                            <div class="title-off-slider">
-                               <h3 style="font-size:1.1rem" class="titbox longtitle">`+dataLastCD[i].Title+`</h3>
+                               <h3 style="font-size:1.1rem" class="titbox longtitle">`+dataLastCD[i].title+`</h3>
                            </div>
-                               <span class="off-slider-darsad"> `+dataLastCD[i].get_discounted+`% تخفيف </span>
-                               <div class="single-off-slide-price"><span class="numbersprice price-root">`+dataLastCD[i].Price+`</span><span class="numbersprice off-price">`+dataLastCD[i].OldPrice+`</span> ریال</div>
+                               <span class="off-slider-darsad"> `+dataLastCD[i].discounted+`% تخفيف </span>
+                               <div class="single-off-slide-price"><span class="numbersprice price-root">`+dataLastCD[i].price+`</span><span class="numbersprice off-price">`+dataLastCD[i].OldPrice+`</span> ریال</div>
                         </a>
                     </div>
 
@@ -641,10 +641,10 @@
                 $("#ProposalProduct").append(`
                 
                                     <div class="boxslider-slick">
-                                        <a href="`+dataProposalProduct[i].get_url+`">
-                                            <img src="`+dataProposalProduct[i].Image_thumbnail_url+`" alt="`+dataProposalProduct[i].Title+`" width="175px" height="175px">
-                                            <h2 style="font-size:1rem" class="titbox">`+dataProposalProduct[i].Title+`</h2>
-                                            <span><span class="numbersprice">`+dataProposalProduct[i].Price+`</span> ریال</span>
+                                        <a href="`+dataProposalProduct[i].url+`">
+                                            <img src="`+dataProposalProduct[i].image_thumbnail_url+`" alt="`+dataProposalProduct[i].Title+`" width="175px" height="175px">
+                                            <h2 style="font-size:1rem" class="titbox">`+dataProposalProduct[i].title+`</h2>
+                                            <span><span class="numbersprice">`+dataProposalProduct[i].price+`</span> ریال</span>
                                         </a>
                                     </div>
                 `)
