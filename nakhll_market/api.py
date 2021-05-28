@@ -67,7 +67,7 @@ class MostDiscountPrecentageProductsViewSet(mixins.ListModelMixin, viewsets.Gene
     permission_classes = [permissions.AllowAny, ]
 
     def get_queryset(self):
-        return Product.objects.et_most_discount_precentage_products()
+        return Product.objects.get_most_discount_precentage_products()
 
 class MostSoldShopsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ShopSerializer
@@ -89,5 +89,6 @@ class ProductsInSameFactorViewSet(generics.ListAPIView):
     permission_classes = [permissions.AllowAny, ]
 
     def get_queryset(self):
-        return Product.objects.get_products_in_same_factor()
+        id = self.kwargs.get('ID')
+        return Product.objects.get_products_in_same_factor(id)
  

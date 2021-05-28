@@ -2,7 +2,8 @@ from rest_framework import serializers
 from rest_framework.utils import field_mapping
 from nakhll_market.models import (
     AmazingProduct, AttrPrice, AttrProduct, Attribute,
-    Category, Product, ProductBanner, Shop, Slider, Comment
+    Category, Product, ProductBanner, Shop, Slider, Comment,
+    SubMarket
     )
 
 # landing serializers
@@ -64,7 +65,7 @@ class AttrPriceSerializer(serializers.ModelSerializer):
     class Meta:
         model = AttrPrice
         fields = [
-            'dscription', 'id', 'value', 'extra_price', 'unit',
+            'description', 'id', 'value', 'extra_price', 'unit',
             'available', 'publish',
         ]
 
@@ -83,24 +84,27 @@ class ProductCommentSerializer(serializers.ModelSerializer):
                   , 'reply' , 'date_create'
                   ]
 
-
+class SubMarketSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SubMarket
+        fields = [
+            'title',
+        ]
 
 class ProductDetailSerializer(serializers.ModelSerializer):
-    get_related_products = ProductSerializer(many=True, read_only=True)
-    Product_Attr = AttrProductSerializer(many=True, read_only=True)
-    AttrPrice_Product = AttrPriceSerializer(many=True, read_only=True)
-    Product_Banner = ProductBannerSerializer(many=True, read_only=True)
-    Product_Comment = ProductCommentSerializer(many=True , read_only=True)
-
+    related_products = ProductSerializer(many=True, read_only=True)
+    attributes = AttrProductSerializer(many=True, read_only=True)
+    attributes_price = AttrPriceSerializer(many=True, read_only=True)
+    banners = ProductBannerSerializer(many=True, read_only=True)
+    comments = ProductCommentSerializer(many=True , read_only=True)
+    sub_market = SubMarketSerializer(many=False, read_only=True)
     class Meta:
         model = Product
         fields = [
             'id', 'title', 'image', 'description', 'slug', 'price',
-            'available', 'publish', 'get_discounted', 'get_related_products',
-            'Product_Attr', 'AttrPrice_Product', 'Product_Banner',
-            'Product_Review', 'net_weghit' , 'weight_with_packing' , 
-            'length_with_packing' , 'height_with_packaging' , 'story' , 'width_with_packin','Product_Comment' , 
-            'product_status' , 'exception_post_range' , 'post_range' , 'sub_market' 
-        
-
+            'available', 'publish', 'get_discounted', 'related_products',
+            'attributes', 'attributes_price', 'banners', 'reviews',
+            'net_weight', 'weight_with_packing',  'length_with_packing',
+            'height_with_packaging', 'story', 'width_with_packing','comments',
+            'product_status', 'exception_post_range', 'post_range', 'sub_market' 
         ]
