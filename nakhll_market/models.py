@@ -4,7 +4,7 @@ from django.db.models.aggregates import Sum
 from django.db.models.deletion import SET_DEFAULT
 from my_auth.models import ProfileManager
 from django.db import models
-from django.db.models import F, Q
+from django.db.models import F, Q, Count
 from django.db.models.functions import Cast
 from django.db.models.fields import CharField, FloatField
 from tinymce.models import HTMLField
@@ -167,6 +167,10 @@ class SubMarket(models.Model):
     FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='تایید کننده', related_name='SubMarket_Accept', blank=True, null=True) 
     FK_Tag=models.ManyToManyField(Tag, verbose_name='تگ ها', related_name='SubMarket_Tag', blank=True)
 
+    @property
+    def title(self):
+        return self.Title
+
     # Output Customization Based On Title
     def __str__(self):
         return "{}".format(self.Title)
@@ -231,7 +235,7 @@ class CategoryManager(models.Manager):
     
 # Category (دسته بندی) Model 
 class Category(models.Model):
-    objects = CategoryManager
+    objects = CategoryManager()
     Title=models.CharField(verbose_name='عنوان دسته بندی', max_length=150, unique=True, db_index=True)
     Description=models.TextField(verbose_name='درباره دسته بندی', blank=True)
     Image=models.ImageField(verbose_name='عکس دسته بندی', upload_to=PathAndRename('media/Pictures/Categories/'), help_text='عکس دسته بندی را اینجا وارد کنید', blank=True, null=True)
@@ -787,8 +791,7 @@ class ProductManager(models.Manager):
             .get_most_discount_precentage_available_product()\
             .order_by('?')[:15]
 
-    def get_products_in_same_factor(self):
-        id = self.kwargs.get('ID')
+    def get_products_in_same_factor(self, id):
         try:
             product = Product.objects.get(ID=id)
             return Product.objects\
@@ -877,7 +880,7 @@ class Product (models.Model):
 
     @property
     def image(self):
-        return self.Image
+        return self.get_image()
 
     @property
     def description(self):
@@ -916,7 +919,7 @@ class Product (models.Model):
         return self.ID
     
     @property
-    def net_weghit(self):
+    def net_weight(self):
         return self.Net_Weight
 
     @property
@@ -945,23 +948,48 @@ class Product (models.Model):
 
     @property
     def post_range(self):
-        return self.FK_PostRange
+        return self.FK_PostRange.all()
 
     @property
     def exception_post_range(self):
-        return self.FK_ExceptionPostRange
+        return self.FK_ExceptionPostRange.all()
 
     @property
     def image_thumbnail_url(self):
-        return self.Image_thumbnail_url
+        return self.Image_thumbnail_url()
 
     @property
     def url(self):
-        return self.get_url
+        return self.get_url()
 
     @property
     def discounted(self):
-        return self.get_discounted
+        return self.get_discounted()
+
+    @property
+    def related_products(self):
+        return self.get_related_products()
+
+    @property
+    def attributs(self):
+        return self.Product_Attr.all()
+
+    @property
+    def attributes_price(self):
+        return self.AttrPrice_Product.all()
+
+    @property
+    def banners(self):
+        return self.Product_Banner.all()
+
+    @property
+    def reviews(self):
+        return self.Product_Review.all()
+
+    @property
+    def comments(self):
+        return self.Product_Comment.all()
+
 
     def __str__(self):
         return "{}".format(self.Title)
@@ -1394,8 +1422,7 @@ class ProductBanner (models.Model):
 
     @property
     def image(self):
-        return self.Image
-    
+        return self.Image_thumbnail_url()
     
     def Image_thumbnail_url(self):
         try:
@@ -1410,7 +1437,6 @@ class ProductBanner (models.Model):
     def __str__(self):
         return "{}".format(self.Title)
 
-    # Ordering With DateCreate
     class Meta:
         ordering = ('id','Title',)   
         verbose_name = "گالری محصول"
@@ -1883,7 +1909,7 @@ class Slider(models.Model):
 
     @property
     def image(self):
-        return self.Image
+        return self.get_image() 
 
     @property
     def title(self):
@@ -1900,7 +1926,13 @@ class Slider(models.Model):
     @property
     def location(self):
         return self.Location
-    
+
+    def get_image(self):
+        try:
+            return self.Image.url
+        except:
+            return None
+
     # Output Customization Based On Title
     def __str__(self):
         return "{}".format(self.Title)
