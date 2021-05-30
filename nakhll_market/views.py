@@ -69,7 +69,6 @@ from .models import Pages
 from .models import Alert
 from .models import Field
 from .models import Note
-from .models import PageViews, User_View, Date_View
 from sms.models import SMS
 from my_auth.models import UserphoneValid
 from Payment.models import Wallet, Factor ,FactorPost, Coupon
@@ -98,68 +97,6 @@ def visitor_ip_address(request):
     else:
         ip = request.META.get('REMOTE_ADDR')
     return ip
-
-#--------------------------------------------------------------------------------------------------------------------------------
-
-
-# Check View - Get View
-def CheckView(request, obj_slug, obj_type):
-    # Get Page View
-    if PageViews.objects.filter(Object_Slug = obj_slug, Object_Type = obj_type).exists():
-        this_page_view = PageViews.objects.get(Object_Slug = obj_slug, Object_Type = obj_type)
-        # Get User View
-        if this_page_view.FK_Viewer.all().count() != 0:
-            if this_page_view.FK_Viewer.filter(User_Ip = visitor_ip_address(request)).count() == 1:
-                # Get View 
-                this_view = this_page_view.FK_Viewer.get(User_Ip = visitor_ip_address(request))
-                # Check Date
-                date_format = "%Y-%m-%d"
-                a = datetime.strptime(str(date.today()), date_format)
-                b = datetime.strptime(str(this_view.DateTime.date()), date_format)
-                delta = a - b
-                # If Delta > 24H
-                if delta.days >= 1:
-                    this_page_view.View_Count += 1
-                    this_view.DateTime = datetime.now()
-                    this_view.save()
-                    this_page_view.save()
-                view_count = this_page_view.View_Count
-            else:
-                this_view = User_View.objects.create(User_Ip = visitor_ip_address(request))
-                this_page_view.FK_Viewer.add(this_view)
-                this_page_view.save()
-                if this_page_view.View_Count < this_page_view.FK_Viewer.all().count():
-                    this_page_view.View_Count = this_page_view.FK_Viewer.all().count()
-                    this_page_view.save()
-                else:
-                    this_page_view.View_Count += 1
-                    this_page_view.save()
-                view_count = this_page_view.View_Count
-        else:
-            this_view = User_View.objects.create(User_Ip = visitor_ip_address(request))
-            this_page_view.FK_Viewer.add(this_view)
-            this_page_view.save()
-            if this_page_view.View_Count < this_page_view.FK_Viewer.all().count():
-                this_page_view.View_Count = this_page_view.FK_Viewer.all().count()
-                this_page_view.save()
-            else:
-                this_page_view.View_Count += 1
-                this_page_view.save()
-            view_count = this_page_view.View_Count
-    else:
-        this_page_view = PageViews.objects.create(Object_Slug = obj_slug, Object_Type = obj_type)
-        this_view = User_View.objects.create(User_Ip = visitor_ip_address(request))
-        this_page_view.FK_Viewer.add(this_view)
-        this_page_view.save()
-        if this_page_view.View_Count < this_page_view.FK_Viewer.all().count():
-            this_page_view.View_Count = this_page_view.FK_Viewer.all().count()
-            this_page_view.save()
-        else:
-            this_page_view.View_Count += 1
-            this_page_view.save()
-        view_count = this_page_view.View_Count
-    return view_count
-
 
 def index(request):
     # Get Menu Item
@@ -607,12 +544,6 @@ def ProductsDetail(request, shop_slug, product_slug, status = None, msg = None):
     # Get Related products
     this_product_related = this_product.get_related_products()
     # -----------------------------------------------------------------
-    # Get Page View
-    # view_count = 
-    CheckView(request, this_product.Slug, '1')
-    # Get Total Sell
-    # total_sell = Product_Total_Sell().run(this_product)
-    # -------------------------------------------------------------------------------------------------------
     if status == None:
         show = False
         massege = ''
@@ -640,8 +571,6 @@ def ProductsDetail(request, shop_slug, product_slug, status = None, msg = None):
         'Banners':pubbanner,
         'Comments':pubcomments,
         'Reviews':pubreviews,
-        # 'View_Count':view_count,
-        # 'Sell_Count':total_sell,
         'RelatedProduct':this_product_related,
         'ShowAlart':show,
         'AlartMessage':massege,

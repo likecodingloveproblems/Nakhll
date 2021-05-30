@@ -2146,54 +2146,6 @@ class User_View(models.Model):
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-# Date_View (تاریخ - بازدید) Model
-class Date_View(models.Model):
-    Date = models.DateField(verbose_name = 'تاریخ بازدید', auto_now_add = True)
-    Count = models.CharField(verbose_name = 'میزان بازدید', max_length = 15, default = '1')
-
-    def __str__(self):
-        return "{} - {}".format(self.Date, self.Count)
-
-    # Ordering With DateCreate
-    class Meta:
-        ordering = ('id',)   
-        verbose_name = "بازدید - تاریخ"
-        verbose_name_plural = "بازدید - تاریخ ها"
-
-#----------------------------------------------------------------------------------------------------------------------------------
-
-# PageViews (بازدید صفحات) Model
-class PageViews(models.Model):
-    Object_Slug = models.SlugField(verbose_name = 'شناسه') 
-    OBJECT_TYPE = (
-        ('0','حجره'),
-        ('1','محصول'),
-        ('2','پست وبلاگ'),
-        ('3','داستان حجره'),
-    )
-    Object_Type = models.CharField(verbose_name = 'نوع شیء', choices = OBJECT_TYPE, max_length = 1, default = '0')
-    View_Count = models.PositiveIntegerField(verbose_name = 'میزان بازدید', default = 1)
-    FK_Viewer = models.ManyToManyField(User_View, verbose_name='بازدید کنندگان', related_name='View_Users', blank = True) 
-
-    # Output Customization Based On Slug (Type) : View_Count
-    def __str__(self):
-        if self.Object_Type == '0':
-            return "{} (حجره) : {}".format(self.Object_Slug, self.View_Count)
-        elif self.Object_Type == '1':
-            return "{} (محصول) : {}".format(self.Object_Slug, self.View_Count)
-        elif self.Object_Type == '2':
-            return "{} (پست وبلاگ) : {}".format(self.Object_Slug, self.View_Count)
-        elif self.Object_Type == '3':
-            return "{} (داستان حجره) : {}".format(self.Object_Slug, self.View_Count)
-
-    # Ordering With DateCreate
-    class Meta:
-        ordering = ('id',)   
-        verbose_name = "بازدید صفحه"
-        verbose_name_plural = "بازدید صفحات"
-        
-#----------------------------------------------------------------------------------------------------------------------------------
-
 # Point (امتیاز) Model
 class UserPoint (models.Model):
     FK_User = models.ForeignKey(User, verbose_name = 'امتیاز دهنده', related_name = 'point_user', on_delete = models.SET_NULL, null = True)
