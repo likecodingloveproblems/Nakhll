@@ -69,11 +69,8 @@ INSTALLED_APPS = [
     'mathfilters',
     'captcha',
     'django_prometheus',
+    'django_extensions',
 ]
-if DEBUG:
-    INSTALLED_APPS += [
-        'django_extensions'
-    ]
 
 MIDDLEWARE = [
     'django_prometheus.middleware.PrometheusBeforeMiddleware',
