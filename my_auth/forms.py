@@ -422,10 +422,15 @@ class GetPhoneForm(forms.Form):
         'placeholder':'شماره همراه خود را وارد کنید',
         'class': 'input-login',
         'type': 'number',
-        'pattern': '09[0-9]{9}',
+        'pattern' : '09[0-9]{9}'
         }),
+        validators=[mobile_number_validator]
     )
 
+
+    error_messages = error_messages
+            
+    
 class LoginCodeForm(GetAuthCode):
     code = forms.CharField(
         label=None, 
