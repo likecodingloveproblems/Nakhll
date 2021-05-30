@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.utils import field_mapping
 from nakhll_market.models import (
     AmazingProduct, AttrPrice, AttrProduct, Attribute,
-    Category, Product, ProductBanner, Shop, Slider, Comment,
+    Category, Market, Product, ProductBanner, Shop, Slider, Comment,
     SubMarket
     )
 
@@ -34,7 +34,7 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = [
             'image_thumbnail_url', 'url', 'old_price', 'price', 'slug',
-            'title', 'status', 'discounted', 'id'
+            'title', 'status', 'discount', 'id'
         ]
 
 class AmazingProductSerializer(serializers.ModelSerializer):
@@ -79,16 +79,24 @@ class ProductBannerSerializer(serializers.ModelSerializer):
 class ProductCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ['user' , 'product' , 
-                  'description' , 'number_like'
-                  , 'reply' , 'date_create'
-                  ]
+        fields = [
+            'user', 'product', 'description', 'number_like',
+            'reply', 'date_create'
+        ]
+
+class MarketSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Market
+        fields = [
+            'title', 'url',
+        ]
 
 class SubMarketSerializer(serializers.ModelSerializer):
+    market = MarketSerializer(many=False, read_only=False)
     class Meta:
         model = SubMarket
         fields = [
-            'title',
+            'title', 'market', 'url',
         ]
 
 class ProductDetailSerializer(serializers.ModelSerializer):
@@ -98,13 +106,15 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     banners = ProductBannerSerializer(many=True, read_only=True)
     comments = ProductCommentSerializer(many=True , read_only=True)
     sub_market = SubMarketSerializer(many=False, read_only=True)
+    shop = ShopSerializer(many=False, read_only=False)
     class Meta:
         model = Product
         fields = [
             'id', 'title', 'image', 'description', 'slug', 'price',
-            'available', 'publish', 'get_discounted', 'related_products',
+            'available', 'publish', 'discount', 'related_products',
             'attributes', 'attributes_price', 'banners', 'reviews',
             'net_weight', 'weight_with_packing',  'length_with_packing',
             'height_with_packaging', 'story', 'width_with_packing','comments',
-            'product_status', 'exception_post_range', 'post_range', 'sub_market' 
+            'status', 'exception_post_range', 'post_range', 'sub_market',
+            'shop'
         ]
