@@ -63,14 +63,14 @@
                         alt="حجره ها" loading="lazy"></div>
             </a>
         </aside>
-        <div style="display: flex;margin-top: 17px;">
+        <div id="bannerTopLanding" style="display: flex;margin-top: 17px;">
 
-            <a href="/kyadak/">
+            {% comment %} <a href="/kyadak/">
                 <div style="display: flex;margin: 2px;"><img class="imgslidercontainer" src="{% static "images/slide 02-2.jpg" %}" alt="بازارچه" loading="lazy"></div>
             </a>
             </a><a href="/galorisoheyl/">
                 <div style="display: flex;margin: 2px;"><img class="imgslidercontainer" src="{% static "images/slide 02-1.jpg" %}" alt="بازارچه" loading="lazy"></div>
-            </a>
+            </a> {% endcomment %}
         </div>
     </div>
 </div>
@@ -324,7 +324,23 @@
  
 
     <script>
-     
+     $.ajax({
+         type:'GET',
+        url:"/api/v1/landing/sliders/?search=2",
+        success:function(slidtop){
+            $("#bannerTopLanding").append(`
+            <a href="`+slidtop[0].url+`">
+                <div style="display: flex;margin: 2px;"><img class="imgslidercontainer" src="`+slidtop[0].image+`" alt="بازارچه" loading="lazy"></div>
+            </a>
+            </a><a href="`+slidtop[1].url+`">
+                <div style="display: flex;margin: 2px;"><img class="imgslidercontainer" src="`+slidtop[1].image+`" alt="بازارچه" loading="lazy"></div>
+            </a>
+            
+            `)
+            
+        }
+
+     })
 
                 <!-----------------------Category List----------------------->
     $.ajax({
@@ -594,7 +610,7 @@
                                <h3 style="font-size:1.1rem" class="titbox longtitle">`+dataLastCD[i].title+`</h3>
                            </div>
                                <span class="off-slider-darsad"> `+dataLastCD[i].discounted+`% تخفيف </span>
-                               <div class="single-off-slide-price"><span class="numbersprice price-root">`+dataLastCD[i].price+`</span><span class="numbersprice off-price">`+Math.round(dataLastCD[i].price*(1+(dataLastCD[i].discounted/100)))+`</span> ریال</div>
+                               <div class="single-off-slide-price"><span class="numbersprice price-root">`+dataLastCD[i].price+`</span><span class="numbersprice off-price">`+dataLastCD[i].old_price+`</span> ریال</div>
                         </a>
                     </div>
 

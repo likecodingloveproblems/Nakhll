@@ -97,6 +97,14 @@ class Market(models.Model):
     FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='تایید کننده', related_name='Market_Accept', blank=True, null=True) 
     FK_Tag=models.ManyToManyField(Tag, verbose_name='تگ ها', related_name='Market_Tagss', blank=True)
 
+    @property
+    def title(self):
+        return self.Title
+
+    @property
+    def url(self):
+        return reverse("nakhll_market:Markets")
+
     def __str__(self):
         return "{}".format(self.Title)
 
@@ -170,6 +178,21 @@ class SubMarket(models.Model):
     @property
     def title(self):
         return self.Title
+
+    @property
+    def slug(self):
+        return self.Slug
+
+    @property
+    def market(self):
+        return self.FK_Market
+
+    @property
+    def url(self):
+        return reverse(
+            'nakhll_market:SubMarkets',
+            kwargs={'submarket_slug':self.slug}
+        )
 
     # Output Customization Based On Title
     def __str__(self):
@@ -535,11 +558,9 @@ class Shop(models.Model):
     def image_thumbnail_url(self):
         return self.Image_thumbnail_url
 
-    
     def __str__(self):
         return "{}".format(self.Title)
 
-    
     def get_absolute_url(self):
         return reverse("nakhll_market:ShopsDetail", kwargs={
             'shop_slug': self.Slug
@@ -912,7 +933,7 @@ class Product (models.Model):
 
     @property
     def status(self):
-        return self.Status
+        return self.get_status()
 
     @property
     def id(self):
@@ -943,12 +964,11 @@ class Product (models.Model):
         return self.Story
 
     @property
-    def product_status(self):
-        return self.PRODUCT_STATUS
-
-    @property
     def post_range(self):
-        return self.FK_PostRange.all()
+        if self.FK_PostRange.exists():
+            return self.FK_PostRange.all()
+        else:
+            return 'سراسر کشور'
 
     @property
     def exception_post_range(self):
@@ -963,7 +983,7 @@ class Product (models.Model):
         return self.get_url()
 
     @property
-    def discounted(self):
+    def discount(self):
         return self.get_discounted()
 
     @property
@@ -971,7 +991,7 @@ class Product (models.Model):
         return self.get_related_products()
 
     @property
-    def attributs(self):
+    def attributes(self):
         return self.Product_Attr.all()
 
     @property
@@ -990,6 +1010,9 @@ class Product (models.Model):
     def comments(self):
         return self.Product_Comment.all()
 
+    @property
+    def shop(self):
+        return self.FK_Shop
 
     def __str__(self):
         return "{}".format(self.Title)
@@ -2144,54 +2167,6 @@ class User_View(models.Model):
         verbose_name = "بازدید کننده"
         verbose_name_plural = "بازدید کنندگان"
 
-#----------------------------------------------------------------------------------------------------------------------------------
-
-# Date_View (تاریخ - بازدید) Model
-class Date_View(models.Model):
-    Date = models.DateField(verbose_name = 'تاریخ بازدید', auto_now_add = True)
-    Count = models.CharField(verbose_name = 'میزان بازدید', max_length = 15, default = '1')
-
-    def __str__(self):
-        return "{} - {}".format(self.Date, self.Count)
-
-    # Ordering With DateCreate
-    class Meta:
-        ordering = ('id',)   
-        verbose_name = "بازدید - تاریخ"
-        verbose_name_plural = "بازدید - تاریخ ها"
-
-#----------------------------------------------------------------------------------------------------------------------------------
-
-# PageViews (بازدید صفحات) Model
-class PageViews(models.Model):
-    Object_Slug = models.SlugField(verbose_name = 'شناسه') 
-    OBJECT_TYPE = (
-        ('0','حجره'),
-        ('1','محصول'),
-        ('2','پست وبلاگ'),
-        ('3','داستان حجره'),
-    )
-    Object_Type = models.CharField(verbose_name = 'نوع شیء', choices = OBJECT_TYPE, max_length = 1, default = '0')
-    View_Count = models.PositiveIntegerField(verbose_name = 'میزان بازدید', default = 1)
-    FK_Viewer = models.ManyToManyField(User_View, verbose_name='بازدید کنندگان', related_name='View_Users', blank = True) 
-
-    # Output Customization Based On Slug (Type) : View_Count
-    def __str__(self):
-        if self.Object_Type == '0':
-            return "{} (حجره) : {}".format(self.Object_Slug, self.View_Count)
-        elif self.Object_Type == '1':
-            return "{} (محصول) : {}".format(self.Object_Slug, self.View_Count)
-        elif self.Object_Type == '2':
-            return "{} (پست وبلاگ) : {}".format(self.Object_Slug, self.View_Count)
-        elif self.Object_Type == '3':
-            return "{} (داستان حجره) : {}".format(self.Object_Slug, self.View_Count)
-
-    # Ordering With DateCreate
-    class Meta:
-        ordering = ('id',)   
-        verbose_name = "بازدید صفحه"
-        verbose_name_plural = "بازدید صفحات"
-        
 #----------------------------------------------------------------------------------------------------------------------------------
 
 # Point (امتیاز) Model

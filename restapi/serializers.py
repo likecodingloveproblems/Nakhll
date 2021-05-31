@@ -1,7 +1,7 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from nakhll_market.models import Profile , Product , Shop , SubMarket , Category , BankAccount , ShopBanner , Attribute , AttrProduct , AttrPrice , ProductBanner , User_View , PageViews , PostRange , Message , User_Message_Status, OptinalAttribute, Details
+from nakhll_market.models import Profile , Product , Shop , SubMarket , Category , BankAccount , ShopBanner , Attribute , AttrProduct , AttrPrice , ProductBanner , User_View, PostRange , Message , User_Message_Status, OptinalAttribute, Details
 from Payment.models import Factor , Wallet , FactorPost , Transaction , PostBarCode , Coupon
 import re
 from rest_framework.exceptions import  ValidationError 
@@ -353,15 +353,6 @@ class User_ViewSerializer(ModelSerializer):
         fields = [
             'User_Ip',
             'DateTime',
-        ]
-
-class PageViewsSerializer(ModelSerializer):
-    class Meta:
-        model = PageViews
-        fields = [
-            'Object_Slug',
-            'Object_Type',
-            'View_Count',
         ]
 
 class PostRangeSerializer(ModelSerializer):

@@ -13,7 +13,7 @@ import threading
 import json
 
 
-from nakhll_market.models import Profile, Product, Shop, SubMarket, Category, BankAccount, ShopBanner, Attribute, AttrProduct, AttrPrice, ProductBanner, User_View, PageViews, PostRange, Message, User_Message_Status, Alert, Field, Message
+from nakhll_market.models import Profile, Product, Shop, SubMarket, Category, BankAccount, ShopBanner, Attribute, AttrProduct, AttrPrice, ProductBanner, User_View, PostRange, Message, User_Message_Status, Alert, Field, Message
 from Payment.models import Factor, Wallet, FactorPost, Transaction, PostBarCode, Coupon
 
 
