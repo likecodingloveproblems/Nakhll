@@ -1,4 +1,5 @@
 from io import BytesIO
+from django.db.models.expressions import Case, Value, When
 
 from django.db.models.query import QuerySet
 from nakhll_market.models import Profile, Shop, Product
@@ -144,3 +145,73 @@ class UserState(View):
         return ExcelResponse(
             data=queryset
         )
+
+class ShopInformation(View):
+
+    def get(self , request):
+        queryset = Shop.objects\
+            .annotate(
+                available_product=Case(
+                    When(ShopProduct__Available=True, then=Value(1)),
+            ))\
+            .annotate(available_product_count=Count('available_product'))\
+            .annotate(
+                unavailable_product=Case(
+                    When(ShopProduct__Available=False, then=Value(2)),
+                ))\
+            .annotate(unavailable_product_count=Count('unavailable_product'))\
+            .annotate(
+                publish_product=Case(
+                    When(ShopProduct__Publish=True, then=Value(3)),
+                ))\
+            .annotate(publish_product_count=Count('publish_product'))\
+            .annotate(
+                unpublish_product=Case(
+                    When(ShopProduct__Publish=False, then=Value(4)),
+                ))\
+            .annotate(unpublish_product_count=Count('unpublish_product'))\
+            .annotate(
+                exist_product=Case(
+                    When(ShopProduct__Status='1', then=Value(5)),
+                ))\
+            .annotate(exist_product_count=Count('exist_product'))\
+            .annotate(
+                production_after_order=Case(
+                    When(ShopProduct__Status='2', then=Value(6)),
+                ))\
+            .annotate(production_after_order_count=Count('production_after_order'))\
+            .annotate(
+                sale_customization_product=Case(
+                    When(ShopProduct__Status='3', then=Value(7)),
+                ))\
+            .annotate(sale_customization_product_count=Count('sale_customization_product'))\
+            .annotate(
+                not_exist_product=Case(
+                    When(ShopProduct__Status='4', then=Value(8)),
+                ))\
+            .annotate(not_exist_product_count=Count('not_exist_product'))\
+            .annotate(factor_count=Count('ShopProduct__Factor_Product__Factor_Products'))\
+            .values(
+                'Title' , 'DateCreate' , 'FK_ShopManager__first_name' , 'FK_ShopManager__last_name',
+                'State' , 'BigCity' , 'City', 'available_product_count' , 'unavailable_product_count',
+                'publish_product_count', 'unpublish_product_count', 'exist_product_count',
+                'production_after_order_count', 'sale_customization_product_count',
+                'not_exist_product_count', 'FK_ShopManager__User_Profile__MobileNumber',
+                'factor_count'
+            )
+     
+        return ExcelResponse(
+            data=queryset
+        )
+
+
+
+
+
+
+
+        
+
+
+
+
