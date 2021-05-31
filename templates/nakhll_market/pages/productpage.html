@@ -764,7 +764,7 @@
 <script>
     let a=window.location.pathname
     let b=a.split("/")
-    var c=b[b.length-2]
+    var c=b[3]
     let urlApi=`/api/v1/product-page/details/`+c+`/`
     $.ajax({
         type:'GET',
