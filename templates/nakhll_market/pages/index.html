@@ -63,14 +63,14 @@
                         alt="حجره ها" loading="lazy"></div>
             </a>
         </aside>
-        <div style="display: flex;margin-top: 17px;">
+        <div id="bannerTopLanding" style="display: flex;margin-top: 17px;">
 
-            <a href="/kyadak/">
+            {% comment %} <a href="/kyadak/">
                 <div style="display: flex;margin: 2px;"><img class="imgslidercontainer" src="{% static "images/slide 02-2.jpg" %}" alt="بازارچه" loading="lazy"></div>
             </a>
             </a><a href="/galorisoheyl/">
                 <div style="display: flex;margin: 2px;"><img class="imgslidercontainer" src="{% static "images/slide 02-1.jpg" %}" alt="بازارچه" loading="lazy"></div>
-            </a>
+            </a> {% endcomment %}
         </div>
     </div>
 </div>
@@ -324,7 +324,23 @@
  
 
     <script>
-     
+     $.ajax({
+         type:'GET',
+        url:"/api/v1/landing/sliders/?search=2",
+        success:function(slidtop){
+            $("#bannerTopLanding").append(`
+            <a href="`+slidtop[0].url+`">
+                <div style="display: flex;margin: 2px;"><img class="imgslidercontainer" src="`+slidtop[0].image+`" alt="بازارچه" loading="lazy"></div>
+            </a>
+            </a><a href="`+slidtop[1].url+`">
+                <div style="display: flex;margin: 2px;"><img class="imgslidercontainer" src="`+slidtop[1].image+`" alt="بازارچه" loading="lazy"></div>
+            </a>
+            
+            `)
+            
+        }
+
+     })
 
                 <!-----------------------Category List----------------------->
     $.ajax({

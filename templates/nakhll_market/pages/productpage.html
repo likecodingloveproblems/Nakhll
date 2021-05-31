@@ -962,7 +962,12 @@
                     <th scope="row" class="titletable">ابعاد محصول با بسته بندی</th>
                     <td>`+`${dataPp.height_with_packaging}*${dataPp.width_with_packing}*${dataPp.length_with_packing}`+` <span class="Riyal">سانتی متر</span></td>
                 </tr>
-                   
+                 {% for item in AttrProduct %}
+                                            <tr>
+                                                <th scope="row" class="titletable">{{item.FK_Attribute.Title}}</th>
+                                                <td>{{item.Value}} <span class="Riyal">{% if item.FK_Attribute.Unit != '-' %}{{item.FK_Attribute.Unit}}{% endif %}</span></td>
+                                            </tr>
+                                        {% endfor %}   
              </tbody>
                 </table>
 
