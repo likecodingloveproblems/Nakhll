@@ -927,6 +927,7 @@ def unsuccessful(request):
 
 # Add Product To Cart With Attribute Price Page
 @login_required
+@csrf_exempt
 def AddProductToCartWithAttrPrice(request, ID):
     # Get This Product
     this_product = get_object_or_404(Product, ID = ID)
