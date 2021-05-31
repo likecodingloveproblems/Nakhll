@@ -58,10 +58,11 @@
 <!--fhfgh -->
 </div>
 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 imgCard">
-        <aside><a href="/5select/">
+        <aside id="bannerTopTopLanding">
+        {% comment %} <a href="/5select/">
                 <div style="display: flex;"><img class="imgslidercontainer" src="{% static "images/slide 01-2.jpg" %}"
                         alt="حجره ها" loading="lazy"></div>
-            </a>
+            </a> {% endcomment %}
         </aside>
         <div id="bannerTopLanding" style="display: flex;margin-top: 17px;">
 
@@ -328,12 +329,18 @@
          type:'GET',
         url:"/api/v1/landing/sliders/?search=2",
         success:function(slidtop){
+            $("#bannerTopTopLanding").append(`
+             <a href="`+slidtop[1].url +`">
+                <div style="display: flex;"><img class="imgslidercontainer" src="`+slidtop[1].image +`"
+                        alt="حجره ها" loading="lazy"></div>
+            </a>
+            `)
             $("#bannerTopLanding").append(`
             <a href="`+slidtop[0].url+`">
                 <div style="display: flex;margin: 2px;"><img class="imgslidercontainer" src="`+slidtop[0].image+`" alt="بازارچه" loading="lazy"></div>
             </a>
-            </a><a href="`+slidtop[1].url+`">
-                <div style="display: flex;margin: 2px;"><img class="imgslidercontainer" src="`+slidtop[1].image+`" alt="بازارچه" loading="lazy"></div>
+            </a><a href="`+slidtop[2].url+`">
+                <div style="display: flex;margin: 2px;"><img class="imgslidercontainer" src="`+slidtop[2].image+`" alt="بازارچه" loading="lazy"></div>
             </a>
             
             `)

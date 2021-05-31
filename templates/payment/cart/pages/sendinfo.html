@@ -68,45 +68,7 @@
             <div class="row">
                 <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-12">
                     <div class="box-cart-page">
-                        <div class="alerts-section"></div>
-                        <!-- Empty Alerts-->
-                        <div id="alert-div-inputFirstName-empty"></div>
-                        <div id="alert-div-inputLastName-empty"></div>
-                        <div id="alert-div-inputState-empty"></div>
-                        <div id="alert-div-inputBigCity-empty"></div>
-                        <div id="alert-div-inputCity-empty"></div>
-                        <div id="alert-div-inputMobileNumber-empty"></div>
-                        <div id="alert-div-inputPhoneNumber-empty"></div>
-                        <div id="alert-div-inputCityPerCode-empty"></div>
-                        <div id="alert-div-inputAddress-empty"></div>
-                        <div id="alert-div-inputZipCode-empty"></div>
-                        <div id="alert-div-inputNationalCode-Persian"></div>
-                        <div id="alert-div-inputNationalCodeError-Persian"></div>
-                        <div id="alert-div-inputNationalCodeFormat-Persian"></div>
-
-                        <!-- Char Alerts-->
-                        <div id="alert-div-inputFirstName-Persian"></div>
-                        <div id="alert-div-inputLastName-Persian"></div>
-                        <div id="alert-div-inputState-Persian"></div>
-                        <div id="alert-div-inputBigCity-Persian"></div>
-                        <div id="alert-div-inputCity-Persian"></div>
-                        <div id="alert-div-inputMobileNumber-digits"></div>
-                        <div id="alert-div-inputPhoneNumber-digits"></div>
-                        <div id="alert-div-inputCityPerCode-digits"></div>
-                        <!-- <div id="alert-div-inputAddress-Persian"></div> -->
-                        <div id="alert-div-inputZipCode-digits"></div>
-
-                        <!--MinLength Alert-->
-                        <div id="alert-div-inputCityPerCode-minlength"></div>
-                        <div id="alert-div-inputAddress-minlength"></div>
-
-                        <!--Length Alerts-->
-                        <div id="alert-div-inputMobileNumber-Length"></div>
-                        <div id="alert-div-inputPhoneNumber-Length"></div>
-                        <div id="alert-div-inputZipCode-Length"></div>
-
-                        <!--Valid Alert-->
-                        <div id="alert-div-inputMobileNumber-valid"></div>
+                        
 
                         <h4>اطلاعات ارسال</h4>
                         <small>به صورت پیش فرض ما از <span class="Riyal">اطلاعات پروفایل</span> شما استفاده می کنیم - تکمیل تمامی فیلد های این فرم <span class="Riyal">الزامی</span> می باشد.</small>
@@ -379,10 +341,49 @@
                         </div>
                         <div class="continue-cart">
                             <a id="next-step-factor" class="btn btn-success whitcol" onclick="ajaxCallsend()" ><i class="fal fa-map-marker-alt"></i> مرحله بعد </a>
-                                <div id="loaderDiv">
+                                {% comment %} <div id="loaderDiv">
                                     لطفا منتظر بمانید
                                     <img src="{% static "images/loading.svg" %}" alt="در حال بارگذاری">
-                                </div>
+                                </div> {% endcomment %}
+                                <div class="alerts-section"></div>
+                        <!-- Empty Alerts-->
+                        <div id="alert-div-inputFirstName-empty"></div>
+                        <div id="alert-div-inputLastName-empty"></div>
+                        <div id="alert-div-inputState-empty"></div>
+                        <div id="alert-div-inputBigCity-empty"></div>
+                        <div id="alert-div-inputCity-empty"></div>
+                        <div id="alert-div-inputMobileNumber-empty"></div>
+                        <div id="alert-div-inputPhoneNumber-empty"></div>
+                        <div id="alert-div-inputCityPerCode-empty"></div>
+                        <div id="alert-div-inputAddress-empty"></div>
+                        <div id="alert-div-inputZipCode-empty"></div>
+                        <div id="alert-div-inputNationalCode-Persian"></div>
+                        <div id="alert-div-inputNationalCodeError-Persian"></div>
+                        <div id="alert-div-inputNationalCodeFormat-Persian"></div>
+
+                        <!-- Char Alerts-->
+                        <div id="alert-div-inputFirstName-Persian"></div>
+                        <div id="alert-div-inputLastName-Persian"></div>
+                        <div id="alert-div-inputState-Persian"></div>
+                        <div id="alert-div-inputBigCity-Persian"></div>
+                        <div id="alert-div-inputCity-Persian"></div>
+                        <div id="alert-div-inputMobileNumber-digits"></div>
+                        <div id="alert-div-inputPhoneNumber-digits"></div>
+                        <div id="alert-div-inputCityPerCode-digits"></div>
+                        <!-- <div id="alert-div-inputAddress-Persian"></div> -->
+                        <div id="alert-div-inputZipCode-digits"></div>
+
+                        <!--MinLength Alert-->
+                        <div id="alert-div-inputCityPerCode-minlength"></div>
+                        <div id="alert-div-inputAddress-minlength"></div>
+
+                        <!--Length Alerts-->
+                        <div id="alert-div-inputMobileNumber-Length"></div>
+                        <div id="alert-div-inputPhoneNumber-Length"></div>
+                        <div id="alert-div-inputZipCode-Length"></div>
+
+                        <!--Valid Alert-->
+                        <div id="alert-div-inputMobileNumber-valid"></div>
                             <br>
                             <a href="/" class="aback">بازگشت به صفحه اول</a>
                         </div>
