@@ -2151,24 +2151,6 @@ class Alert(models.Model):
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
-# User_View (بازدید کننده) Model
-class User_View(models.Model):
-    User_Ip = models.CharField(verbose_name = 'آدرس ای پی', max_length = 50, blank = True)
-    DateTime = models.DateTimeField(verbose_name = 'تاریخ بازدید', auto_now_add = True)
-    Total_View = models.CharField(verbose_name = 'میزان بازدید', max_length = 15, default = '1')
-
-    # Output Customization Based On ip
-    def __str__(self):
-        return "{} - {}".format(self.User_Ip, self.Total_View)
-
-    # Ordering With DateCreate
-    class Meta:
-        ordering = ('id',)   
-        verbose_name = "بازدید کننده"
-        verbose_name_plural = "بازدید کنندگان"
-
-#----------------------------------------------------------------------------------------------------------------------------------
-
 # Point (امتیاز) Model
 class UserPoint (models.Model):
     FK_User = models.ForeignKey(User, verbose_name = 'امتیاز دهنده', related_name = 'point_user', on_delete = models.SET_NULL, null = True)
