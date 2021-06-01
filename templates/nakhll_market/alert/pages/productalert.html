@@ -29,7 +29,9 @@
                     {% block topsidebar %}
                         {% include "nakhll_market/profile/parents/new-topsidebar.html" %}
                     {% endblock %}
-                    <div class="profile-sidebar-main">
+
+                    <div class="d-none d-md-block profile-sidebar-main">
+
                         <a href="/profile/dashboard/">
                             <button>
                                 <i class="fas fa-id-badge"></i>
@@ -73,11 +75,103 @@
                         </a>
 
                         {% if request.user.is_staff %}
-                            {% block review %}
-                                {% include "nakhll_market/alert/pages/menu_for_alert.html" %}
+                            {% block menu %}
+                                {% include "nakhll_market/profile/parents/menu_for_shop_manage.html" %}
                             {% endblock %}
                         {% endif %}
                     </div>
+
+                    {% comment %} menue mobile {% endcomment %}
+
+                        {% if request.user.is_staff %}
+
+                            <div class="d-flex d-sm-none profile-sidebar-main-mobile">
+
+
+                                <a href="/profile/factor/">
+                                    <button>
+                                        <i class="fas fa-file-invoice-dollar"></i>
+                                        <h5>صورت حساب ها</h5>
+                                    </button>
+                                </a>
+
+                                <a href="/profile/alert/">
+                                    <button class="activebtn">
+                                        <i class="fas fa-bell"></i>
+                                        <h5>هشدار ها</h5>
+                                    </button>
+                                </a>
+
+                                <a href="{% url "nakhll_market:Show_All_Content" %}">
+                                    <button>
+                                        <i class="fas fa-sliders-h"></i>
+                                        <h5>مدیریت محتوا</h5>
+                                    </button>
+                                </a>
+
+                                <a href="{% url "nakhll_market:Show_All_User_Info" %}">
+                                    <button>
+                                        <i class="fas fa-users"></i>
+                                        <h5>کاربران</h5>
+                                    </button>
+                                </a>
+
+
+
+                                <a href="/profile/shops/">
+                                    <button>
+                                        <i class="fas fa-store"></i>
+                                        <h5>مدیریت حجره</h5>
+                                    </button>
+                                </a>
+
+
+                            </div>
+
+                        {% else %}
+                            <div class="d-flex d-sm-none profile-sidebar-main-mobile">
+
+                                <a href="/profile/dashboard/">
+                                    <button>
+                                        <i class="fas fa-id-badge"></i>
+                                        <h5>داشبورد</h5>
+                                    </button>
+                                </a>
+
+                                <a href="/profile/transaction/">
+                                    <button>
+                                        <i class="fad fa-clipboard-list"></i>
+                                    <h5>تراکنش ها</h5>
+                                    </button>
+                                </a>
+
+                                <a href="/profile/factor/">
+                                    <button>
+                                        <i class="fas fa-file-invoice-dollar"></i>
+                                        <h5>صورت حساب ها</h5>
+                                    </button>
+                                </a>
+
+                                <a href="/profile/ticketing/">
+                                    <button>
+                                        <i class="fad fa-user-headset"></i>
+                                        <h5>پشتیبانی</h5>
+                                    </button>
+                                </a>
+
+                                <a href="/profile/shops/">
+                                    <button>
+                                        <i class="fas fa-store"></i>
+                                        <h5>مدیریت حجره</h5>
+                                    </button>
+                                </a>
+
+
+                            </div>
+
+                        {% endif %}
+
+
                 </div>
             </div>
 

@@ -2041,6 +2041,42 @@ header {
     right: auto;
 }
 
+.profile-sidebar-main-mobile {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #F9F5F5;
+    padding: .3rem .5rem;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    z-index: 1000;
+    border-top: 1px solid #eee;
+    transform: translateY(0);
+    transition: all .3s ease;
+}
+
+.profile-sidebar-main-mobile button {
+    border: none;
+    background: #F9F5F5;
+
+}
+
+.profile-sidebar-main-mobile button i {
+    font-size: 2rem;
+    padding: 10px;
+    color: rgb(157, 157, 157);
+}
+
+.profile-sidebar-main-mobile h5 {
+    font-size: 10px;
+    font-weight: 300;
+    color: rgb(157, 157, 157);
+}
+
+
+
 .profile-sidebar-main {
     text-align: center;
 }

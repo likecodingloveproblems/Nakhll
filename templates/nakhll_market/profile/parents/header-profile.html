@@ -1,7 +1,7 @@
 {% load i18n static %}
 {% load analytical %}
-<div class="row">
-        <div class="col-xl-4">
+<div class="d-block   row">
+        <div class=" d-none d-md-block col-xl-4">
         <div class="body-top-profile">
             <span>
                 {% if request.user.is_authenticated %}
@@ -10,7 +10,7 @@
             </span>
         </div>
         </div>
-        <div class="col-xl-4">
+        <div class=" d-none d-md-block col-xl-4">
             <div class="body-top-profile">
             <a href="{% url "nakhll_market:Wallet" %}">
                 {% if request.user.is_authenticated %}
@@ -19,7 +19,7 @@
             </a>
             </div>
         </div>
-        <div class="col-xl-4">
+        <div class=" d-none d-md-block col-xl-4">
             <div class="body-top-profile">
                 <span>
                     {% if request.user.is_authenticated %}
