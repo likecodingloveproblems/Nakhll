@@ -555,7 +555,8 @@ def add_to_cart_with_price_attribute(request):
                     if AttrPrice.objects.filter(id = item):
                         attr_price_list.append(AttrPrice.objects.get(id = item))
                 # Check Peoduct Status
-                if (this_product.Status == '4') or (this_product.Inventory == 0):
+                if (this_product.Status == '4') or\
+                    (this_product.Status == '1' and this_product.Inventory == 0):
                     response_data['status'] = False
                     response_data['code'] = '404'
                     response_data['msg'] = 'Product Not Available'

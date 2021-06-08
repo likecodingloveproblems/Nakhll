@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.utils import field_mapping
 from nakhll_market.models import (
     AmazingProduct, AttrPrice, AttrProduct, Attribute,
-    Category, Market, Product, ProductBanner, Shop, Slider, Comment,
+    Category, Market, PostRange, Product, ProductBanner, Shop, Slider, Comment,
     SubMarket
     )
 
@@ -30,11 +30,12 @@ class ShopSerializer(serializers.ModelSerializer):
         ]
 
 class ProductSerializer(serializers.ModelSerializer):
+    shop = ShopSerializer(many=False, read_only=True)
     class Meta:
         model = Product
         fields = [
             'image_thumbnail_url', 'url', 'old_price', 'price', 'slug',
-            'title', 'status', 'discount', 'id'
+            'title', 'status', 'discount', 'id', 'shop'
         ]
 
 class AmazingProductSerializer(serializers.ModelSerializer):
@@ -99,6 +100,13 @@ class SubMarketSerializer(serializers.ModelSerializer):
             'title', 'market', 'url',
         ]
 
+class PostRangeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostRange
+        fields = [
+            'state', 'big_city', 'city'
+        ]
+
 class ProductDetailSerializer(serializers.ModelSerializer):
     related_products = ProductSerializer(many=True, read_only=True)
     attributes = AttrProductSerializer(many=True, read_only=True)
@@ -107,6 +115,8 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     comments = ProductCommentSerializer(many=True , read_only=True)
     sub_market = SubMarketSerializer(many=False, read_only=True)
     shop = ShopSerializer(many=False, read_only=False)
+    post_range = PostRangeSerializer(many=True, read_only=True)
+    exception_post_range = PostRangeSerializer(many=True, read_only=True)
     class Meta:
         model = Product
         fields = [

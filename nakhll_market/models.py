@@ -369,6 +369,30 @@ class PostRange (models.Model):
     BigCity=models.CharField(max_length=50, verbose_name='شهرستان', blank=True)
     City=models.CharField(max_length=50, verbose_name='شهر', blank=True)
 
+    @property
+    def state(self):
+        return self.State
+
+    @state.setter
+    def state(self, value):
+        self.State = value
+
+    @property
+    def big_city(self):
+        return self.BigCity
+
+    @big_city.setter
+    def big_city(self, value):
+        self.BigCity = value
+
+    @property
+    def city(self):
+        return self.City
+
+    @city.setter
+    def city(self, value):
+        self.City = value
+
     # Output Customization Based On State - BigCity - City 
     def __str__(self):
         if (self.BigCity != '') and (self.City == ''):
@@ -965,10 +989,7 @@ class Product (models.Model):
 
     @property
     def post_range(self):
-        if self.FK_PostRange.exists():
-            return self.FK_PostRange.all()
-        else:
-            return 'سراسر کشور'
+        return self.FK_PostRange.all()
 
     @property
     def exception_post_range(self):
@@ -1902,13 +1923,7 @@ class Slider(models.Model):
     ShowInfo=models.BooleanField(verbose_name='وضعیت نمایش اطلاعات اسلایدر', default=True, help_text='اگر می خواهید عنوان و توضیحات بنر روی آن نمایش داده شود، این گزینه را فعال کنید.')
     URL=models.URLField(verbose_name='لینک', help_text='لینکی که در صورت کلیک به آن منتقل می شود', blank= True)
     Image=models.ImageField(verbose_name='عکس اسلایدر', upload_to=PathAndRename('media/Pictures/Sliders/'), help_text='اسلایدر را اینجا وارد کنید')
-    LOCATION_TYPE=(
-        ('1','صفحه اصلی'),
-        ('2','تبلیغات صفحه اصلی - پایین'),
-        ('3','تبلیغات صفحه اصلی - وسط'),
-        ('4','بنر صفحه بازارچه ها'),
-    )
-    Location=models.CharField(verbose_name='مکان اسلایدر', max_length=2, choices=LOCATION_TYPE, default='1')
+    Location=models.IntegerField(verbose_name='مکان اسلایدر')
     DateCreate=models.DateTimeField(verbose_name='تاریخ بارگذاری اسلایدر', auto_now_add=True)
     DtatUpdate=models.DateTimeField(verbose_name='تاریخ بروزرسانی اسلایدر', auto_now=True)
     

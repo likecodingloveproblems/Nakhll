@@ -50,180 +50,180 @@ $("#alert-div-inputMobileNumber-valid").hide();
 
 //#region   Empty Alerts
 $("#alert-div-inputFirstName-empty").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom  alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>وارد کردن نام الزامی است</p>' +
     '</div></div>');
 
 $("#alert-div-inputNationalCode-Persian").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom  alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>کد ملی باید شامل ده رقم باشد..</p>' +
     '</div></div>');
 $("#alert-div-inputNationalCodeFormat-Persian").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom  alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>کدملی وارد شده معتبر نمیباشد...</p>' +
     '</div></div>');
 $("#alert-div-inputNationalCodeError-Persian").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom  alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>کد ملی وارد شده صحیح نمی باشد.</p>' +
     '</div></div>');
 
 $("#alert-div-inputLastName-empty").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom  alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>وارد کردن نام خانوادگی الزامی است</p>' +
     '</div></div>');
 
 $("#alert-div-inputState-empty").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom  alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>انتخاب استان الزامی است</p>' +
     '</div></div>');
 
 $("#alert-div-inputBigCity-empty").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom  alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>انتخاب شهرستان الزامی است</p>' +
     '</div></div>');
 
 $("#alert-div-inputCity-empty").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom  alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>انتخاب شهر الزامی است</p>' +
     '</div></div>');
 
 $("#alert-div-inputMobileNumber-empty").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom  alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>وارد کردن شماره همراه الزامی است</p>' +
     '</div></div>');
 
 $("#alert-div-inputPhoneNumber-empty").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom  alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>وارد کردن شماره تلفن ثابت الزامی است</p>' +
     '</div></div>');
 
 $("#alert-div-inputCityPerCode-empty").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom  alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>وارد کردن پیش شماره شهر الزامی است</p>' +
     '</div></div>');
 
 $("#alert-div-inputAddress-empty").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom  alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>وارد کردن آدرس الزامی است</p>' +
     '</div></div>');
 
 $("#alert-div-inputZipCode-empty").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom  alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>وارد کردن کدپستی الزامی است</p>' +
     '</div></div>');
 //#endregion
 
 //#region   Char Alerts
 $("#alert-div-inputFirstName-Persian").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom  alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>نام فقط میتواند شامل حروف فارسی باشد</p>' +
     '</div></div>');
 
 $("#alert-div-inputLastName-Persian").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom  alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>نام خانوادگی فقط میتواند شامل حروف فارسی باشد</p>' +
     '</div></div>');
 
 $("#alert-div-inputState-Persian").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom  alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>استان فقط میتواند شامل حروف فارسی باشد</p>' +
     '</div></div>');
 
 $("#alert-div-inputBigCity-Persian").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom  alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>شهرستان فقط میتواند شامل حروف فارسی باشد</p>' +
     '</div></div>');
 
 $("#alert-div-inputCity-Persian").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom  alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>شهر فقط میتواند شامل حروف فارسی باشد</p>' +
     '</div></div>');
 
 $("#alert-div-inputMobileNumber-digits").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom  alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>برای وارد نمودن شماره همراه تنها از اعداد میتوانید استفاده نمائید</p>' +
     '</div></div>');
 
 $("#alert-div-inputPhoneNumber-digits").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom  alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>برای وارد نمودن شماره ثابت تنها از اعداد میتوانید استفاده نمائید</p>' +
     '</div></div>');
 
 $("#alert-div-inputCityPerCode-digits").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom  alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>برای وارد نمودن پیش شماره شهر تنها از اعداد میتوانید استفاده نمائید</p>' +
     '</div></div>');
 
 // $("#alert-div-inputAddress-Persian").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-//     '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-//     '<i class="far fa-exclamation-circle"></i>' +
+//     '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom  alert-width limit-alert" role="alert">' +
+    '<i class="far fa-exclamation-circle"></i>' +
 //     '<p>تنها مجاز به استفاده از حروف فارسی و اعداد در آدرس هستید</p>' +
 //     '</div></div>');
 
 $("#alert-div-inputZipCode-digits").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom  alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>برای وارد نمودن کد پستی تنها از اعداد میتوانید استفاده نمائید</p>' +
     '</div></div>');
 //#endregion
 
 //#region   MinLength Alerts
 // $("#alert-div-inputAddress-minlength").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-// '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-// '<i class="far fa-exclamation-circle"></i>' +
+// '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom  alert-width limit-alert" role="alert">' +
+'<i class="far fa-exclamation-circle"></i>' +
 // '<p>آدرس حداقل بایستی 10 کاراکتر باشد</p>' +
 // '</div></div>');
 //#endregion
 
 //#region   Length Alerts
 $("#alert-div-inputCityPerCode-minlength").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom  alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>پیش شماره شهر بایستی 3 رقم باشد</p>' +
     '</div></div>');
 
 $("#alert-div-inputMobileNumber-Length").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom  alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>شماره همراه بایستی 11 رقم باشد</p>' +
     '</div></div>');
 $("#alert-div-inputPhoneNumber-Length").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom  alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>شماره ثابت بایستی 8 رقم باشد</p>' +
     '</div></div>');
 $("#alert-div-inputZipCode-Length").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom  alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>کد پستی بایستی 10 رقم باشد</p>' +
     '</div></div>');
 //#endregion
 
 //#region   Valid Alert
 $("#alert-div-inputMobileNumber-valid").html('<div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">' +
-    '<div class="alert alert-warning alert-dismissible fade show custom-alart alert-width limit-alert" role="alert">' +
-    '<i class="far fa-exclamation-circle"></i>' +
+    '<div class="alert alert-warning alert-dismissible fade show custom-alart-custom  alert-width limit-alert" role="alert">' +
+    // '<i class="far fa-exclamation-circle"></i>' +
     '<p>این شماره همراه معتبر نمیباشد</p>' +
     '</div></div>');
 //#endregion

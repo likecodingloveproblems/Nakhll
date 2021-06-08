@@ -14,6 +14,8 @@
 <link rel="stylesheet" href="../../../../static/slicknav/slicknav.min.css">
 <link rel="stylesheet" href="../../../../static/css/mainCard.css">
 {% analytical_head_bottom %}</head>
+<script src="https://unpkg.com/swiper/swiper-bundle.js"></script>
+<script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 <body>{% analytical_body_top %}
 
 {% block headertag %}
@@ -58,10 +60,11 @@
 <!--fhfgh -->
 </div>
 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 imgCard">
-        <aside><a href="/5select/">
+        <aside id="bannerTopTopLanding">
+        {% comment %} <a href="/5select/">
                 <div style="display: flex;"><img class="imgslidercontainer" src="{% static "images/slide 01-2.jpg" %}"
                         alt="حجره ها" loading="lazy"></div>
-            </a>
+            </a> {% endcomment %}
         </aside>
         <div id="bannerTopLanding" style="display: flex;margin-top: 17px;">
 
@@ -135,7 +138,7 @@
                  <h3 style="font-size:1.1rem"><a href="/product/all/">نمایش همه محصولات</a></h3>
                 </div>
                     <div class="clearfix"></div>
-                    <div class="slider-full-cat slider-half">
+                    <div class="slider-full-cat ">
                         <div class="postslidebt">
                             <section id="lastProduct" class="autoplay slider sliderhalfLanding">
                             </section>
@@ -174,6 +177,11 @@
 
 </div>
 <!-- ---------------------------------- -->
+
+
+
+
+<!-- ---------------------->
 <section id="three-box-slider">
     <div class="container">
         <div class="row">
@@ -184,7 +192,7 @@
                     <h3 style="font-size:1.1rem"><a href="/product/all/">نمایش همه محصولات</a></h3>
                     </div>
                     <div class="clearfix"></div>
-                    <div class="slider-full-cat slider-half">
+                    <div class="slider-full-cat ">
                         <div class="postslidebt">
                             <section id="ProposalProduct" class="autoplay slider sliderfullP">
 
@@ -234,10 +242,8 @@
     
 </section>
 
+
 <!-- -------------------------------------پایان---------------------------------- -->
-
-
-
 
 
     
@@ -276,7 +282,7 @@
 
                                 </div>
                                 <div style="display:flex ; justify-content : flex-start ; align-items : center ; margin-top : 20px">
-                                    <span class="price">`+DataAmazingBanner[i].product.price+` </span>تومان
+                                    <span class="price">`+DataAmazingBanner[i].product.Price+` </span>ریال
 
                                 </div>
 
@@ -328,12 +334,18 @@
          type:'GET',
         url:"/api/v1/landing/sliders/?search=2",
         success:function(slidtop){
+            $("#bannerTopTopLanding").append(`
+             <a href="`+slidtop[1].url +`">
+                <div style="display: flex;"><img class="imgslidercontainer" src="`+slidtop[1].image +`"
+                        alt="حجره ها" loading="lazy"></div>
+            </a>
+            `)
             $("#bannerTopLanding").append(`
             <a href="`+slidtop[0].url+`">
                 <div style="display: flex;margin: 2px;"><img class="imgslidercontainer" src="`+slidtop[0].image+`" alt="بازارچه" loading="lazy"></div>
             </a>
-            </a><a href="`+slidtop[1].url+`">
-                <div style="display: flex;margin: 2px;"><img class="imgslidercontainer" src="`+slidtop[1].image+`" alt="بازارچه" loading="lazy"></div>
+            </a><a href="`+slidtop[2].url+`">
+                <div style="display: flex;margin: 2px;"><img class="imgslidercontainer" src="`+slidtop[2].image+`" alt="بازارچه" loading="lazy"></div>
             </a>
             
             `)
@@ -501,17 +513,59 @@
                     <!--پنجم اجرا میشود-->
            
            for(let i=0;i<result.length;i++){
-              
+
+
+                                  
+
            $("#lastProduct").append(`
-            <div>
-           <div class="boxslider-slick products-new">
-                <a href="`+result[i].url+`">
-                  <img src="`+result[i].image_thumbnail_url+`" alt=`+result[i].title+` width="175px" height="175px" >
-                  <h2 style="font-size:1rem" class="titbox">`+result[i].title+`</h2>
-                  <span><span class="numbersprice">`+result[i].price+`</span> ریال</span>
-                </a>
-            </div>
-            </div>`)
+            <div class="_card_product">
+                                            <div class="_img_card">
+                                                <a href="`+result[i].url+`">
+                                                    <img src="`+result[i].image_thumbnail_url+`" alt="`+result[i].title+`" />
+                                                </a>
+                                            </div>
+                                            <div class="_content_card">
+                                                <div class="_content_card_top">
+                                                    <a class="_content_card_title text-truncate" href="#">`+result[i].title+`</a>
+                                            
+                                                    <div class="_content_card_vendor text-truncate">
+                                                       <span>`+result[i].shop.state+`</span>
+                                                        <i class="fa fa-angle-left px-1"></i>
+                                                        <a href="`+result[i].shop.url+`">`+result[i].shop.title+`</a>
+                                                    </div>
+                                                </div>
+                                                <div class="_content_card_discount">
+                                                    <div class="d-flex">
+                                                        <div class=""></div>
+                                                    </div>
+                                                    <div class="_content_reviwer">
+                                                        {% comment %} <span class="text-secondary"> (1 نظر) </span>
+                                                        <span class="font-weight-bold ml-1">5</span>
+                                                        <i class="fa fa-star " style="color: #ffc315;" aria-hidden="true"></i> {% endcomment %}
+                                                    </div>
+                                                </div>
+                                                <div class="_content_card_price">
+                                                    <div class="_content_price_number">
+                                                        <span class="_content_toman">ریال</span>
+                                                        <span class="_content_price_now ">`+result[i].price+`</span>
+                                                        <span class="_content_price_old "></span>
+                                                    </div>
+                                                    <div >
+                                                        {% comment %} <button class="btn _btn_add_card">
+                                                        <i class="fa fa-plus" />
+                                                    </button> {% endcomment %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+
+
+
+           `)
+
+
            
                 }  
 
@@ -532,7 +586,7 @@
                         slidesToShow: 1,
                     }
                 }]
-            });                         
+            });   
        }
     })
 
@@ -574,7 +628,9 @@
             $("#mostDisProLanding").append(`
             
             <h3  class="title-borderbt">تخفیفات ویژه</h3>
-
+                <div style="
+    margin-top: 43px;
+">
 
                     <img src="`+dataMostDisPro[0].image_thumbnail_url+`" alt="عکس تخفیفات ویژه" width="175px" height="175px">
                     <a href="`+dataMostDisPro[0].url+`">
@@ -583,7 +639,7 @@
                     <span class="strikeprice numbersprice takhfif">`+dataMostDisPro[0].old_price+` ریال</span>
                     <br>
                     <span class="priceline numbersprice takhfif">`+dataMostDisPro[0].price+` ریال</span> 
-            
+            </div>
             
             `)
        }
@@ -597,23 +653,54 @@
         url:"/api/v1/landing/last-created-discounted-products/",
         success:function(dataLastCD){
             
-           <!-- ششم اجرا میشود-->
+          
             
             for(let i=0;i<dataLastCD.length;i++){
 
                 $("#LastCreatedDiscounted").append(`
-                 
-                    <div class="boxslider-slick">
-                        <a href="`+dataLastCD[i].url+`">
-                           <img src="`+dataLastCD[i].image_thumbnail_url+`" alt="`+dataLastCD[i].title+`" width="170px" height="170px">
-                           <div class="title-off-slider">
-                               <h3 style="font-size:1.1rem" class="titbox longtitle">`+dataLastCD[i].title+`</h3>
-                           </div>
-                               <span class="off-slider-darsad"> `+dataLastCD[i].discount+`% تخفيف </span>
-                               <div class="single-off-slide-price"><span class="numbersprice price-root">`+dataLastCD[i].price+`</span><span class="numbersprice off-price">`+dataLastCD[i].old_price+`</span> ریال</div>
-                        </a>
-                    </div>
-
+                     <div class="_card_product">
+                                            <div class="_img_card">
+                                                <a href="`+dataLastCD[i].url+`">
+                                                    <img src="`+dataLastCD[i].image_thumbnail_url+`" alt="`+dataLastCD[i].title+`" />
+                                                </a>
+                                            </div>
+                                            <div class="_content_card">
+                                                <div class="_content_card_top">
+                                                    <a class="_content_card_title text-truncate" href="#">`+dataLastCD[i].title+`</a>
+                                            
+                                                    <div class="_content_card_vendor text-truncate">
+                                                        <span>`+dataLastCD[i].shop.state+`</span>
+                                                        <i class="fa fa-angle-left px-1"></i>
+                                                        <a href="`+dataLastCD[i].shop.url+`">`+dataLastCD[i].shop.title+`</a>
+                                                    </div>
+                                                </div>
+                                                <div class="_content_card_discount">
+                                                    <div class="d-flex">
+                                                        <div class="_card_discount">`+dataLastCD[i].discount+`%</div>
+                                                    </div>
+                                                    <div class="_content_reviwer">
+                                                        {% comment %} <span class="text-secondary"> (1 نظر) </span>
+                                                        <span class="font-weight-bold ml-1">5</span>
+                                                        <i class="fa fa-star " style="color: #ffc315;" aria-hidden="true"></i> {% endcomment %}
+                                                    </div>
+                                                </div>
+                                                <div class="_content_card_price">
+                                                    <div class="_content_price_number">
+                                                        <span class="_content_toman">ریال</span>
+                                                        <span class="_content_price_now">`+dataLastCD[i].price+`</span>
+                                                        <span class="_content_price_old">`+dataLastCD[i].old_price+`</span>
+                                                    </div>
+                                                    <div >
+                                                    
+                                                        {% comment %} <button class="btn _btn_add_card">
+                                                        <i class="fa fa-plus" />
+                                                    </button> {% endcomment %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+               
+                   
                 
                 `)
                 
@@ -623,7 +710,7 @@
             
             $(".sliderfullLanding").slick({
                 infinite: true,
-                slidesToShow: 6,
+                slidesToShow: 5,
                 slidesToScroll: 1,
                     responsive: [{
                     breakpoint: 1025,
@@ -655,6 +742,50 @@
             
             for(let i=0;i<dataProposalProduct.length;i++){
                 $("#ProposalProduct").append(`
+
+                                    <div class="_card_product">
+                                            <div class="_img_card">
+                                                <a href="`+dataProposalProduct[i].url+`">
+                                                    <img src="`+dataProposalProduct[i].image_thumbnail_url+`" alt="`+dataProposalProduct[i].title+`" />
+                                                </a>
+                                            </div>
+                                            <div class="_content_card">
+                                                <div class="_content_card_top">
+                                                    <a class="_content_card_title text-truncate" href="#">`+dataProposalProduct[i].title+`</a>
+                                            
+                                                    <div class="_content_card_vendor text-truncate">
+                                                        <span>`+dataProposalProduct[i].shop.state+`</span>
+                                                        <i class="fa fa-angle-left px-1"></i>
+                                                        <a href="`+dataProposalProduct[i].shop.url+`">`+dataProposalProduct[i].shop.title+`</a>
+                                                    </div>
+                                                </div>
+                                                <div class="_content_card_discount">
+                                                    <div class="d-flex">
+                                                        <div class=""></div>
+                                                    </div>
+                                                    <div class="_content_reviwer">
+                                                        {% comment %} <span class="text-secondary"> (1 نظر) </span>
+                                                        <span class="font-weight-bold ml-1">5</span>
+                                                        <i class="fa fa-star " style="color: #ffc315;" aria-hidden="true"></i> {% endcomment %}
+                                                    </div>
+                                                </div>
+                                                <div class="_content_card_price">
+                                                    <div class="_content_price_number">
+                                                        <span class="_content_toman">ریال</span>
+                                                        <span class="_content_price_now">`+dataProposalProduct[i].price+`</span>
+                                                        <span class="_content_price_old"></span>
+                                                    </div>
+                                                    <div >
+                                                        {% comment %} <button class="btn _btn_add_card">
+                                                          <i class="fa fa-plus" />
+                                                        </button> {% endcomment %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+
                 
                                     <div class="boxslider-slick">
                                         <a href="`+dataProposalProduct[i].url+`">

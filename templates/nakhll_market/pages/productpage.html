@@ -708,6 +708,7 @@
         <div class="clearfix"></div>
 </section>
 
+
 <script type="text/javascript">
     $(window).on('load', function() {
         $('#myModal').modal('show');
@@ -1061,9 +1062,7 @@
                success:function(dataTakhfif){
                    console.log("did","yes yes")
                    console.log("did",dataTakhfif)
-                   if(dataTakhfif.length>2){
-
-                   }else{
+                   
                        console.log("did","else")
                        $.ajax({
                             type:'GET',
@@ -1073,42 +1072,42 @@
                                 
                                 for(let j=0;j<dataMostDisPro.length; j++){
                                     if(j==0){
-                                        $("#superOffProductPage").append(`
-                                         <h3 style="font-size: 1.3rem" class="title-borderbt">تخفیفات ویژه</h3>
+                                                $("#superOffProductPage").append(`
+                                                <h3 style="font-size: 1.3rem" class="title-borderbt">تخفیفات ویژه</h3>
 
-                                            <img src="`+dataMostDisPro[j].image_thumbnail_url+`" alt="عکس تخفیفات ویژه" width="175px" height="175px">
-                                            
-                                            <a href="`+dataMostDisPro[j].url+`">
-                                                <h2 style="font-size: 1rem" class="longtitle">`+dataMostDisPro[j].title+`</h2>
-                                            </a>
+                                                    <img src="`+dataMostDisPro[j].image_thumbnail_url+`" alt="عکس تخفیفات ویژه" width="175px" height="175px">
+                                                    
+                                                    <a href="`+dataMostDisPro[j].url+`">
+                                                        <h2 style="font-size: 1rem" class="longtitle">`+dataMostDisPro[j].title+`</h2>
+                                                    </a>
+                                                        
+                                                            <span class="strikeprice numbersprice takhfif">`+dataMostDisPro[j].old_price+` ریال</span>
+                                                        
+                                                    <br>
+                                                    <span class="priceline numbersprice takhfif">`+dataMostDisPro[j].price+` ریال</span>
                                                 
-                                                    <span class="strikeprice numbersprice takhfif">`+dataMostDisPro[j].old_price+` ریال</span>
-                                                
-                                            <br>
-                                            <span class="priceline numbersprice takhfif">`+dataMostDisPro[j].price+` ریال</span>
-                                        
-                                        `)
+                                                `)
 
                                     }else{
                                    
-                                    $("#GoldOrPerhapsProduct").append(`
-                                    
-                                    <div class="boxslider-slick">
-                                        <a href="`+dataMostDisPro[j].url+`">
-                                            <img src="`+dataMostDisPro[j].image_thumbnail_url+`" alt="`+dataMostDisPro[j].title+`" width="170px" height="170px">
-                                            <div class="title-off-slider">
-                                                <h3 style="font-size:1.1rem" class="titbox longtitle">`+dataMostDisPro[j].title+`</h3>
-                                            </div>
-                                                                        
-                                                <span class="off-slider-darsad"> `+dataMostDisPro[j].discount+`% تخفيف </span>
-                                                <div class="single-off-slide-price"><span class="numbersprice price-root">`+dataMostDisPro[j].price+`</span><span class="numbersprice off-price">`+dataMostDisPro[j].old_price+`</span> ریال</div>
+                                            $("#GoldOrPerhapsProduct").append(`
                                             
-                                        </a>
-                                    </div>
-                                
+                                            <div class="boxslider-slick">
+                                                <a href="`+dataMostDisPro[j].url+`">
+                                                    <img src="`+dataMostDisPro[j].image_thumbnail_url+`" alt="`+dataMostDisPro[j].title+`" width="170px" height="170px">
+                                                    <div class="title-off-slider">
+                                                        <h3 style="font-size:1.1rem" class="titbox longtitle">`+dataMostDisPro[j].title+`</h3>
+                                                    </div>
+                                                                                
+                                                        <span class="off-slider-darsad"> `+dataMostDisPro[j].discount+`% تخفيف </span>
+                                                        <div class="single-off-slide-price"><span class="numbersprice price-root">`+dataMostDisPro[j].price+`</span><span class="numbersprice off-price">`+dataMostDisPro[j].old_price+`</span> ریال</div>
+                                                    
+                                                </a>
+                                            </div>
+                                        
 
-                                    
-                                    `)
+                                            
+                                            `)
                                     }
                                 }
                                 $(".sliderfullProductPage").slick({
@@ -1141,7 +1140,7 @@
                             }
 
                         })
-                   }
+                   
                }
 
             })
