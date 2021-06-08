@@ -715,42 +715,112 @@
                     <!-- topsidebar -->
                     <p>{{simpleDict.user.name}}</p>
                     <div class="profile-sidebar-main">
-                        {% for menu in sidebarMenu %}
-                            {% if menu.staffOnly %}
-                                {% if request.user.is_staff %}
-                                    <a href="{{menu.url}}">
-                                        {% if menu.isActive %}
-                                        <button class="activebtn">
-                                        {% else %}
-                                        <button>
+                        {% comment %} desktop situation {% endcomment %}
+                        <div class="d-none d-md-block profile-sidebar-main">
+                            {% for menu in sidebarMenu %}
+                                    {% if menu.staffOnly %}
+                                        {% if request.user.is_staff %}
+                                            <a href="{{menu.url}}">
+                                                {% if menu.isActive %}
+                                                <button class="activebtn">
+                                                {% else %}
+                                                <button>
+                                                {% endif %}
+                                                    <i class="{{menu.class}}"></i>
+                                                    <h5>{{menu.name}}</h5>
+                                                </button>
+                                            </a>
                                         {% endif %}
-                                            <i class="{{menu.class}}"></i>
-                                            <h5>{{menu.name}}</h5>
+                                    {% else %}
+                                        <a href="{{menu.url}}">
+                                            {% if menu.isActive %}
+                                            <button class="activebtn">
+                                            {% else %}
+                                            <button>
+                                            {% endif %}
+                                                <i class="{{menu.class}}"></i>
+                                                <h5>{{menu.name}}</h5>
+                                            </button>
+                                        </a>
+                                    {% endif %}
+                            {% endfor %}
+                        </div>
+                        {% comment %} mobile situation {% endcomment %}
+                        <div class="d-flex d-sm-none profile-sidebar-main-mobile">
+                            {% if request.user.is_staff %}
+                                    <a href="/profile/factor/">
+                                        <button>
+                                            <i class="fas fa-file-invoice-dollar"></i>
+                                            <h5>صورت حساب ها</h5>
                                         </button>
                                     </a>
-                                {% endif %}
+
+                                    <a href="/profile/alert/">
+                                        <button class="activebtn">
+                                            <i class="fas fa-bell"></i>
+                                            <h5>هشدار ها</h5>
+                                        </button>
+                                    </a>
+
+                                    <a href="{% url "nakhll_market:Show_All_Content" %}">
+                                        <button>
+                                            <i class="fas fa-sliders-h"></i>
+                                            <h5>مدیریت محتوا</h5>
+                                        </button>
+                                    </a>
+
+                                    <a href="{% url "nakhll_market:Show_All_User_Info" %}">
+                                        <button>
+                                            <i class="fas fa-users"></i>
+                                            <h5>کاربران</h5>
+                                        </button>
+                                    </a>
+
+                                    <a href="/profile/shops/">
+                                        <button>
+                                            <i class="fas fa-store"></i>
+                                            <h5>مدیریت حجره</h5>
+                                        </button>
+                                    </a>
+
+                                </div>
                             {% else %}
-                                <a href="{{menu.url}}">
-                                    {% if menu.isActive %}
-                                    <button class="activebtn">
-                                    {% else %}
-                                    <button>
-                                    {% endif %}
-                                        <i class="{{menu.class}}"></i>
-                                        <h5>{{menu.name}}</h5>
-                                    </button>
-                                </a>
+                                    <a href="/profile/dashboard/">
+                                        <button>
+                                            <i class="fas fa-id-badge"></i>
+                                            <h5>داشبورد</h5>
+                                        </button>
+                                    </a>
+
+                                    <a href="/profile/transaction/">
+                                        <button>
+                                            <i class="fad fa-clipboard-list"></i>
+                                        <h5>تراکنش ها</h5>
+                                        </button>
+                                    </a>
+
+                                    <a href="/profile/factor/">
+                                        <button>
+                                            <i class="fas fa-file-invoice-dollar"></i>
+                                            <h5>صورت حساب ها</h5>
+                                        </button>
+                                    </a>
+
+                                    <a href="/profile/ticketing/">
+                                        <button>
+                                            <i class="fad fa-user-headset"></i>
+                                            <h5>پشتیبانی</h5>
+                                        </button>
+                                    </a>
+
+                                    <a href="/profile/shops/">
+                                        <button>
+                                            <i class="fas fa-store"></i>
+                                            <h5>مدیریت حجره</h5>
+                                        </button>
+                                    </a>
                             {% endif %}
-                        {% endfor %}
-
-                            <!-- <a href="/profile/shops/manage_campaign_list/">
-                                <button>
-                                    <i class="fas fa-tag"></i>
-                                    <h5>کمپین ها</h5>
-                                </button>
-                            </a> -->
-                            <!-- menu_for_alluser -->
-
+                        </div>
                     </div>
                 </div>
             </div>
