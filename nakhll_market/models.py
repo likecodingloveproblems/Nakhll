@@ -369,6 +369,30 @@ class PostRange (models.Model):
     BigCity=models.CharField(max_length=50, verbose_name='شهرستان', blank=True)
     City=models.CharField(max_length=50, verbose_name='شهر', blank=True)
 
+    @property
+    def state(self):
+        return self.State
+
+    @state.setter
+    def state(self, value):
+        self.State = value
+
+    @property
+    def big_city(self):
+        return self.BigCity
+
+    @big_city.setter
+    def big_city(self, value):
+        self.BigCity = value
+
+    @property
+    def city(self):
+        return self.City
+
+    @city.setter
+    def city(self, value):
+        self.City = value
+
     # Output Customization Based On State - BigCity - City 
     def __str__(self):
         if (self.BigCity != '') and (self.City == ''):
