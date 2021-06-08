@@ -989,10 +989,7 @@ class Product (models.Model):
 
     @property
     def post_range(self):
-        if self.FK_PostRange.exists():
-            return self.FK_PostRange.all()
-        else:
-            return 'سراسر کشور'
+        return self.FK_PostRange.all()
 
     @property
     def exception_post_range(self):
