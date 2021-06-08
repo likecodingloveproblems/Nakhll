@@ -8777,8 +8777,9 @@ button.swiper-pagination-bullet {
     transition: all .3s ease;
 }
 
-.btn:hover {
+
+/* .btn:hover {
     background-color: #fff;
     color: #00a7e6;
     transform: scale(1.4);
-}
+} */
