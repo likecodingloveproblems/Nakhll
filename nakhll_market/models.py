@@ -1532,8 +1532,8 @@ class ProductMovie (models.Model):
 # Comment (نظر محصول) Model
 class Comment(models.Model):
     TYPE_STATUS =(
-        (True,'مثبت'),
         (False,'منفی'),
+        (True,'مثبت'),
     )
     Type=models.BooleanField(verbose_name='نوع نظر', choices=TYPE_STATUS, default=True)
     FK_UserAdder=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='کاربر', related_name='User_Comment', null=True)
@@ -1568,6 +1568,10 @@ class Comment(models.Model):
     @property
     def date_create(self):
         return self.DateCreate
+
+    @property
+    def type(self):
+        return self.TYPE_STATUS[self.Type][1]
 
     def get_type(self):
         if self.Type:

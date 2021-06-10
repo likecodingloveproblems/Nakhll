@@ -83,7 +83,7 @@ class ProductDetailsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     lookup_field = 'Slug'
     queryset = Product.objects.all()
 
-    
+
 class ProductsInSameFactorViewSet(generics.ListAPIView):
     serializer_class = ProductSerializer
     permission_classes = [permissions.AllowAny, ]

@@ -26,5 +26,5 @@ product_page_router.register(r'details', ProductDetailsViewSet, basename="detail
 urlpatterns = [
     path('landing/', include(landing_router.urls)),
     path('product-page/', include(product_page_router.urls)),
-    path('product-page/same-factor/<uuid:ID>/',ProductsInSameFactorViewSet.as_view() )
+    path('product-page/same-factor/<uuid:ID>/', ProductsInSameFactorViewSet.as_view()),
 ]

@@ -1,4 +1,7 @@
+from django.contrib.auth.models import User
+from django.db.models import fields
 from rest_framework import serializers
+from rest_framework.relations import HyperlinkedIdentityField, HyperlinkedRelatedField
 from rest_framework.utils import field_mapping
 from nakhll_market.models import (
     AmazingProduct, AttrPrice, AttrProduct, Attribute,
@@ -77,12 +80,30 @@ class ProductBannerSerializer(serializers.ModelSerializer):
             'image', 'id'
         ]
 
-class ProductCommentSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'first_name', 'last_name',
+        ]
+
+class CommentSerializer(serializers.ModelSerializer):
+    user = UserSerializer(many=False, read_only=True)
     class Meta:
         model = Comment
         fields = [
-            'user', 'product', 'description', 'number_like',
-            'reply', 'date_create'
+            'user', 'description', 'number_like',
+            'date_create',
+        ]
+
+class ProductCommentSerializer(serializers.ModelSerializer):
+    user = UserSerializer(many=False, read_only=True)
+    reply = CommentSerializer(many=False, read_only=True)
+    class Meta:
+        model = Comment
+        fields = [
+            'user', 'description', 'number_like',
+            'reply', 'date_create',
         ]
 
 class MarketSerializer(serializers.ModelSerializer):
@@ -107,7 +128,7 @@ class PostRangeSerializer(serializers.ModelSerializer):
             'state', 'big_city', 'city'
         ]
 
-class ProductDetailSerializer(serializers.ModelSerializer):
+class ProductDetailSerializer(serializers.HyperlinkedModelSerializer):
     related_products = ProductSerializer(many=True, read_only=True)
     attributes = AttrProductSerializer(many=True, read_only=True)
     attributes_price = AttrPriceSerializer(many=True, read_only=True)
@@ -126,5 +147,5 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'net_weight', 'weight_with_packing',  'length_with_packing',
             'height_with_packaging', 'story', 'width_with_packing','comments',
             'status', 'exception_post_range', 'post_range', 'sub_market',
-            'shop'
+            'shop',
         ]
