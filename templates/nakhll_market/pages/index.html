@@ -271,14 +271,14 @@
                  $("#ConsectorSlideBanner").append(`
                       
                         <div class="product-item swiper-slide">
-                            <a href="`+DataAmazingBanner[i].product.get_url+`"><img src="`+DataAmazingBanner[i].product.Image_thumbnail_url+`" alt="`+DataAmazingBanner[i].product.Title+`"></a>
-                            <a class="title" href="`+DataAmazingBanner[i].product.get_url+`">`+DataAmazingBanner[i].product.Title+`</a>
+                            <a href="`+DataAmazingBanner[i].product.url+`"><img src="`+DataAmazingBanner[i].product.image_thumbnail_url+`" alt="`+DataAmazingBanner[i].product.title+`"></a>
+                            <a class="title" href="`+DataAmazingBanner[i].product.url+`">`+DataAmazingBanner[i].product.title+`</a>
                             <div class="inc-product-price">
 
                                 
                                 <div class="del-product-price">
-                                    <del>`+DataAmazingBanner[i].product.OldPrice+`</del>
-                                    <div class="c-price__discount-oval"><span>`+DataAmazingBanner[i].product.get_discounted+`٪</span></div>
+                                    <del>`+DataAmazingBanner[i].product.old_price+`</del>
+                                    <div class="c-price__discount-oval"><span>`+DataAmazingBanner[i].product.discounted+`٪</span></div>
 
                                 </div>
                                 <div style="display:flex ; justify-content : flex-start ; align-items : center ; margin-top : 20px">
@@ -787,7 +787,7 @@
 
 
                 
-                                    
+                                   
                 `)
         }
         $(".sliderfullP").slick({
@@ -850,7 +850,7 @@
             "image": "https://nakhll.com/static/images/Logo%20SVG.svg",
             "@id": "https://www.nakhll.com",
             "url": "https://www.nakhll.com",
-            "telephone": "+983432476561",
+            "telephone": "09385062471",
             "priceRange": "IRR",
             "address": {
             "@type": "PostalAddress",
