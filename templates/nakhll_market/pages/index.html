@@ -282,7 +282,7 @@
 
                                 </div>
                                 <div style="display:flex ; justify-content : flex-start ; align-items : center ; margin-top : 20px">
-                                    <span class="price">`+DataAmazingBanner[i].product.Price+` </span>ریال
+                                    <span class="price">`+DataAmazingBanner[i].product.Price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+` </span>ریال
 
                                 </div>
 
@@ -636,9 +636,9 @@
                     <a href="`+dataMostDisPro[0].url+`">
                     <h2 style="font-size: 1.1rem" class="longtitle">`+dataMostDisPro[0].title+`</h2>
                     </a>
-                    <span class="strikeprice numbersprice takhfif">`+dataMostDisPro[0].old_price+` ریال</span>
+                    <span class="strikeprice numbersprice takhfif">`+dataMostDisPro[0].old_price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+` ریال</span>
                     <br>
-                    <span class="priceline numbersprice takhfif">`+dataMostDisPro[0].price+` ریال</span> 
+                    <span class="priceline numbersprice takhfif">`+dataMostDisPro[0].price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+` ریال</span> 
             </div>
             
             `)
@@ -687,8 +687,8 @@
                                                 <div class="_content_card_price">
                                                     <div class="_content_price_number">
                                                         <span class="_content_toman">ریال</span>
-                                                        <span class="_content_price_now">`+dataLastCD[i].price+`</span>
-                                                        <span class="_content_price_old">`+dataLastCD[i].old_price+`</span>
+                                                        <span class="_content_price_now">`+dataLastCD[i].price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</span>
+                                                        <span class="_content_price_old">`+dataLastCD[i].old_price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</span>
                                                     </div>
                                                     <div >
                                                     
@@ -772,7 +772,7 @@
                                                 <div class="_content_card_price">
                                                     <div class="_content_price_number">
                                                         <span class="_content_toman">ریال</span>
-                                                        <span class="_content_price_now">`+dataProposalProduct[i].price+`</span>
+                                                        <span class="_content_price_now">`+dataProposalProduct[i].price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</span>
                                                         <span class="_content_price_old"></span>
                                                     </div>
                                                     <div >
