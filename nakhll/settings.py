@@ -310,3 +310,4 @@ if DEBUG:
     SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
 
 SENDSMS_BACKEND = 'sms.backend.SmsBackend'
+HOTJAR_SITE_ID = '2447146'
