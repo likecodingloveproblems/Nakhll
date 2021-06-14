@@ -3957,7 +3957,7 @@ def CheckCopun(request):
                                                 else:
 
                                                     response_data[
-                                                        'error'] = 'خرید شما از حجره مرتبط با این کد تخفیف به میزان تعیین شده (' + copun.MinimumAmount + 'ریال' + ') نرسیده است.'
+                                                        'error'] = 'خرید شما از حجره مرتبط با این کد تخفیف به میزان تعیین شده ({} ریال) نرسیده است.'.format(copun.MinimumAmount)
                                                     response_data['status'] = False
                                                     return JsonResponse(response_data)
 
@@ -4071,7 +4071,7 @@ def CheckCopun(request):
                                             else:
 
                                                 response_data[
-                                                    'error'] = 'خرید شما از حجره مرتبط با این کد تخفیف به میزان تعیین شده (' + copun.MinimumAmount + 'ریال' + ') نرسیده است.'
+                                                    'error'] = 'خرید شما از حجره مرتبط با این کد تخفیف به میزان تعیین شده ({} ریال) نرسیده است.'.format(copun.MinimumAmount)
                                                 response_data['status'] = False
                                                 return JsonResponse(response_data)
 
