@@ -197,7 +197,7 @@ class ShopInformation(View):
                 'publish_product_count', 'unpublish_product_count', 'exist_product_count',
                 'production_after_order_count', 'sale_customization_product_count',
                 'not_exist_product_count', 'FK_ShopManager__User_Profile__MobileNumber',
-                'factor_count', 'FK_SubMarket__Title'
+                'factor_count', 'FK_SubMarket__Title', 'Available', 'Publish'
             )
      
         return ExcelResponse(

@@ -1387,7 +1387,7 @@ def Add_New_Shop_Product(request, id):
                         if context['Prodoldprice'] != '':
                             product.OldPrice = context['Prodoldprice']
                         else:
-                            product.OldPrice = '0'
+                            product.OldPrice = 0
 
                         product.PostRangeType = context['ProdRange']
 
@@ -1575,7 +1575,7 @@ def Edit_Full_Product(request, id):
                             alert.FK_Field.add(OldPriceField)
                     else:
                         if context['Prodoldprice'] != context['Product'].OldPrice:
-                            context['Product'].OldPrice = '0'
+                            context['Product'].OldPrice = 0
                             context['Product'].save()
 
                     if context['ProdRange'] != '':

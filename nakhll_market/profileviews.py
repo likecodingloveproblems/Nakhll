@@ -1633,11 +1633,12 @@ def edit_product(request, product_slug):
                 discount = '0'
             price = request.POST.get("prod_Price", 0)
             if price == '':
-                price = '0'
+                price = 0
             if discount == '0':
-                oldprice = '0'
+                oldprice = 0
             else:
-                oldprice = str(int(price) + int(discount))
+                oldprice = int(price)
+                price = int(price) - int(discount)
             send_type = request.POST.get("ProdRange")
             status = request.POST.get("ProdPostType")
             net_weight = request.POST.get("product_netweight")
@@ -2758,6 +2759,7 @@ def add_product_attribute_price(request, product_slug):
 # ---------------- Ticketin Section ----------------------------
 
 # Get User Ticketing
+@login_required
 def ProfileTicketing(request):
     # Check User Status
     if not (request.user.first_name and request.user.last_name):
@@ -3957,7 +3959,7 @@ def CheckCopun(request):
                                                 else:
 
                                                     response_data[
-                                                        'error'] = 'خرید شما از حجره مرتبط با این کد تخفیف به میزان تعیین شده (' + copun.MinimumAmount + 'ریال' + ') نرسیده است.'
+                                                        'error'] = 'خرید شما از حجره مرتبط با این کد تخفیف به میزان تعیین شده ({} ریال) نرسیده است.'.format(copun.MinimumAmount)
                                                     response_data['status'] = False
                                                     return JsonResponse(response_data)
 
@@ -4071,7 +4073,7 @@ def CheckCopun(request):
                                             else:
 
                                                 response_data[
-                                                    'error'] = 'خرید شما از حجره مرتبط با این کد تخفیف به میزان تعیین شده (' + copun.MinimumAmount + 'ریال' + ') نرسیده است.'
+                                                    'error'] = 'خرید شما از حجره مرتبط با این کد تخفیف به میزان تعیین شده ({} ریال) نرسیده است.'.format(copun.MinimumAmount)
                                                 response_data['status'] = False
                                                 return JsonResponse(response_data)
 

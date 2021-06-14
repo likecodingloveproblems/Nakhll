@@ -405,6 +405,12 @@ def create_new_product(request):
         submarket_id = request.POST["product_submarket"]
         price = request.POST["product_price"]
         oldprice = request.POST["product_oldprice"]
+        # modify discount logic
+        if int(oldprice):
+            discount = int(oldprice) - int(price)
+            real_price = int(price)
+            discounted_price = real_price - discount
+            oldprice, price = real_price, discounted_price
         send_type = request.POST["product_sendtype"]
         status = request.POST["product_status"]
         net_weight = request.POST["product_netweight"]
@@ -435,9 +441,38 @@ def create_new_product(request):
         if (this_shop.FK_ShopManager == request.user) and (Shop.objects.get(ID = shop_id).FK_ShopManager == request.user):
             # Check Product Image
             if (image != '') and (image != None):
-                this_product = Product.objects.create(FK_Shop = this_shop, Image = image, Title = title, Slug = slug, FK_SubMarket = this_submarket, Price = price, OldPrice = oldprice, Net_Weight = net_weight, Weight_With_Packing = packing_weight, Length_With_Packaging = length, Width_With_Packaging = width, Height_With_Packaging = height, PostRangeType = send_type, Status = status)
+                this_product = Product.objects.create(
+                    FK_Shop = this_shop,
+                    Image = image,
+                    Title = title,
+                    Slug = slug,
+                    FK_SubMarket = this_submarket,
+                    Price = price,
+                    OldPrice = oldprice,
+                    Net_Weight = net_weight,
+                    Weight_With_Packing = packing_weight,
+                    Length_With_Packaging = length,
+                    Width_With_Packaging = width,
+                    Height_With_Packaging = height,
+                    PostRangeType = send_type,
+                    Status = status
+                )
             else:
-                this_product = Product.objects.create(FK_Shop = this_shop, Title = title, Slug = slug, FK_SubMarket = this_submarket, Price = price, OldPrice = oldprice, Net_Weight = net_weight, Weight_With_Packing = packing_weight, Length_With_Packaging = length, Width_With_Packaging = width, Height_With_Packaging = height, PostRangeType = send_type, Status = status)
+                this_product = Product.objects.create(
+                    FK_Shop = this_shop,
+                    Title = title,
+                    Slug = slug,
+                    FK_SubMarket = this_submarket,
+                    Price = price,
+                    OldPrice = oldprice,
+                    Net_Weight = net_weight,
+                    Weight_With_Packing = packing_weight,
+                    Length_With_Packaging = length,
+                    Width_With_Packaging = width,
+                    Height_With_Packaging = height,
+                    PostRangeType = send_type,
+                    Status = status
+                )
             # Set Product Bio
             if (bio != '') and (bio != None):
                 this_product.Bio = bio

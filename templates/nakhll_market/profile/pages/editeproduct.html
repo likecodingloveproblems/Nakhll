@@ -461,7 +461,7 @@
                                         <input type="number" name="Prodoffamount"
                                             class="form-control inputprod_offamount" pattern="[0-9]{5,}"
                                             id="inputprod_offamount" 
-                                            {% if Product.OldPrice == '0' %} 
+                                            {% if Product.OldPrice == 0 %} 
                                             value="0"
                                             {% else %}
                                             value="{{ Product.OldPrice|sub:Product.Price }}"

@@ -812,13 +812,13 @@ class ProductManager(models.Manager):
 
     def get_last_created_products(self):
         return Product.objects\
-            .filter(Publish = True, Available = True, OldPrice = '0', Status__in = ['1', '2', '3'])\
+            .filter(Publish = True, Available = True, OldPrice = 0, Status__in = ['1', '2', '3'])\
                 .order_by('-DateCreate')[:12]
 
     def get_last_created_discounted_products(self):
         return Product.objects\
             .filter(Publish = True, Available = True, Status__in = ['1', '2', '3'])\
-            .exclude(OldPrice='0')\
+            .exclude(OldPrice=0)\
             .order_by('-DateCreate')[:16]
 
     def get_random_products(self):
@@ -826,7 +826,7 @@ class ProductManager(models.Manager):
             .filter(
                 Publish = True,
                 Available = True,
-                OldPrice = '0',
+                OldPrice = 0,
                 Status__in = ['1', '2', '3']
                 )\
             .order_by('?')[:16]
