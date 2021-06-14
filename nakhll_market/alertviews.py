@@ -1707,7 +1707,7 @@ def RecorFactorAlert(request, id):
             except MultiValueDictKeyError:
                 Dec = False
 
-            alert = Alert.objects.get(Slug = id, Part = '12', Seen = False)
+            alert = get_object_or_404(Alert, Slug = id, Part = '12', Seen = False)
             factor = Factor.objects.get(ID = id)
             profile = Profile.objects.get(FK_User = factor.FK_User)
 
