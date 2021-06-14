@@ -272,6 +272,7 @@
     <script>
     
     $("#AmazingProBanner").hide();
+
     $.ajax({
         type:'GET',
         url:"/api/v1/landing/amazing-products/",
@@ -365,7 +366,7 @@
 
      })
 
-                <!-----------------------Category List----------------------->
+                
     $.ajax({
          
         type:'GET',
@@ -373,7 +374,7 @@
         success:function(dataCategoryList){
           
             for(let i=0;i<dataCategoryList.length;i++){
-             <!--سوم اجرا میشه-->
+         
                 $("#CategoryList").append(`
                  
                     <div class="sliderRaste">
@@ -384,13 +385,14 @@
                     </div>
                 `)
             }
+
+
             $(".sliderboxLanding").slick({
                 infinite: true,
                 slidesToShow: 8,
                 slidesToScroll: 1,
                 
-                // prevArrow: '<img src="http://uupload.ir/files/5wwj_left-btn.png" />',
-                // nextArrow: '<img src="http://uupload.ir/files/g3zl_right-btn_thumb.png" />',
+                
                 responsive: [{
                     breakpoint: 1025,
                     settings: {
@@ -414,14 +416,13 @@
      })
          
      
-        <!--------mainbanner------->
+       
     $.ajax({
           
         type:'GET',
         url:"/api/v1/landing/sliders/?search=1",
         success:function(dataMainBanner){
-            <!--دوم اجرا میشه-->
-           
+            
            
             for(let i=0;i<dataMainBanner.length;i++){
                 if(i==0){$("#mainCarousel").append(
@@ -478,7 +479,7 @@
         success:function(dataresult){
             
             
-            <!-- چهارم اجرا میشود-->
+           
             
                     for (let i = 0; i < dataresult.length; i++) {
                        $("#randomShops").append(`<div class="boxslider-slick">
@@ -521,7 +522,7 @@
        type:'GET',
        url:"/api/v1/landing/last-created-products/",
        success: function(result){
-                    <!--پنجم اجرا میشود-->
+                 
            
            for(let i=0;i<result.length;i++){
 
