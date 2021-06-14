@@ -1633,9 +1633,9 @@ def edit_product(request, product_slug):
                 discount = '0'
             price = request.POST.get("prod_Price", 0)
             if price == '':
-                price = '0'
+                price = 0
             if discount == '0':
-                oldprice = '0'
+                oldprice = 0
             else:
                 oldprice = str(int(price) + int(discount))
             send_type = request.POST.get("ProdRange")
