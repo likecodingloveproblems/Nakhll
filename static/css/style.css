@@ -8645,7 +8645,6 @@ button.swiper-pagination-bullet {
     width: 100%;
     height: 171px;
     display: block;
-    pointer-events: none;
 }
 
 ._img_card img {
