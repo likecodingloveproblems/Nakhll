@@ -2758,6 +2758,7 @@ def add_product_attribute_price(request, product_slug):
 # ---------------- Ticketin Section ----------------------------
 
 # Get User Ticketing
+@login_required
 def ProfileTicketing(request):
     # Check User Status
     if not (request.user.first_name and request.user.last_name):
