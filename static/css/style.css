@@ -502,16 +502,7 @@ header {
     border-radius: 5px;
 }
 
-.carousel-control-next,
-.carousel-control-prev {
-    width: 7%;
-    /* border-radius: 10px; */
-}
 
-.carousel-control-prev {
-    left: 0 important;
-    right: none important
-}
 
 .myCarousel {
     display: flex
@@ -3079,11 +3070,6 @@ header {
     text-align: center;
 }
 
-.slider-top-prod .carousel-control-next-icon,
-.slider-top-prod .carousel-control-prev-icon {
-    background-color: #000;
-    border-radius: 50%;
-}
 
 .sign-calss {
     background: #ffffff !important;
@@ -8392,11 +8378,6 @@ button.swiper-pagination-bullet {
     bottom: auto;
 }
 
-.carousel-control-next,
-.carousel-control-prev {
-    width: 7%;
-    /* border-radius: 10px; */
-}
 
 .carousel-indicators-custom-single-product {
     margin: 0;
@@ -8410,11 +8391,6 @@ button.swiper-pagination-bullet {
     z-index: 999999;
 }
 
-.slider-top-prod .carousel-control-next-icon,
-.slider-top-prod .carousel-control-prev-icon {
-    background-color: #000;
-    border-radius: 50%;
-}
 
 .slider-license-footer .carousel-indicators li {
     width: 6px;
@@ -8786,3 +8762,24 @@ button.swiper-pagination-bullet {
 .raychat_main_button.bottom {
     bottom: 80px !important;
 }
+
+._landing_parent_slide{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+
+
+._img_rounded{
+    border: 0px hidden transparent;
+    border-radius: 15px;
+}
+
+@media only screen and (max-width: 768px) {
+    ._img_margin{
+        margin-top: 10px;
+    }
+  }

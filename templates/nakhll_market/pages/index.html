@@ -27,58 +27,41 @@
     {% include "nakhll_market/parents/menuheader-section.html" %}
 {% endblock %}
 <!-- --------------------------------header slider section----------------------------- -->
-
-           <div class="slidercontanerr">
-<div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-12">
-<div>
-<br>
-<div id="myCarousel" class="carousel slide" data-ride="carousel">
-
-
-<!-- Wrapper for slides -->
-<div id="mainCarousel" class="carousel-inner" role="listbox">
-
-
-
-</div>
-
-
-
-
-    <a class="right carousel-control btn-controll-right" href="#myCarousel" role="button" data-slide="next">
-    <span class="glyphicon glyphicon-chevron-right carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="sr-only">Next</span>
-    </a>
-    <a class="left carousel-control btn-controll-left" href="#myCarousel" role="button" data-slide="prev" style="left:0 !important, right: none !important">
-    <span class="glyphicon glyphicon-chevron-left carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="sr-only">Prev</span>
-    </a>
-
-</div>
-</div>
-
-<!--fhfgh -->
-</div>
-<div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 imgCard">
-        <aside id="bannerTopTopLanding">
-        {% comment %} <a href="/5select/">
-                <div style="display: flex;"><img class="imgslidercontainer" src="{% static "images/slide 01-2.jpg" %}"
-                        alt="حجره ها" loading="lazy"></div>
-            </a> {% endcomment %}
-        </aside>
-        <div id="bannerTopLanding" style="display: flex;margin-top: 17px;">
-
-            {% comment %} <a href="/kyadak/">
-                <div style="display: flex;margin: 2px;"><img class="imgslidercontainer" src="{% static "images/slide 02-2.jpg" %}" alt="بازارچه" loading="lazy"></div>
-            </a>
-            </a><a href="/galorisoheyl/">
-                <div style="display: flex;margin: 2px;"><img class="imgslidercontainer" src="{% static "images/slide 02-1.jpg" %}" alt="بازارچه" loading="lazy"></div>
-            </a> {% endcomment %}
+<div class="container">
+    <div class="row _margin">
+      <div class="col-md-8 col-xs-12 _landing_main_slide">
+        <div
+          id="carouselExampleControls"
+          class="carousel slide"
+          data-ride="carousel"
+        >
+          <div class="carousel-inner" id="_landing_main_slide">
+            
+            
+          </div>
+         
         </div>
+      </div>
+      <div class="col-md-4 _landing_parent_slide">
+          <div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
+              <div class="carousel-inner">
+                <div class="carousel-item active " id="_top_banner_slid">
+                  
+                </div>
+                
+              </div>
+            </div><div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
+              <div class="carousel-inner">
+                <div class="carousel-item active" id="_bot_banner_slid">
+                   
+                </div>
+                
+              </div>
+            </div>
+      </div>
     </div>
-</div>
-
-
+  </div>
+ 
 <!-- --------------------------------slider-prod-cat----------------------------- -->
 <div class="slider-prod-cat ">
     <div class="container-fluid">        
@@ -331,23 +314,20 @@
  
 
     <script>
+        
      $.ajax({
          type:'GET',
         url:"/api/v1/landing/sliders/?search=2",
         success:function(slidtop){
-            $("#bannerTopTopLanding").append(`
-             <a href="`+slidtop[1].url +`">
-                <div style="display: flex;"><img class="imgslidercontainer" src="`+slidtop[1].image +`"
-                        alt="حجره ها" loading="lazy"></div>
+            $("#_top_banner_slid").append(`
+            <a href="`+slidtop[0].url+`">
+            <img class="d-block w-100 _img_rounded _img_margin" src="`+slidtop[0].image+`" alt="حجره">
             </a>
             `)
-            $("#bannerTopLanding").append(`
-            <a href="`+slidtop[0].url+`">
-                <div style="display: flex;margin: 2px;"><img class="imgslidercontainer" src="`+slidtop[0].image+`" alt="بازارچه" loading="lazy"></div>
-            </a>
-            </a><a href="`+slidtop[2].url+`">
-                <div style="display: flex;margin: 2px;"><img class="imgslidercontainer" src="`+slidtop[2].image+`" alt="بازارچه" loading="lazy"></div>
-            </a>
+            $("#_bot_banner_slid").append(`
+            <a href="`+slidtop[1].url+`">
+                  <img class="d-block w-100 _img_rounded _img_margin" src="`+slidtop[1].image+`" alt="حجره">
+                </a>
             
             `)
             
@@ -414,37 +394,31 @@
             
            
             for(let i=0;i<dataMainBanner.length;i++){
-                if(i==0){$("#mainCarousel").append(
+                if(i==0){
+                    $("#_landing_main_slide").append(
                     `
+
+                    <div class="carousel-item active">
+                        <a href="`+dataMainBanner[0].url+`">
+                        <img class="d-block w-100 _img_rounded" src="‍‍‍‍‍`+dataMainBanner[0].image+`" alt="`+dataMainBanner[0].title+`" />
+                        </a>
+                    </div>
                  
-                    <aside data-target="#mycarousel" class="carousel-item  active">
-                    <a href="`+dataMainBanner[i].url+`"><img src="`+dataMainBanner[i].image+`"
-                    class="sliderAsli" alt="`+dataMainBanner[i].title+`">
-                    `+(dataMainBanner.show_info ? `<div class="carousel-caption">
-                    <h3>`+dataMainBanner[i].title+`</h3>
-                    <p>`+dataMainBanner[i].description+`</p>
-                    </div>`:``)+`
                     
-                    </a>
-                    </aside>
                     
 
                 
                 `)
-      }else{
-            $("#mainCarousel").append(
+                }else{
+            $("#_landing_main_slide").append(
                                 `
-                            
-                                <aside data-target="#mycarousel" class="carousel-item ">
-                                <a href="`+dataMainBanner[i].url+`"><img src="`+dataMainBanner[i].image+`"
-                                class="sliderAsli" alt="`+dataMainBanner[i].title+`">
-                                `+(dataMainBanner.show_info ? `<div class="carousel-caption">
-                                <h3>`+dataMainBanner[i].title+`</h3>
-                                <p>`+dataMainBanner[i].description+`</p>
-                                </div>`:``)+`
+                                <div class="carousel-item">
+                                    <a href="`+dataMainBanner[i].url+`">
+                                        <img class="d-block w-100 _img_rounded" src="`+dataMainBanner[i].image+`" alt="`+dataMainBanner[i].title+`" />
+                                    </a>
+                                </div>
                                 
-                                </a>
-                                </aside>
+                                                    
                                 
 
                             
