@@ -8603,7 +8603,7 @@ button.swiper-pagination-bullet {
     position: relative;
     overflow: hidden;
     background-color: #fff;
-    border: 1px solid hsl(0deg 0% 93%);
+    border: 1px solid rgba(0, 0, 0, 0.12);
     box-sizing: border-box;
     border-radius: 12px;
     min-width: 12rem;
