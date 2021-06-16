@@ -1,14 +1,14 @@
 from io import BytesIO
 from django.db.models.expressions import Case, Value, When
-
-from django.db.models.query import QuerySet
-from nakhll_market.models import Profile, Shop, Product
 from django.http import HttpResponse
 from xlsxwriter.workbook import Workbook
 from django.views import View
 from braces.views import GroupRequiredMixin
 from excel_response import ExcelResponse
 from django.db.models import Count, Sum
+
+from Payment.models import Factor
+from nakhll_market.models import Profile, Shop, Product
 
 
 class ShopManagersInformation(GroupRequiredMixin, View):
@@ -124,14 +124,14 @@ class ProductStats(View):
                 'FK_Shop__Slug', 'FK_Shop__State', 'FK_Shop__BigCity', 'FK_Shop__City',
                 'FK_Shop__Location', 'FK_Shop__Available', 'FK_Shop__Publish', 
                 'FK_Shop__CanselCount','FK_Shop__FK_ShopManager__username', 'sell_count',
-                'sell_product_count', 'Price', 'OldPrice',
+                'sell_product_count', 'Price', 'OldPrice', 'DateCreate', 'DateUpdate',
                 )
         
         return ExcelResponse(
             data=queryset
         )
 
-class UserState(View):
+class UserStats(View):
 
     def get (self , request):
         queryset =  Profile.objects\
@@ -205,13 +205,16 @@ class ShopInformation(View):
         )
 
 
+class FactorStats(GroupRequiredMixin, View):
+    group_required = u"factor-stats"
 
-
-
-
-
-        
-
-
-
-
+    def get(self, request):
+        queryset = Factor.objects.values(
+            'FactorNumber', 'FK_User__username', 'MobileNumber', 'Address',
+            'Location', 'City', 'BigCity', 'State', 'PhoneNumber', 'FK_Coupon__SerialNumber',
+            'DiscountType','PostPrice', 'TotalPrice', 'PaymentStatus', 'OrderDate',
+            'OrderStatus', 'Checkout', 'Publish'
+        )
+        return ExcelResponse(
+            data=queryset
+        )
