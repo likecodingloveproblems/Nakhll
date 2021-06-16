@@ -210,6 +210,7 @@ def Set_Send_Info(request):
     if request.user.is_authenticated :
         # Get User Factor
         if request.method == 'POST':
+            # TODO it will make many unhandled errors if user don't pass params
             Factor_FirstName = request.POST["Factor_FirstName"]
             Factor_LastName = request.POST["Factor_LastName"]
             Factor_NationalCode = request.POST.get('Factor_NationalCode')

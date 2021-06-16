@@ -943,9 +943,17 @@ class Product (models.Model):
     def old_price(self):
         return self.OldPrice
 
+    @old_price.setter
+    def old_price(self, value):
+        self.OldPrice = value
+
     @property
     def price(self):
         return self.Price
+
+    @price.setter
+    def price(self, value):
+        self.Price = value
 
     @property
     def slug(self):
