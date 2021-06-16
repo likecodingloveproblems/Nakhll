@@ -8762,13 +8762,13 @@ button.swiper-pagination-bullet {
 .raychat_main_button.bottom {
     bottom: 80px !important;
 }
+/*---------------Start-----------------------*/
+/*slider top site*/
 
 ._landing_parent_slide{
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding-right: 10px;
-    padding-left: 10px;
 }
 
 
@@ -8777,9 +8777,21 @@ button.swiper-pagination-bullet {
     border: 0px hidden transparent;
     border-radius: 15px;
 }
+._slide_ratio{
+    height: auto;
+    aspect-ratio: 2/1;
+}
+@media all and (max-width: 768px){
 
-@media only screen and (max-width: 768px) {
-    ._img_margin{
-        margin-top: 10px;
+    ._slide_ratio{
+        margin-bottom: 10px;
+        
     }
-  }
+}
+
+._main_slid_top{
+margin-top: 10px;
+}
+
+
+/*---------------End-----------------------*/
