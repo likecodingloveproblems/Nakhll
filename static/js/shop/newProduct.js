@@ -1821,7 +1821,7 @@ checkProductFields = function () {
     var checks = true;
 
     //Img
-	if ($("#avatar").prop("src") == 'http://localhost:8000/static/images/image_upload.jpg') {
+	if ($("#avatar").prop("src") == '/static-django/images/image_upload.jpg') {
 		$("#alert-div-inputproduct-img-empty").show();
 		checks = false;
 	}

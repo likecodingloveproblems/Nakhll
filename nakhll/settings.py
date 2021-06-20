@@ -235,7 +235,7 @@ STATICFILES_DIRS = (
 )
  
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATIC_URL = '/static/'
+STATIC_URL = '/static-django/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, '')
 MEDIA_URL = '/'

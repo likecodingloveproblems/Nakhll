@@ -906,7 +906,7 @@ header {
 }
 
 #footer {
-    background: url(/static/images/footer_pattern.svg) top left no-repeat #fff;
+    background: url(/static-django/images/footer_pattern.svg) top left no-repeat #fff;
     margin-top: -35px;
     padding-top: 65px;
 }
@@ -1003,7 +1003,7 @@ header {
 }
 
 #copy-right-footer {
-    background: url(/static/images/Footer_2.svg) bottom #fff;
+    background: url(/static-django/images/Footer_2.svg) bottom #fff;
     padding-top: 45px;
 }
 
@@ -1906,7 +1906,7 @@ header {
     height: 184px;
     margin-bottom: 30px;
     /* background: linear-gradient(221deg, #fff, #d3d8dc); */
-    background: url(/static/images/bg-shop.jpg) top left no-repeat #fff;
+    background: url(/static-django/images/bg-shop.jpg) top left no-repeat #fff;
     background-size: cover;
     border-radius: 5px;
     padding: 10px;

@@ -1819,7 +1819,7 @@ class Profile(models.Model):
             url = self.ImageNationalCard.url
             return url
         except:
-            url = "https://nakhll.com/static/images/image_upload.jpg"
+            url = "https://nakhll.com/static-django/images/image_upload.jpg"
             return url
 
     # Get User Bank Account Info
