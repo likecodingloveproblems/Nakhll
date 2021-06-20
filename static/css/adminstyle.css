@@ -2,7 +2,7 @@ body{
     font-family: IRANSans;
     font-style: normal;
     background: url(https://upload.wikimedia.org/wikipedia/commons/b/b9/Grand_Bazaar%2C_Tehran_14.jpg);
-    background: url('/static/Pictures/bg-admin.jpg');
+    background: url('/static-django/Pictures/bg-admin.jpg');
     background-size: cover;
     background-attachment: fixed;
 }

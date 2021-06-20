@@ -12,7 +12,7 @@
     <meta name="product_id" content="{{Product.ID}}">
     <meta name="product_price" content="{{Product.Price|currency}}">
     <meta name="product_old_price" content="{{Product.OldPrice|currency}}">
-    <meta name="availability" content="instock">
+    <meta name="availability" content={%if Product.Status != 4 and Product.Inventory %}"instock"{% else %}"outofstock"{% endif %}>
     <title>بازار نخل | {{Product.Title}}</title>
 {% analytical_head_bottom %}</head>
 
