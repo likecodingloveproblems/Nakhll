@@ -426,8 +426,10 @@
                                         </label>
                                         <div id="alert-div-image-newShop"></div>
                                         <br>
-                                        {% if UserShop.Image_thumbnailMeli_url %}
-                                        <img class="rounded cropper-rounded " id="avatarMeli" style="float:left;margin-left:3%" src="{{ UserShop.Image_thumbnailMeli_url }}" alt="avatar" data-toggle="tooltip" title="انتخاب عکس ">
+                                        {% comment %} {% if UserShop.Image_thumbnailMeli_url %}
+                                        <img class="rounded cropper-rounded " id="avatarMeli" style="float:left;margin-left:3%" src="{{ UserShop.Image_thumbnailMeli_url }}" alt="avatar" data-toggle="tooltip" title="انتخاب عکس "> {% endcomment %}
+                                        {% if This_User_Profile.ImageNationalCard %}
+                                        <img class="rounded cropper-rounded " id="avatarMeli" style="float:left;margin-left:3%" src="{{ This_User_Profile.ImageNationalCard.url }}" alt="avatar" data-toggle="tooltip" title="انتخاب عکس ">
                                         {% else %}
                                         <img class="rounded cropper-rounded " id="avatarMeli"
                                             style="float:left;margin-left:3%" src="{% static "images/image_upload.jpg" %}" alt="avatar" data-toggle="tooltip" title="انتخاب عکس ">

@@ -314,4 +314,4 @@ if DEBUG:
 SENDSMS_BACKEND = 'sms.backend.SmsBackend'
 HOTJAR_SITE_ID = '2447146'
 
-CORS_ALLOWED_ORIGINS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
+# CORS_ALLOWED_ORIGINS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")

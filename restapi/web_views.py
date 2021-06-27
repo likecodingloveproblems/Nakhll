@@ -319,6 +319,12 @@ def edit_shop(request):
         except:
             shop_ID = None
         shop_holidays = request.POST.get('shop_holidays')
+
+        try:
+            national_card_image = request.FILES["shop_imageNation"]
+        except MultiValueDictKeyError:
+            national_card_image = None
+
         try:
             shop_profile = request.FILES["shop_image"]
         except MultiValueDictKeyError:
@@ -361,6 +367,12 @@ def edit_shop(request):
             if (shop_holidays != 'null') and (shop_holidays != this_shop.Holidays):
                 shop_holidays_field = Field.objects.create(Title = 'Holidays', Value = shop_holidays)
                 edit_shop_alert.FK_Field.add(shop_holidays_field)
+
+            # Check national card image
+            if national_card_image != '' and national_card_image != None:
+                this_shop.FK_ShopManager.User_Profile.ImageNationalCard = national_card_image
+                this_shop.FK_ShopManager.User_Profile.save()
+
             # Check Shop Image
             if (shop_profile != '') and (shop_profile != None):
                 this_shop.NewImage = shop_profile
