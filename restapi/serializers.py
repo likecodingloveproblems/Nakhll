@@ -2,10 +2,16 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from nakhll_market.models import Profile , Product , Shop , SubMarket , Category , BankAccount , ShopBanner , Attribute , AttrProduct , AttrPrice , ProductBanner, PostRange , Message , User_Message_Status, OptinalAttribute, Details
-from Payment.models import Factor , Wallet , FactorPost , Transaction , PostBarCode , Coupon
+from Payment.models import Campaign, Factor , Wallet , FactorPost , Transaction , PostBarCode , Coupon
 import re
 from rest_framework.exceptions import  ValidationError 
 from rest_framework.fields import CurrentUserDefault
+
+
+
+
+
+
 
 
 # user and profile and home page 
@@ -13,6 +19,7 @@ class UserDetailSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = [
+            'id',
             'username',
             'first_name',
             'last_name',
@@ -22,6 +29,38 @@ class UserDetailSerializer(ModelSerializer):
             'username',
         ]
 
+class SubMarketSerializer(ModelSerializer):
+    class Meta:
+        model = SubMarket
+        fields = [
+            'ID',
+            'Title',
+            'Description',
+            'Slug',
+        ]
+
+class ShopDetailSerializer(ModelSerializer):
+    FK_SubMarket = SubMarketSerializer(many = True)
+    FK_ShopManager = UserDetailSerializer(read_only = True)
+    class Meta:
+        model = Shop
+        fields = [
+            'ID',
+            'Title',
+            'FK_SubMarket',
+            'Slug',
+            'Description',
+            'Image_thumbnail_url',
+            'Bio',
+            'State',
+            'BigCity',
+            'City',
+            'Point',
+            'Holidays',
+            'Available',
+            'FK_ShopManager',
+            'Publish',
+        ]
 
 
 class BankAccountSerializer(ModelSerializer):
@@ -32,8 +71,6 @@ class BankAccountSerializer(ModelSerializer):
             'ShabaBankNumber',
             'AccountOwner',
         ]
-
-
 
 class ProfileSerializer(ModelSerializer):
     FK_User = UserDetailSerializer(read_only = True)
@@ -69,7 +106,6 @@ class ProfileSerializer(ModelSerializer):
             'NationalCode',
         ]
 
-
 class WalletSerializer(ModelSerializer):
     class Meta:
         model = Wallet
@@ -79,8 +115,6 @@ class WalletSerializer(ModelSerializer):
         read_only_fields = [
             'Inverntory',
         ]
-
-
 
 class ShopListHomeSerializer(ModelSerializer):
     class Meta:
@@ -94,7 +128,6 @@ class ShopListHomeSerializer(ModelSerializer):
             'Available',
             'Publish',
         ]
-
 
 class ProductListHomeSerializer(ModelSerializer):
     class Meta:
@@ -111,6 +144,14 @@ class ProductListHomeSerializer(ModelSerializer):
             'Publish',
         ]
 
+class ProductFullSerializer(ModelSerializer):
+    FK_Shop = ShopDetailSerializer(read_only = True)
+    class Meta:
+        model = Product
+        fields = [
+            'Title',
+            'FK_Shop',
+        ]
 
 class ProductTitleSerializer(ModelSerializer):
     class Meta:
@@ -119,10 +160,58 @@ class ProductTitleSerializer(ModelSerializer):
             'Title'
         ]
 
+class CampaignSerializer(ModelSerializer):
+    class Meta:
+        model = Campaign
+        fields = [
+            'title',
+            'description',
+            'discount_type',
+            'discount_rate',
+            'campaign_type',
+            'discount_status',
+            'text_request',
+            'minimum_amount',
+            'maximum_amount',
+            'start_date',
+            'end_date',
+            'available',
+            'publish',
+            # 'invitation_shops',
+            # 'shops',
+            # 'products',
+            # 'ctegories',
+            # 'ceator',
+            # 'user',
+        ]
+
 
 #factor and payment section
 class FactorPostSerializer(ModelSerializer):
-    FK_Product = ProductTitleSerializer(read_only = True)
+    # FK_Product = ProductTitleSerializer(read_only = True)
+    FK_Product = ProductFullSerializer(read_only = True)
+    class Meta:
+        model = FactorPost
+        fields = [
+            'FK_Product',
+            'ProductCount',
+            'get_total_item_price',
+            'Description',
+            'get_one_price',
+            'EndPrice',
+        ]
+
+class FactorPostSummarySerializer(ModelSerializer):
+    class Meta:
+        model = FactorPost
+        fields = [
+            'product_image_thumbnail',
+        ]
+
+
+
+class FactorPostUserSerializer(ModelSerializer):
+    FK_Product = ProductTitleSerializer(read_only = True, many=False)
     class Meta:
         model = FactorPost
         fields = [
@@ -152,31 +241,67 @@ class CouponSerializer(ModelSerializer):
         ]
 
 class FactorListSerializer(ModelSerializer):
-    FK_FactorPost = FactorPostSerializer(read_only=True, many=True)
-    FK_Coupon = CouponSerializer(read_only=True, many=False)
+    factor_posts_summary = FactorPostSummarySerializer(read_only=True, many=True)
     class Meta:
         model = Factor
         fields = [
-            'ID',
-            'FactorNumber',
-            'FK_User',
-            'Description',
-            'MobileNumber',
-            'ZipCode',
-            'Address',
-            'CityPerCode',
-            'City',
-            'BigCity',
-            'State',
-            'PhoneNumber',
-            'FK_FactorPost',
-            'FK_Coupon',
-            'DiscountRate',
-            'DiscountType',
-            'PostPrice',
-            'OrderDate',
-            'OrderStatus',
-            'Checkout',
+            'id',
+            'factor_number',
+            'big_city',
+            'state',
+            'factor_posts_summary',
+            'factor_posts_count',
+            'order_date',
+            'delivery_date',
+            'order_status',
+            'factor_status',
+            'user',
+        ]
+
+class FactorAllDetailsSerializer(ModelSerializer):
+    factor_post = FactorPostSerializer(read_only=True, many=True)
+    coupon = CouponSerializer(read_only=True, many=False)
+    profile = ProfileSerializer(read_only=True, many=False)
+    campaign = CampaignSerializer(read_only=True, many=False)
+    staff = ProfileSerializer(read_only=True, many=False)
+    staff_checkout = ProfileSerializer(read_only=True, many=False)
+
+    class Meta:
+        model = Factor
+        fields = [
+            'id',
+            'factor_number',
+            'description',
+            'counter_pre_code',
+            'mobile_number',
+            'zip_code',
+            'address',
+            'location',
+            'fax_number',
+            'city_pre_code',
+            'big_city',
+            'state',
+            'phone_number',
+            'factor_type',
+            'shop_info',
+            'user_info',
+            'discount_rate',
+            'discount_type',
+            'campaing_type',
+            'post_price',
+            'total_price',
+            'payment_status',
+            'order_date',
+            'delivery_date',
+            'order_status',
+            'checkout',
+
+            'profile',
+            'factor_post',
+            'coupon',
+            'campaign',
+            'staff',
+            'staff_checkout',
         ]
 
 class FactorDesSerializer(ModelSerializer):
@@ -255,15 +380,8 @@ class PostBarCodeSerializer(ModelSerializer):
             'PostPrice',
         ]
 
-class SubMarketSerializer(ModelSerializer):
-    class Meta:
-        model = SubMarket
-        fields = [
-            'ID',
-            'Title',
-            'Description',
-            'Slug',
-        ]
+
+
 
 class CategorySerializer(ModelSerializer):
     class Meta:
@@ -355,27 +473,6 @@ class PostRangeSerializer(ModelSerializer):
             'State',
             'BigCity',
             'City',
-        ]
-
-class ShopDetailSerializer(ModelSerializer):
-    FK_SubMarket = SubMarketSerializer(many = True)
-    class Meta:
-        model = Shop
-        fields = [
-            'ID',
-            'Title',
-            'FK_SubMarket',
-            'Slug',
-            'Description',
-            'Image_thumbnail_url',
-            'Bio',
-            'State',
-            'BigCity',
-            'City',
-            'Point',
-            'Holidays',
-            'Available',
-            'Publish',
         ]
 
 class ProductDetailSerializer(ModelSerializer):

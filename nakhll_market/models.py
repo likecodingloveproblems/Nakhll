@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from django.db.models.aggregates import Sum
+from django.db.models.aggregates import Avg, Sum
 from django.db.models.deletion import SET_DEFAULT
 from my_auth.models import ProfileManager
 from django.db import models
@@ -848,7 +848,31 @@ class ProductManager(models.Manager):
 
         
 # Product (محصول) Model
-class Product (models.Model):
+class Product(models.Model):
+    POSTRANGE_TYPE=(
+        ('1','سراسر کشور'),
+        ('2','استانی'),
+        ('3','شهرستانی'),
+        ('4','شهری'),
+    )
+    PRODUCT_STATUS=(
+        ('1','آماده در انبار'),
+        ('2','تولید بعد از سفارش'),
+        ('3','سفارشی سازی فروش'),
+        ('4','موجود نیست'),
+    )
+    AVAILABLE_STATUS =(
+        (True,'فعال'),
+        (False,'غیر فعال'),
+    )
+    PUBLISH_STATUS =(
+        (True,'منتشر شده'),
+        (False,'در انتظار تایید'),
+    )
+    EDITE_STATUS =(
+        (True,'در حال بررسی تغییرات'),
+        (False,'تغییری اعمال شده است'),
+    )
     objects = ProductManager()
     ID=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     Title=models.CharField(max_length=200, verbose_name='نام محصول', db_index=True)
@@ -881,38 +905,17 @@ class Product (models.Model):
     Height_With_Packaging=models.CharField(verbose_name='ارتفاع محصول با بسته بندی (سانتی متر(', max_length=4, default='0')
     # Product Inventory
     Inventory=models.IntegerField(verbose_name='میزان موجودی از این کالا در انبار', default=5)
-    POSTRANGE_TYPE=(
-        ('1','سراسر کشور'),
-        ('2','استانی'),
-        ('3','شهرستانی'),
-        ('4','شهری'),
-    )
+    
     PostRangeType=models.CharField(verbose_name='محدوده ارسال محصولات', max_length=1, choices=POSTRANGE_TYPE, default='1', help_text='محدوده ارسال را بر اساس تایپ های مشخص شده، تعیین کنید.')
     FK_PostRange=models.ManyToManyField('PostRange', verbose_name='استان، شهرستان و شهر', related_name='Product_PostRange', blank=True)
     FK_ExceptionPostRange=models.ManyToManyField('PostRange', verbose_name='استثناء های محدوده ارسال', related_name='Poduct_PostRange_Exception', blank=True)
     FK_Points = models.ManyToManyField('UserPoint', verbose_name = 'امتیاز ها', related_name = 'User_Points', blank = True)
     FK_OptinalAttribute = models.ManyToManyField('OptinalAttribute', verbose_name = 'ویژگی های انتخابی', related_name = 'product_optional_attribute', blank = True)
-    PRODUCT_STATUS=(
-        ('1','آماده در انبار'),
-        ('2','تولید بعد از سفارش'),
-        ('3','سفارشی سازی فروش'),
-        ('4','موجود نیست'),
-    )
+    
     Status=models.CharField(verbose_name='وضعیت فروش', max_length=1, choices=PRODUCT_STATUS)
     DateCreate=models.DateTimeField(verbose_name='تاریخ بارگذاری محصول', auto_now_add=True)
     DateUpdate=models.DateTimeField(verbose_name='تاریخ بروزرسانی محصول', auto_now=True)
-    AVAILABLE_STATUS =(
-        (True,'فعال'),
-        (False,'غیر فعال'),
-    )
-    PUBLISH_STATUS =(
-        (True,'منتشر شده'),
-        (False,'در انتظار تایید'),
-    )
-    EDITE_STATUS =(
-        (True,'در حال بررسی تغییرات'),
-        (False,'تغییری اعمال شده است'),
-    )
+    
     Edite=models.BooleanField(verbose_name='وضعیت ویرایش محصول', choices=EDITE_STATUS, default=False)
     Available=models.BooleanField(verbose_name='وضعیت بارگذاری محصول', choices=AVAILABLE_STATUS, default=True)
     Publish=models.BooleanField(verbose_name='وضعیت انتشار محصول', choices=PUBLISH_STATUS, default=False)
@@ -1036,6 +1039,10 @@ class Product (models.Model):
         return self.Product_Review.all()
 
     @property
+    def comments_count(self):
+        return self.Product_Comment.count()
+
+    @property
     def comments(self):
         return self.Product_Comment.all()
 
@@ -1043,9 +1050,20 @@ class Product (models.Model):
     def shop(self):
         return self.FK_Shop
 
+    @property
+    def inventory(self):
+        return self.Inventory
+
+    @property
+    def average_user_point(self):
+        return self.FK_Points.aggregate(average=Avg('Point'))['average']
+
+    @property
+    def total_sell(self):
+        return self.Factor_Product.count()
+
     def __str__(self):
         return "{}".format(self.Title)
-
 
     def get_status(self):
         Status = {
