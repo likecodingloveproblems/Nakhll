@@ -314,4 +314,9 @@ if DEBUG:
 SENDSMS_BACKEND = 'sms.backend.SmsBackend'
 HOTJAR_SITE_ID = '2447146'
 
-# CORS_ALLOWED_ORIGINS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
+CORS_ALLOW_ALL_ORIGINS = bool(os.environ.get('CORS_ALLOW_ALL_ORIGINS'))
+if not CORS_ALLOW_ALL_ORIGINS:
+    CORS_ALLOWED_ORIGINS = (os.environ.get("CORS_ALLOWED_ORIGINS") or 'http://localhost:3000').split(" ")
+cors_allowed_headers = lambda: os.environ.get('CORS_ALLOWED_HEADERS')
+if cors_allowed_headers:
+    CORS_ALLOWED_HEADERS = cors_allowed_headers()
