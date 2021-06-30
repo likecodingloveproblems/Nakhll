@@ -1828,6 +1828,7 @@ class Profile(models.Model):
                                 format='JPEG',
                                 options={'quality': 60} )
     ImageNationalCard = models.ImageField(verbose_name="عکس کارت ملی", upload_to=PathAndRename('media/Pictures/NationalCard/'), null=True, blank=True)
+    ImageNationalCardUnverified = models.ImageField(verbose_name="عکس کارت ملی تایید نشده", upload_to=PathAndRename('media/Pictures/NationalCard/'), null=True, blank=True)
     UserReferenceCode=models.CharField(verbose_name='کد شما', max_length=6, unique=True, default=BuildReferenceCode(6))
     Point=models.PositiveIntegerField(verbose_name='امتیاز کاربر', default=0)
     TutorialWebsite=models.CharField(verbose_name='نحوه آشنایی با سایت', max_length=1, choices=TUTORIALWEB_TYPE, blank=True, default='8')

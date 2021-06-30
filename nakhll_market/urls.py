@@ -436,6 +436,8 @@ urlpatterns = [
     path('profile/alert/editeproductbanner/<int:id>', alertviews.EditeProductBannerAlert, name='EditeProductBannerAlert'),
     # Edite Shop Alert
     path('profile/alert/editeshop/<uuid:id>', alertviews.EditeShopAlert, name='EditeShopAlert'),
+    # Edite National Card Image Alert
+    path('profile/alert/editenationalcardimage/<user_id>/', alertviews.EditeNationalCardImageAlert, name='EditeNationalImageCard'),
     # Edite Product Alert
     path('profile/alert/editeproduct/<uuid:id>', alertviews.EditeProductAlert, name='EditeProductAlert'),
     # Ticlet Alert
@@ -474,6 +476,9 @@ urlpatterns = [
     path('profile/alert/delete-optional-attribute/<int:id>', alertviews.Delete_Optional_Attribute, name='Delete_Optional_Attribute'),
 
 
+
+    # Edit National Card Image 
+    path('profile/alert/editnationalcardimage/<int:user_id>/', alertviews. EditeNationalCardImageAlert, name='Edit_National_Card_Image'),
 
 
 

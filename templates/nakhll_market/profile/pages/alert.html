@@ -236,6 +236,8 @@
                                             </div>
                                             <select class="custom-select alert-profile-custom-select" name="check_out" id="inputGroupSelect01">
                                                 <option value="000" {% if CheckOut == '000' %}selected{% endif %}>همه</option>
+                                                <option value="0" {% if CheckOut == '0' %}selected{% endif %}>ایجاد پروفایل</option>
+                                                <option value="1" {% if CheckOut == '1' %}selected{% endif %}>ویرایش پروفایل</option>
                                                 <option value="2" {% if CheckOut == '2' %}selected{% endif %}>ایجاد حجره</option>
                                                 <option value="3" {% if CheckOut == '3' %}selected{% endif %}>ویرایش حجره</option>
                                                 <option value="4" {% if CheckOut == '4' %}selected{% endif %}>ایجاد بنر حجره</option>
@@ -414,7 +416,7 @@
                                                     {% if alert.Part == '0' %}
                                                         ایجاد پروفایل
                                                     {% elif alert.Part == '1' %}
-                                                        ویرایش پروفایل
+                                                        <a type="button" href="/profile/alert/editenationalcardimage/{{alert.Slug}}/"><i class="fal fa-edit"></i></a>
                                                     {% elif alert.Part == '2' %}
                                                         <a type="button" href="/profile/alert/shop/{{alert.Slug}}"><i class="fal fa-edit"></i></a>
                                                     {% elif alert.Part == '3' %}

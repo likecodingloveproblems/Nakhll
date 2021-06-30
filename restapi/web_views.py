@@ -370,8 +370,15 @@ def edit_shop(request):
 
             # Check national card image
             if national_card_image != '' and national_card_image != None:
-                this_shop.FK_ShopManager.User_Profile.ImageNationalCard = national_card_image
+                this_shop.FK_ShopManager.User_Profile.ImageNationalCardUnverified = national_card_image
                 this_shop.FK_ShopManager.User_Profile.save()
+                profile_alert, created = Alert.objects.get_or_create(Part='1', FK_User=request.user, Slug=request.user.id, Seen=False)
+                if not created:
+                    profile_alert.FK_Field.all().delete()
+                unverified_image_string = 'UnveriviedImage' + '#' + str(this_shop.NewImage)
+                profile_alert_field = Field.objects.create(Title='NationalCardImage', Value=unverified_image_string)
+                profile_alert.FK_Field.add(profile_alert_field)
+
 
             # Check Shop Image
             if (shop_profile != '') and (shop_profile != None):

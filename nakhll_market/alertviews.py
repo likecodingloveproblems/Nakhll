@@ -17,6 +17,7 @@ import requests
 
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import user_passes_test
 
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -2757,3 +2758,60 @@ def RecordProductAlert(request, id):
             return redirect("nakhll_market:Alert")
     else:
         return redirect("auth:get-phone")
+
+
+
+
+# Edite Shop Alert
+@login_required
+@staff_member_required
+def EditeNationalCardImageAlert(request, user_id):
+    
+    # Get User Info
+    this_profile = Profile.objects.get(FK_User=request.user)
+    this_inverntory = request.user.WalletManager.Inverntory
+    # Get Menu Item
+    options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+    # Get Nav Bar Menu Item
+    navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+    # --------------------------------------------------------------------
+    user = User.objects.get(id=user_id)
+    profile = user.User_Profile
+    alert = Alert.objects.get(Part='1', Slug=user.id, Seen=False)
+    title = 'ویرایش تصویر کارت ملی'
+
+    if request.method == 'POST':
+        Type = request.POST.get("accept-btn", None)
+        Dec = request.POST.get("Des", None)
+        alert.Seen = True
+        alert.Description = Dec
+        alert.FK_Staff = request.user
+
+        if Type == '1': # Accept incomming changes
+            alert.Status = True
+            profile.ImageNationalCard = profile.ImageNationalCardUnverified 
+            description = 'تصویر کارت ملی شما تایید شد!'
+            SendAlertResponse(title, Dec, profile.MobileNumber)
+            send_push_notification().run(title, description, profile.MobileNumber)
+        else: # Deny changes
+            profile.ImageNationalCardUnverified = None
+            alert.Status = False
+            description = f'تصویر کارت ملی شما تایید نشد! {Dec}'
+            SendAlertResponse(title, Dec, profile.MobileNumber)
+            send_push_notification().run(title, description, profile.MobileNumber)
+        # Save changes
+        profile.save()
+        alert.save()
+        return redirect("nakhll_market:Alert")
+
+    context = {
+        'This_User_Profile':this_profile,
+        'This_User_Inverntory': this_inverntory,
+        'Options': options,
+        'MenuList':navbar,
+        'Alert': alert,
+        'image': user.User_Profile.ImageNationalCardUnverified,
+    }
+    
+    return render(request, 'nakhll_market/alert/pages/editenationalcardimage.html', context)
+
