@@ -2376,7 +2376,7 @@ class FactorDetails(APIView):
     def get_object(self, factor_id):
         try:
             user = self.request.user
-            user = User.objects.get(id=4)
+            # user = User.objects.get(id=4)
             return Factor.objects.get(FactorNumber=factor_id, FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user)
         except Factor.DoesNotExist:
             raise Http404
@@ -2394,8 +2394,8 @@ class FactorPostUserList(ListAPIView):
 
     def get_queryset(self):
         factor_id = self.kwargs.get(self.lookup_url_kwarg)
-        # user = self.request.user
-        user = User.objects.get(id=4)
+        user = self.request.user
+        # user = User.objects.get(id=4)
 
         factor = Factor.objects.get(FactorNumber=factor_id)
         return FactorPost.objects.filter(Factor_Products=factor, FK_Product__FK_Shop__FK_ShopManager=user)
@@ -2407,7 +2407,7 @@ class FactorList(ListAPIView):
     serializer_class = FactorListSerializer
     def get_queryset(self):
         user = self.request.user
-        user = User.objects.get(id=4)
+        # user = User.objects.get(id=4)
         return Factor.objects.filter(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user)
 
 
@@ -2416,7 +2416,7 @@ class ShopFactorList(ListAPIView):
     serializer_class = FactorListSerializer
     def get_queryset(self):
         user = self.request.user
-        user = User.objects.get(id=4)
+        # user = User.objects.get(id=4)
         shop_slug = self.kwargs.get('shop_slug')
         return Factor.objects.filter(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user, 
                                      FK_FactorPost__FK_Product__FK_Shop__Slug=shop_slug)
@@ -2426,7 +2426,7 @@ class UncompeletedFactors(ListAPIView):
     serializer_class = FactorListSerializer
     def get_queryset(self):
         user = self.request.user
-        user = User.objects.get(id=4)
+        # user = User.objects.get(id=4)
         return Factor.objects.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) & 
                                     ~Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
 
@@ -2435,7 +2435,7 @@ class CompeletedFactors(ListAPIView):
     serializer_class = FactorListSerializer
     def get_queryset(self):
         user = self.request.user
-        user = User.objects.get(id=4)
+        # user = User.objects.get(id=4)
         return Factor.objects.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) & 
                                      Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
 
@@ -2445,7 +2445,7 @@ class ShopCompeletedFactors(ListAPIView):
     serializer_class = FactorListSerializer
     def get_queryset(self):
         user = self.request.user
-        user = User.objects.get(id=4)
+        # user = User.objects.get(id=4)
         shop_slug = self.kwargs.get('shop_slug')
         return Factor.objects.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) & 
                                      Q(FK_FactorPost__FK_Product__FK_Shop__Slug=shop_slug) &
@@ -2457,7 +2457,7 @@ class ShopUncompeletedFactors(ListAPIView):
     serializer_class = FactorListSerializer
     def get_queryset(self):
         user = self.request.user
-        user = User.objects.get(id=4)
+        # user = User.objects.get(id=4)
         shop_slug = self.kwargs.get('shop_slug')
         return Factor.objects.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) & 
                                      Q(FK_FactorPost__FK_Product__FK_Shop__Slug=shop_slug) &
@@ -2478,3 +2478,12 @@ class ShopProductList(ListAPIView):
         return shop_products
 
  
+class UserInfo(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        user = request.user
+        # user = User.objects.get(id=72)
+        serializer = ProfileSerializer(user.User_Profile)
+        return Response(serializer.data)
+

@@ -14,6 +14,20 @@ from rest_framework.fields import CurrentUserDefault
 
 
 
+class ShopListHomeSerializer(ModelSerializer):
+    class Meta:
+        model = Shop
+        fields = [
+            'id',
+            'title',
+            'slug',
+            'image_thumbnail_url',
+            'point',
+            'available',
+            'publish',
+        ]
+
+
 # user and profile and home page 
 class UserDetailSerializer(ModelSerializer):
     class Meta:
@@ -73,37 +87,36 @@ class BankAccountSerializer(ModelSerializer):
         ]
 
 class ProfileSerializer(ModelSerializer):
-    FK_User = UserDetailSerializer(read_only = True)
+    user = UserDetailSerializer(read_only = True)
+    shops = ShopListHomeSerializer(many=True)
 
     class Meta:
         model = Profile 
         fields = [
-            'ID',
-            'FK_User',
-            'Sex',
-            'MobileNumber',
-            'ZipCode',
-            'NationalCode',
-            'Address',
-            'State',
-            'BigCity',
-            'City',
-            'BrithDay',
-            'CityPerCode',
-            'PhoneNumber',
-            'Bio',
-            'Image_thumbnail_url',
-            'UserReferenceCode',
-            'Point',
-            'TutorialWebsite',
-            'get_bank_account_name',
-            'get_credit_card_number',
-            'get_shaba_number',
-            ]
-        read_only_fields = [
-            'ID',
-            'MobileNumber',
-            'NationalCode',
+            'id',
+            'user',
+            'sex',
+            'counter_pre_code',
+            'mobile_number',
+            'zip_code',
+            'national_code',
+            'address',
+            'state',
+            'big_city',
+            'city',
+            'location',
+            'bio',
+            'phone_number',
+            'image',
+            'fax_number',
+            'city_per_code',
+            'image_national_card',
+            'user_reference_code',
+            'point',
+            'tutorial_website',
+            'reference_code',
+            'ip_address',
+            'shops',
         ]
 
 class WalletSerializer(ModelSerializer):
@@ -115,20 +128,6 @@ class WalletSerializer(ModelSerializer):
         read_only_fields = [
             'Inverntory',
         ]
-
-class ShopListHomeSerializer(ModelSerializer):
-    class Meta:
-        model = Shop
-        fields = [
-            'ID',
-            'Title',
-            'Slug',
-            'Image_thumbnail_url',
-            'Point',
-            'Available',
-            'Publish',
-        ]
-
 class ProductListHomeSerializer(ModelSerializer):
     class Meta:
         model = Product

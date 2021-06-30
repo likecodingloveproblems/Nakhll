@@ -563,12 +563,28 @@ class Shop(models.Model):
 
     
     @property
+    def id(self):
+        return self.ID
+
+    @property
     def slug(self):
         return self.Slug
 
     @property
     def title(self):
         return self.Title
+
+    @property
+    def point(self):
+        return self.Point
+
+    @property
+    def publish(self):
+        return self.Publish
+
+    @property
+    def available(self):
+        return self.Available
 
     @property
     def state(self):
@@ -1771,15 +1787,26 @@ class Review(models.Model):
 
 # Profile (پروفایل) Model
 class Profile(models.Model):
-    objects = ProfileManager()
-    ID=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
-    FK_User=models.OneToOneField(User, on_delete=models.SET_NULL, verbose_name='کاربر', related_name='User_Profile', null=True)
     SEX_STATUS =(
         ('0','انتخاب جنسیت'),
         ('1','زن'),
         ('2','مرد'),
         ('3','سایر'),
     )
+    TUTORIALWEB_TYPE =(
+        ('0','موتور های جستجو'),
+        ('1','حجره داران'),
+        ('2','شبکه های اجتماعی'),
+        ('3','کاربران'),
+        ('4','رسانه ها'),
+        ('5','تبلیغات'),
+        ('6','NOD'),
+        ('7','سایر'),
+        ('8','هیچ کدام'),
+    )
+    objects = ProfileManager()
+    ID=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    FK_User=models.OneToOneField(User, on_delete=models.SET_NULL, verbose_name='کاربر', related_name='User_Profile', null=True)
     Sex=models.CharField(verbose_name='جنسیت', max_length=1, choices=SEX_STATUS, default='0')
     CountrPreCode=models.CharField(verbose_name='کد کشور', max_length=6, default='098')
     MobileNumber=models.CharField(verbose_name='شماره موبایل', max_length=11, unique=True)
@@ -1803,17 +1830,6 @@ class Profile(models.Model):
     ImageNationalCard = models.ImageField(verbose_name="عکس کارت ملی", upload_to=PathAndRename('media/Pictures/NationalCard/'), null=True, blank=True)
     UserReferenceCode=models.CharField(verbose_name='کد شما', max_length=6, unique=True, default=BuildReferenceCode(6))
     Point=models.PositiveIntegerField(verbose_name='امتیاز کاربر', default=0)
-    TUTORIALWEB_TYPE =(
-        ('0','موتور های جستجو'),
-        ('1','حجره داران'),
-        ('2','شبکه های اجتماعی'),
-        ('3','کاربران'),
-        ('4','رسانه ها'),
-        ('5','تبلیغات'),
-        ('6','NOD'),
-        ('7','سایر'),
-        ('8','هیچ کدام'),
-    )
     TutorialWebsite=models.CharField(verbose_name='نحوه آشنایی با سایت', max_length=1, choices=TUTORIALWEB_TYPE, blank=True, default='8')
     ReferenceCode=models.CharField(verbose_name='کد معرف', max_length=6, blank=True)
     IPAddress=models.CharField(verbose_name='آدرس ای پی', max_length=15, blank=True)
@@ -1898,6 +1914,81 @@ class Profile(models.Model):
             return City.objects.get(id=self.City).name
         except:
             return None
+
+    @property
+    def id(self):
+        return self.ID
+    @property
+    def user(self):
+        return self.FK_User
+    @property
+    def sex(self):
+        return self.Sex
+    @property
+    def counter_pre_code(self):
+        return self.CountrPreCode
+    @property
+    def mobile_number(self):
+        return self.MobileNumber
+    @property
+    def zip_code(self):
+        return self.ZipCode
+    @property
+    def national_code(self):
+        return self.NationalCode
+    @property
+    def address(self):
+        return self.Address
+    @property
+    def state(self):
+        return self.State
+    @property
+    def big_city(self):
+        return self.BigCity
+    @property
+    def city(self):
+        return self.City
+    @property
+    def location(self):
+        return self.Location
+    @property
+    def fax_number(self):
+        return self.FaxNumber
+    @property
+    def city_per_code(self):
+        return self.CityPerCode
+    @property
+    def phone_number(self):
+        return self.PhoneNumber
+    @property
+    def bio(self):
+        return self.Bio
+    @property
+    def image(self):
+        return self.Image.url
+    @property
+    def image_national_card(self):
+        return self.ImageNationalCard.url if self.ImageNationalCard else None
+    @property
+    def user_reference_code(self):
+        return self.UserReferenceCode
+    @property
+    def point(self):
+        return self.Point
+    @property
+    def tutorial_website(self):
+        return self.TutorialWebsite
+    @property
+    def reference_code(self):
+        return self.ReferenceCode
+    @property
+    def ip_address(self):
+        return self.IPAddress
+    @property
+    def shops(self):
+        return self.FK_User.ShopManager.all()
+
+
     # Ordering With DateCreate
     class Meta:
         ordering = ('ID',)   
