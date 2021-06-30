@@ -54,10 +54,13 @@ urlpatterns = [
     # new
     url(r'^v1/get-factor-detail-new$', views.get_factor_details , name='get_factor_detail'),
     # path('v1/factor/<factor_id>/', views.FactorDetails.as_view(),name='get_factor_detail_2'),
-    # path('v1/factor/', views.FactorList.as_view(),name='get_factor_detail_2'),
     # path('v1/factor-post/<factor_id>/', views.FactorPostUserList.as_view(),name='get_factor_post_user_list'),
-    path('v1/factor/<factor_id>/uncompleted/', views.UncompeletedFactors.as_view(), name='get_uncompleted_factor'),
-    path('v1/factor/<factor_id>/completed/', views.CompeletedFactors.as_view(), name='get_completed_factor'),
+    path('v1/factor/', views.FactorList.as_view(),name='get_user_factor_list'),
+    path('v1/factor/uncompleted/', views.UncompeletedFactors.as_view(), name='get_uncompleted_factor'),
+    path('v1/factor/completed/', views.CompeletedFactors.as_view(), name='get_completed_factor'),
+    path('v1/factor/shop/<shop_slug>/', views.ShopFactorList.as_view(),name='get_user_shop_factor_list'),
+    path('v1/factor/shop/<shop_slug>/uncompleted/', views.UncompeletedFactors.as_view(), name='get_shop_uncompleted_factor'),
+    path('v1/factor/shop/<shop_slug>/completed/', views.CompeletedFactors.as_view(), name='get_shop_completed_factor'),
     path('v1/get-shop-products/<shop_slug>/', views.ShopProductList.as_view(), name='get_shop_porducts'),
 
 
