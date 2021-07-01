@@ -633,17 +633,17 @@ class Factor(models.Model):
             return 'پرداخت با کیف پول - بن کارت'
 
     def get_factor_status(self):
-        if self.PaymentType == '0':
+        if self.OrderStatus== '0':
             return 'سفارش تحویل داده شده است'
-        elif self.PaymentType == '1':
+        elif self.OrderStatus == '1':
             return 'سفارش آماده است'
-        elif self.PaymentType == '2':
+        elif self.OrderStatus == '2':
             return 'سفارش در حال آماده سازی است'
-        elif self.PaymentType == '3':
+        elif self.OrderStatus == '3':
             return 'منتظر بررسی'
-        elif self.PaymentType == '4':
+        elif self.OrderStatus == '4':
             return 'سفارش لغو شده است'
-        elif self.PaymentType == '5':
+        elif self.OrderStatus == '5':
             return 'سفارش ارسال شده است'
 
     def get_coupon_status(self):
