@@ -413,6 +413,10 @@ def EditeShopBannerAlert(request, id):
 @login_required
 @staff_member_required
 def EditeProductBannerAlert(request, id):
+     # Get User Info
+    this_profile = Profile.objects.get(FK_User=request.user)
+    this_inverntory = request.user.WalletManager.Inverntory
+    # Get Menu Item
     options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
     # Get Nav Bar Menu Item
     navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
