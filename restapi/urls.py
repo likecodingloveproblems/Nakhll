@@ -61,7 +61,7 @@ urlpatterns = [
     path('v1/factor/shop/<shop_slug>/', views.ShopFactorList.as_view(),name='get_user_shop_factor_list'),
     path('v1/factor/shop/<shop_slug>/uncompleted/', views.UncompeletedFactors.as_view(), name='get_shop_uncompleted_factor'),
     path('v1/factor/shop/<shop_slug>/completed/', views.CompeletedFactors.as_view(), name='get_shop_completed_factor'),
-    path('v1/get-shop-products/<shop_slug>/', views.UserInfo.as_view(), name='get_user_shop_products'),
+    path('v1/get-shop-products/<shop_slug>/', views.ShopProductList.as_view(), name='get_user_shop_products'),
     path('v1/get-user-info/', views.UserInfo.as_view(), name='get_user_info'),
 
 
