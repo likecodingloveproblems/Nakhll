@@ -91,6 +91,7 @@ class ProfileForm(forms.ModelForm):
             'BrithDay': forms.TextInput(attrs={
                  'class': 'form-control',
                  'type':'text',
+                 'placeholder': '1300-01-01',
             }),
             'State': forms.TextInput(attrs={
                 'class': 'form-control',
