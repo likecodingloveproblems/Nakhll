@@ -228,38 +228,12 @@ class Invitation(models.Model):
 
 # Campaign (کمپین) Model
 class Campaign(models.Model):
-    Title=models.CharField(verbose_name='عنوان', max_length=100, db_index=True)
-    Description=models.TextField(verbose_name='توضیحات', blank=True)
-    FK_Creator=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='سازنده', related_name='Campaign_Creator', null=True)
+
     DISCOUNT_TYPE=(
         ('1','درصدی'),
         ('2','اعتباری'),
         ('3','ارسال رایگان'),
     )
-    DiscountType=models.CharField(verbose_name='نوع تخفیف', max_length=1, choices=DISCOUNT_TYPE, default='1')
-    DiscountRate=models.CharField(verbose_name='میزان تخفیف', max_length=7, blank=True)
-    FK_InvitationShops=models.ManyToManyField('Invitation', verbose_name='حجره های دعوت شده', related_name='Campaign_Invitation_Shop', blank=True)
-    FK_Shops=models.ManyToManyField(Shop, verbose_name='حجره های مجاز', related_name='ShopCampaign', blank=True)
-    FK_Products=models.ManyToManyField(Product, verbose_name='محصولات مجاز', related_name='ProductCampaign', blank=True)
-    FK_Categories=models.ManyToManyField(Category, verbose_name='دسته بندی های مجاز', related_name='CategoryCampaign', blank=True)
-    CAMPAGIN_TYPE=(
-        ('0','تولد'),
-        ('1','مناسبتی'),
-        ('2','انجمنی'),
-        ('3','فروش اولی'),
-        ('4','خرید اولی'),
-    )
-    CampaignType=models.CharField(verbose_name='نوع کمپین', max_length=1, choices=CAMPAGIN_TYPE)
-    DISCOUNT_TYPE =(
-        ('0','مدیریتی'),
-        ('1','حجره ای'),
-    )
-    DiscountStatus=models.CharField(verbose_name='نوع تخفیف', max_length=1, choices=DISCOUNT_TYPE, blank=True)
-    TextRequest=models.TextField(verbose_name='متن پیام دعوت نامه', blank=True)
-    MinimumAmount=models.CharField(verbose_name='حداقل مبلغ خرید', max_length=15, blank=True, default='0')
-    MaximumAmount=models.CharField(verbose_name='حداکثر مبلغ خرید', max_length=15, blank=True, default='0')
-    StartDate=jmodels.jDateField(verbose_name='تاریخ شروع کمپین')
-    EndDate=jmodels.jDateField(verbose_name='تاریخ پایان کمپین')
     AVAILABLE_STATUS =(
         (True,'فعال'),
         (False,'غیر فعال'),
@@ -268,11 +242,99 @@ class Campaign(models.Model):
         (True,'منتشر شده'),
         (False,'در انتظار تایید'),
     )
+    DISCOUNT_TYPE =(
+        ('0','مدیریتی'),
+        ('1','حجره ای'),
+    )
+    CAMPAGIN_TYPE=(
+        ('0','تولد'),
+        ('1','مناسبتی'),
+        ('2','انجمنی'),
+        ('3','فروش اولی'),
+        ('4','خرید اولی'),
+    )
+ 
+    Title=models.CharField(verbose_name='عنوان', max_length=100, db_index=True)
+    Description=models.TextField(verbose_name='توضیحات', blank=True)
+    FK_Creator=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='سازنده', related_name='Campaign_Creator', null=True)
+    DiscountType=models.CharField(verbose_name='نوع تخفیف', max_length=1, choices=DISCOUNT_TYPE, default='1')
+    DiscountRate=models.CharField(verbose_name='میزان تخفیف', max_length=7, blank=True)
+    FK_InvitationShops=models.ManyToManyField('Invitation', verbose_name='حجره های دعوت شده', related_name='Campaign_Invitation_Shop', blank=True)
+    FK_Shops=models.ManyToManyField(Shop, verbose_name='حجره های مجاز', related_name='ShopCampaign', blank=True)
+    FK_Products=models.ManyToManyField(Product, verbose_name='محصولات مجاز', related_name='ProductCampaign', blank=True)
+    FK_Categories=models.ManyToManyField(Category, verbose_name='دسته بندی های مجاز', related_name='CategoryCampaign', blank=True)
+    CampaignType=models.CharField(verbose_name='نوع کمپین', max_length=1, choices=CAMPAGIN_TYPE)
+    DiscountStatus=models.CharField(verbose_name='نوع تخفیف', max_length=1, choices=DISCOUNT_TYPE, blank=True)
+    TextRequest=models.TextField(verbose_name='متن پیام دعوت نامه', blank=True)
+    MinimumAmount=models.CharField(verbose_name='حداقل مبلغ خرید', max_length=15, blank=True, default='0')
+    MaximumAmount=models.CharField(verbose_name='حداکثر مبلغ خرید', max_length=15, blank=True, default='0')
+    StartDate=jmodels.jDateField(verbose_name='تاریخ شروع کمپین')
+    EndDate=jmodels.jDateField(verbose_name='تاریخ پایان کمپین')
     Available=models.BooleanField(verbose_name='وضعیت ثبت کمپین', choices=AVAILABLE_STATUS, default=True)
     Publish=models.BooleanField(verbose_name='وضعیت انتشار کمپین', choices=PUBLISH_STATUS, default=False)
     FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='تایید کننده', related_name='Campaign_Accept', blank=True, null=True)
 
-    # Output Customization Based On Creator, Serial Number
+
+    @property
+    def title(self):
+        return self.Title
+    @property
+    def description(self):    
+        return self.Description
+    @property
+    def ceator(self):    
+        return self.FK_Creator
+    @property
+    def discount_type(self):    
+        return self.DiscountType
+    @property
+    def discount_rate(self):    
+        return self.DiscountRate
+    @property
+    def invitation_shops(self):    
+        return self.FK_InvitationShops
+    @property
+    def shops(self):    
+        return self.FK_Shops
+    @property
+    def products(self):    
+        return self.FK_Products
+    @property
+    def ctegories(self):    
+        return self.FK_Categories
+    @property
+    def campaign_type(self):    
+        return self.CampaignType
+    @property
+    def discount_status(self):    
+        return self.DiscountStatus
+    @property
+    def text_request(self):    
+        return self.TextRequest
+    @property
+    def minimum_amount(self):    
+        return self.MinimumAmount
+    @property
+    def maximum_amount(self):    
+        return self.MaximumAmount
+    @property
+    def start_date(self):    
+        return self.StartDate
+    @property
+    def end_date(self):    
+        return self.EndDate
+    @property
+    def available(self):    
+        return self.Available
+    @property
+    def publish(self):    
+        return self.Publish
+    @property
+    def user(self):    
+        return self.FK_User
+    
+
+   # Output Customization Based On Creator, Serial Number
     def __str__(self):
         return "{} ({})".format(self.Title, self.FK_Creator)
 
@@ -358,7 +420,7 @@ class Coupon(models.Model):
 #----------------------------------------------------------------------------------------------------------------------------------
 
 # FactorPost (محصولات صورت حساب) Model
-class FactorPost (models.Model):
+class FactorPost(models.Model):
     ID=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     FK_Product=models.ForeignKey(Product, on_delete=models.SET_NULL, verbose_name='محصول', related_name='Factor_Product', null=True)
     FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='کاربر خریدار', related_name='item_Product', blank=True, null=True) 
@@ -443,6 +505,10 @@ class FactorPost (models.Model):
         except:
             return 0
     
+    @property
+    def product_image_thumbnail(self):
+        return self.FK_Product.image_thumbnail_url
+
     # Ordering With DateCreate
     class Meta:
         ordering = ('ID',)
@@ -454,14 +520,17 @@ class FactorPost (models.Model):
 # Factor (صورت حساب) Model 
 class Factor(models.Model):
     ID=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
-    FactorNumber=models.CharField(verbose_name='شماره صورت حساب', max_length=10, unique=True, default=BuildFactorCode(10))
-    FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='صاحب صورت حساب', related_name='UserFactor', null=True)
+    FactorNumber=models.CharField(verbose_name='شماره صورت حساب', max_length=10, 
+                                    unique=True, default=BuildFactorCode(10))
+    FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='صاحب صورت حساب',
+                                 related_name='UserFactor', null=True)
     Description=models.TextField(verbose_name='توضیحات سبد خرید',max_length=350, blank=True)
     CountrPreCode=models.CharField(verbose_name='کد کشور', max_length=6, default='098')
     MobileNumber=models.CharField(verbose_name='شماره موبایل', max_length=11, blank=True)
     ZipCode=models.CharField(verbose_name='کد پستی', max_length=10, blank=True)
     Address=models.CharField(verbose_name='آدرس', max_length=300, blank=True)
-    Location=models.CharField(verbose_name='موقعیت مکانی', max_length=150, blank=True, help_text='طول و عرض جغرافیایی')
+    Location=models.CharField(verbose_name='موقعیت مکانی', max_length=150, blank=True,
+                                 help_text='طول و عرض جغرافیایی')
     FaxNumber=models.CharField(verbose_name='شماره فکس', max_length=8, blank=True)
     CityPerCode=models.CharField(verbose_name='پیش شماره', max_length=6, default='034')
     City=models.CharField(verbose_name='شهر', max_length=50, blank=True)
@@ -564,17 +633,17 @@ class Factor(models.Model):
             return 'پرداخت با کیف پول - بن کارت'
 
     def get_factor_status(self):
-        if self.PaymentType == '0':
+        if self.OrderStatus== '0':
             return 'سفارش تحویل داده شده است'
-        elif self.PaymentType == '1':
+        elif self.OrderStatus == '1':
             return 'سفارش آماده است'
-        elif self.PaymentType == '2':
+        elif self.OrderStatus == '2':
             return 'سفارش در حال آماده سازی است'
-        elif self.PaymentType == '3':
+        elif self.OrderStatus == '3':
             return 'منتظر بررسی'
-        elif self.PaymentType == '4':
+        elif self.OrderStatus == '4':
             return 'سفارش لغو شده است'
-        elif self.PaymentType == '5':
+        elif self.OrderStatus == '5':
             return 'سفارش ارسال شده است'
 
     def get_coupon_status(self):
@@ -894,6 +963,159 @@ class Factor(models.Model):
 
     def get_shop_titles(self):
         return set(self.FK_FactorPost.values_list('FK_Product__FK_Shop__Title',flat=True))
+
+    @property
+    def id(self):
+        return self.ID
+    
+    @property
+    def factor_number(self):
+        return self.FactorNumber
+
+    @property
+    def description(self):
+        return self.Description
+
+    @property
+    def counter_pre_code(self):
+        return self.CountrPreCode
+
+    @property
+    def mobile_number(self):
+        return self.MobileNumber
+
+    @property
+    def zip_code(self):
+        return self.ZipCode
+
+    @property
+    def address(self):
+        return self.Address
+
+    @property
+    def location(self):
+        return self.Location
+
+    @property
+    def fax_number(self):
+        return self.FaxNumber
+
+    @property
+    def city_pre_code(self):
+        return self.CityPerCode
+
+    @property
+    def big_city(self):
+        return self.BigCity
+
+    @property
+    def state(self):
+        return self.State
+
+    @property
+    def factor_status(self):
+        return self.get_factor_status()
+
+    @property
+    def phone_number(self):
+        return self.PhoneNumber
+
+    @property
+    def factor_type(self):
+        return self.FactorType
+
+    @property
+    def shop_info(self):
+        return self.ShopInfo
+
+    @property
+    def user(self):
+        return self.FK_User.get_full_name()
+
+
+    @property
+    def factor_posts_count(self):
+        return self.FK_FactorPost.count()
+
+    @property
+    def factor_posts_summary(self):
+        return self.FK_FactorPost.all()[:4]
+
+    @property
+    def user_info(self):
+        return self.UserInfo
+
+    @property
+    def discount_rate(self):
+        return self.DiscountRate
+
+    @property
+    def discount_type(self):
+        return self.DiscountType
+
+    @property
+    def campaing_type(self):
+        return self.CampaingType
+
+    @property
+    def post_price(self):
+        return self.PostPrice
+
+    @property
+    def total_price(self):
+        return self.TotalPrice
+
+    @property
+    def payment_status(self):
+        return self.PaymentStatus
+
+    @property
+    def payment_type(self):
+        return self.PaymentType
+
+    @property
+    def order_date(self):
+        return self.OrderDate
+
+    @property
+    def delivery_date(self):
+        return self.DeliveryDate
+
+    @property
+    def order_status(self):
+        return self.OrderStatus
+
+    @property
+    def checkout(self):
+        return self.Checkout
+
+    @property
+    def publish(self):
+        return self.Publish
+
+    @property
+    def profile(self):
+        return Profile.objects.get(FK_User = self.FK_User)
+
+    @property
+    def factor_post(self):
+        return self.FK_FactorPost
+
+    @property
+    def coupon(self):
+        return self.FK_Coupon
+
+    @property
+    def campaign(self):
+        return self.FK_Campaign
+
+    @property
+    def staff(self):
+        return Profile.objects.get(FK_User = self.FK_Staff)
+
+    @property
+    def staff_checkout(self):
+        return Profile.objects.get(FK_User = self.FK_Staff_Checkout)
 
 
     # Ordering With DateCreate

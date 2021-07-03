@@ -1,3 +1,4 @@
+from os import name
 from django.urls import path, re_path ,include
 from django.conf.urls import url
 from . import views, web_views, analyzeview
@@ -49,8 +50,19 @@ urlpatterns = [
     re_path(r'^v1/get-inpreparation-factor/$', views.get_inpreparation_factor , name='get_inpreparation_factor'),
     re_path(r'^v1/get-waiting-factor/$', views.get_waiting_factor , name='get_waiting_factor'),
     url(r'^v1/get-factor-detail$', views.get_factor_detail , name='get_factor_detail'),
+
     # new
     url(r'^v1/get-factor-detail-new$', views.get_factor_details , name='get_factor_detail'),
+    # path('v1/factor/<factor_id>/', views.FactorDetails.as_view(),name='get_factor_detail_2'),
+    # path('v1/factor-post/<factor_id>/', views.FactorPostUserList.as_view(),name='get_factor_post_user_list'),
+    path('v1/factor/', views.FactorList.as_view(),name='get_user_factor_list'),
+    path('v1/factor/uncompleted/', views.UncompeletedFactors.as_view(), name='get_uncompleted_factor'),
+    path('v1/factor/completed/', views.CompeletedFactors.as_view(), name='get_completed_factor'),
+    path('v1/factor/shop/<shop_slug>/', views.ShopFactorList.as_view(),name='get_user_shop_factor_list'),
+    path('v1/factor/shop/<shop_slug>/uncompleted/', views.ShopUncompeletedFactors.as_view(), name='get_shop_uncompleted_factor'),
+    path('v1/factor/shop/<shop_slug>/completed/', views.ShopCompeletedFactors.as_view(), name='get_shop_completed_factor'),
+    path('v1/get-shop-products/<shop_slug>/', views.ShopProductList.as_view(), name='get_user_shop_products'),
+    path('v1/get-user-info/', views.UserInfo.as_view(), name='get_user_info'),
 
 
     #factors change status
@@ -72,9 +84,6 @@ urlpatterns = [
     
     url(r'^v1/get-shop-detail$', views.get_shop_detail , name='get_shop_detail'),
     url(r'^v1/get-shop-banner$', views.get_shop_banner , name='get_shop_banner'),
-    
-    
-    
 
     # create shop and product
     url(r'^v1/create-new-shop$', views.create_new_shop , name='create_new_shop'),

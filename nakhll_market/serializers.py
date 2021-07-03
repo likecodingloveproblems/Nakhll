@@ -149,3 +149,19 @@ class ProductDetailSerializer(serializers.HyperlinkedModelSerializer):
             'status', 'exception_post_range', 'post_range', 'sub_market',
             'shop',
         ]
+
+class ProductListSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Product
+        fields = [
+            'id', 
+            'title',
+            'slug',
+            'inventory',
+            'image_thumbnail_url',
+            'price',
+            'status',
+            'comments_count',
+            'average_user_point',
+            'total_sell',
+        ]

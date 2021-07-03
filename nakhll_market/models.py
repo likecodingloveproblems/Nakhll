@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from django.db.models.aggregates import Sum
+from django.db.models.aggregates import Avg, Sum
 from django.db.models.deletion import SET_DEFAULT
 from my_auth.models import ProfileManager
 from django.db import models
@@ -563,12 +563,28 @@ class Shop(models.Model):
 
     
     @property
+    def id(self):
+        return self.ID
+
+    @property
     def slug(self):
         return self.Slug
 
     @property
     def title(self):
         return self.Title
+
+    @property
+    def point(self):
+        return self.Point
+
+    @property
+    def publish(self):
+        return self.Publish
+
+    @property
+    def available(self):
+        return self.Available
 
     @property
     def state(self):
@@ -848,7 +864,31 @@ class ProductManager(models.Manager):
 
         
 # Product (محصول) Model
-class Product (models.Model):
+class Product(models.Model):
+    POSTRANGE_TYPE=(
+        ('1','سراسر کشور'),
+        ('2','استانی'),
+        ('3','شهرستانی'),
+        ('4','شهری'),
+    )
+    PRODUCT_STATUS=(
+        ('1','آماده در انبار'),
+        ('2','تولید بعد از سفارش'),
+        ('3','سفارشی سازی فروش'),
+        ('4','موجود نیست'),
+    )
+    AVAILABLE_STATUS =(
+        (True,'فعال'),
+        (False,'غیر فعال'),
+    )
+    PUBLISH_STATUS =(
+        (True,'منتشر شده'),
+        (False,'در انتظار تایید'),
+    )
+    EDITE_STATUS =(
+        (True,'در حال بررسی تغییرات'),
+        (False,'تغییری اعمال شده است'),
+    )
     objects = ProductManager()
     ID=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     Title=models.CharField(max_length=200, verbose_name='نام محصول', db_index=True)
@@ -881,38 +921,17 @@ class Product (models.Model):
     Height_With_Packaging=models.CharField(verbose_name='ارتفاع محصول با بسته بندی (سانتی متر(', max_length=4, default='0')
     # Product Inventory
     Inventory=models.IntegerField(verbose_name='میزان موجودی از این کالا در انبار', default=5)
-    POSTRANGE_TYPE=(
-        ('1','سراسر کشور'),
-        ('2','استانی'),
-        ('3','شهرستانی'),
-        ('4','شهری'),
-    )
+    
     PostRangeType=models.CharField(verbose_name='محدوده ارسال محصولات', max_length=1, choices=POSTRANGE_TYPE, default='1', help_text='محدوده ارسال را بر اساس تایپ های مشخص شده، تعیین کنید.')
     FK_PostRange=models.ManyToManyField('PostRange', verbose_name='استان، شهرستان و شهر', related_name='Product_PostRange', blank=True)
     FK_ExceptionPostRange=models.ManyToManyField('PostRange', verbose_name='استثناء های محدوده ارسال', related_name='Poduct_PostRange_Exception', blank=True)
     FK_Points = models.ManyToManyField('UserPoint', verbose_name = 'امتیاز ها', related_name = 'User_Points', blank = True)
     FK_OptinalAttribute = models.ManyToManyField('OptinalAttribute', verbose_name = 'ویژگی های انتخابی', related_name = 'product_optional_attribute', blank = True)
-    PRODUCT_STATUS=(
-        ('1','آماده در انبار'),
-        ('2','تولید بعد از سفارش'),
-        ('3','سفارشی سازی فروش'),
-        ('4','موجود نیست'),
-    )
+    
     Status=models.CharField(verbose_name='وضعیت فروش', max_length=1, choices=PRODUCT_STATUS)
     DateCreate=models.DateTimeField(verbose_name='تاریخ بارگذاری محصول', auto_now_add=True)
     DateUpdate=models.DateTimeField(verbose_name='تاریخ بروزرسانی محصول', auto_now=True)
-    AVAILABLE_STATUS =(
-        (True,'فعال'),
-        (False,'غیر فعال'),
-    )
-    PUBLISH_STATUS =(
-        (True,'منتشر شده'),
-        (False,'در انتظار تایید'),
-    )
-    EDITE_STATUS =(
-        (True,'در حال بررسی تغییرات'),
-        (False,'تغییری اعمال شده است'),
-    )
+    
     Edite=models.BooleanField(verbose_name='وضعیت ویرایش محصول', choices=EDITE_STATUS, default=False)
     Available=models.BooleanField(verbose_name='وضعیت بارگذاری محصول', choices=AVAILABLE_STATUS, default=True)
     Publish=models.BooleanField(verbose_name='وضعیت انتشار محصول', choices=PUBLISH_STATUS, default=False)
@@ -1036,6 +1055,10 @@ class Product (models.Model):
         return self.Product_Review.all()
 
     @property
+    def comments_count(self):
+        return self.Product_Comment.count()
+
+    @property
     def comments(self):
         return self.Product_Comment.all()
 
@@ -1043,9 +1066,20 @@ class Product (models.Model):
     def shop(self):
         return self.FK_Shop
 
+    @property
+    def inventory(self):
+        return self.Inventory
+
+    @property
+    def average_user_point(self):
+        return self.FK_Points.aggregate(average=Avg('Point'))['average']
+
+    @property
+    def total_sell(self):
+        return self.Factor_Product.count()
+
     def __str__(self):
         return "{}".format(self.Title)
-
 
     def get_status(self):
         Status = {
@@ -1753,15 +1787,26 @@ class Review(models.Model):
 
 # Profile (پروفایل) Model
 class Profile(models.Model):
-    objects = ProfileManager()
-    ID=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
-    FK_User=models.OneToOneField(User, on_delete=models.SET_NULL, verbose_name='کاربر', related_name='User_Profile', null=True)
     SEX_STATUS =(
         ('0','انتخاب جنسیت'),
         ('1','زن'),
         ('2','مرد'),
         ('3','سایر'),
     )
+    TUTORIALWEB_TYPE =(
+        ('0','موتور های جستجو'),
+        ('1','حجره داران'),
+        ('2','شبکه های اجتماعی'),
+        ('3','کاربران'),
+        ('4','رسانه ها'),
+        ('5','تبلیغات'),
+        ('6','NOD'),
+        ('7','سایر'),
+        ('8','هیچ کدام'),
+    )
+    objects = ProfileManager()
+    ID=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    FK_User=models.OneToOneField(User, on_delete=models.SET_NULL, verbose_name='کاربر', related_name='User_Profile', null=True)
     Sex=models.CharField(verbose_name='جنسیت', max_length=1, choices=SEX_STATUS, default='0')
     CountrPreCode=models.CharField(verbose_name='کد کشور', max_length=6, default='098')
     MobileNumber=models.CharField(verbose_name='شماره موبایل', max_length=11, unique=True)
@@ -1783,19 +1828,9 @@ class Profile(models.Model):
                                 format='JPEG',
                                 options={'quality': 60} )
     ImageNationalCard = models.ImageField(verbose_name="عکس کارت ملی", upload_to=PathAndRename('media/Pictures/NationalCard/'), null=True, blank=True)
+    ImageNationalCardUnverified = models.ImageField(verbose_name="عکس کارت ملی تایید نشده", upload_to=PathAndRename('media/Pictures/NationalCard/'), null=True, blank=True)
     UserReferenceCode=models.CharField(verbose_name='کد شما', max_length=6, unique=True, default=BuildReferenceCode(6))
     Point=models.PositiveIntegerField(verbose_name='امتیاز کاربر', default=0)
-    TUTORIALWEB_TYPE =(
-        ('0','موتور های جستجو'),
-        ('1','حجره داران'),
-        ('2','شبکه های اجتماعی'),
-        ('3','کاربران'),
-        ('4','رسانه ها'),
-        ('5','تبلیغات'),
-        ('6','NOD'),
-        ('7','سایر'),
-        ('8','هیچ کدام'),
-    )
     TutorialWebsite=models.CharField(verbose_name='نحوه آشنایی با سایت', max_length=1, choices=TUTORIALWEB_TYPE, blank=True, default='8')
     ReferenceCode=models.CharField(verbose_name='کد معرف', max_length=6, blank=True)
     IPAddress=models.CharField(verbose_name='آدرس ای پی', max_length=15, blank=True)
@@ -1880,6 +1915,81 @@ class Profile(models.Model):
             return City.objects.get(id=self.City).name
         except:
             return None
+
+    @property
+    def id(self):
+        return self.ID
+    @property
+    def user(self):
+        return self.FK_User
+    @property
+    def sex(self):
+        return self.Sex
+    @property
+    def counter_pre_code(self):
+        return self.CountrPreCode
+    @property
+    def mobile_number(self):
+        return self.MobileNumber
+    @property
+    def zip_code(self):
+        return self.ZipCode
+    @property
+    def national_code(self):
+        return self.NationalCode
+    @property
+    def address(self):
+        return self.Address
+    @property
+    def state(self):
+        return self.State
+    @property
+    def big_city(self):
+        return self.BigCity
+    @property
+    def city(self):
+        return self.City
+    @property
+    def location(self):
+        return self.Location
+    @property
+    def fax_number(self):
+        return self.FaxNumber
+    @property
+    def city_per_code(self):
+        return self.CityPerCode
+    @property
+    def phone_number(self):
+        return self.PhoneNumber
+    @property
+    def bio(self):
+        return self.Bio
+    @property
+    def image(self):
+        return self.Image.url
+    @property
+    def image_national_card(self):
+        return self.ImageNationalCard.url if self.ImageNationalCard else None
+    @property
+    def user_reference_code(self):
+        return self.UserReferenceCode
+    @property
+    def point(self):
+        return self.Point
+    @property
+    def tutorial_website(self):
+        return self.TutorialWebsite
+    @property
+    def reference_code(self):
+        return self.ReferenceCode
+    @property
+    def ip_address(self):
+        return self.IPAddress
+    @property
+    def shops(self):
+        return self.FK_User.ShopManager.all()
+
+
     # Ordering With DateCreate
     class Meta:
         ordering = ('ID',)   

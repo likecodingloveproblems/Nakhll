@@ -1,6 +1,8 @@
+from nakhll_market.serializers import ProductListSerializer
 from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404 
-from django.http import HttpResponse , JsonResponse
+from django.http import HttpResponse , JsonResponse, Http404
+from django.db.models import Q
 
 from django.utils.datastructures import MultiValueDictKeyError
 from django.views.decorators.http import require_POST 
@@ -2364,3 +2366,124 @@ def get_user_home_page_statistics(request):
         return JsonResponse({'message_count' : count, 'sned' : send_factors, 'wait' : wait_factors, 'satisfaction' : 0}, status = HTTP_200_OK)
     else:
         return JsonResponse({'err' : 'Not Exists Any Shop For You'}, status = HTTP_404_NOT_FOUND)
+
+
+
+
+
+class FactorDetails(APIView):
+    # permission_classes = [IsAuthenticated]
+    def get_object(self, factor_id):
+        try:
+            user = self.request.user
+            # user = User.objects.get(id=4)
+            return Factor.objects.get(FactorNumber=factor_id, FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user)
+        except Factor.DoesNotExist:
+            raise Http404
+
+    def get(self, request, factor_id, format=None):
+        factor = self.get_object(factor_id)
+        serializer = FactorAllDetailsSerializer(factor)
+        return Response(serializer.data)
+
+
+class FactorPostUserList(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = FactorPostUserSerializer
+    lookup_url_kwarg = 'factor_id'
+
+    def get_queryset(self):
+        factor_id = self.kwargs.get(self.lookup_url_kwarg)
+        user = self.request.user
+        # user = User.objects.get(id=4)
+
+        factor = Factor.objects.get(FactorNumber=factor_id)
+        return FactorPost.objects.filter(Factor_Products=factor, FK_Product__FK_Shop__FK_ShopManager=user)
+
+
+
+class FactorList(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = FactorListSerializer
+    def get_queryset(self):
+        user = self.request.user
+        # user = User.objects.get(id=4)
+        return Factor.objects.filter(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user)
+
+
+class ShopFactorList(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = FactorListSerializer
+    def get_queryset(self):
+        user = self.request.user
+        # user = User.objects.get(id=4)
+        shop_slug = self.kwargs.get('shop_slug')
+        return Factor.objects.filter(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user, 
+                                     FK_FactorPost__FK_Product__FK_Shop__Slug=shop_slug)
+
+class UncompeletedFactors(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = FactorListSerializer
+    def get_queryset(self):
+        user = self.request.user
+        # user = User.objects.get(id=4)
+        return Factor.objects.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) & 
+                                    ~Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
+
+class CompeletedFactors(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = FactorListSerializer
+    def get_queryset(self):
+        user = self.request.user
+        # user = User.objects.get(id=4)
+        return Factor.objects.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) & 
+                                     Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
+
+
+class ShopCompeletedFactors(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = FactorListSerializer
+    def get_queryset(self):
+        user = self.request.user
+        # user = User.objects.get(id=4)
+        shop_slug = self.kwargs.get('shop_slug')
+        return Factor.objects.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) & 
+                                     Q(FK_FactorPost__FK_Product__FK_Shop__Slug=shop_slug) &
+                                     Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
+
+
+class ShopUncompeletedFactors(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = FactorListSerializer
+    def get_queryset(self):
+        user = self.request.user
+        # user = User.objects.get(id=4)
+        shop_slug = self.kwargs.get('shop_slug')
+        return Factor.objects.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) & 
+                                     Q(FK_FactorPost__FK_Product__FK_Shop__Slug=shop_slug) &
+                                    ~Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
+
+
+
+class ShopProductList(ListAPIView):
+    serializer_class = ProductListSerializer
+    permission_classes = [permissions.IsAuthenticated ]
+    lookup_field = 'shop_slug'
+    def get_queryset(self):
+        slug = self.kwargs.get('shop_slug')
+        shop = Shop.objects.get(Slug=slug)
+        user = self.request.user
+        # user = User.objects.get(id=72)
+        shop_products = Product.objects.filter(FK_Shop=shop, FK_Shop__FK_ShopManager=user)
+        return shop_products
+
+ 
+class UserInfo(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        user = request.user
+        # user = User.objects.get(id=72)
+        serializer = ProfileSerializer(user.User_Profile)
+        return Response(serializer.data)
+
