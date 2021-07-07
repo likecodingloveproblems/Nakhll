@@ -160,6 +160,7 @@ class ProductListSerializer(serializers.HyperlinkedModelSerializer):
             'inventory',
             'image_thumbnail_url',
             'price',
+            'old_price',
             'status',
             'comments_count',
             'average_user_point',
