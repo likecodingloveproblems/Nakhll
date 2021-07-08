@@ -56,7 +56,6 @@ from rest_framework.status import (
 )
 from rest_framework.response import Response
 
-from restapi.filters import OrderingFilter
 
 
 # user login //req : request.user  // res:  OR err
@@ -2454,7 +2453,7 @@ class ShopProductList(ListAPIView):
         slug = self.kwargs.get('shop_slug')
         shop = Shop.objects.get(Slug=slug)
         user = self.request.user
-        user = User.objects.get(id=72)
+        # user = User.objects.get(id=72)
 
         # Get query Parameters to do filtring and ordering
         product_status = self.request.query_params.get('product_status')
@@ -2462,10 +2461,11 @@ class ShopProductList(ListAPIView):
         price_to = self.request.query_params.get('price_to')
         inventory_from = self.request.query_params.get('inventory_from')
         inventory_to = self.request.query_params.get('inventory_to')
+        order_by = self.request.query_params.get('order_by', None)
 
 
         # Filtering
-        shop_products = Product.objects.filter(FK_Shop=shop, FK_Shop__FK_ShopManager=user)
+        shop_products = Product.objects.get_user_shop_products(user, shop, order_by)
         shop_products = shop_products.filter(Status=product_status) if product_status else shop_products
         shop_products = shop_products.filter(Price__gt=price_from) if price_from else shop_products
         shop_products = shop_products.filter(Price__lt=price_to) if price_to else shop_products
