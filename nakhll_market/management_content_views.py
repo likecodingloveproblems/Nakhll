@@ -188,8 +188,7 @@ def Add_New_User(request):
 
                 if (len(context['User_NationalCode']) == 10) and (len(context['User_MobileNumber']) == 11):
 
-                    if not Profile.objects.filter( Q(MobileNumber = context['User_MobileNumber']) and Q(NationalCode = context['User_NationalCode'])).exists():
-
+                    if not Profile.objects.filter(MobileNumber = context['User_MobileNumber']).exists():
                         # Build User
                         new_user = User(username = context['User_MobileNumber'], first_name = context['User_FirstName'], last_name = context['User_LastName'] )
                         new_user.save()
@@ -199,40 +198,47 @@ def Add_New_User(request):
                         # Build Profile
                         new_profile = Profile(FK_User = new_user, MobileNumber = context['User_MobileNumber'], NationalCode = context['User_NationalCode'])
                         new_profile.save()
-                        # Build User Wallet
-                        if (context['User_Amount'] != '') and (context['User_Amount'] != 0):
-                            new_user_wallet = Wallet(FK_User = new_user, Inverntory = context['User_Amount'])
-                            new_user_wallet.save()
-
-                            # Get Description
-                            transaction_description = Option_Meta.objects.get(Title = 'add_new_user').Value_1
-                            # Set Transaction
-                            transaction = Transaction(FK_User = new_user, Price = context['User_Amount'], Type = '1', FK_Wallet = new_user_wallet, Description = transaction_description)
-                            transaction.save()
-                        else:
-                            new_user_wallet = Wallet(FK_User = new_user)
-                            new_user_wallet.save()
-
-                        # Send SMS To User
-                        url = 'https://api.kavenegar.com/v1/{}/verify/lookup.json'.format(KAVENEGAR_KEY) 
-                        params = {'receptor': context['User_MobileNumber'], 'token' : new_user.username, 'token2' : new_profile.NationalCode, 'template' : 'nakhll-addnewuser'}
-                        result = requests.post(url, params = params)
-                        Message = result.json()
-                        MessageReturn = Message["return"]
-                        print(MessageReturn["status"])
-
-
-                        if context['status'] == 1:
-       
-                            return redirect("nakhll_market:Add_New_Shop", id = new_user.id)
-
-                        elif context['status'] == 0:
-
-                            return redirect("nakhll_market:Show_All_User_Info")
-
+                        # create wallet
+                        new_user_wallet = Wallet(FK_User = new_user)
+                        new_user_wallet.save()
                     else:
-                        context['ShowAlart'] = True
-                        context['AlartMessage'] = 'کاربری با این شماره موبایل یا کد ملی قبلا ثبت شده است!'
+                        new_profile = Profile.objects.get(MobileNumber=context['User_MobileNumber'])
+                        new_profile.NationalCode = context['User_NationalCode']
+                        new_profile.save()
+                        new_user = new_profile.FK_User
+                        new_user.username = context['User_MobileNumber']
+                        new_user.first_name = context['User_FirstName']
+                        new_user.last_name = context['User_LastName']
+                        new_user.save()
+                        new_user_wallet = new_user.WalletManager
+
+                    # Build User Wallet
+                    if (context['User_Amount'] != '') and (context['User_Amount'] != 0):
+                        new_user_wallet.Inverntory = context['User_Amount']
+                        new_user_wallet.save()
+
+                        # Get Description
+                        transaction_description = Option_Meta.objects.get(Title = 'add_new_user').Value_1
+                        # Set Transaction
+                        transaction = Transaction(FK_User = new_user, Price = context['User_Amount'], Type = '1', FK_Wallet = new_user_wallet, Description = transaction_description)
+                        transaction.save()
+
+                    # Send SMS To User
+                    url = 'https://api.kavenegar.com/v1/{}/verify/lookup.json'.format(KAVENEGAR_KEY) 
+                    params = {'receptor': context['User_MobileNumber'], 'token' : new_user.username, 'token2' : new_profile.NationalCode, 'template' : 'nakhll-addnewuser'}
+                    result = requests.post(url, params = params)
+                    Message = result.json()
+                    MessageReturn = Message["return"]
+                    print(MessageReturn["status"])
+
+
+                    if context['status'] == 1:
+    
+                        return redirect("nakhll_market:Add_New_Shop", id = new_user.id)
+
+                    elif context['status'] == 0:
+
+                        return redirect("nakhll_market:Show_All_User_Info")
 
                 else:
                     context['ShowAlart'] = True

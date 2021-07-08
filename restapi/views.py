@@ -56,8 +56,6 @@ from rest_framework.status import (
 )
 from rest_framework.response import Response
 
-
-
 # user login //req : request.user  // res:  OR err
 @csrf_exempt
 @api_view(["GET"])
