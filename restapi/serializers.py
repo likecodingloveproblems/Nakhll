@@ -1,7 +1,7 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from nakhll_market.models import Profile , Product , Shop , SubMarket , Category , BankAccount , ShopBanner , Attribute , AttrProduct , AttrPrice , ProductBanner, PostRange , Message , User_Message_Status, OptinalAttribute, Details
+from nakhll_market.models import Profile , Product , Shop , SubMarket , Category , BankAccount , ShopBanner , Attribute , AttrProduct , AttrPrice , ProductBanner, PostRange , Message , User_Message_Status, OptinalAttribute, Details, State, BigCity, City
 from Payment.models import Campaign, Factor , Wallet , FactorPost , Transaction , PostBarCode , Coupon
 import re
 from rest_framework.exceptions import  ValidationError 
@@ -636,3 +636,22 @@ class ShopSubMarketsSerializer(ModelSerializer):
             'ID',
             'Title',
         ]
+
+
+class StateSerializer(ModelSerializer):
+    class Meta:
+        model = State
+        fields = ['id', 'name', ]
+
+class BigCitySerializer(ModelSerializer):
+    class Meta:
+        model = BigCity
+        fields = ['id', 'name', ]
+
+class CitySerializer(ModelSerializer):
+    class Meta:
+        model = City
+        fields = ['id', 'name', ]
+
+
+

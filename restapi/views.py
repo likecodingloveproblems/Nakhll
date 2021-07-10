@@ -17,7 +17,10 @@ import threading
 import json
 
 
-from nakhll_market.models import Profile, Product, Shop, SubMarket, Category, BankAccount, ShopBanner, Attribute, AttrProduct, AttrPrice, ProductBanner, PostRange, Message, User_Message_Status, Alert, Field, Message
+from nakhll_market.models import (Profile, Product, Shop, SubMarket, Category, 
+                                BankAccount, ShopBanner, Attribute, AttrProduct, AttrPrice,
+                                ProductBanner, PostRange, Message, User_Message_Status,
+                                Alert, Field, Message, State)
 from Payment.models import Factor, Wallet, FactorPost, Transaction, PostBarCode, Coupon
 
 
@@ -2483,3 +2486,26 @@ class UserInfo(APIView):
         # user = User.objects.get(id=72)
         serializer = ProfileSerializer(user.User_Profile)
         return Response(serializer.data)
+
+
+
+class StateList(ListAPIView):
+    serializer_class = StateSerializer
+    queryset = State.objects.all()
+
+class BigCityList(ListAPIView):
+    serializer_class = BigCitySerializer
+    def get_queryset(self):
+        state_id = self.request.GET.get('state_id')
+        state = get_object_or_404(State, id=state_id)
+        return BigCity.objects.filter(state=state)
+
+class CityList(ListAPIView):
+    serializer_class = CitySerializer
+    def get_queryset(self):
+        bigcity_id = self.request.GET.get('bigcity_id')
+        bigcity = get_object_or_404(BigCity, id=bigcity_id)
+        return City.objects.filter(big_city=bigcity)
+
+
+
