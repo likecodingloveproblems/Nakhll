@@ -110,7 +110,7 @@ class MarketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Market
         fields = [
-            'title', 'url',
+            'title', 'url', 'id',
         ]
 
 class SubMarketSerializer(serializers.ModelSerializer):
@@ -118,7 +118,7 @@ class SubMarketSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubMarket
         fields = [
-            'title', 'market', 'url',
+            'title', 'market', 'url', 'id'
         ]
 
 class PostRangeSerializer(serializers.ModelSerializer):
@@ -165,4 +165,19 @@ class ProductListSerializer(serializers.HyperlinkedModelSerializer):
             'comments_count',
             'average_user_point',
             'total_sell',
+        ]
+
+
+class FullMarketSerializer(serializers.ModelSerializer):
+    submarkets = SubMarketSerializer(many=True, read_only=True)
+    class Meta:
+        model = Market
+        fields = [
+            'id',
+            'title',
+            'description',
+            'image',
+            'slug',
+            'url',
+            'submarkets',
         ]

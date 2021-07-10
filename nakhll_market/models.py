@@ -98,12 +98,33 @@ class Market(models.Model):
     FK_Tag=models.ManyToManyField(Tag, verbose_name='تگ ها', related_name='Market_Tagss', blank=True)
 
     @property
+    def id(self):
+        return self.ID
+
+    @property
     def title(self):
         return self.Title
 
     @property
+    def description(self):
+        return self.Description
+
+    @property
+    def image(self):
+        return self.Image.url
+
+    @property
+    def slug(self):
+        return self.Slug
+
+    @property
     def url(self):
         return reverse("nakhll_market:Markets")
+
+    @property
+    def submarkets(self):
+        return self.FatherMarket.filter(Publish=True, Available=True)
+
 
     def __str__(self):
         return "{}".format(self.Title)
@@ -174,6 +195,10 @@ class SubMarket(models.Model):
     Publish=models.BooleanField(verbose_name='وضعیت انتشار راسته', choices=PUBLISH_STATUS, default=False)
     FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='تایید کننده', related_name='SubMarket_Accept', blank=True, null=True) 
     FK_Tag=models.ManyToManyField(Tag, verbose_name='تگ ها', related_name='SubMarket_Tag', blank=True)
+
+    @property
+    def id(self):
+        return self.ID
 
     @property
     def title(self):

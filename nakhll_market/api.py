@@ -1,10 +1,10 @@
 from nakhll_market.models import (
-    AmazingProduct, Product, Shop, Slider, Category
+    AmazingProduct, Product, Shop, Slider, Category, Market
     )
 from nakhll_market.serializers import (
     AmazingProductSerializer, ProductDetailSerializer,
     ProductSerializer, ShopSerializer,SliderSerializer,
-    CategorySerializer
+    CategorySerializer, FullMarketSerializer
     )
 from rest_framework import generics, routers, views, viewsets
 from rest_framework import permissions, filters, mixins
@@ -92,3 +92,10 @@ class ProductsInSameFactorViewSet(generics.ListAPIView):
         id = self.kwargs.get('ID')
         return Product.objects.get_products_in_same_factor(id)
  
+ 
+class MarketList(generics.ListAPIView):
+    serializer_class = FullMarketSerializer
+    permission_classes = [permissions.AllowAny, ]
+    queryset = Market.objects.filter(Available=True, Publish=True)
+
+
