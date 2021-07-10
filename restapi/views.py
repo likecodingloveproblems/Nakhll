@@ -2491,21 +2491,21 @@ class UserInfo(APIView):
 
 class StateList(ListAPIView):
     serializer_class = StateSerializer
-    queryset = State.objects.all()
+    queryset = State.objects.all().order_by('name')
 
 class BigCityList(ListAPIView):
     serializer_class = BigCitySerializer
     def get_queryset(self):
         state_id = self.request.GET.get('state_id')
         state = get_object_or_404(State, id=state_id)
-        return BigCity.objects.filter(state=state)
+        return BigCity.objects.filter(state=state).order_by('name')
 
 class CityList(ListAPIView):
     serializer_class = CitySerializer
     def get_queryset(self):
         bigcity_id = self.request.GET.get('bigcity_id')
         bigcity = get_object_or_404(BigCity, id=bigcity_id)
-        return City.objects.filter(big_city=bigcity)
+        return City.objects.filter(big_city=bigcity).order_by('name')
 
 
 
