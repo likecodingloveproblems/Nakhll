@@ -314,9 +314,14 @@ if DEBUG:
 SENDSMS_BACKEND = 'sms.backend.SmsBackend'
 HOTJAR_SITE_ID = '2447146'
 
-CORS_ALLOW_ALL_ORIGINS = bool(os.environ.get('CORS_ALLOW_ALL_ORIGINS'))
-if not CORS_ALLOW_ALL_ORIGINS:
-    CORS_ALLOWED_ORIGINS = (os.environ.get("CORS_ALLOWED_ORIGINS") or 'http://localhost:3000').split(" ")
-cors_allowed_headers = lambda: os.environ.get('CORS_ALLOWED_HEADERS')
-if cors_allowed_headers:
-    CORS_ALLOWED_HEADERS = cors_allowed_headers()
+
+# CORS Settings
+CORS_ORIGIN_ALLOW_ALL = bool(os.environ.get('CORS_ALLOW_ALL_ORIGINS'))
+CORS_ALLOW_CREDENTIALS = bool(os.environ.get('CORS_ALLOW_CREDENTIALS', True))
+if not CORS_ORIGIN_ALLOW_ALL :
+    CORS_ORIGIN_WHITELIST = os.environ.get('CORS_ORIGIN_WHITELIST', 'http://localhost:3007').split(' ')
+CORS_ALLOW_HEADERS = os.environ.get('CORS_ALLOW_HEADERS',
+                        'accept accept-encoding authorization content-type origin\
+                         dnt user-agent x-csrftoken x-requested-with').split(' ')
+CORS_ALLOW_METHODS = os.environ.get('CORS_ALLOW_METHODS',
+                        'DELETE GET OPTIONS PATCH POST PUT').split(' ')
