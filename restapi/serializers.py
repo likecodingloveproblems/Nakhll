@@ -1,3 +1,4 @@
+from os import read
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 from django.contrib.auth.models import User
@@ -119,6 +120,21 @@ class ProfileSerializer(ModelSerializer):
             'shops',
         ]
 
+
+class SimpleProfileSerializer(ModelSerializer):
+    user = UserDetailSerializer(read_only = True)
+    class Meta:
+        model = Profile 
+        fields = [
+            'id',
+            'user',
+            'sex',
+            'mobile_number',
+            'national_code',
+            'image',
+        ]
+
+
 class WalletSerializer(ModelSerializer):
     class Meta:
         model = Wallet
@@ -157,6 +173,18 @@ class ProductTitleSerializer(ModelSerializer):
         model = Product
         fields = [
             'Title'
+        ]
+
+
+class SimpleProductSerializer(ModelSerializer):
+    class Meta:
+        model = Product
+        fields = [
+            'title',
+            'price', 
+            'old_price',
+            'discount',
+            'image_thumbnail_url',
         ]
 
 class CampaignSerializer(ModelSerializer):
@@ -199,6 +227,23 @@ class FactorPostSerializer(ModelSerializer):
             'get_one_price',
             'EndPrice',
         ]
+
+class SimpleFactorPostSerializer(ModelSerializer):
+    # FK_Product = ProductTitleSerializer(read_only = True)
+    product = SimpleProductSerializer(read_only = True)
+    class Meta:
+        model = FactorPost
+        fields = [
+            'product',
+            'ProductCount',
+            'get_total_item_price',
+            'Description',
+            'get_one_price',
+            'EndPrice',
+        ]
+
+
+
 
 class FactorPostSummarySerializer(ModelSerializer):
     class Meta:
@@ -257,50 +302,79 @@ class FactorListSerializer(ModelSerializer):
             'user',
         ]
 
+class PostBarCodeSerializer(ModelSerializer):
+    class Meta:
+        model = PostBarCode
+        fields = [
+            'user_sender',
+            'bar_code',
+            'post_price',
+            'send_date',
+        ]
+
+
 class FactorAllDetailsSerializer(ModelSerializer):
-    factor_post = FactorPostSerializer(read_only=True, many=True)
-    coupon = CouponSerializer(read_only=True, many=False)
-    profile = ProfileSerializer(read_only=True, many=False)
-    campaign = CampaignSerializer(read_only=True, many=False)
-    staff = ProfileSerializer(read_only=True, many=False)
-    staff_checkout = ProfileSerializer(read_only=True, many=False)
+    factor_post = SimpleFactorPostSerializer(read_only=True, many=True)
+    # coupon = CouponSerializer(read_only=True, many=False)
+    profile = SimpleProfileSerializer(read_only=True, many=False)
+    post_details = PostBarCodeSerializer(read_only=True, many=False)
+    # campaign = CampaignSerializer(read_only=True, many=False)
+    # staff = ProfileSerializer(read_only=True, many=False)
+    # staff_checkout = ProfileSerializer(read_only=True, many=False)
 
     class Meta:
         model = Factor
         fields = [
             'id',
             'factor_number',
-            'description',
-            'counter_pre_code',
-            'mobile_number',
-            'zip_code',
-            'address',
-            'location',
-            'fax_number',
-            'city_pre_code',
-            'big_city',
-            'state',
-            'phone_number',
-            'factor_type',
-            'shop_info',
-            'user_info',
-            'discount_rate',
-            'discount_type',
-            'campaing_type',
-            'post_price',
-            'total_price',
-            'payment_status',
-            'order_date',
-            'delivery_date',
             'order_status',
-            'checkout',
 
             'profile',
+            'phone_number',
+            'mobile_number',
+            'location',
+            'counter_pre_code',
+            'state',
+            'city_pre_code',
+            'big_city',
+            'address',
+            'zip_code',
+
+            'jalali_order_date',
+            'delivery_date',
+            'post_price',
+            'post_details',
+
             'factor_post',
-            'coupon',
-            'campaign',
-            'staff',
-            'staff_checkout',
+            # Title
+            # Image
+            # Price
+            # Total Price
+            # Count
+
+            'total_price',
+            # Deliver Total Price
+            # Wage
+            # Checkout Price
+
+
+            # Extra fields
+            # 'description',
+            # 'fax_number',
+            # 'factor_type',
+            # 'shop_info',
+            # 'user_info',
+            # 'discount_rate',
+            # 'discount_type',
+            # 'campaing_type',
+            # 'payment_status',
+            # 'delivery_date',
+            # 'checkout',
+
+            # 'coupon',
+            # 'campaign',
+            # 'staff',
+            # 'staff_checkout',
         ]
 
 class FactorDesSerializer(ModelSerializer):
@@ -367,18 +441,6 @@ class TransactionSerializer(ModelSerializer):
             'Type',
             'Date',
         ]
-
-class PostBarCodeSerializer(ModelSerializer):
-    class Meta:
-        model = PostBarCode
-        fields = [
-            'FK_Factor',
-            'User_Sender',
-            'FK_Shops',
-            'BarCode',
-            'PostPrice',
-        ]
-
 
 
 

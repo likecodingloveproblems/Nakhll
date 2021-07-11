@@ -66,6 +66,7 @@ urlpatterns = [
     path('v1/get-all-state/', views.StateList.as_view(), name='get_all_state'),
     path('v1/get-big-cities/', views.BigCityList.as_view(), name='get_big_cities'),
     path('v1/get-cities/', views.CityList.as_view(), name='get_cities'),
+    path('v1/get-factor-details/', views.FactorDetails.as_view(), name='get_factor_details'),
 
 
     #factors change status

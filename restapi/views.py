@@ -2296,22 +2296,6 @@ def get_user_home_page_statistics(request):
         return JsonResponse({'err': 'Not Exists Any Shop For You'}, status=HTTP_404_NOT_FOUND)
 
 
-class FactorDetails(APIView):
-    # permission_classes = [IsAuthenticated]
-    def get_object(self, factor_id):
-        try:
-            user = self.request.user
-            # user = User.objects.get(id=4)
-            return Factor.objects.get(FactorNumber=factor_id, FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user)
-        except Factor.DoesNotExist:
-            raise Http404
-
-    def get(self, request, factor_id, format=None):
-        factor = self.get_object(factor_id)
-        serializer = FactorAllDetailsSerializer(factor)
-        return Response(serializer.data)
-
-
 class FactorPostUserList(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = FactorPostUserSerializer
@@ -2332,7 +2316,7 @@ class FactorList(ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        # user = User.objects.get(id=4)
+        user = User.objects.get(id=72)
         return Factor.objects.filter(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user)
 
 
@@ -2506,6 +2490,36 @@ class CityList(ListAPIView):
         bigcity_id = self.request.GET.get('bigcity_id')
         bigcity = get_object_or_404(BigCity, id=bigcity_id)
         return City.objects.filter(big_city=bigcity).order_by('name')
+
+
+class FactorDetails(APIView):
+    permission_classes = [IsAuthenticated, ]
+    def get(self, request, format=None):
+        user = request.user
+        factor_id = request.GET.get('factor_id', 0)
+        user = User.objects.get(id=72)
+        try:
+            factor = Factor.objects.get(ID=factor_id, FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user)
+        except Factor.DoesNotExist:
+            raise Http404()
+        serializer = FactorAllDetailsSerializer(factor)
+        return Response(serializer.data)
+
+# class FactorDetails(APIView):
+#     # permission_classes = [IsAuthenticated]
+#     def get_object(self, factor_id):
+#         try:
+#             user = self.request.user
+#             # user = User.objects.get(id=4)
+#             return Factor.objects.get(FactorNumber=factor_id, FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user)
+#         except Factor.DoesNotExist:
+#             raise Http404
+
+#     def get(self, request, factor_id, format=None):
+#         factor = self.get_object(factor_id)
+#         serializer = FactorAllDetailsSerializer(factor)
+#         return Response(serializer.data)
+
 
 
 

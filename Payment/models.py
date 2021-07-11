@@ -508,6 +508,31 @@ class FactorPost(models.Model):
     @property
     def product_image_thumbnail(self):
         return self.FK_Product.image_thumbnail_url
+    @property
+    def id(self):
+        return self.ID
+    @property
+    def product(self):
+        return self.FK_Product
+    @property
+    def user(self):
+        return self.FK_User
+    @property
+    def product_status(self):
+        return self.ProductStatus
+    @property
+    def product_count(self):
+        return self.ProductCount
+    @property
+    def attr_price(self):
+        return self.FK_AttrPrice
+    @property
+    def description(self):
+        return self.Description
+    @property
+    def end_price(self):
+        return self.EndPrice
+
 
     # Ordering With DateCreate
     class Meta:
@@ -964,6 +989,12 @@ class Factor(models.Model):
     def get_shop_titles(self):
         return set(self.FK_FactorPost.values_list('FK_Product__FK_Shop__Title',flat=True))
 
+    def get_post_details(self):
+        return self.Factor_PostBarCode.first()
+
+
+
+
     @property
     def id(self):
         return self.ID
@@ -1117,6 +1148,19 @@ class Factor(models.Model):
     def staff_checkout(self):
         return Profile.objects.get(FK_User = self.FK_Staff_Checkout)
 
+    @property
+    def post_details(self):
+        return self.get_post_details()
+
+    @property
+    def jalali_order_date(self):
+        jalali_datetime =  jdatetime.datetime.fromgregorian(datetime=self.order_date)
+        return jalali_datetime.strftime('%Y/%m/%d %H:%M')
+
+    # @property
+    # def jalali_delivery_date(self):
+    #     jalali_datetime =  jdatetime.datetime.fromgregorian(datetime=self.delivery_date)
+    #     return jalali_datetime.strftime('%Y/%m/%d %H:%M')
 
     # Ordering With DateCreate
     class Meta:
@@ -1161,6 +1205,37 @@ class PostBarCode (models.Model):
             return jdatetime.date.fromgregorian(day = thisdate.day, month = thisdate.month, year = thisdate.year)
         except:
             return None
+
+    @property
+    def factor(self):
+        return self.FK_Factor
+    @property
+    def user_sender(self):
+        return self.User_Sender
+    @property
+    def products(self):
+        return self.FK_Products
+    @property
+    def bar_code(self):
+        return self.BarCode
+    @property
+    def post_price(self):
+        return self.PostPrice
+    @property
+    def send_date(self):
+        return self.SendDate
+    @property
+    def create_date(self):
+        return self.CreateDate
+    @property
+    def send_type(self):
+        return self.SendType
+    @property
+    def image(self):
+        return self.Image
+
+
+
 
     class Meta:
         ordering = ('id',)
