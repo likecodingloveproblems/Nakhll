@@ -616,6 +616,54 @@ class Shop(models.Model):
         return self.State
 
     @property
+    def big_city(self):
+        return self.BigCity
+
+    @property
+    def city(self):
+        return self.City
+
+    @property
+    def url(self):
+        return self.get_absolute_url
+
+    @property
+    def image_thumbnail_url(self):
+        return self.Image_thumbnail_url
+
+    def __str__(self):
+        return "{}".format(self.Title)
+
+    def get_absolute_url(self):
+        return reverse("nakhll_market:ShopsDetail", kwargs={
+            'shop_slug': self.Slug
+        })
+
+    def Image_thumbnail_url(self):
+        try:
+            i = self.Image_thumbnail.url
+            url = self.Image_thumbnail.url
+            return url
+        except:
+            url ="https://nakhll.com/media/Pictures/default.jpg"
+            return url
+
+    def get_url(self):
+        return reverse("nakhll_market:ShopsDetail", kwargs={
+            'shop_slug': self.Slug,
+        })
+
+    def get_holidays(self):
+        return self.Holidays.split('-')
+
+    def get_products_category(self):
+        category = []
+        for item in self.get_products():
+            for category_item in item.FK_Category.filter(FK_SubCategory = None, Publish = True):
+                category.append(category_item)
+        category = list(dict.fromkeys(category))
+        return category
+    @property
     def url(self):
         return self.get_absolute_url
 

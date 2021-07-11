@@ -1,15 +1,18 @@
+from django.http.response import Http404
 from nakhll_market.models import (
     AmazingProduct, Product, Shop, Slider, Category, Market
     )
 from nakhll_market.serializers import (
     AmazingProductSerializer, ProductDetailSerializer,
     ProductSerializer, ShopSerializer,SliderSerializer,
-    CategorySerializer, FullMarketSerializer
+    CategorySerializer, FullMarketSerializer, CreateShopSerializer
     )
 from rest_framework import generics, routers, views, viewsets
 from rest_framework import permissions, filters, mixins
 from django.db.models import Q, F, Count
 import random
+from nakhll.authentications import CsrfExemptSessionAuthentication
+from rest_framework.response import Response
 
 
 class SliderViewSet(viewsets.ReadOnlyModelViewSet):
@@ -97,5 +100,35 @@ class MarketList(generics.ListAPIView):
     serializer_class = FullMarketSerializer
     permission_classes = [permissions.AllowAny, ]
     queryset = Market.objects.filter(Available=True, Publish=True)
+
+
+class GetShopWithSlug(views.APIView):
+    permission_classes = [permissions.IsAuthenticated, ]
+
+    def get(self, request, format=None):
+        shop_slug = request.GET.get('slug')
+        try:
+            shop = Shop.objects.get(Slug=shop_slug)
+        except Shop.DoesNotExist:
+            raise Http404
+        serializer = ShopSerializer(shop)
+        return Response(serializer.data)
+
+
+
+
+
+class CreateShop(generics.CreateAPIView):
+    serializer_class = CreateShopSerializer
+    permission_classes = [permissions.IsAuthenticated, ]
+    authentication_classes = [CsrfExemptSessionAuthentication, ]
+    def get_queryset(self):
+        return Shop.objects.filter(FK_ShopManager=self.request.user)
+    def perform_create(self, serializer):
+        super().perform_create(serializer)
+        serializer.save(FK_ShopManager=self.request.user)
+
+
+
 
 

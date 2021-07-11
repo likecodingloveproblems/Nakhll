@@ -32,6 +32,12 @@ class ShopSerializer(serializers.ModelSerializer):
             'state'
         ]
 
+class CreateShopSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Shop
+        fields = ['Slug', 'Title', 'State', 'BigCity', 'City', ]
+   
+
 class ProductSerializer(serializers.ModelSerializer):
     shop = ShopSerializer(many=False, read_only=True)
     class Meta:
