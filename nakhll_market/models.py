@@ -938,7 +938,7 @@ class ProductManager(models.Manager):
     def get_user_shop_products(self, user, shop, order=None):
         if order and order in ['total_sell', 'title']:
             try:
-                products = Product.objects.filter(FK_Shop=shop, FK_Shop__FK_ShopManager=user)
+                products = Product.objects.filter(FK_Shop=shop, FK_Shop__FK_ShopManager=user, Publish=True)
                 if order == 'total_sell':
                     return products.annotate(num=Count('Factor_Product')).order_by('-num')
                 elif order == 'title':
