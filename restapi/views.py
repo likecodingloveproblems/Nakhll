@@ -2497,7 +2497,7 @@ class FactorDetails(APIView):
     def get(self, request, format=None):
         user = request.user
         factor_id = request.GET.get('factor_id', 0)
-        user = User.objects.get(id=72)
+        # user = User.objects.get(id=72)
         try:
             factor = Factor.objects.get(ID=factor_id, FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user)
         except Factor.DoesNotExist:
