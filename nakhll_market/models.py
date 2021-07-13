@@ -1023,6 +1023,16 @@ class Product(models.Model):
     Publish=models.BooleanField(verbose_name='وضعیت انتشار محصول', choices=PUBLISH_STATUS, default=False)
     FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='تایید کننده', related_name='Product_Accept', blank=True, null=True) 
     FK_Tag=models.ManyToManyField(Tag, verbose_name='تگ ها', related_name='Product_Tag', blank=True)
+    PreparationDays = models.PositiveSmallIntegerField(verbose_name='زمان آماده‌سازی', null=True)
+
+
+    @property
+    def id(self):
+        return self.ID
+
+    @property
+    def user(self):
+        return self.FK_User
 
     @property
     def sub_market(self):
@@ -1163,6 +1173,14 @@ class Product(models.Model):
     @property
     def total_sell(self):
         return self.Factor_Product.count()
+
+    @property
+    def preparation_days(self):
+        return self.PreparationDays
+    
+    @property
+    def post_range_type(self):
+        return self.PostRangeType
 
     def __str__(self):
         return "{}".format(self.Title)
