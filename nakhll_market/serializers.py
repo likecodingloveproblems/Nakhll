@@ -21,7 +21,7 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = [
-            'slug', 'title', 'url', 'image_thumbnail',
+            'id', 'Slug', 'title', 'url', 'image_thumbnail',
         ]
 
 class ShopSerializer(serializers.ModelSerializer):
@@ -156,22 +156,57 @@ class ProductDetailSerializer(serializers.HyperlinkedModelSerializer):
             'shop',
         ]
 
-class ProductListSerializer(serializers.HyperlinkedModelSerializer):
+
+class ProductListSerializer(serializers.ModelSerializer):
+    # FK_User = serializers.SlugRelatedField(slug_field='username', queryset=User.objects.all())
+    category = CategorySerializer(many=True, read_only=True)
+    shop = serializers.SlugRelatedField(slug_field='Slug', read_only=True)
     class Meta:
         model = Product
         fields = [
-            'id', 
+            'id',
             'title',
             'slug',
             'inventory',
+            'category',
             'image_thumbnail_url',
             'price',
+            'shop',
             'old_price',
+            'net_weight',
+            'weight_with_packing',
+            'description',
             'status',
+            'post_range_type',
+            'preparation_days',
             'comments_count',
             'average_user_point',
             'total_sell',
         ]
+class ProductWriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = [
+            'ID',
+            'Title',
+            'Slug',
+            'Inventory',
+            'Price',
+            'OldPrice',
+            'Net_Weight',
+            'Weight_With_Packing',
+            'Description',
+            'Status',
+            'PostRangeType',
+            'PreparationDays',
+            'FK_Shop'
+        ]
+
+class ProductCategorySerializer(serializers.Serializer):
+    product = serializers.SlugField()
+    categories = serializers.ListField(
+        child=serializers.IntegerField(min_value=0)
+    )
 
 
 class FullMarketSerializer(serializers.ModelSerializer):
