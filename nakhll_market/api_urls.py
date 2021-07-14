@@ -4,7 +4,8 @@ from nakhll_market.api import (
     LastCreatedProductsViewSet, MostDiscountPrecentageProductsViewSet,
     UserProductViewSet, ProductsInSameFactorViewSet, SliderViewSet,
     MostSoldShopsViewSet, RandomShopsViewSet, RandomProductsViewSet,
-    MarketList, CreateShop, GetShopWithSlug, CheckShopSlug, CheckProductSlug
+    MarketList, CreateShop, GetShopWithSlug, CheckShopSlug, CheckProductSlug,
+    AddImageToProduct,
     )
 from rest_framework import routers
 
@@ -31,5 +32,6 @@ urlpatterns = [
     path('shop/create/', CreateShop.as_view()),
     path('shop/check/', CheckShopSlug.as_view()),
     path('product/check/', CheckProductSlug.as_view()),
-    path('product/category/', AddCategoryToProduct.as_view()),
+    path('product/categories/', AddCategoryToProduct.as_view()),
+    path('product/images/', AddImageToProduct.as_view()),
 ]

@@ -1,10 +1,11 @@
 from django.http.response import Http404
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.exceptions import ValidationError
 from nakhll_market.models import (
-    AmazingProduct, Product, Shop, Slider, Category, Market
+    AmazingProduct, Product, ProductBanner, Shop, Slider, Category, Market
     )
 from nakhll_market.serializers import (
-    AmazingProductSerializer, ProductDetailSerializer,
+    AmazingProductSerializer, ProductDetailSerializer, ProductImagesSerializer,
     ProductSerializer, ShopSerializer,SliderSerializer,
     CategorySerializer, FullMarketSerializer, CreateShopSerializer,
     ProductListSerializer, ProductCategorySerializer, ProductWriteSerializer,
@@ -152,6 +153,12 @@ class CreateShop(generics.CreateAPIView):
         super().perform_create(serializer)
         serializer.save(FK_ShopManager=self.request.user)
 
+                # TODO: Create Alerts
+                #
+                #
+                #
+
+
 
 
 
@@ -176,7 +183,7 @@ class CheckProductSlug(views.APIView):
         except Product.DoesNotExist:
             return Response({'product_slug': None})
 class AddCategoryToProduct(views.APIView):
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [CsrfExemptSessionAuthentication, ]
     def post(self, request, format=None):
         try:
@@ -190,6 +197,12 @@ class AddCategoryToProduct(views.APIView):
             for category_id in categories_id:
                 category = Category.objects.get(id=category_id)
                 product.FK_Category.add(category)
+
+                # TODO: Create Alerts
+                #
+                #
+                #
+
             return Response({'details': 'done'}, status=status.HTTP_200_OK)
         except:
             return Response({'details': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
@@ -197,3 +210,38 @@ class AddCategoryToProduct(views.APIView):
         cats = Category.objects.all()
         ser = CategorySerializer(cats, many=True)
         return Response(ser.data)
+
+class AddImageToProduct(views.APIView):
+    parser_classes = (MultiPartParser, FormParser)
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [CsrfExemptSessionAuthentication, ]
+    def post(self, request, format=None):
+        try:
+            serializer = ProductImagesSerializer(data=request.data)
+            if serializer.is_valid() and 'images' in request.FILES:
+                product_slug = serializer.validated_data.get('product')
+                images = request.FILES.getlist('images')
+                product = Shop.objects.get(Slug=product_slug)
+                product_owner = product.FK_Shop.FK_ShopManager
+                if product_owner != request.user:
+                    return Response({'details': 'Access Denied'}, status=status.HTTP_401_UNAUTHORIZED)
+                
+                # Save first image in product.NewImage
+                product_main_image = images[0]
+                product.NewImage = product_main_image
+                product.save()
+
+                # Save all images in product.Product_Banner
+                for image in images:
+                    ProductBanner.objects.create(FK_Product=product, Image=image)
+
+                # TODO: Create Alerts
+                #
+                #
+                #
+
+                return Response({'details': 'done'}, status=status.HTTP_200_OK)
+            return Response(serializer.errors)
+        except:
+            return Response({'details': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
+

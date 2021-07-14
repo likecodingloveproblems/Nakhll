@@ -202,13 +202,6 @@ class ProductWriteSerializer(serializers.ModelSerializer):
             'FK_Shop'
         ]
 
-class ProductCategorySerializer(serializers.Serializer):
-    product = serializers.SlugField()
-    categories = serializers.ListField(
-        child=serializers.IntegerField(min_value=0)
-    )
-
-
 class FullMarketSerializer(serializers.ModelSerializer):
     submarkets = SubMarketSerializer(many=True, read_only=True)
     class Meta:
@@ -222,3 +215,18 @@ class FullMarketSerializer(serializers.ModelSerializer):
             'url',
             'submarkets',
         ]
+
+
+class ProductCategorySerializer(serializers.Serializer):
+    product = serializers.SlugField()
+    categories = serializers.ListField(
+        child=serializers.IntegerField(min_value=0)
+    )
+
+
+class ProductImagesSerializer(serializers.Serializer):
+    product = serializers.SlugField()
+    images = serializers.ImageField()
+
+
+
