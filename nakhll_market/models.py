@@ -900,18 +900,21 @@ class ProductManager(models.Manager):
         return result[random_id]
 
     def get_last_created_products(self):
-        return Product.objects\
+        queryset = self.get_queryset()
+        return queryset\
             .filter(Publish = True, Available = True, OldPrice = 0, Status__in = ['1', '2', '3'])\
                 .order_by('-DateCreate')[:12]
 
     def get_last_created_discounted_products(self):
-        return Product.objects\
+        queryset = self.get_queryset()
+        return queryset\
             .filter(Publish = True, Available = True, Status__in = ['1', '2', '3'])\
             .exclude(OldPrice=0)\
             .order_by('-DateCreate')[:16]
 
     def get_random_products(self):
-        return Product.objects\
+        queryset = self.get_queryset()
+        return queryset\
             .filter(
                 Publish = True,
                 Available = True,
@@ -921,14 +924,16 @@ class ProductManager(models.Manager):
             .order_by('?')[:16]
 
     def get_most_discount_precentage_products(self):
-        return Product.objects\
+        queryset = self.get_queryset()
+        return queryset\
             .get_most_discount_precentage_available_product()\
             .order_by('?')[:15]
 
     def get_products_in_same_factor(self, id):
+        queryset = self.get_queryset()
         try:
-            product = Product.objects.get(ID=id)
-            return Product.objects\
+            product = queryset.get(ID=id)
+            return queryset\
                 .filter(Factor_Product__Factor_Products__FK_FactorPost__FK_Product=product)\
                 .exclude(ID = product.ID)\
                 .distinct()
@@ -936,17 +941,17 @@ class ProductManager(models.Manager):
             return None
 
     def get_user_shop_products(self, user, shop, order=None):
+        queryset = self.get_queryset()
         if order and order in ['total_sell', 'title']:
             try:
-                products = Product.objects.filter(FK_Shop=shop, FK_Shop__FK_ShopManager=user, Publish=True)
+                products = queryset.filter(FK_Shop=shop, FK_Shop__FK_ShopManager=user, Publish=True)
                 if order == 'total_sell':
                     return products.annotate(num=Count('Factor_Product')).order_by('-num')
                 elif order == 'title':
                     return products.order_by('Title')
             except:
                 pass
-        return Product.objects.filter(FK_Shop=shop, FK_Shop__FK_ShopManager=user)
-
+        return queryset.filter(FK_Shop=shop, FK_Shop__FK_ShopManager=user)
 
         
 # Product (محصول) Model
