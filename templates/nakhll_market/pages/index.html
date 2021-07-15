@@ -533,7 +533,7 @@
                                                 <div class="_content_card_price">
                                                     <div class="_content_price_number">
                                                         <span class="_content_toman">ریال</span>
-                                                        <span class="_content_price_now ">`+result[i].price+`</span>
+                                                        <span class="_content_price_now ">`+result[i].price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</span>
                                                         <span class="_content_price_old "></span>
                                                     </div>
                                                     <div >
@@ -615,20 +615,23 @@
             
             <h3  class="title-borderbt">تخفیفات ویژه</h3>
                 <div style="
-    margin-top: 43px;
-">
+                    margin-top: 43px;
+                ">
 
-                    <img src="`+dataMostDisPro[0].image_thumbnail_url+`" alt="عکس تخفیفات ویژه" width="175px" height="175px">
-                    <a href="`+dataMostDisPro[0].url+`">
-                    <h2 style="font-size: 1.1rem" class="longtitle">`+dataMostDisPro[0].title+`</h2>
-                    </a>
-                    <span class="strikeprice numbersprice takhfif">`+dataMostDisPro[0].old_price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+` ریال</span>
-                    <br>
-                    <span class="priceline numbersprice takhfif">`+dataMostDisPro[0].price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+` ریال</span> 
-            </div>
-            
+                                    <img src="`+dataMostDisPro[0].image_thumbnail_url+`" alt="عکس تخفیفات ویژه" width="175px" height="175px">
+                                    <a href="`+dataMostDisPro[0].url+`">
+                                    <h2 style="font-size: 1.1rem" class="longtitle">`+dataMostDisPro[0].title+`</h2>
+                                    </a>
+                                    <span class=" strikeprice numbersprice takhfif">`+dataMostDisPro[0].old_price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+` ریال</span>
+                                    <br>
+                                    <span class=" priceline numbersprice takhfif">`+dataMostDisPro[0].price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+` ریال</span> 
+                            </div>
+                            
             `)
+           
        }
+
+       
 
     })
 
