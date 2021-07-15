@@ -1,9 +1,11 @@
 from django.urls import re_path, include, path
 from nakhll_market.api import (
-    AmazingProductViewSet, CategoryViewSet, LastCreatedDiscountedProductsViewSet,
+    AddCategoryToProduct, AmazingProductViewSet, CategoryViewSet, LastCreatedDiscountedProductsViewSet,
     LastCreatedProductsViewSet, MostDiscountPrecentageProductsViewSet,
-    ProductDetailsViewSet, ProductsInSameFactorViewSet, SliderViewSet,
-    MostSoldShopsViewSet, RandomShopsViewSet, RandomProductsViewSet
+    UserProductViewSet, ProductsInSameFactorViewSet, SliderViewSet,
+    MostSoldShopsViewSet, RandomShopsViewSet, RandomProductsViewSet,
+    MarketList, CreateShop, GetShopWithSlug, CheckShopSlug, CheckProductSlug,
+    AddImageToProduct,
     )
 from rest_framework import routers
 
@@ -19,12 +21,17 @@ landing_router.register(r'most-discount-prec-products', MostDiscountPrecentagePr
 landing_router.register(r'most-sold-shops', MostSoldShopsViewSet, basename="most-sold-shops")
 landing_router.register(r'random-shops', RandomShopsViewSet, basename="random-shops")
 landing_router.register(r'random-products', RandomProductsViewSet, basename="random-products")
+landing_router.register(r'products', UserProductViewSet, basename="products")
 
-product_page_router = routers.DefaultRouter()
-product_page_router.register(r'details', ProductDetailsViewSet, basename="details")
 
 urlpatterns = [
     path('landing/', include(landing_router.urls)),
-    path('product-page/', include(product_page_router.urls)),
     path('product-page/same-factor/<uuid:ID>/', ProductsInSameFactorViewSet.as_view()),
+    path('markets/', MarketList.as_view()),
+    path('shop/', GetShopWithSlug.as_view()),
+    path('shop/create/', CreateShop.as_view()),
+    path('shop/check/', CheckShopSlug.as_view()),
+    path('product/check/', CheckProductSlug.as_view()),
+    path('product/categories/', AddCategoryToProduct.as_view()),
+    path('product/images/', AddImageToProduct.as_view()),
 ]

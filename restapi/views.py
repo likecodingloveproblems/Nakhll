@@ -17,7 +17,10 @@ import threading
 import json
 
 
-from nakhll_market.models import Profile, Product, Shop, SubMarket, Category, BankAccount, ShopBanner, Attribute, AttrProduct, AttrPrice, ProductBanner, PostRange, Message, User_Message_Status, Alert, Field, Message
+from nakhll_market.models import (Profile, Product, Shop, SubMarket, Category, 
+                                BankAccount, ShopBanner, Attribute, AttrProduct, AttrPrice,
+                                ProductBanner, PostRange, Message, User_Message_Status,
+                                Alert, Field, Message, State)
 from Payment.models import Factor, Wallet, FactorPost, Transaction, PostBarCode, Coupon
 
 
@@ -2293,22 +2296,6 @@ def get_user_home_page_statistics(request):
         return JsonResponse({'err': 'Not Exists Any Shop For You'}, status=HTTP_404_NOT_FOUND)
 
 
-class FactorDetails(APIView):
-    # permission_classes = [IsAuthenticated]
-    def get_object(self, factor_id):
-        try:
-            user = self.request.user
-            # user = User.objects.get(id=4)
-            return Factor.objects.get(FactorNumber=factor_id, FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user)
-        except Factor.DoesNotExist:
-            raise Http404
-
-    def get(self, request, factor_id, format=None):
-        factor = self.get_object(factor_id)
-        serializer = FactorAllDetailsSerializer(factor)
-        return Response(serializer.data)
-
-
 class FactorPostUserList(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = FactorPostUserSerializer
@@ -2329,7 +2316,7 @@ class FactorList(ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        # user = User.objects.get(id=4)
+        user = User.objects.get(id=72)
         return Factor.objects.filter(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user)
 
 
@@ -2451,7 +2438,7 @@ class ShopProductList(ListAPIView):
         slug = self.kwargs.get('shop_slug')
         shop = Shop.objects.get(Slug=slug)
         user = self.request.user
-        user = User.objects.get(id=72)
+        # user = User.objects.get(id=72)
 
         # Get query Parameters to do filtring and ordering
         product_status = self.request.query_params.get('product_status')
@@ -2459,10 +2446,11 @@ class ShopProductList(ListAPIView):
         price_to = self.request.query_params.get('price_to')
         inventory_from = self.request.query_params.get('inventory_from')
         inventory_to = self.request.query_params.get('inventory_to')
+        order_by = self.request.query_params.get('order_by', None)
 
 
         # Filtering
-        shop_products = Product.objects.filter(FK_Shop=shop, FK_Shop__FK_ShopManager=user)
+        shop_products = Product.objects.get_user_shop_products(user, shop, order_by)
         shop_products = shop_products.filter(Status=product_status) if product_status else shop_products
         shop_products = shop_products.filter(Price__gt=price_from) if price_from else shop_products
         shop_products = shop_products.filter(Price__lt=price_to) if price_to else shop_products
@@ -2482,3 +2470,56 @@ class UserInfo(APIView):
         # user = User.objects.get(id=72)
         serializer = ProfileSerializer(user.User_Profile)
         return Response(serializer.data)
+
+
+
+class StateList(ListAPIView):
+    serializer_class = StateSerializer
+    queryset = State.objects.all().order_by('name')
+
+class BigCityList(ListAPIView):
+    serializer_class = BigCitySerializer
+    def get_queryset(self):
+        state_id = self.request.GET.get('state_id')
+        state = get_object_or_404(State, id=state_id)
+        return BigCity.objects.filter(state=state).order_by('name')
+
+class CityList(ListAPIView):
+    serializer_class = CitySerializer
+    def get_queryset(self):
+        bigcity_id = self.request.GET.get('bigcity_id')
+        bigcity = get_object_or_404(BigCity, id=bigcity_id)
+        return City.objects.filter(big_city=bigcity).order_by('name')
+
+
+class FactorDetails(APIView):
+    permission_classes = [IsAuthenticated, ]
+    def get(self, request, format=None):
+        user = request.user
+        factor_id = request.GET.get('factor_id', 0)
+        # user = User.objects.get(id=72)
+        try:
+            factor = Factor.objects.get(ID=factor_id, FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user)
+        except Factor.DoesNotExist:
+            raise Http404()
+        serializer = FactorAllDetailsSerializer(factor)
+        return Response(serializer.data)
+
+# class FactorDetails(APIView):
+#     # permission_classes = [IsAuthenticated]
+#     def get_object(self, factor_id):
+#         try:
+#             user = self.request.user
+#             # user = User.objects.get(id=4)
+#             return Factor.objects.get(FactorNumber=factor_id, FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user)
+#         except Factor.DoesNotExist:
+#             raise Http404
+
+#     def get(self, request, factor_id, format=None):
+#         factor = self.get_object(factor_id)
+#         serializer = FactorAllDetailsSerializer(factor)
+#         return Response(serializer.data)
+
+
+
+

@@ -21,7 +21,7 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = [
-            'slug', 'title', 'url', 'image_thumbnail',
+            'id', 'Slug', 'title', 'url', 'image_thumbnail',
         ]
 
 class ShopSerializer(serializers.ModelSerializer):
@@ -31,6 +31,12 @@ class ShopSerializer(serializers.ModelSerializer):
             'slug', 'title', 'url', 'image_thumbnail_url',
             'state'
         ]
+
+class CreateShopSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Shop
+        fields = ['Slug', 'Title', 'State', 'BigCity', 'City', ]
+   
 
 class ProductSerializer(serializers.ModelSerializer):
     shop = ShopSerializer(many=False, read_only=True)
@@ -110,7 +116,7 @@ class MarketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Market
         fields = [
-            'title', 'url',
+            'title', 'url', 'id',
         ]
 
 class SubMarketSerializer(serializers.ModelSerializer):
@@ -118,7 +124,7 @@ class SubMarketSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubMarket
         fields = [
-            'title', 'market', 'url',
+            'title', 'market', 'url', 'id'
         ]
 
 class PostRangeSerializer(serializers.ModelSerializer):
@@ -150,19 +156,77 @@ class ProductDetailSerializer(serializers.HyperlinkedModelSerializer):
             'shop',
         ]
 
-class ProductListSerializer(serializers.HyperlinkedModelSerializer):
+
+class ProductListSerializer(serializers.ModelSerializer):
+    # FK_User = serializers.SlugRelatedField(slug_field='username', queryset=User.objects.all())
+    category = CategorySerializer(many=True, read_only=True)
+    shop = serializers.SlugRelatedField(slug_field='Slug', read_only=True)
     class Meta:
         model = Product
         fields = [
-            'id', 
+            'id',
             'title',
             'slug',
             'inventory',
+            'category',
             'image_thumbnail_url',
             'price',
+            'shop',
             'old_price',
+            'net_weight',
+            'weight_with_packing',
+            'description',
             'status',
+            'post_range_type',
+            'preparation_days',
             'comments_count',
             'average_user_point',
             'total_sell',
         ]
+class ProductWriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = [
+            'ID',
+            'Title',
+            'Slug',
+            'Inventory',
+            'Price',
+            'OldPrice',
+            'Net_Weight',
+            'Weight_With_Packing',
+            'Description',
+            'Status',
+            'PostRangeType',
+            'PreparationDays',
+            'FK_Shop'
+        ]
+
+class FullMarketSerializer(serializers.ModelSerializer):
+    submarkets = SubMarketSerializer(many=True, read_only=True)
+    class Meta:
+        model = Market
+        fields = [
+            'id',
+            'title',
+            'description',
+            'image',
+            'slug',
+            'url',
+            'submarkets',
+        ]
+
+
+class ProductCategorySerializer(serializers.Serializer):
+    product = serializers.SlugField()
+    categories = serializers.ListField(
+        child=serializers.IntegerField(min_value=0)
+    )
+
+
+class ProductImagesSerializer(serializers.Serializer):
+    product = serializers.SlugField()
+    images = serializers.ImageField()
+
+
+

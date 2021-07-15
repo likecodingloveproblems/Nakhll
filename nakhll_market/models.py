@@ -98,12 +98,33 @@ class Market(models.Model):
     FK_Tag=models.ManyToManyField(Tag, verbose_name='تگ ها', related_name='Market_Tagss', blank=True)
 
     @property
+    def id(self):
+        return self.ID
+
+    @property
     def title(self):
         return self.Title
 
     @property
+    def description(self):
+        return self.Description
+
+    @property
+    def image(self):
+        return self.Image.url
+
+    @property
+    def slug(self):
+        return self.Slug
+
+    @property
     def url(self):
         return reverse("nakhll_market:Markets")
+
+    @property
+    def submarkets(self):
+        return self.FatherMarket.filter(Publish=True, Available=True)
+
 
     def __str__(self):
         return "{}".format(self.Title)
@@ -174,6 +195,10 @@ class SubMarket(models.Model):
     Publish=models.BooleanField(verbose_name='وضعیت انتشار راسته', choices=PUBLISH_STATUS, default=False)
     FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='تایید کننده', related_name='SubMarket_Accept', blank=True, null=True) 
     FK_Tag=models.ManyToManyField(Tag, verbose_name='تگ ها', related_name='SubMarket_Tag', blank=True)
+
+    @property
+    def id(self):
+        return self.ID
 
     @property
     def title(self):
@@ -591,6 +616,54 @@ class Shop(models.Model):
         return self.State
 
     @property
+    def big_city(self):
+        return self.BigCity
+
+    @property
+    def city(self):
+        return self.City
+
+    @property
+    def url(self):
+        return self.get_absolute_url
+
+    @property
+    def image_thumbnail_url(self):
+        return self.Image_thumbnail_url
+
+    def __str__(self):
+        return "{}".format(self.Title)
+
+    def get_absolute_url(self):
+        return reverse("nakhll_market:ShopsDetail", kwargs={
+            'shop_slug': self.Slug
+        })
+
+    def Image_thumbnail_url(self):
+        try:
+            i = self.Image_thumbnail.url
+            url = self.Image_thumbnail.url
+            return url
+        except:
+            url ="https://nakhll.com/media/Pictures/default.jpg"
+            return url
+
+    def get_url(self):
+        return reverse("nakhll_market:ShopsDetail", kwargs={
+            'shop_slug': self.Slug,
+        })
+
+    def get_holidays(self):
+        return self.Holidays.split('-')
+
+    def get_products_category(self):
+        category = []
+        for item in self.get_products():
+            for category_item in item.FK_Category.filter(FK_SubCategory = None, Publish = True):
+                category.append(category_item)
+        category = list(dict.fromkeys(category))
+        return category
+    @property
     def url(self):
         return self.get_absolute_url
 
@@ -862,6 +935,19 @@ class ProductManager(models.Manager):
         except:
             return None
 
+    def get_user_shop_products(self, user, shop, order=None):
+        if order and order in ['total_sell', 'title']:
+            try:
+                products = Product.objects.filter(FK_Shop=shop, FK_Shop__FK_ShopManager=user, Publish=True)
+                if order == 'total_sell':
+                    return products.annotate(num=Count('Factor_Product')).order_by('-num')
+                elif order == 'title':
+                    return products.order_by('Title')
+            except:
+                pass
+        return Product.objects.filter(FK_Shop=shop, FK_Shop__FK_ShopManager=user)
+
+
         
 # Product (محصول) Model
 class Product(models.Model):
@@ -937,6 +1023,16 @@ class Product(models.Model):
     Publish=models.BooleanField(verbose_name='وضعیت انتشار محصول', choices=PUBLISH_STATUS, default=False)
     FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='تایید کننده', related_name='Product_Accept', blank=True, null=True) 
     FK_Tag=models.ManyToManyField(Tag, verbose_name='تگ ها', related_name='Product_Tag', blank=True)
+    PreparationDays = models.PositiveSmallIntegerField(verbose_name='زمان آماده‌سازی', null=True)
+
+
+    @property
+    def id(self):
+        return self.ID
+
+    @property
+    def user(self):
+        return self.FK_User
 
     @property
     def sub_market(self):
@@ -1077,6 +1173,14 @@ class Product(models.Model):
     @property
     def total_sell(self):
         return self.Factor_Product.count()
+
+    @property
+    def preparation_days(self):
+        return self.PreparationDays
+    
+    @property
+    def post_range_type(self):
+        return self.PostRangeType
 
     def __str__(self):
         return "{}".format(self.Title)
