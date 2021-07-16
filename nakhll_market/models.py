@@ -25,6 +25,9 @@ from django.utils.translation import ugettext_lazy as _
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
+
+OUTOFSTOCK_LIMIT_NUM = 5
+
 # Rename Method
 @deconstructible
 class PathAndRename():
@@ -938,14 +941,27 @@ class ProductManager(models.Manager):
     def get_user_shop_products(self, user, shop, order=None):
         if order and order in ['total_sell', 'title']:
             try:
-                products = Product.objects.filter(FK_Shop=shop, FK_Shop__FK_ShopManager=user, Publish=True)
+                products = self.filter(FK_Shop=shop, FK_Shop__FK_ShopManager=user, Publish=True)
                 if order == 'total_sell':
                     return products.annotate(num=Count('Factor_Product')).order_by('-num')
                 elif order == 'title':
                     return products.order_by('Title')
             except:
                 pass
-        return Product.objects.filter(FK_Shop=shop, FK_Shop__FK_ShopManager=user)
+        return self.filter(FK_Shop=shop, FK_Shop__FK_ShopManager=user)
+    
+    def user_shop_active_products(self, user, shop_slug):
+        return self.filter(FK_Shop__FK_ShopManager=user, FK_Shop__Slug=shop_slug, Available=True, Publish=True)
+
+    def user_shop_inactive_products(self, user, shop_slug):
+        return self.filter(FK_Shop__FK_ShopManager=user, FK_Shop__Slug=shop_slug, Available=False, Publish=True)
+
+    def nearly_outofstock_products(self, user, shop_slug):
+        return self.filter(FK_Shop__FK_ShopManager=user, FK_Shop__Slug=shop_slug, Publish=True, Inventory__lt=OUTOFSTOCK_LIMIT_NUM)
+
+    def outofstock_products(self, user, shop_slug):
+        return self.filter(FK_Shop__FK_ShopManager=user, FK_Shop__Slug=shop_slug, Publish=True, Inventory__lt=1)
+
 
 
         
@@ -2490,3 +2506,27 @@ class City(models.Model):
         ordering = ('id',)   
         verbose_name = "شهر"
         verbose_name_plural = "شهر ها"
+
+
+class DashboardBannerManager(models.Manager):
+    def get_banners(self, banner_status):
+        return self.filter(publish_status=banner_status)
+class DashboardBanner(models.Model):
+    class Meta:
+        verbose_name = 'بنر داشبرد'
+        verbose_name_plural = 'بنرهای داشبرد'
+    class PublishStatuses(models.TextChoices):
+        PUBLISH = 'pub', 'منتشر شده'
+        PREVIEW = 'prv', 'پیش‌نمایش'
+    def __str__(self):
+        return self.image.name
+    
+    image = models.ImageField(verbose_name='عکس بنر', upload_to=PathAndRename('media/Pictures/Dashboard/Banner/'))
+    url = models.URLField(max_length=100, verbose_name='لینک بنر', null=True)
+    staff_user = models.ForeignKey(User, verbose_name='کارشناس', on_delete=models.SET_NULL, null=True, related_name='dashboard_banners')
+    created_datetime = models.DateTimeField(verbose_name='تاریخ ثبت', auto_now=False, auto_now_add=True)
+    publish_status = models.CharField(max_length=3, choices=PublishStatuses.choices, default=PublishStatuses.PUBLISH)
+    objects = DashboardBannerManager()
+
+
+

@@ -1,5 +1,6 @@
 from typing import List, Tuple
 from django.db import models
+from rest_framework import status
 from nakhll_market.serializers import ProductListSerializer
 from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
@@ -17,10 +18,10 @@ import threading
 import json
 
 
-from nakhll_market.models import (Profile, Product, Shop, SubMarket, Category, 
+from nakhll_market.models import (Comment, Profile, Product, Shop, SubMarket, Category, 
                                 BankAccount, ShopBanner, Attribute, AttrProduct, AttrPrice,
                                 ProductBanner, PostRange, Message, User_Message_Status,
-                                Alert, Field, Message, State)
+                                Alert, Field, Message, State, DashboardBanner)
 from Payment.models import Factor, Wallet, FactorPost, Transaction, PostBarCode, Coupon
 
 
@@ -2339,8 +2340,7 @@ class UncompeletedFactors(ListAPIView):
     def get_queryset(self):
         user = self.request.user
         # user = User.objects.get(id=4)
-        return Factor.objects.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) &
-                                     ~Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
+        return Factor.objects.uncompleted_user_factors(user)
 
 
 class CompeletedFactors(ListAPIView):
@@ -2350,8 +2350,7 @@ class CompeletedFactors(ListAPIView):
     def get_queryset(self):
         user = self.request.user
         # user = User.objects.get(id=4)
-        return Factor.objects.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) &
-                                     Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
+        return Factor.objects.completed_user_factors(user)
 
 
 class ShopCompeletedFactors(ListAPIView):
@@ -2362,9 +2361,7 @@ class ShopCompeletedFactors(ListAPIView):
         user = self.request.user
         # user = User.objects.get(id=4)
         shop_slug = self.kwargs.get('shop_slug')
-        return Factor.objects.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) &
-                                     Q(FK_FactorPost__FK_Product__FK_Shop__Slug=shop_slug) &
-                                     Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
+        return Factor.objects.completed_user_shop_factors(user, shop_slug)
 
 
 class ShopUncompeletedFactors(ListAPIView):
@@ -2375,10 +2372,7 @@ class ShopUncompeletedFactors(ListAPIView):
         user = self.request.user
         # user = User.objects.get(id=4)
         shop_slug = self.kwargs.get('shop_slug')
-        return Factor.objects.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) &
-                                     Q(FK_FactorPost__FK_Product__FK_Shop__Slug=shop_slug) &
-                                     ~Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
-
+        return Factor.objects.uncompleted_user_shop_factors(user, shop_slug)
 
 class RelatedOrderingFilter(filters.OrderingFilter):
     _max_related_depth = 3
@@ -2470,6 +2464,71 @@ class UserInfo(APIView):
         # user = User.objects.get(id=72)
         serializer = ProfileSerializer(user.User_Profile)
         return Response(serializer.data)
+
+class UserDashboardInfo(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def get(self, request, shop_slug, format=None):
+        user = request.user
+        shop_slug = self.kwargs.get('shop_slug')
+
+        # Completed Factors Count
+        completed_fators = Factor.objects.completed_user_shop_factors(user, shop_slug).count()
+
+        # UnCompleted Factors Count
+        uncompleted_fators = Factor.objects.uncompleted_user_shop_factors(user, shop_slug).count()
+
+        # UnConfirmmed Factors Count
+        uncomfirmed_factors = 0
+
+        # Dashboard banner images
+        banners = DashboardBanner.objects.get_banners(banner_status=DashboardBanner.PublishStatuses.PUBLISH)
+
+        # New Comments Count
+        unread_comments_count = Comment.objects.filter(FK_Product__FK_Shop__FK_ShopManager=user).count()
+
+        # Balance
+        balance = request.user.WalletManager.Inverntory
+
+        # Total sell in current week
+        current_week_total_sell = FactorPost.objects.current_week_user_total_sell(user, shop_slug)
+
+        # Total sell in last week
+        last_week_total_sell = FactorPost.objects.last_week_user_total_sell(user, shop_slug)
+
+        # Total sell in last month
+        last_month_total_sell = FactorPost.objects.last_month_user_total_sell(user, shop_slug)
+
+        # Active Products
+        active_products = Product.objects.user_shop_active_products(user, shop_slug).count()
+
+        # InActive Products
+        inactive_products = Product.objects.user_shop_inactive_products(user, shop_slug).count()
+
+        # Nearly Out-Of-Stock Products
+        nearly_outofstock_products = Product.objects.nearly_outofstock_products(user, shop_slug).count()
+
+        # Out-Of-Stock Products
+        outofstock_products = Product.objects.outofstock_products(user, shop_slug).count()
+
+        # Panel Images and Sell History in Days for later
+        return Response({
+            'completed_fators': completed_fators,
+            'uncompleted_fators': uncompleted_fators,
+            'uncomfirmed_factors': uncomfirmed_factors,
+            'unread_comments_count': unread_comments_count,
+            'balance': balance,
+            'current_week_total_sell': current_week_total_sell,
+            'last_week_total_sell': last_week_total_sell,
+            'last_month_total_sell': last_month_total_sell,
+            'active_products': active_products,
+            'inactive_products': inactive_products,
+            'nearly_outofstock_products': nearly_outofstock_products,
+            'outofstock_products': outofstock_products,
+            'banners': banners,
+        }, status=status.HTTP_200_OK)
+
+
 
 
 
