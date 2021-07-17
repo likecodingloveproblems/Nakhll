@@ -208,7 +208,8 @@ def get_prev_code(request):
 
 def set_code(request):
     # generate code and set it to session
-    code = get_prev_code(request) or generate_code()
+    # code = get_prev_code(request) or generate_code()
+    code = generate_code()
     phone_number = get_phone_number(request)
     # send code by sms to user
     params = {

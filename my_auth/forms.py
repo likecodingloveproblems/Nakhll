@@ -442,6 +442,21 @@ class LoginCodeForm(GetAuthCode):
         }),
     )    
 
+    error_messages = {
+        'invalid-code':'لطفا کد صحیح را وارد نمایید.'
+    }
+    def clean_code(self):
+        code = self.cleaned_data['code']
+        if code != self.auth_code:
+            # validation error invalid-code
+            self.invalid_code()
+        return self.cleaned_data['code']
+
+    def invalid_code(self):
+        raise forms.ValidationError(
+            message=self.error_messages['invalid-code'],
+            code='invalid-code',
+        )
 class LoginPasswordForm(forms.Form):
     password = forms.CharField(
         label=None, 
