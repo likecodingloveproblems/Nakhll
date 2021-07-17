@@ -2317,7 +2317,7 @@ class FactorList(ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        user = User.objects.get(id=72)
+        # user = User.objects.get(id=72)
         return Factor.objects.filter(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user)
 
 

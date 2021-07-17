@@ -7,7 +7,7 @@ from django.utils.deconstruct import deconstructible
 import uuid, random, string, os, time
 from django_jalali.db import models as jmodels
 from django.shortcuts import reverse
-from datetime import datetime, date 
+from datetime import datetime, date, timedelta 
 import jdatetime
 import math
 
@@ -540,6 +540,15 @@ class FactorPost(models.Model):
     @property
     def product_image_thumbnail(self):
         return self.FK_Product.image_thumbnail_url
+    @property
+    def jalali_prepare_date(self):
+        if self.FK_Product.PreparationDays:
+            date = self.Factor_Products.first().OrderDate + timedelta(days=self.FK_Product.PreparationDays)
+            prepare_date = jdatetime.date.fromgregorian(day = date.day, month = date.month, year = date.year)
+            prepare_date = prepare_date.strftime('%Y/%m/%d')
+        else:
+            prepare_date = None
+        return prepare_date
     @property
     def id(self):
         return self.ID

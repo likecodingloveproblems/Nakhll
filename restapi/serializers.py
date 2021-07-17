@@ -250,6 +250,7 @@ class FactorPostSummarySerializer(ModelSerializer):
         model = FactorPost
         fields = [
             'product_image_thumbnail',
+            'jalali_prepare_date',
         ]
 
 
