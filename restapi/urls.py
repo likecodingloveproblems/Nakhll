@@ -68,6 +68,10 @@ urlpatterns = [
     path('v1/get-cities/', views.CityList.as_view(), name='get_cities'),
     path('v1/get-factor-details/', views.FactorDetails.as_view(), name='get_factor_details'),
     path('v1/dashboard/<shop_slug>/', views.UserDashboardInfo.as_view(), name='user_dashboard_info'),
+    # path('v1/update-factor/', views.FactorList.as_view(), name='change_factor_state'),
+    # path('v1/update-factor/<id>/', views.ChangeFactorStateByManager.as_view(), name='change_factor_state'),
+     path('v1/factor/change-status/confirmed/<factor_id>/', views.ChangeFactorToConfirmed.as_view(), name='change_factor_status_to_confirmed'),
+     path('v1/factor/change-status/sent/<factor_id>/', views.ChangeFactorToSent.as_view(), name='change_factor_status_to_sent'),
 
 
     #factors change status
