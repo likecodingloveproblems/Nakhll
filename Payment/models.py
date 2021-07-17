@@ -601,6 +601,11 @@ class FactorManager(models.Manager):
                                      Q(FK_FactorPost__FK_Product__FK_Shop__Slug=shop_slug) &
                                      ~Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
     
+    def get_user_factor(self, factor_id, user):
+        try:
+            return self.get(ID=factor_id, FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user)
+        except:
+            return None
 
 
 
@@ -1235,6 +1240,29 @@ class Factor(models.Model):
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
+class PostTrackingCodeManager(models.Manager):
+    pass
+
+class PostTrackingCode(models.Model):
+    class Meta:
+        verbose_name = 'بارکد پستی'
+        verbose_name_plural = 'بارکدهای پستی'
+    class PostTypes(models.TextChoices):
+        IRPOST = 'irpost', 'شرکت پست جمهوری اسلامی ایران'
+        TIPAX = 'tipax', 'تیپاکس'
+    class SendTypes(models.TextChoices):
+        IN_CITY = 'in_c', 'درون شهری'
+        NORMAL = 'norm', 'پست معمولی'
+        PAY_AT_DELIVER = 'pad', 'پس کرایه'
+    factor_post = models.ForeignKey(FactorPost, verbose_name='محصول', on_delete=models.CASCADE, related_name='barcodes')
+    barcode = models.CharField('بارکد', max_length=24)
+    created_datetime = models.DateTimeField('تاریخ ایجاد بارکد', auto_now=False, auto_now_add=True)
+    post_price = models.DecimalField(verbose_name='هزینه ارسال', max_length=15, default='0', max_digits=8, decimal_places=0)
+    post_type = models.CharField('نوع پست', max_length=6, choices=PostTypes.choices, default=PostTypes.IRPOST)
+    send_type=models.CharField(verbose_name='وضعیت ارسال', max_length=4, choices=SendTypes.choices, default=SendTypes.NORMAL)
+
+
+#----------------------------------------------------------------------------------------------------------------------------------
 # PostBarCode (بارکد) Model
 class PostBarCode (models.Model):
     FK_Factor=models.ForeignKey(Factor, on_delete=models.SET_NULL, verbose_name='شماره صورت حساب', related_name='Factor_PostBarCode', null=True)
