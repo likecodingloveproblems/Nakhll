@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.http.response import Http404
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.exceptions import ValidationError
@@ -6,8 +7,8 @@ from nakhll_market.models import (
     )
 from nakhll_market.serializers import (
     AmazingProductSerializer, ProductDetailSerializer, ProductImagesSerializer,
-    ProductSerializer, ShopSerializer,SliderSerializer,
-    CategorySerializer, FullMarketSerializer, CreateShopSerializer,
+    ProductSerializer, ShopSerializer,SliderSerializer, ProductPriceWriteSerializer,
+    CategorySerializer, FullMarketSerializer, CreateShopSerializer, ProductInventoryWriteSerializer,
     ProductListSerializer, ProductCategorySerializer, ProductWriteSerializer,
     )
 from rest_framework import generics, routers, status, views, viewsets
@@ -244,4 +245,56 @@ class AddImageToProduct(views.APIView):
             return Response(serializer.errors)
         except:
             return Response({'details': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ShopMultipleUpdatePrice(views.APIView):
+    permission_classes = [permissions.IsAuthenticated, ]
+    authentication_classes = [CsrfExemptSessionAuthentication, ]
+    def patch(self, request, format=None):
+        serializer = ProductPriceWriteSerializer(data=request.data, many=True)
+        user = request.user
+        # user = User.objects.get(id=72)
+        if serializer.is_valid():
+            price_list = serializer.data
+            ready_for_update_products = []
+            for price_item in price_list:
+                try:
+                    product = Product.objects.get(Slug=price_item.get('Slug'))
+                    old_price = price_item.get('OldPrice')
+                    price = price_item.get('Price')
+                    if product.FK_Shop.FK_ShopManager == user:
+                        product.OldPrice = old_price
+                        product.Price = price
+                        ready_for_update_products.append(product)
+                except:
+                    pass
+            Product.objects.bulk_update(ready_for_update_products, ['Price', 'OldPrice'])
+            return Response({'details': 'done'})
+        else:
+            return Response(serializer.errors)
+
+class ShopMultipleUpdateInventory(views.APIView):
+    permission_classes = [permissions.IsAuthenticated, ]
+    authentication_classes = [CsrfExemptSessionAuthentication, ]
+    def patch(self, request, format=None):
+        serializer = ProductInventoryWriteSerializer(data=request.data, many=True)
+        user = request.user
+        # user = User.objects.get(id=72)
+        if serializer.is_valid():
+            price_list = serializer.data
+            ready_for_update_products = []
+            for inventory_item in price_list:
+                try:
+                    product = Product.objects.get(Slug=inventory_item.get('Slug'))
+                    inventory = inventory_item.get('Inventory')
+                    if product.FK_Shop.FK_ShopManager == user:
+                        product.Inventory = inventory
+                        ready_for_update_products.append(product)
+                except:
+                    pass
+            Product.objects.bulk_update(ready_for_update_products, ['Inventory'])
+            return Response({'details': 'done'})
+        else:
+            return Response(serializer.errors)
+
 

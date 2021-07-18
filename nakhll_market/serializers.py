@@ -229,4 +229,20 @@ class ProductImagesSerializer(serializers.Serializer):
     images = serializers.ImageField()
 
 
+class ProductPriceWriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ['Slug', 'OldPrice', 'Price' ] 
+        extra_kwargs = {
+            'Slug': {'validators': []},
+        }
+
+class ProductInventoryWriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ['Slug', 'Inventory'] 
+        extra_kwargs = {
+            'Slug': {'validators': []},
+        }
+
 
