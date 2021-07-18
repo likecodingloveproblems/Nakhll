@@ -631,8 +631,20 @@ class Shop(models.Model):
         return self.get_absolute_url
 
     @property
+    def description(self):
+        return self.Description
+
+    @property
     def image_thumbnail_url(self):
         return self.Image_thumbnail_url
+
+    @property
+    def sub_market(self):
+        return self.FK_SubMarket.all()
+
+    @property
+    def profile(self):
+        return self.FK_ShopManager.User_Profile
 
     def __str__(self):
         return "{}".format(self.Title)
@@ -735,8 +747,37 @@ class Shop(models.Model):
         verbose_name = "حجره"
         verbose_name_plural = "حجره ها"
 
-#----------------------------------------------------------------------------------------------------------------------------------
 
+#----------------------------------------------------------------------------------------------------------------------------------
+# ShopSocialMedia (شبکه‌های اجتماعی حجره) Model
+
+class ShopSocialMedia(models.Model):
+    class Meta:
+        verbose_name = 'شبکه اجتماعی حجره'
+        verbose_name_plural = 'شبکه‌های اجتماعی حجره'
+    def __str__(self):
+        return self.Shop.Slug
+    shop = models.OneToOneField(Shop, verbose_name='حجره', on_delete=models.CASCADE, related_name='social_media')
+    telegram = models.CharField('تلگرام', max_length=100, help_text='آی‌دی تلگرام بدون نام سایت', null=True, blank=True) 
+    instagram = models.CharField('اینستاگرام', max_length=100, help_text='آی‌دی اینستاگرام بدون نام سایت', null=True, blank=True) 
+
+#----------------------------------------------------------------------------------------------------------------------------------
+# ShopBankAccount (حساب‌های حجره) Model
+
+class ShopBankAccount(models.Model):
+    class Meta:
+        verbose_name = 'حساب بانکی حجره'
+        verbose_name_plural = 'حساب‌های حجره'
+    def __str__(self):
+        return self.Shop.Slug
+    shop = models.OneToOneField(Shop, verbose_name='حجره', on_delete=models.CASCADE, related_name='bank_account')
+    iban = models.CharField('شماره شبا', max_length=24, help_text='شماره شبا بدون IR', null=True, blank=True) 
+    owner = models.CharField('صاحب حساب', max_length=100, null=True, blank=True)
+
+
+
+
+#----------------------------------------------------------------------------------------------------------------------------------
 # BankAccount (حساب بانکی) Model
 class BankAccount(models.Model):
     ID=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
