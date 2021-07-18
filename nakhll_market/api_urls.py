@@ -1,11 +1,11 @@
 from django.urls import re_path, include, path
 from nakhll_market.api import (
-    AddCategoryToProduct, AmazingProductViewSet, CategoryViewSet, LastCreatedDiscountedProductsViewSet,
-    LastCreatedProductsViewSet, MostDiscountPrecentageProductsViewSet, ShopMultipleUpdateInventory, ShopMultipleUpdatePrice,
+    AddCategoryToProduct, AllShopSettings, AmazingProductViewSet, CategoryViewSet, LastCreatedDiscountedProductsViewSet,
+    LastCreatedProductsViewSet, MostDiscountPrecentageProductsViewSet, ShopMultipleUpdateInventory, ShopMultipleUpdatePrice, SocialMediaShopSettings,
     UserProductViewSet, ProductsInSameFactorViewSet, SliderViewSet,
     MostSoldShopsViewSet, RandomShopsViewSet, RandomProductsViewSet,
     MarketList, CreateShop, GetShopWithSlug, CheckShopSlug, CheckProductSlug,
-    AddImageToProduct, ProductFullDetailsViewSet,
+    AddImageToProduct, ProductFullDetailsViewSet, BankAccountShopSettings
     )
 from rest_framework import routers
 
@@ -34,6 +34,9 @@ urlpatterns = [
     path('markets/', MarketList.as_view()),
 
     path('shop/', GetShopWithSlug.as_view()),
+    path('shop/<shop_slug>/settings/', AllShopSettings.as_view()),
+    path('shop/<shop_slug>/settings/bank_account/', BankAccountShopSettings.as_view()),
+    path('shop/<shop_slug>/settings/social_media/', SocialMediaShopSettings.as_view()),
     path('shop/create/', CreateShop.as_view()),
     path('shop/check/', CheckShopSlug.as_view()),
     path('shop/multiple-update/price/', ShopMultipleUpdatePrice.as_view()),
