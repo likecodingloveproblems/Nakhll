@@ -631,8 +631,20 @@ class Shop(models.Model):
         return self.get_absolute_url
 
     @property
+    def description(self):
+        return self.Description
+
+    @property
     def image_thumbnail_url(self):
         return self.Image_thumbnail_url
+
+    @property
+    def sub_market(self):
+        return self.FK_SubMarket.all()
+
+    @property
+    def profile(self):
+        return self.FK_ShopManager.User_Profile
 
     def __str__(self):
         return "{}".format(self.Title)
