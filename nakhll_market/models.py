@@ -588,6 +588,7 @@ class Shop(models.Model):
         default=list,
         blank=True,
         )
+    show_contact_info = models.BooleanField('نمایش اطلاعات تماس حجره', default=False)
 
     
     @property

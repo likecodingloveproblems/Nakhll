@@ -30,13 +30,13 @@ class ShopSerializer(serializers.ModelSerializer):
         model = Shop
         fields = [
             'slug', 'title', 'url', 'image_thumbnail_url',
-            'state'
+            'state', 'show_contact_info',
         ]
 
 class CreateShopSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shop
-        fields = ['Slug', 'Title', 'State', 'BigCity', 'City', ]
+        fields = ['Slug', 'Title', 'State', 'BigCity', 'City', 'show_contact_info']
    
 
 class ProductSerializer(serializers.ModelSerializer):
