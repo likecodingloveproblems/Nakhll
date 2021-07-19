@@ -25,6 +25,9 @@ from django.utils.translation import ugettext_lazy as _
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
+
+OUTOFSTOCK_LIMIT_NUM = 5
+
 # Rename Method
 @deconstructible
 class PathAndRename():
@@ -628,8 +631,20 @@ class Shop(models.Model):
         return self.get_absolute_url
 
     @property
+    def description(self):
+        return self.Description
+
+    @property
     def image_thumbnail_url(self):
         return self.Image_thumbnail_url
+
+    @property
+    def sub_market(self):
+        return self.FK_SubMarket.all()
+
+    @property
+    def profile(self):
+        return self.FK_ShopManager.User_Profile
 
     def __str__(self):
         return "{}".format(self.Title)
@@ -732,8 +747,37 @@ class Shop(models.Model):
         verbose_name = "حجره"
         verbose_name_plural = "حجره ها"
 
-#----------------------------------------------------------------------------------------------------------------------------------
 
+#----------------------------------------------------------------------------------------------------------------------------------
+# ShopSocialMedia (شبکه‌های اجتماعی حجره) Model
+
+class ShopSocialMedia(models.Model):
+    class Meta:
+        verbose_name = 'شبکه اجتماعی حجره'
+        verbose_name_plural = 'شبکه‌های اجتماعی حجره'
+    def __str__(self):
+        return self.Shop.Slug
+    shop = models.OneToOneField(Shop, verbose_name='حجره', on_delete=models.CASCADE, related_name='social_media')
+    telegram = models.CharField('تلگرام', max_length=100, help_text='آی‌دی تلگرام بدون نام سایت', null=True, blank=True) 
+    instagram = models.CharField('اینستاگرام', max_length=100, help_text='آی‌دی اینستاگرام بدون نام سایت', null=True, blank=True) 
+
+#----------------------------------------------------------------------------------------------------------------------------------
+# ShopBankAccount (حساب‌های حجره) Model
+
+class ShopBankAccount(models.Model):
+    class Meta:
+        verbose_name = 'حساب بانکی حجره'
+        verbose_name_plural = 'حساب‌های حجره'
+    def __str__(self):
+        return self.Shop.Slug
+    shop = models.OneToOneField(Shop, verbose_name='حجره', on_delete=models.CASCADE, related_name='bank_account')
+    iban = models.CharField('شماره شبا', max_length=24, help_text='شماره شبا بدون IR', null=True, blank=True) 
+    owner = models.CharField('صاحب حساب', max_length=100, null=True, blank=True)
+
+
+
+
+#----------------------------------------------------------------------------------------------------------------------------------
 # BankAccount (حساب بانکی) Model
 class BankAccount(models.Model):
     ID=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
@@ -938,14 +982,27 @@ class ProductManager(models.Manager):
     def get_user_shop_products(self, user, shop, order=None):
         if order and order in ['total_sell', 'title']:
             try:
-                products = Product.objects.filter(FK_Shop=shop, FK_Shop__FK_ShopManager=user, Publish=True)
+                products = self.filter(FK_Shop=shop, FK_Shop__FK_ShopManager=user, Publish=True)
                 if order == 'total_sell':
                     return products.annotate(num=Count('Factor_Product')).order_by('-num')
                 elif order == 'title':
                     return products.order_by('Title')
             except:
                 pass
-        return Product.objects.filter(FK_Shop=shop, FK_Shop__FK_ShopManager=user)
+        return self.filter(FK_Shop=shop, FK_Shop__FK_ShopManager=user)
+    
+    def user_shop_active_products(self, user, shop_slug):
+        return self.filter(FK_Shop__FK_ShopManager=user, FK_Shop__Slug=shop_slug, Available=True, Publish=True)
+
+    def user_shop_inactive_products(self, user, shop_slug):
+        return self.filter(FK_Shop__FK_ShopManager=user, FK_Shop__Slug=shop_slug, Available=False, Publish=True)
+
+    def nearly_outofstock_products(self, user, shop_slug):
+        return self.filter(FK_Shop__FK_ShopManager=user, FK_Shop__Slug=shop_slug, Publish=True, Inventory__lt=OUTOFSTOCK_LIMIT_NUM)
+
+    def outofstock_products(self, user, shop_slug):
+        return self.filter(FK_Shop__FK_ShopManager=user, FK_Shop__Slug=shop_slug, Publish=True, Inventory__lt=1)
+
 
 
         
@@ -2490,3 +2547,27 @@ class City(models.Model):
         ordering = ('id',)   
         verbose_name = "شهر"
         verbose_name_plural = "شهر ها"
+
+
+class DashboardBannerManager(models.Manager):
+    def get_banners(self, banner_status):
+        return self.filter(publish_status=banner_status)
+class DashboardBanner(models.Model):
+    class Meta:
+        verbose_name = 'بنر داشبرد'
+        verbose_name_plural = 'بنرهای داشبرد'
+    class PublishStatuses(models.TextChoices):
+        PUBLISH = 'pub', 'منتشر شده'
+        PREVIEW = 'prv', 'پیش‌نمایش'
+    def __str__(self):
+        return self.image.name
+    
+    image = models.ImageField(verbose_name='عکس بنر', upload_to=PathAndRename('media/Pictures/Dashboard/Banner/'))
+    url = models.URLField(max_length=100, verbose_name='لینک بنر', null=True)
+    staff_user = models.ForeignKey(User, verbose_name='کارشناس', on_delete=models.SET_NULL, null=True, related_name='dashboard_banners')
+    created_datetime = models.DateTimeField(verbose_name='تاریخ ثبت', auto_now=False, auto_now_add=True)
+    publish_status = models.CharField(max_length=3, choices=PublishStatuses.choices, default=PublishStatuses.PUBLISH)
+    objects = DashboardBannerManager()
+
+
+

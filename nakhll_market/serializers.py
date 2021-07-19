@@ -1,11 +1,12 @@
+from restapi.serializers import ProfileSerializer, UserDetailSerializer
 from django.contrib.auth.models import User
 from django.db.models import fields
 from rest_framework import serializers
 from rest_framework.relations import HyperlinkedIdentityField, HyperlinkedRelatedField
 from rest_framework.utils import field_mapping
 from nakhll_market.models import (
-    AmazingProduct, AttrPrice, AttrProduct, Attribute,
-    Category, Market, PostRange, Product, ProductBanner, Shop, Slider, Comment,
+    AmazingProduct, AttrPrice, AttrProduct, Attribute, BankAccount, ShopBankAccount, ShopSocialMedia,
+    Category, Market, PostRange, Product, ProductBanner, Profile, Shop, ShopBankAccount, Slider, Comment,
     SubMarket
     )
 
@@ -228,5 +229,130 @@ class ProductImagesSerializer(serializers.Serializer):
     product = serializers.SlugField()
     images = serializers.ImageField()
 
+class ShopFullSerializer(serializers.ModelSerializer):
+    profile = ProfileSerializer(read_only=True, many=False)
+    sub_market = SubMarketSerializer(read_only=True, many=True)
+    class Meta:
+        model = Shop
+        fields = [
+            'title', 'slug', 'url', 'description', 'profile', 'image_thumbnail_url',
+            'state', 'sub_market',
+        ]
+
+class ShopBankAccountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ShopBankAccount
+        fields = ['iban', 'owner']
+class ShopSocialMediaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ShopSocialMedia
+        fields = ['telegram', 'instagram']
+
+class SettingsProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ['NationalCode', 'MobileNumber', 'PhoneNumber', 'BigCity', 'State', 'Address', 'ZipCode']
+        extra_kwargs = {
+            'NationalCode': {'validators': []},
+            'MobileNumber': {'validators': []}
+        }
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    User_Profile = SettingsProfileSerializer(read_only=False)
+    class Meta:
+        model = User
+        fields = ['User_Profile']
+class ShopSettingsSerializer(serializers.ModelSerializer):
+    FK_ShopManager = UserProfileSerializer(read_only=False)
+    class Meta:
+        model = Shop
+        fields = [
+            'Title', 'Slug', 'Description', 'FK_ShopManager', 
+        ]
+        extra_kwargs = {
+            'Slug': {'validators': []},
+        }
+
+class ShopAllSettingsSerializer(serializers.ModelSerializer):
+    FK_ShopManager = UserProfileSerializer(read_only=False)
+    bank_account = ShopBankAccountSerializer(read_only=True)
+    social_media = ShopSocialMediaSerializer(read_only=True)
+    class Meta:
+        model = Shop
+        fields = [
+            'Title', 'Slug', 'Description', 'FK_ShopManager', 'bank_account', 'social_media' 
+        ]
+        extra_kwargs = {
+            'Slug': {'validators': []},
+        }
+    def update(self, instance, validated_data):
+        user = validated_data.get('FK_ShopManager')
+        if not user:
+            return instance
+
+        profile_data = user.get('User_Profile')
+        if not profile_data:
+            return instance
+
+        profile = instance.FK_ShopManager.User_Profile
+        profile.NationalCode = profile_data.get('NationalCode')
+        profile.MobileNumber = profile_data.get('MobileNumber')
+        profile.PhoneNumber = profile_data.get('PhoneNumber')
+        profile.State = profile_data.get('State')
+        profile.BigCity = profile_data.get('BigCity')
+        profile.Address = profile_data.get('Address')
+        profile.ZipCode = profile_data.get('ZipCode')
+        profile.save()
+        return instance
+            
+class ShopBankAccountSettingsSerializer(serializers.ModelSerializer):
+    bank_account = ShopBankAccountSerializer(read_only=False)
+    class Meta:
+        model = Shop
+        fields = ['bank_account', ]
+    def update(self, instance, validated_data):
+        bank_account_data = validated_data.get('bank_account')
+        if not bank_account_data:
+            return instance
+        bank_account, created = ShopBankAccount.objects.get_or_create(shop=instance)
+        bank_account.iban = bank_account_data.get('iban')
+        bank_account.owner = bank_account_data.get('owner')
+        bank_account.save()
+        return instance
+ 
+class SocialMediaAccountSettingsSerializer(serializers.ModelSerializer):
+    social_media = ShopSocialMediaSerializer(read_only=False)
+    class Meta:
+        model = Shop
+        fields = ['social_media', ]
+    def update(self, instance, validated_data):
+        social_media_data = validated_data.get('social_media')
+        if not social_media_data:
+            return instance
+        social_media, created = ShopSocialMedia.objects.get_or_create(shop=instance)
+        social_media.telegram = social_media_data.get('telegram')
+        social_media.instagram = social_media_data.get('instagram')
+        social_media.save()
+        return instance
+ 
+
+
+ 
+
+class ProductPriceWriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ['Slug', 'OldPrice', 'Price' ] 
+        extra_kwargs = {
+            'Slug': {'validators': []},
+        }
+
+class ProductInventoryWriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ['Slug', 'Inventory'] 
+        extra_kwargs = {
+            'Slug': {'validators': []},
+        }
 
 

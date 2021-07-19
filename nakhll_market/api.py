@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.http.response import Http404
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.exceptions import ValidationError
@@ -6,9 +7,10 @@ from nakhll_market.models import (
     )
 from nakhll_market.serializers import (
     AmazingProductSerializer, ProductDetailSerializer, ProductImagesSerializer,
-    ProductSerializer, ShopSerializer,SliderSerializer,
-    CategorySerializer, FullMarketSerializer, CreateShopSerializer,
-    ProductListSerializer, ProductCategorySerializer, ProductWriteSerializer,
+    ProductSerializer, ShopSerializer,SliderSerializer, ProductPriceWriteSerializer,
+    CategorySerializer, FullMarketSerializer, CreateShopSerializer, ProductInventoryWriteSerializer,
+    ProductListSerializer, ProductCategorySerializer, ProductWriteSerializer, ShopAllSettingsSerializer,
+    ShopBankAccountSettingsSerializer, SocialMediaAccountSettingsSerializer,
     )
 from rest_framework import generics, routers, status, views, viewsets
 from rest_framework import permissions, filters, mixins
@@ -129,6 +131,7 @@ class MarketList(generics.ListAPIView):
 
 class GetShopWithSlug(views.APIView):
     permission_classes = [permissions.IsAuthenticated, ]
+    authentication_classes = [CsrfExemptSessionAuthentication, ]
 
     def get(self, request, format=None):
         shop_slug = request.GET.get('slug')
@@ -138,6 +141,10 @@ class GetShopWithSlug(views.APIView):
             raise Http404
         serializer = ShopSerializer(shop)
         return Response(serializer.data)
+
+    def patch(self, request, instance, format=None):
+        # TODO: Search for patch function in Internet
+        pass
 
 
 
@@ -245,3 +252,121 @@ class AddImageToProduct(views.APIView):
         except:
             return Response({'details': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
 
+
+class ShopMultipleUpdatePrice(views.APIView):
+    permission_classes = [permissions.IsAuthenticated, ]
+    authentication_classes = [CsrfExemptSessionAuthentication, ]
+    def patch(self, request, format=None):
+        serializer = ProductPriceWriteSerializer(data=request.data, many=True)
+        user = request.user
+        # user = User.objects.get(id=72)
+        if serializer.is_valid():
+            price_list = serializer.data
+            ready_for_update_products = []
+            for price_item in price_list:
+                try:
+                    product = Product.objects.get(Slug=price_item.get('Slug'))
+                    old_price = price_item.get('OldPrice')
+                    price = price_item.get('Price')
+                    if product.FK_Shop.FK_ShopManager == user:
+                        product.OldPrice = old_price
+                        product.Price = price
+                        ready_for_update_products.append(product)
+                except:
+                    pass
+            Product.objects.bulk_update(ready_for_update_products, ['Price', 'OldPrice'])
+            return Response({'details': 'done'})
+        else:
+            return Response(serializer.errors)
+
+class ShopMultipleUpdateInventory(views.APIView):
+    permission_classes = [permissions.IsAuthenticated, ]
+    authentication_classes = [CsrfExemptSessionAuthentication, ]
+    def patch(self, request, format=None):
+        serializer = ProductInventoryWriteSerializer(data=request.data, many=True)
+        user = request.user
+        # user = User.objects.get(id=72)
+        if serializer.is_valid():
+            price_list = serializer.data
+            ready_for_update_products = []
+            for inventory_item in price_list:
+                try:
+                    product = Product.objects.get(Slug=inventory_item.get('Slug'))
+                    inventory = inventory_item.get('Inventory')
+                    if product.FK_Shop.FK_ShopManager == user:
+                        product.Inventory = inventory
+                        ready_for_update_products.append(product)
+                except:
+                    pass
+            Product.objects.bulk_update(ready_for_update_products, ['Inventory'])
+            return Response({'details': 'done'})
+        else:
+            return Response(serializer.errors)
+
+class AllShopSettings(views.APIView):
+    permission_classes = [permissions.IsAuthenticated, ]
+    authentication_classes = [CsrfExemptSessionAuthentication,]
+    def get_object(self, shop_slug, user):
+        try:
+            return Shop.objects.get(Slug=shop_slug, FK_ShopManager=user)
+        except:
+            raise Http404
+    def get(self, request, shop_slug, format=None):
+        user = request.user
+        # TODO: Remove This user
+        user = User.objects.get(id=72)
+        shop = self.get_object(shop_slug, user)
+        serializer = ShopAllSettingsSerializer(shop)
+        return Response(serializer.data)
+
+    def put(self, request, shop_slug, format=None):
+        user = request.user
+        # TODO: Remove This user
+        user = User.objects.get(id=72)
+        shop = self.get_object(shop_slug, user)
+        serializer = ShopAllSettingsSerializer(data=request.data, instance=shop)
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            return Response(serializer.errors)
+        return Response(serializer.data)
+
+class BankAccountShopSettings(views.APIView):
+    permission_classes = [permissions.IsAuthenticated, ]
+    authentication_classes = [CsrfExemptSessionAuthentication,]
+    def get_object(self, shop_slug, user):
+        try:
+            return Shop.objects.get(Slug=shop_slug, FK_ShopManager=user)
+        except:
+            raise Http404
+    def put(self, request, shop_slug, format=None):
+        user = request.user
+        # TODO: Remove This user
+        user = User.objects.get(id=72)
+        shop = self.get_object(shop_slug, user)
+        serializer = ShopBankAccountSettingsSerializer(data=request.data, instance=shop)
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            return Response(serializer.errors)
+        return Response(serializer.data)
+
+class SocialMediaShopSettings(views.APIView):
+    permission_classes = [permissions.IsAuthenticated, ]
+    authentication_classes = [CsrfExemptSessionAuthentication,]
+    def get_object(self, shop_slug, user):
+        try:
+            return Shop.objects.get(Slug=shop_slug, FK_ShopManager=user)
+        except:
+            raise Http404
+    def put(self, request, shop_slug, format=None):
+        user = request.user
+        # TODO: Remove This user
+        user = User.objects.get(id=72)
+        shop = self.get_object(shop_slug, user)
+        serializer = SocialMediaAccountSettingsSerializer(data=request.data, instance=shop)
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            return Response(serializer.errors)
+        return Response(serializer.data)

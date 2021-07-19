@@ -1,5 +1,6 @@
 from typing import List, Tuple
 from django.db import models
+from rest_framework import status
 from nakhll_market.serializers import ProductListSerializer
 from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
@@ -17,11 +18,11 @@ import threading
 import json
 
 
-from nakhll_market.models import (Profile, Product, Shop, SubMarket, Category, 
+from nakhll_market.models import (Comment, Profile, Product, Shop, SubMarket, Category, 
                                 BankAccount, ShopBanner, Attribute, AttrProduct, AttrPrice,
                                 ProductBanner, PostRange, Message, User_Message_Status,
-                                Alert, Field, Message, State)
-from Payment.models import Factor, Wallet, FactorPost, Transaction, PostBarCode, Coupon
+                                Alert, Field, Message, State, DashboardBanner)
+from Payment.models import Factor, Wallet, FactorPost, Transaction, PostBarCode, Coupon, PostTrackingCode
 
 
 from django.views.decorators.csrf import csrf_exempt
@@ -58,6 +59,7 @@ from rest_framework.status import (
     HTTP_500_INTERNAL_SERVER_ERROR,
 )
 from rest_framework.response import Response
+from nakhll.authentications import CsrfExemptSessionAuthentication
 
 # user login //req : request.user  // res:  OR err
 @csrf_exempt
@@ -2316,7 +2318,7 @@ class FactorList(ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        user = User.objects.get(id=72)
+        # user = User.objects.get(id=72)
         return Factor.objects.filter(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user)
 
 
@@ -2339,8 +2341,7 @@ class UncompeletedFactors(ListAPIView):
     def get_queryset(self):
         user = self.request.user
         # user = User.objects.get(id=4)
-        return Factor.objects.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) &
-                                     ~Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
+        return Factor.objects.uncompleted_user_factors(user)
 
 
 class CompeletedFactors(ListAPIView):
@@ -2350,8 +2351,7 @@ class CompeletedFactors(ListAPIView):
     def get_queryset(self):
         user = self.request.user
         # user = User.objects.get(id=4)
-        return Factor.objects.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) &
-                                     Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
+        return Factor.objects.completed_user_factors(user)
 
 
 class ShopCompeletedFactors(ListAPIView):
@@ -2362,9 +2362,7 @@ class ShopCompeletedFactors(ListAPIView):
         user = self.request.user
         # user = User.objects.get(id=4)
         shop_slug = self.kwargs.get('shop_slug')
-        return Factor.objects.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) &
-                                     Q(FK_FactorPost__FK_Product__FK_Shop__Slug=shop_slug) &
-                                     Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
+        return Factor.objects.completed_user_shop_factors(user, shop_slug)
 
 
 class ShopUncompeletedFactors(ListAPIView):
@@ -2375,10 +2373,7 @@ class ShopUncompeletedFactors(ListAPIView):
         user = self.request.user
         # user = User.objects.get(id=4)
         shop_slug = self.kwargs.get('shop_slug')
-        return Factor.objects.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) &
-                                     Q(FK_FactorPost__FK_Product__FK_Shop__Slug=shop_slug) &
-                                     ~Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
-
+        return Factor.objects.uncompleted_user_shop_factors(user, shop_slug)
 
 class RelatedOrderingFilter(filters.OrderingFilter):
     _max_related_depth = 3
@@ -2429,7 +2424,7 @@ class RelatedOrderingFilter(filters.OrderingFilter):
         
 class ShopProductList(ListAPIView):
     serializer_class = ProductListSerializer
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'shop_slug'
     # filter_backends = [OrderingFilter]
     # ordering_fields = ['inventory', 'price', 'total_sell']
@@ -2471,6 +2466,71 @@ class UserInfo(APIView):
         serializer = ProfileSerializer(user.User_Profile)
         return Response(serializer.data)
 
+class UserDashboardInfo(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def get(self, request, shop_slug, format=None):
+        user = request.user
+        shop_slug = self.kwargs.get('shop_slug')
+
+        # Completed Factors Count
+        completed_fators = Factor.objects.completed_user_shop_factors(user, shop_slug).count()
+
+        # UnCompleted Factors Count
+        uncompleted_fators = Factor.objects.uncompleted_user_shop_factors(user, shop_slug).count()
+
+        # UnConfirmmed Factors Count
+        uncomfirmed_factors = 0
+
+        # Dashboard banner images
+        banners = DashboardBanner.objects.get_banners(banner_status=DashboardBanner.PublishStatuses.PUBLISH)
+
+        # New Comments Count
+        unread_comments_count = Comment.objects.filter(FK_Product__FK_Shop__FK_ShopManager=user).count()
+
+        # Balance
+        balance = request.user.WalletManager.Inverntory
+
+        # Total sell in current week
+        current_week_total_sell = FactorPost.objects.current_week_user_total_sell(user, shop_slug)
+
+        # Total sell in last week
+        last_week_total_sell = FactorPost.objects.last_week_user_total_sell(user, shop_slug)
+
+        # Total sell in last month
+        last_month_total_sell = FactorPost.objects.last_month_user_total_sell(user, shop_slug)
+
+        # Active Products
+        active_products = Product.objects.user_shop_active_products(user, shop_slug).count()
+
+        # InActive Products
+        inactive_products = Product.objects.user_shop_inactive_products(user, shop_slug).count()
+
+        # Nearly Out-Of-Stock Products
+        nearly_outofstock_products = Product.objects.nearly_outofstock_products(user, shop_slug).count()
+
+        # Out-Of-Stock Products
+        outofstock_products = Product.objects.outofstock_products(user, shop_slug).count()
+
+        # Panel Images and Sell History in Days for later
+        return Response({
+            'completed_fators': completed_fators,
+            'uncompleted_fators': uncompleted_fators,
+            'uncomfirmed_factors': uncomfirmed_factors,
+            'unread_comments_count': unread_comments_count,
+            'balance': balance,
+            'current_week_total_sell': current_week_total_sell,
+            'last_week_total_sell': last_week_total_sell,
+            'last_month_total_sell': last_month_total_sell,
+            'active_products': active_products,
+            'inactive_products': inactive_products,
+            'nearly_outofstock_products': nearly_outofstock_products,
+            'outofstock_products': outofstock_products,
+            'banners': banners,
+        }, status=status.HTTP_200_OK)
+
+
+
 
 
 class StateList(ListAPIView):
@@ -2505,20 +2565,98 @@ class FactorDetails(APIView):
         serializer = FactorAllDetailsSerializer(factor)
         return Response(serializer.data)
 
-# class FactorDetails(APIView):
-#     # permission_classes = [IsAuthenticated]
-#     def get_object(self, factor_id):
+
+# class ChangeFactorStateByManager(APIView):
+#     # permission_classes = [IsAuthenticated, ]
+#     def get_object(self, id):
 #         try:
-#             user = self.request.user
-#             # user = User.objects.get(id=4)
-#             return Factor.objects.get(FactorNumber=factor_id, FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user)
+#             factor = Factor.objects.get(ID=id)
 #         except Factor.DoesNotExist:
 #             raise Http404
+#         return factor
+#     def put(self, request, id=None):
+#         '''Update an specific object'''
+#         factor = self.get_object(id)
+#         serializer_data = FactorAllDetailsSerializer(factor)
+#         if serializer_data.is_valid():
+#             serializer_data.save()
+#             return Response(serializer_data.data)
+#         return Response(serializer_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
-#     def get(self, request, factor_id, format=None):
-#         factor = self.get_object(factor_id)
+#     def patch(self, request, pk=None):
+#         '''Patch an object'''
+#         return Response({'method': 'PATCH'})
+
+#     def get(self, request, id=None):
+#         factor = self.get_object(id)
 #         serializer = FactorAllDetailsSerializer(factor)
 #         return Response(serializer.data)
+
+# class FactorList(APIView):
+#     def get(self, request):
+#         factors = Factor.objects.all()[:50]
+#         serializer = FactorAllDetailsSerializer(factors, many=True)
+#         return Response(serializer.data)
+#     def post(self, request):
+#         serializer = FactorAllDetailsSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ChangeFactorToConfirmed(APIView):
+    permission_classes = [IsAuthenticated,]
+    authentication_classes = [CsrfExemptSessionAuthentication, ]
+    def get_object(self, factor_id):
+        try:
+            return Factor.objects.get(ID=factor_id)
+        except:
+            raise Http404
+
+    def put(self, request, factor_id):
+        user = request.user
+        # user = User.objects.get(id=2567)
+        factor = self.get_object(factor_id)
+        factor_posts = factor.FK_FactorPost.filter(FK_Product__FK_Shop__FK_ShopManager=user)
+        factor_post_list = []
+        for factor_post in factor_posts:
+            # Cofirm every factorpost by changing product status to 2
+            factor_post.ProductStatus = '2'
+            factor_post_list.append(factor_post)
+        FactorPost.objects.bulk_update(factor_post_list, ['ProductStatus'])
+        return Response({'details': 'Done'}, status=status.HTTP_200_OK)
+
+class ChangeFactorToSent(APIView):
+    permission_classes = [IsAuthenticated,]
+    authentication_classes = [CsrfExemptSessionAuthentication, ]
+    def get_object(self, factor_id):
+        try:
+            return Factor.objects.get(ID=factor_id)
+        except:
+            raise Http404
+
+    def post(self, request, factor_id):
+        serializer = PostTrackingCodeWriteSerializer(data=request.data)
+        if serializer.is_valid():
+            barcode = serializer.validated_data.get('barcode')
+            user = request.user
+            # user = User.objects.get(id=2567)
+            factor = self.get_object(factor_id)
+            factor_posts = factor.FK_FactorPost.filter(FK_Product__FK_Shop__FK_ShopManager=user)
+
+            # Change factor_posts status and add post barcode to them
+            factor_post_list = []
+            for factor_post in factor_posts:
+                factor_post.ProductStatus = '3'
+                PostTrackingCode.objects.create(factor_post=factor_post, barcode=barcode)
+                factor_post_list.append(factor_post)
+            FactorPost.objects.bulk_update(factor_post_list, ['ProductStatus'])
+        else:
+            return Response(serializer.errors)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 
 
