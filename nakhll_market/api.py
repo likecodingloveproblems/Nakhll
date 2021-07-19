@@ -238,11 +238,11 @@ class AddImageToProduct(views.APIView):
                 product.save()
 
                 # Save all images in product.Product_Banner
+                # Set Alert for each image
                 for image in images:
-                    ProductBanner.objects.create(FK_Product=product, Image=image)
+                    product_banner = ProductBanner.objects.create(FK_Product=product, Image=image)
+                    Alert.objects.create(Part='8', FK_User=request.user, Slug=product_banner.id)
 
-                # TODO: Check if created product alert display images and categories
-                # TODO: or I should create an alert for categories and images
 
                 return Response({'details': 'done'}, status=status.HTTP_200_OK)
             return Response(serializer.errors)
