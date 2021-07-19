@@ -235,11 +235,13 @@ class SimpleFactorPostSerializer(ModelSerializer):
         model = FactorPost
         fields = [
             'product',
-            'ProductCount',
+            'product_count',
             'get_total_item_price',
-            'Description',
+            'description',
             'get_one_price',
-            'EndPrice',
+            'end_price',
+            'product_status',
+            'product_status_value'
         ]
 
 

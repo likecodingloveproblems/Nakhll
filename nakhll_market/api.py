@@ -1,9 +1,10 @@
 from django.contrib.auth.models import User
 from django.http.response import Http404
+from django.shortcuts import get_object_or_404
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.exceptions import ValidationError
 from nakhll_market.models import (
-    AmazingProduct, Product, ProductBanner, Shop, Slider, Category, Market
+    Alert, AmazingProduct, Product, ProductBanner, Shop, Slider, Category, Market
     )
 from nakhll_market.serializers import (
     AmazingProductSerializer, ProductDetailSerializer, ProductImagesSerializer,
@@ -18,6 +19,7 @@ from django.db.models import Q, F, Count
 import random
 from nakhll.authentications import CsrfExemptSessionAuthentication
 from rest_framework.response import Response
+from restapi.permissions import IsFactorOwner, IsProductOwner, IsShopOwner
 
 
 class SliderViewSet(viewsets.ReadOnlyModelViewSet):
@@ -100,7 +102,19 @@ class UserProductViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mix
         shop = data.get('FK_Shop')
         if shop.FK_ShopManager != self.request.user:
             raise ValidationError({'details': 'Shop is not own by user'})
-        serializer.save()
+        # TODO: This behavior should be inhanced later
+        #! Check if price have dicount or not
+        #! Swap Price and OldPrice value if discount exists
+        #! Note that, request should use OldPrice as price with discount
+        old_price = data.get('OldPrice')
+        if old_price:
+            price = data.get('Price')
+            product = serializer.save(OldPrice=price, Price=old_price)
+        else:
+            product = serializer.save()
+        # TODO: Check if product created successfully and published and alerts created as well
+        Alert.objects.create(Part='7', FK_User=self.request.user, Slug=product.ID)
+
     permission_classes = [permissions.IsAuthenticated, ]
     authentication_classes = [CsrfExemptSessionAuthentication, ]
     lookup_field = 'Slug'
@@ -135,17 +149,9 @@ class GetShopWithSlug(views.APIView):
 
     def get(self, request, format=None):
         shop_slug = request.GET.get('slug')
-        try:
-            shop = Shop.objects.get(Slug=shop_slug)
-        except Shop.DoesNotExist:
-            raise Http404
+        shop = get_object_or_404(Shop, Slug=shop_slug)
         serializer = ShopSerializer(shop)
         return Response(serializer.data)
-
-    def patch(self, request, instance, format=None):
-        # TODO: Search for patch function in Internet
-        pass
-
 
 
 
@@ -158,12 +164,9 @@ class CreateShop(generics.CreateAPIView):
         return Shop.objects.filter(FK_ShopManager=self.request.user)
     def perform_create(self, serializer):
         super().perform_create(serializer)
-        serializer.save(FK_ShopManager=self.request.user)
-
-                # TODO: Create Alerts
-                #
-                #
-                #
+        # TODO: Check if shop created successfully and published and alerts created as well
+        new_shop = serializer.save(FK_ShopManager=self.request.user)
+        Alert.objects.create(Part='2', FK_User=self.request.user, Slug=new_shop.ID)
 
 
 
@@ -198,17 +201,13 @@ class AddCategoryToProduct(views.APIView):
             product_slug = serializer.data.get('product')
             categories_id = serializer.data.get('categories', [])
             product = Product.objects.get(Slug=product_slug)
-            product_owner = product.FK_Shop.FK_ShopManager
-            if product_owner != request.user:
-                return Response({'details': 'Access Denied'}, status=status.HTTP_401_UNAUTHORIZED)
+            self.check_object_permissions(request, product)
             for category_id in categories_id:
                 category = Category.objects.get(id=category_id)
                 product.FK_Category.add(category)
 
-                # TODO: Create Alerts
-                #
-                #
-                #
+            # TODO: Check if created product alert display images and categories
+            # TODO: or I should create an alert for categories and images
 
             return Response({'details': 'done'}, status=status.HTTP_200_OK)
         except:
@@ -229,9 +228,9 @@ class AddImageToProduct(views.APIView):
                 product_slug = serializer.validated_data.get('product')
                 images = request.FILES.getlist('images')
                 product = Shop.objects.get(Slug=product_slug)
-                product_owner = product.FK_Shop.FK_ShopManager
-                if product_owner != request.user:
-                    return Response({'details': 'Access Denied'}, status=status.HTTP_401_UNAUTHORIZED)
+
+                product = Product.objects.get(Slug=product_slug)
+                self.check_object_permissions(request, product)
                 
                 # Save first image in product.NewImage
                 product_main_image = images[0]
@@ -242,10 +241,8 @@ class AddImageToProduct(views.APIView):
                 for image in images:
                     ProductBanner.objects.create(FK_Product=product, Image=image)
 
-                # TODO: Create Alerts
-                #
-                #
-                #
+                # TODO: Check if created product alert display images and categories
+                # TODO: or I should create an alert for categories and images
 
                 return Response({'details': 'done'}, status=status.HTTP_200_OK)
             return Response(serializer.errors)
@@ -254,12 +251,12 @@ class AddImageToProduct(views.APIView):
 
 
 class ShopMultipleUpdatePrice(views.APIView):
+    #TODO: Swap OldPrice and Price
     permission_classes = [permissions.IsAuthenticated, ]
     authentication_classes = [CsrfExemptSessionAuthentication, ]
     def patch(self, request, format=None):
         serializer = ProductPriceWriteSerializer(data=request.data, many=True)
         user = request.user
-        # user = User.objects.get(id=72)
         if serializer.is_valid():
             price_list = serializer.data
             ready_for_update_products = []
@@ -304,26 +301,22 @@ class ShopMultipleUpdateInventory(views.APIView):
             return Response(serializer.errors)
 
 class AllShopSettings(views.APIView):
-    permission_classes = [permissions.IsAuthenticated, ]
+    # TODO: Check this class entirely
+    permission_classes = [permissions.IsAuthenticated, IsShopOwner]
     authentication_classes = [CsrfExemptSessionAuthentication,]
     def get_object(self, shop_slug, user):
-        try:
-            return Shop.objects.get(Slug=shop_slug, FK_ShopManager=user)
-        except:
-            raise Http404
+        return get_object_or_404(Shop, Slug=shop_slug)
     def get(self, request, shop_slug, format=None):
         user = request.user
-        # TODO: Remove This user
-        user = User.objects.get(id=72)
         shop = self.get_object(shop_slug, user)
+        self.check_object_permissions(request, shop)
         serializer = ShopAllSettingsSerializer(shop)
         return Response(serializer.data)
 
     def put(self, request, shop_slug, format=None):
         user = request.user
-        # TODO: Remove This user
-        user = User.objects.get(id=72)
         shop = self.get_object(shop_slug, user)
+        self.check_object_permissions(request, shop)
         serializer = ShopAllSettingsSerializer(data=request.data, instance=shop)
         if serializer.is_valid():
             serializer.save()
@@ -332,18 +325,15 @@ class AllShopSettings(views.APIView):
         return Response(serializer.data)
 
 class BankAccountShopSettings(views.APIView):
+    # TODO: Check this class entirely
     permission_classes = [permissions.IsAuthenticated, ]
     authentication_classes = [CsrfExemptSessionAuthentication,]
     def get_object(self, shop_slug, user):
-        try:
-            return Shop.objects.get(Slug=shop_slug, FK_ShopManager=user)
-        except:
-            raise Http404
+        return get_object_or_404(Shop, Slug=shop_slug)
     def put(self, request, shop_slug, format=None):
         user = request.user
-        # TODO: Remove This user
-        user = User.objects.get(id=72)
         shop = self.get_object(shop_slug, user)
+        self.check_object_permissions(request, shop)
         serializer = ShopBankAccountSettingsSerializer(data=request.data, instance=shop)
         if serializer.is_valid():
             serializer.save()
@@ -352,18 +342,15 @@ class BankAccountShopSettings(views.APIView):
         return Response(serializer.data)
 
 class SocialMediaShopSettings(views.APIView):
+    # TODO: Check this class entirely
     permission_classes = [permissions.IsAuthenticated, ]
     authentication_classes = [CsrfExemptSessionAuthentication,]
     def get_object(self, shop_slug, user):
-        try:
-            return Shop.objects.get(Slug=shop_slug, FK_ShopManager=user)
-        except:
-            raise Http404
+        return get_object_or_404(Shop, Slug=shop_slug)
     def put(self, request, shop_slug, format=None):
         user = request.user
-        # TODO: Remove This user
-        user = User.objects.get(id=72)
         shop = self.get_object(shop_slug, user)
+        self.check_object_permissions(request, shop)
         serializer = SocialMediaAccountSettingsSerializer(data=request.data, instance=shop)
         if serializer.is_valid():
             serializer.save()

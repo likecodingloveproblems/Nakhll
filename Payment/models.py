@@ -573,6 +573,9 @@ class FactorPost(models.Model):
     @property
     def end_price(self):
         return self.EndPrice
+    @property
+    def product_status_value(self):
+        return self.get_status()
 
 
     # Ordering With DateCreate
@@ -600,7 +603,10 @@ class FactorManager(models.Manager):
         return self.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) &
                                      Q(FK_FactorPost__FK_Product__FK_Shop__Slug=shop_slug) &
                                      ~Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
-    
+    def unconfirmed_user_shop_factors(self, user, shop_slug):
+        return self.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) &
+                                    Q(FK_FactorPost__FK_Product__FK_Shop__Slug=shop_slug) &
+                                    Q(FK_FactorPost__ProductStatus='1'))
     def get_user_factor(self, factor_id, user):
         try:
             return self.get(ID=factor_id, FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user)

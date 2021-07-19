@@ -764,6 +764,11 @@ class ShopSocialMedia(models.Model):
 #----------------------------------------------------------------------------------------------------------------------------------
 # ShopBankAccount (حساب‌های حجره) Model
 
+def iban_validator(value):
+    if not value.isdigit():
+        raise ValidationError(_(f'مقدار {value} باید فقط عدد باشد'))
+    if len(value) != 24:
+        raise ValidationError(_(f'مقدار {value} باید فقط 24 رقم باشد'))
 class ShopBankAccount(models.Model):
     class Meta:
         verbose_name = 'حساب بانکی حجره'
@@ -771,7 +776,7 @@ class ShopBankAccount(models.Model):
     def __str__(self):
         return self.Shop.Slug
     shop = models.OneToOneField(Shop, verbose_name='حجره', on_delete=models.CASCADE, related_name='bank_account')
-    iban = models.CharField('شماره شبا', max_length=24, help_text='شماره شبا بدون IR', null=True, blank=True) 
+    iban = models.CharField('شماره شبا', max_length=24, help_text='شماره شبا بدون IR', null=True, blank=True, validators=[iban_validator])
     owner = models.CharField('صاحب حساب', max_length=100, null=True, blank=True)
 
 
@@ -1166,6 +1171,10 @@ class Product(models.Model):
     @property
     def story(self):
         return self.Story
+
+    @property
+    def category(self):
+        return self.FK_Category.all()
 
     @property
     def post_range(self):
