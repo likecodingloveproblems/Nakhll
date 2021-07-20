@@ -2602,7 +2602,7 @@ class ChangeFactorToSent(APIView):
             #! TODO: Another problem is what should be saved to Slug field?
             Alert.objects.get_or_create(Part='34', FK_User=request.user, Slug=barcode)
         else:
-            return Response(serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({'details': response_msg, 'data': serializer.data}, status=status.HTTP_200_OK)
 
