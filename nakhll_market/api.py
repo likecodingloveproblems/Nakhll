@@ -252,7 +252,7 @@ class AddImageToProduct(views.APIView):
 
 
                 return Response({'details': 'done'}, status=status.HTTP_200_OK)
-            return Response(serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'details': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -281,7 +281,7 @@ class ShopMultipleUpdatePrice(views.APIView):
             Product.objects.bulk_update(ready_for_update_products, ['Price', 'OldPrice'])
             return Response({'details': 'done'})
         else:
-            return Response(serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ShopMultipleUpdateInventory(views.APIView):
     permission_classes = [permissions.IsAuthenticated, ]
@@ -305,7 +305,7 @@ class ShopMultipleUpdateInventory(views.APIView):
             Product.objects.bulk_update(ready_for_update_products, ['Inventory'])
             return Response({'details': 'done'})
         else:
-            return Response(serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class AllShopSettings(views.APIView):
     # TODO: Check this class entirely
@@ -328,7 +328,7 @@ class AllShopSettings(views.APIView):
         if serializer.is_valid():
             serializer.save()
         else:
-            return Response(serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.data)
 
 class BankAccountShopSettings(views.APIView):
@@ -345,7 +345,7 @@ class BankAccountShopSettings(views.APIView):
         if serializer.is_valid():
             serializer.save()
         else:
-            return Response(serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.data)
 
 class SocialMediaShopSettings(views.APIView):
@@ -362,5 +362,5 @@ class SocialMediaShopSettings(views.APIView):
         if serializer.is_valid():
             serializer.save()
         else:
-            return Response(serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.data)
