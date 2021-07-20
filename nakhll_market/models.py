@@ -933,7 +933,7 @@ class Attribute(models.Model):
 
 #----------------------------------------------------------------------------------------------------------------------------------
 class ProductManager(models.Manager):
-    FEW_HOURS_AGO = datetime.datetime.now() - datetime.timedelta(hours=15)
+    FEW_HOURS_AGO = timezone.make_aware(datetime.datetime.now() - datetime.timedelta(hours=15))
     def get_most_discount_precentage_available_product(self):
         queryset = self.get_queryset()
         return queryset\

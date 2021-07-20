@@ -102,6 +102,7 @@ class UserProductViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mix
         shop = data.get('FK_Shop')
         if shop.FK_ShopManager != self.request.user:
             raise ValidationError({'details': 'Shop is not own by user'})
+        product_extra_fileds = {'Publish': True}
         # TODO: This behavior should be inhanced later
         #! Check if price have dicount or not
         #! Swap Price and OldPrice value if discount exists
@@ -109,9 +110,9 @@ class UserProductViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mix
         old_price = data.get('OldPrice')
         if old_price:
             price = data.get('Price')
-            product = serializer.save(OldPrice=price, Price=old_price)
+            product = serializer.save(OldPrice=price, Price=old_price, **product_extra_fileds)
         else:
-            product = serializer.save()
+            product = serializer.save(**product_extra_fileds)
         # TODO: Check if product created successfully and published and alerts created as well
         Alert.objects.create(Part='7', FK_User=self.request.user, Slug=product.ID)
 
@@ -165,7 +166,7 @@ class CreateShop(generics.CreateAPIView):
     def perform_create(self, serializer):
         super().perform_create(serializer)
         # TODO: Check if shop created successfully and published and alerts created as well
-        new_shop = serializer.save(FK_ShopManager=self.request.user)
+        new_shop = serializer.save(FK_ShopManager=self.request.user, Publish=True)
         Alert.objects.create(Part='2', FK_User=self.request.user, Slug=new_shop.ID)
 
 
