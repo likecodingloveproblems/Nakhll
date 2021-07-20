@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.exceptions import ValidationError
 from nakhll_market.models import (
-    Alert, AmazingProduct, Product, ProductBanner, Shop, Slider, Category, Market, SubMarket
+    Alert, AmazingProduct, Product, ProductBanner, Shop, Slider, Category, Market, State, BigCity, City, SubMarket
     )
 from nakhll_market.serializers import (
     AmazingProductSerializer, ProductDetailSerializer, ProductImagesSerializer,
@@ -165,8 +165,18 @@ class CreateShop(generics.CreateAPIView):
         return Shop.objects.filter(FK_ShopManager=self.request.user)
     def perform_create(self, serializer):
         super().perform_create(serializer)
-        # TODO: Check if shop created successfully and published and alerts created as well
-        new_shop = serializer.save(FK_ShopManager=self.request.user, Publish=True)
+        # TODO: REFACTOR: Replace state, bigcity and city id to string in front side,
+        # TODO: REFACTOR: and this gets do not need anymore
+        state_id = serializer.validated_data.get('State')
+        bigcity_id = serializer.validated_data.get('BigCity')
+        city_id = serializer.validated_data.get('City')
+
+        state = get_object_or_404(State, id=state_id)
+        bigcity = get_object_or_404(BigCity, id=bigcity_id)
+        city = get_object_or_404(City, id=city_id)
+
+
+        new_shop = serializer.save(FK_ShopManager=self.request.user, Publish=True, State=state.name, BigCity=bigcity.name, City=city.name)
         Alert.objects.create(Part='2', FK_User=self.request.user, Slug=new_shop.ID)
 
 
@@ -199,9 +209,9 @@ class AddSubMarketToProduct(views.APIView):
     def post(self, request, format=None):
         try:
             serializer = ProductSubMarketSerializer(request.data)
-            product_slug = serializer.data.get('product')
+            product_id = serializer.data.get('product')
             submarket_ids = serializer.data.get('submarkets', [])
-            product = Product.objects.get(Slug=product_slug)
+            product = Product.objects.get(ID=product_id)
             self.check_object_permissions(request, product)
             for submarket_id in submarket_ids:
                 submarket = SubMarket.objects.get(id=submarket_id)
@@ -222,11 +232,11 @@ class AddImageToProduct(views.APIView):
         try:
             serializer = ProductImagesSerializer(data=request.data)
             if serializer.is_valid() and 'images' in request.FILES:
-                product_slug = serializer.validated_data.get('product')
+                product_id = serializer.validated_data.get('product')
                 images = request.FILES.getlist('images')
-                product = Shop.objects.get(Slug=product_slug)
+                product = Shop.objects.get(ID=product_id)
 
-                product = Product.objects.get(Slug=product_slug)
+                product = Product.objects.get(ID=product_id)
                 self.check_object_permissions(request, product)
                 
                 # Save first image in product.NewImage
