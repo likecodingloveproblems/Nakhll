@@ -2428,6 +2428,7 @@ class Alert(models.Model):
         ('31', 'درخواست تسویه'),
         ('32', 'ثبت ویژگی انتخابی جدید'),
         ('33', 'حذف ویژگی انتخابی'),
+        ('34', 'ارسال سفارش‌های جداگانه'),
     )
     Part=models.CharField(verbose_name='بخش', choices=PART_TYPE, max_length=2, default='0')
     Slug=models.TextField(verbose_name='شناسه بخش', blank=True, null=True)

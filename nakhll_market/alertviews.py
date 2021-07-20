@@ -54,7 +54,7 @@ from .models import Option_Meta
 from .models import Alert
 from .models import Field 
 
-from Payment.models import Wallet, Transaction, Factor, FactorPost, PostBarCode, Coupon
+from Payment.models import PostTrackingCode, Wallet, Transaction, Factor, FactorPost, PostBarCode, Coupon
 
 from Ticketing.models import Ticketing, TicketingMessage, Complaint
 
@@ -2624,4 +2624,32 @@ def EditeNationalCardImageAlert(request, user_id):
     }
     
     return render(request, 'nakhll_market/alert/pages/editenationalcardimage.html', context)
+
+# Factor Alert
+@login_required
+@staff_member_required
+def PostTrackingCodeAlert(request, id):
+    # Get User Info
+    this_profile = Profile.objects.get(FK_User=request.user)
+    this_inverntory = request.user.WalletManager.Inverntory
+    # Get Menu Item
+    options = Option_Meta.objects.filter(Title = 'index_page_menu_items')
+    # Get Nav Bar Menu Item
+    navbar = Option_Meta.objects.filter(Title = 'nav_menu_items')
+    # -------------------------------------------------------------------
+    # get PostTracking with barcode
+    alert = Alert.objects.get(id=id)
+    post_tracking = get_object_or_404(PostTrackingCode, barcode=alert.Slug)
+    products = FactorPost.objects.filter(barcodes__barcode=post_tracking.barcode)
+
+    context = {
+        'This_User_Profile':this_profile,
+        'This_User_Inverntory': this_inverntory,
+        'Options': options,
+        'MenuList':navbar,
+        'post_tracking': post_tracking,
+        'products': products,
+    }
+        
+    return render(request, 'nakhll_market/alert/pages/posttracking.html', context)
 
