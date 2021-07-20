@@ -100,14 +100,14 @@ class UserProductViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mix
         queryset = Product.objects.filter(FK_Shop__FK_ShopManager=self.request.user).order_by('-DateCreate')
         return queryset
 
-    def generate_unique_slug(title):
+    def generate_unique_slug(self, title):
         ''' Generate new unique slug for Product Model 
             NOTE: This fucntion should move to utils
         '''
         slug = slugify(title, allow_unicode=True)
         counter = 1
         new_slug = slug
-        while(Product.objects.get(Slug=new_slug)):
+        while(Product.objects.filter(Slug=new_slug).exists()):
             new_slug = f'{slug}_{counter}'
             counter += 1
         return new_slug

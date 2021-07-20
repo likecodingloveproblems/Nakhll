@@ -197,7 +197,6 @@ class ProductWriteSerializer(serializers.ModelSerializer):
         fields = [
             'ID',
             'Title',
-            'Slug',
             'Inventory',
             'Price',
             'OldPrice',
