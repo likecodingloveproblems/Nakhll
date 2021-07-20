@@ -19,6 +19,7 @@ from django.db.models import Q, F, Count
 import random
 from nakhll.authentications import CsrfExemptSessionAuthentication
 from rest_framework.response import Response
+from django.utils.text import slugify
 from restapi.permissions import IsFactorOwner, IsProductOwner, IsShopOwner
 
 
@@ -97,12 +98,27 @@ class UserProductViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mix
     def get_queryset(self):
         queryset = Product.objects.filter(FK_Shop__FK_ShopManager=self.request.user).order_by('-DateCreate')
         return queryset
+
+    def generate_unique_slug(title):
+        ''' Generate new unique slug for Product Model 
+            NOTE: This fucntion should move to utils
+        '''
+        slug = slugify(title, allow_unicode=True)
+        counter = 1
+        new_slug = slug
+        while(Product.objects.get(Slug=new_slug)):
+            new_slug = f'{slug}_{counter}'
+            counter += 1
+        return new_slug
+
     def perform_create(self, serializer):
         data = serializer.validated_data
         shop = data.get('FK_Shop')
+        title = data.get('Title')
         if shop.FK_ShopManager != self.request.user:
             raise ValidationError({'details': 'Shop is not own by user'})
-        product_extra_fileds = {'Publish': True}
+        slug = self.generate_unique_slug(title)
+        product_extra_fileds = {'Publish': True, 'Slug': slug}
         # TODO: This behavior should be inhanced later
         #! Check if price have dicount or not
         #! Swap Price and OldPrice value if discount exists
@@ -115,7 +131,6 @@ class UserProductViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mix
             product = serializer.save(**product_extra_fileds)
         # TODO: Check if product created successfully and published and alerts created as well
         Alert.objects.create(Part='7', FK_User=self.request.user, Slug=product.ID)
-
     permission_classes = [permissions.IsAuthenticated, ]
     authentication_classes = [CsrfExemptSessionAuthentication, ]
     lookup_field = 'Slug'
