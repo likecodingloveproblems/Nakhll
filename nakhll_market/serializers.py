@@ -161,7 +161,9 @@ class ProductDetailSerializer(serializers.HyperlinkedModelSerializer):
 class ProductListSerializer(serializers.ModelSerializer):
     # FK_User = serializers.SlugRelatedField(slug_field='username', queryset=User.objects.all())
     category = CategorySerializer(many=True, read_only=True)
+    sub_market = SubMarketSerializer(read_only=True)
     shop = serializers.SlugRelatedField(slug_field='Slug', read_only=True)
+    banners = ProductBannerSerializer(read_only=True, many=True)
     class Meta:
         model = Product
         fields = [
@@ -170,6 +172,8 @@ class ProductListSerializer(serializers.ModelSerializer):
             'slug',
             'inventory',
             'category',
+            'sub_market',
+            'banners',
             'image_thumbnail_url',
             'price',
             'shop',
