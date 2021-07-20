@@ -167,6 +167,7 @@ class ProductListSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'title',
+            'slug',
             'inventory',
             'category',
             'image_thumbnail_url',
@@ -229,7 +230,7 @@ class ProductCategorySerializer(serializers.Serializer):
 class ProductSubMarketSerializer(serializers.Serializer):
     product = serializers.UUIDField()
     submarkets = serializers.ListField(
-        child=serializers.IntegerField(min_value=0)
+        child=serializers.UUIDField()
     )
 
 

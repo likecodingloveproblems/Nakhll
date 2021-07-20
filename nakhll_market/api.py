@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.http import response
 from django.http.response import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -223,19 +224,22 @@ class AddSubMarketToProduct(views.APIView):
     authentication_classes = [CsrfExemptSessionAuthentication, ]
     def post(self, request, format=None):
         try:
-            serializer = ProductSubMarketSerializer(request.data)
-            product_id = serializer.data.get('product')
-            submarket_ids = serializer.data.get('submarkets', [])
-            product = Product.objects.get(ID=product_id)
-            self.check_object_permissions(request, product)
-            for submarket_id in submarket_ids:
-                submarket = SubMarket.objects.get(id=submarket_id)
-                submarket.Product_SubMarket.add(product)
+            serializer = ProductSubMarketSerializer(data=request.data)
+            if serializer.is_valid():
+                product_id = serializer.data.get('product')
+                submarket_ids = serializer.data.get('submarkets', [])
+                product = Product.objects.get(ID=product_id)
+                self.check_object_permissions(request, product)
+                for submarket_id in submarket_ids:
+                    submarket = SubMarket.objects.get(ID=submarket_id)
+                    submarket.Product_SubMarket.add(product)
 
-            # TODO: Check if created product alert display images and submarkets
-            # TODO: or I should create an alert for submarkets and images
+                # TODO: Check if created product alert display images and submarkets
+                # TODO: or I should create an alert for submarkets and images
 
-            return Response({'details': 'done'}, status=status.HTTP_200_OK)
+                return Response({'details': 'done'}, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'details': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -249,8 +253,6 @@ class AddImageToProduct(views.APIView):
             if serializer.is_valid() and 'images' in request.FILES:
                 product_id = serializer.validated_data.get('product')
                 images = request.FILES.getlist('images')
-                product = Shop.objects.get(ID=product_id)
-
                 product = Product.objects.get(ID=product_id)
                 self.check_object_permissions(request, product)
                 
