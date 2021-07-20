@@ -187,6 +187,7 @@ class ProductListSerializer(serializers.ModelSerializer):
             'available'
         ]
 class ProductWriteSerializer(serializers.ModelSerializer):
+    FK_Shop = serializers.SlugRelatedField(slug_field='Slug', many=False, read_only=False, queryset=Shop.objects.all())
     class Meta:
         model = Product
         fields = [
