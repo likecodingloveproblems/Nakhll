@@ -292,7 +292,8 @@ def AllShop(request):
             self.SubMarket = item_submarket
     # Get All Shops
     shops = []
-    for item in Shop.objects.filter(Publish = True, Available = True).order_by('-DateCreate'):
+    FEW_HOURS_AGO = timezone.make_aware(datetime.now() - timedelta(hours=15))
+    for item in Shop.objects.filter(Publish = True, Available = True, DateCreate__lt=FEW_HOURS_AGO).order_by('-DateCreate'):
         if Product.objects.filter(FK_Shop = item, Publish = True, Available = True).exists():
             if item.FK_SubMarket.all().count() != 0:
                 # Get Shop First SubMarket

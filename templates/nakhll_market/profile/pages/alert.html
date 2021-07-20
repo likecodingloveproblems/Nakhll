@@ -267,6 +267,7 @@
                                                 <option value="29" {% if CheckOut == '29' %}selected{% endif %}>ثبت کامنت داستان</option>
                                                 <option value="30" {% if CheckOut == '30' %}selected{% endif %}>ثبت کامنت حجره</option>
                                                 <option value="31" {% if CheckOut == '30' %}selected{% endif %}>درخواست تسویه</option>
+                                                <option value="34" {% if CheckOut == '34' %}selected{% endif %}>ارسال سفارشات تکی</option>
                                             </select>
                                         </div>
                                     </div>
@@ -407,6 +408,8 @@
                                                     ثبت ویژگی انتخابی جدید
                                                     {% elif alert.Part == '33' %}
                                                     حذف ویژگی انتخابی
+                                                    {% elif alert.Part == '34' %}
+                                                    ارسال سفارشات تکی
                                                     {% endif %}
                                                 </td>
                                                 <td>{{alert.FK_User.first_name}} {{alert.FK_User.last_name}}</td>
@@ -479,6 +482,8 @@
                                                         <a type="button" href="{% url "nakhll_market:Add_New_Optional_Attribute" alert.id %}"><i class="fal fa-edit"></i></a>
                                                     {% elif alert.Part == '33' %}
                                                         <a type="button" href="{% url "nakhll_market:Delete_Optional_Attribute" alert.id %}"><i class="fal fa-edit"></i></a>
+                                                    {% elif alert.Part == '34' %}
+                                                        <a type="button" href="{% url "nakhll_market:Post_Tracking_Code_Alert" alert.id %}"><i class="fal fa-edit"></i></a>
                                                     {% endif %}
                                                 </td>
                                             </tr>

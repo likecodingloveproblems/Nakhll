@@ -1,7 +1,12 @@
 from typing import Dict, Optional
 from django.contrib import admin
 from django.http import HttpRequest, HttpResponse
-from .models import  AmazingProduct, Tag, Market, MarketBanner, SubMarket, SubMarketBanner,BankAccount, Category ,PostRange, Shop, ShopBanner, ShopMovie, Attribute, AttrPrice, AttrProduct, Product, ProductBanner, ProductMovie, Comment, Profile, Review, Survey, Slider, Option_Meta, Message, Pages ,Alert ,Field, User_Message_Status, UserPoint
+from .models import (AmazingProduct, Tag, Market, MarketBanner, SubMarket, 
+                     SubMarketBanner,BankAccount, Category ,PostRange, Shop, 
+                     ShopBanner, ShopMovie, Attribute, AttrPrice, AttrProduct, 
+                     Product, ProductBanner, ProductMovie, Comment, Profile, 
+                     Review, Survey, Slider, Option_Meta, Message, Pages, Alert,
+                     Field, User_Message_Status, UserPoint, DashboardBanner)
 from django.contrib import admin
 from django.contrib.auth.models import Permission
 
@@ -9,7 +14,6 @@ admin.site.site_header = 'مدیریت بازار نخل '
 
 # enable django permission setting in admin panel to define custom permissions
 admin.site.register(Permission)
-
 #tag admin panel
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
@@ -207,3 +211,11 @@ class AmazingProduct(admin.ModelAdmin):
     raw_id_fields = ("product",)
     list_display=('product', 'start_date', 'end_date')
     list_filter=('product', 'start_date', 'end_date')
+@admin.register(DashboardBanner)
+class DashboardBannerAdmin(admin.ModelAdmin):
+    list_display=('image','url','staff_user','created_datetime','publish_status')
+    list_filter=('staff_user','created_datetime','publish_status')
+    search_fields=('url',)
+    ordering=['id','created_datetime','publish_status']
+    # inlines=[AttrProductInline, ProductBannerInline, ProductMovieInline]
+

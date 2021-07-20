@@ -478,7 +478,9 @@ urlpatterns = [
 
 
     # Edit National Card Image 
-    path('profile/alert/editnationalcardimage/<int:user_id>/', alertviews. EditeNationalCardImageAlert, name='Edit_National_Card_Image'),
+    path('profile/alert/editnationalcardimage/<int:user_id>/', alertviews.EditeNationalCardImageAlert, name='Edit_National_Card_Image'),
+    # Set PostTracking
+    path('profile/alert/post-tracking/<int:id>/', alertviews.PostTrackingCodeAlert, name='Post_Tracking_Code_Alert'),
 
 
 

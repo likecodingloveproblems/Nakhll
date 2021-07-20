@@ -588,6 +588,7 @@ class Shop(models.Model):
         default=list,
         blank=True,
         )
+    show_contact_info = models.BooleanField('نمایش اطلاعات تماس حجره', default=False)
 
     
     @property
@@ -764,6 +765,11 @@ class ShopSocialMedia(models.Model):
 #----------------------------------------------------------------------------------------------------------------------------------
 # ShopBankAccount (حساب‌های حجره) Model
 
+def iban_validator(value):
+    if not value.isdigit():
+        raise ValidationError(_(f'مقدار {value} باید فقط عدد باشد'))
+    if len(value) != 24:
+        raise ValidationError(_(f'مقدار {value} باید فقط 24 رقم باشد'))
 class ShopBankAccount(models.Model):
     class Meta:
         verbose_name = 'حساب بانکی حجره'
@@ -771,7 +777,7 @@ class ShopBankAccount(models.Model):
     def __str__(self):
         return self.Shop.Slug
     shop = models.OneToOneField(Shop, verbose_name='حجره', on_delete=models.CASCADE, related_name='bank_account')
-    iban = models.CharField('شماره شبا', max_length=24, help_text='شماره شبا بدون IR', null=True, blank=True) 
+    iban = models.CharField('شماره شبا', max_length=24, help_text='شماره شبا بدون IR', null=True, blank=True, validators=[iban_validator])
     owner = models.CharField('صاحب حساب', max_length=100, null=True, blank=True)
 
 
@@ -927,11 +933,11 @@ class Attribute(models.Model):
 
 #----------------------------------------------------------------------------------------------------------------------------------
 class ProductManager(models.Manager):
-
+    FEW_HOURS_AGO = timezone.make_aware(datetime.datetime.now() - datetime.timedelta(hours=15))
     def get_most_discount_precentage_available_product(self):
         queryset = self.get_queryset()
         return queryset\
-            .filter(Publish=True, Available = True, Status__in=['1','2','3'])\
+            .filter(Publish=True, Available = True, Status__in=['1','2','3'],DateCreate__lt=self.FEW_HOURS_AGO)\
             .exclude(OldPrice=0)\
             .annotate(OldPrice_float=Cast(F('OldPrice'), FloatField()))\
             .annotate(Price_float=Cast(F('Price'), FloatField()))\
@@ -945,22 +951,24 @@ class ProductManager(models.Manager):
 
     def get_last_created_products(self):
         return Product.objects\
-            .filter(Publish = True, Available = True, OldPrice = 0, Status__in = ['1', '2', '3'])\
+            .filter(Publish = True, Available = True, OldPrice = 0, Status__in = ['1', '2', '3'],DateCreate__lt=self.FEW_HOURS_AGO)\
                 .order_by('-DateCreate')[:12]
 
     def get_last_created_discounted_products(self):
         return Product.objects\
-            .filter(Publish = True, Available = True, Status__in = ['1', '2', '3'])\
+            .filter(Publish = True, Available = True, Status__in = ['1', '2', '3'],DateCreate__lt=self.FEW_HOURS_AGO)\
             .exclude(OldPrice=0)\
             .order_by('-DateCreate')[:16]
 
     def get_random_products(self):
+
         return Product.objects\
             .filter(
                 Publish = True,
                 Available = True,
                 OldPrice = 0,
-                Status__in = ['1', '2', '3']
+                Status__in = ['1', '2', '3'],
+                DateCreate__lt=self.FEW_HOURS_AGO
                 )\
             .order_by('?')[:16]
 
@@ -973,7 +981,7 @@ class ProductManager(models.Manager):
         try:
             product = Product.objects.get(ID=id)
             return Product.objects\
-                .filter(Factor_Product__Factor_Products__FK_FactorPost__FK_Product=product)\
+                .filter(Factor_Product__Factor_Products__FK_FactorPost__FK_Product=product,DateCreated__lt=self.FEW_HOURS_AGO)\
                 .exclude(ID = product.ID)\
                 .distinct()
         except:
@@ -1166,6 +1174,10 @@ class Product(models.Model):
     @property
     def story(self):
         return self.Story
+
+    @property
+    def category(self):
+        return self.FK_Category.all()
 
     @property
     def post_range(self):
@@ -2416,6 +2428,7 @@ class Alert(models.Model):
         ('31', 'درخواست تسویه'),
         ('32', 'ثبت ویژگی انتخابی جدید'),
         ('33', 'حذف ویژگی انتخابی'),
+        ('34', 'ارسال سفارش‌های جداگانه'),
     )
     Part=models.CharField(verbose_name='بخش', choices=PART_TYPE, max_length=2, default='0')
     Slug=models.TextField(verbose_name='شناسه بخش', blank=True, null=True)

@@ -30,13 +30,13 @@ class ShopSerializer(serializers.ModelSerializer):
         model = Shop
         fields = [
             'slug', 'title', 'url', 'image_thumbnail_url',
-            'state'
+            'state', 'show_contact_info', 'publish', 'available'
         ]
 
 class CreateShopSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shop
-        fields = ['Slug', 'Title', 'State', 'BigCity', 'City', ]
+        fields = ['Slug', 'Title', 'State', 'BigCity', 'City', 'show_contact_info']
    
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -182,8 +182,11 @@ class ProductListSerializer(serializers.ModelSerializer):
             'comments_count',
             'average_user_point',
             'total_sell',
+            'publish',
+            'available'
         ]
 class ProductWriteSerializer(serializers.ModelSerializer):
+    FK_Shop = serializers.SlugRelatedField(slug_field='Slug', many=False, read_only=False, queryset=Shop.objects.all())
     class Meta:
         model = Product
         fields = [
@@ -218,14 +221,21 @@ class FullMarketSerializer(serializers.ModelSerializer):
 
 
 class ProductCategorySerializer(serializers.Serializer):
-    product = serializers.SlugField()
+    product = serializers.UUIDField()
     categories = serializers.ListField(
         child=serializers.IntegerField(min_value=0)
     )
 
+class ProductSubMarketSerializer(serializers.Serializer):
+    product = serializers.UUIDField()
+    submarkets = serializers.ListField(
+        child=serializers.IntegerField(min_value=0)
+    )
+
+
 
 class ProductImagesSerializer(serializers.Serializer):
-    product = serializers.SlugField()
+    product = serializers.UUIDField()
     images = serializers.ImageField()
 
 class ShopFullSerializer(serializers.ModelSerializer):
@@ -293,6 +303,9 @@ class ShopAllSettingsSerializer(serializers.ModelSerializer):
         if not profile_data:
             return instance
 
+        instance.Title = validated_data.get('Title')
+        instance.Description = validated_data.get('Description')
+
         profile = instance.FK_ShopManager.User_Profile
         profile.NationalCode = profile_data.get('NationalCode')
         profile.MobileNumber = profile_data.get('MobileNumber')
@@ -301,7 +314,9 @@ class ShopAllSettingsSerializer(serializers.ModelSerializer):
         profile.BigCity = profile_data.get('BigCity')
         profile.Address = profile_data.get('Address')
         profile.ZipCode = profile_data.get('ZipCode')
+
         profile.save()
+        instance.save()
         return instance
             
 class ShopBankAccountSettingsSerializer(serializers.ModelSerializer):

@@ -457,6 +457,7 @@ class LoginCodeForm(GetAuthCode):
             message=self.error_messages['invalid-code'],
             code='invalid-code',
         )
+
 class LoginPasswordForm(forms.Form):
     password = forms.CharField(
         label=None, 
