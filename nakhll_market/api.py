@@ -290,9 +290,18 @@ class ShopMultipleUpdatePrice(views.APIView):
                     old_price = price_item.get('OldPrice')
                     price = price_item.get('Price')
                     if product.FK_Shop.FK_ShopManager == user:
-                        product.OldPrice = old_price
-                        product.Price = price
+                        # TODO: This behavior should be inhanced later
+                        #! Check if price have dicount or not
+                        #! Swap Price and OldPrice value if discount exists
+                        #! Note that, request should use OldPrice as price with discount
+                        if old_price:
+                            product.OldPrice = price
+                            product.Price = old_price
+                        else:
+                            product.OldPrice = old_price
+                            product.Price = price
                         ready_for_update_products.append(product)
+
                 except:
                     pass
             Product.objects.bulk_update(ready_for_update_products, ['Price', 'OldPrice'])
