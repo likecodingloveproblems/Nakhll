@@ -219,13 +219,13 @@ class FullMarketSerializer(serializers.ModelSerializer):
 
 
 class ProductCategorySerializer(serializers.Serializer):
-    product = serializers.SlugField()
+    product = serializers.UUIDField()
     categories = serializers.ListField(
         child=serializers.IntegerField(min_value=0)
     )
 
 class ProductSubMarketSerializer(serializers.Serializer):
-    product = serializers.SlugField()
+    product = serializers.UUIDField()
     submarkets = serializers.ListField(
         child=serializers.IntegerField(min_value=0)
     )
@@ -233,7 +233,7 @@ class ProductSubMarketSerializer(serializers.Serializer):
 
 
 class ProductImagesSerializer(serializers.Serializer):
-    product = serializers.SlugField()
+    product = serializers.UUIDField()
     images = serializers.ImageField()
 
 class ShopFullSerializer(serializers.ModelSerializer):
