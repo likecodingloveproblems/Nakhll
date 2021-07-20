@@ -231,6 +231,7 @@ class FactorPostSerializer(ModelSerializer):
 class SimpleFactorPostSerializer(ModelSerializer):
     # FK_Product = ProductTitleSerializer(read_only = True)
     product = SimpleProductSerializer(read_only = True)
+    barcodes = serializers.SlugRelatedField(slug_field='barcode', read_only=True, many=True)
     class Meta:
         model = FactorPost
         fields = [
@@ -241,7 +242,8 @@ class SimpleFactorPostSerializer(ModelSerializer):
             'get_one_price',
             'end_price',
             'product_status',
-            'product_status_value'
+            'product_status_value',
+            'barcodes'
         ]
 
 
