@@ -4,14 +4,14 @@ from django.shortcuts import get_object_or_404
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.exceptions import ValidationError
 from nakhll_market.models import (
-    Alert, AmazingProduct, Product, ProductBanner, Shop, Slider, Category, Market
+    Alert, AmazingProduct, Product, ProductBanner, Shop, Slider, Category, Market, SubMarket
     )
 from nakhll_market.serializers import (
     AmazingProductSerializer, ProductDetailSerializer, ProductImagesSerializer,
     ProductSerializer, ShopSerializer,SliderSerializer, ProductPriceWriteSerializer,
     CategorySerializer, FullMarketSerializer, CreateShopSerializer, ProductInventoryWriteSerializer,
-    ProductListSerializer, ProductCategorySerializer, ProductWriteSerializer, ShopAllSettingsSerializer,
-    ShopBankAccountSettingsSerializer, SocialMediaAccountSettingsSerializer,
+    ProductListSerializer, ProductWriteSerializer, ShopAllSettingsSerializer,
+    ShopBankAccountSettingsSerializer, SocialMediaAccountSettingsSerializer, ProductSubMarketSerializer, SubMarketSerializer
     )
 from rest_framework import generics, routers, status, views, viewsets
 from rest_framework import permissions, filters, mixins
@@ -193,30 +193,26 @@ class CheckProductSlug(views.APIView):
             return Response({'product_slug': product.ID})
         except Product.DoesNotExist:
             return Response({'product_slug': None})
-class AddCategoryToProduct(views.APIView):
+class AddSubMarketToProduct(views.APIView):
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [CsrfExemptSessionAuthentication, ]
     def post(self, request, format=None):
         try:
-            serializer = ProductCategorySerializer(request.data)
+            serializer = ProductSubMarketSerializer(request.data)
             product_slug = serializer.data.get('product')
-            categories_id = serializer.data.get('categories', [])
+            submarket_ids = serializer.data.get('submarkets', [])
             product = Product.objects.get(Slug=product_slug)
             self.check_object_permissions(request, product)
-            for category_id in categories_id:
-                category = Category.objects.get(id=category_id)
-                product.FK_Category.add(category)
+            for submarket_id in submarket_ids:
+                submarket = SubMarket.objects.get(id=submarket_id)
+                submarket.Product_SubMarket.add(product)
 
-            # TODO: Check if created product alert display images and categories
-            # TODO: or I should create an alert for categories and images
+            # TODO: Check if created product alert display images and submarkets
+            # TODO: or I should create an alert for submarkets and images
 
             return Response({'details': 'done'}, status=status.HTTP_200_OK)
         except:
             return Response({'details': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
-    def get(self, request, format=None):
-        cats = Category.objects.all()
-        ser = CategorySerializer(cats, many=True)
-        return Response(ser.data)
 
 class AddImageToProduct(views.APIView):
     parser_classes = (MultiPartParser, FormParser)

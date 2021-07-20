@@ -224,6 +224,13 @@ class ProductCategorySerializer(serializers.Serializer):
         child=serializers.IntegerField(min_value=0)
     )
 
+class ProductSubMarketSerializer(serializers.Serializer):
+    product = serializers.SlugField()
+    submarkets = serializers.ListField(
+        child=serializers.IntegerField(min_value=0)
+    )
+
+
 
 class ProductImagesSerializer(serializers.Serializer):
     product = serializers.SlugField()

@@ -1,6 +1,6 @@
 from django.urls import re_path, include, path
 from nakhll_market.api import (
-    AddCategoryToProduct, AllShopSettings, AmazingProductViewSet, CategoryViewSet, LastCreatedDiscountedProductsViewSet,
+    AddSubMarketToProduct, AllShopSettings, AmazingProductViewSet, CategoryViewSet, LastCreatedDiscountedProductsViewSet,
     LastCreatedProductsViewSet, MostDiscountPrecentageProductsViewSet, ShopMultipleUpdateInventory, ShopMultipleUpdatePrice, SocialMediaShopSettings,
     UserProductViewSet, ProductsInSameFactorViewSet, SliderViewSet,
     MostSoldShopsViewSet, RandomShopsViewSet, RandomProductsViewSet,
@@ -43,6 +43,6 @@ urlpatterns = [
     path('shop/multiple-update/inventory/', ShopMultipleUpdateInventory.as_view()),
 
     path('product/check/', CheckProductSlug.as_view()),
-    path('product/categories/', AddCategoryToProduct.as_view()),
+    path('product/categories/', AddSubMarketToProduct.as_view()),
     path('product/images/', AddImageToProduct.as_view()),
 ]
