@@ -179,20 +179,39 @@ class CreateShop(generics.CreateAPIView):
     authentication_classes = [CsrfExemptSessionAuthentication, ]
     def get_queryset(self):
         return Shop.objects.filter(FK_ShopManager=self.request.user)
+
+    def generate_unique_slug(self, title):
+        ''' Generate new unique slug for Shop Model 
+            NOTE: This fucntion should move to utils
+        '''
+        slug = slugify(title, allow_unicode=True)
+        counter = 1
+        new_slug = slug
+        while(Shop.objects.filter(Slug=new_slug).exists()):
+            new_slug = f'{slug}_{counter}'
+            counter += 1
+        return new_slug
+
     def perform_create(self, serializer):
-        super().perform_create(serializer)
+        # super().perform_create(serializer)
         # TODO: REFACTOR: Replace state, bigcity and city id to string in front side,
         # TODO: REFACTOR: and this gets do not need anymore
         state_id = serializer.validated_data.get('State')
         bigcity_id = serializer.validated_data.get('BigCity')
         city_id = serializer.validated_data.get('City')
+        title = serializer.validated_data.get('Title')
+        slug = serializer.validated_data.get('Slug')
+        if not slug:
+            slug = self.generate_unique_slug(title)
+        elif Shop.objects.filter(Slug=slug).exists():
+            raise ValidationError({'details': 'شناسه حجره از قبل موجود است'})
 
         state = get_object_or_404(State, id=state_id)
         bigcity = get_object_or_404(BigCity, id=bigcity_id)
         city = get_object_or_404(City, id=city_id)
 
-
-        new_shop = serializer.save(FK_ShopManager=self.request.user, Publish=True, State=state.name, BigCity=bigcity.name, City=city.name)
+        new_shop = serializer.save(FK_ShopManager=self.request.user, Publish=True, 
+                                State=state.name, BigCity=bigcity.name, City=city.name, Slug=slug)
         Alert.objects.create(Part='2', FK_User=self.request.user, Slug=new_shop.ID)
 
 

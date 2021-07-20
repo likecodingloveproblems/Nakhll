@@ -37,6 +37,9 @@ class CreateShopSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shop
         fields = ['Slug', 'Title', 'State', 'BigCity', 'City', 'show_contact_info']
+        extra_kwargs = {
+            'Slug': {'validators': [], 'allow_null': True, 'required': False}
+        }
    
 
 class ProductSerializer(serializers.ModelSerializer):
