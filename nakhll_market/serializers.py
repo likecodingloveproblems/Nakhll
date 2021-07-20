@@ -167,7 +167,6 @@ class ProductListSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'title',
-            'slug',
             'inventory',
             'category',
             'image_thumbnail_url',
