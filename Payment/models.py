@@ -1261,11 +1261,13 @@ class PostTrackingCode(models.Model):
         NORMAL = 'norm', 'پست معمولی'
         PAY_AT_DELIVER = 'pad', 'پس کرایه'
     factor_post = models.ForeignKey(FactorPost, verbose_name='محصول', on_delete=models.CASCADE, related_name='barcodes')
-    barcode = models.CharField('بارکد', max_length=24)
+    barcode = models.CharField('بارکد', max_length=24, unique=True)
     created_datetime = models.DateTimeField('تاریخ ایجاد بارکد', auto_now=False, auto_now_add=True)
     post_price = models.DecimalField(verbose_name='هزینه ارسال', max_length=15, default='0', max_digits=8, decimal_places=0)
     post_type = models.CharField('نوع پست', max_length=6, choices=PostTypes.choices, default=PostTypes.IRPOST)
     send_type=models.CharField(verbose_name='وضعیت ارسال', max_length=4, choices=SendTypes.choices, default=SendTypes.NORMAL)
+    def __str__(self):
+        return self.barcode
 
 
 #----------------------------------------------------------------------------------------------------------------------------------
