@@ -2385,7 +2385,7 @@ class ShopProductList(ListAPIView):
 
     def get_queryset(self):
         slug = self.kwargs.get('shop_slug')
-        shop = Shop.objects.get(Slug=slug)
+        shop = get_object_or_404(Shop, Slug=slug)
         user = self.request.user
         # user = User.objects.get(id=72)
         self.check_object_permissions(self.request, shop)
