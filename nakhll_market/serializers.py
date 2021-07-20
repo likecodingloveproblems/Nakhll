@@ -30,7 +30,7 @@ class ShopSerializer(serializers.ModelSerializer):
         model = Shop
         fields = [
             'slug', 'title', 'url', 'image_thumbnail_url',
-            'state', 'show_contact_info',
+            'state', 'show_contact_info', 'publish', 'available'
         ]
 
 class CreateShopSerializer(serializers.ModelSerializer):
@@ -183,6 +183,8 @@ class ProductListSerializer(serializers.ModelSerializer):
             'comments_count',
             'average_user_point',
             'total_sell',
+            'publish',
+            'available'
         ]
 class ProductWriteSerializer(serializers.ModelSerializer):
     class Meta:
