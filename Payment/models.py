@@ -1,11 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.aggregates import Sum
+from django.db.models.query_utils import Q
 from nakhll_market.models import Shop, Product, AttrPrice, Category, Option_Meta, Profile
 from django.utils.deconstruct import deconstructible
 import uuid, random, string, os, time
 from django_jalali.db import models as jmodels
 from django.shortcuts import reverse
-from datetime import datetime, date 
+from datetime import datetime, date, timedelta 
 import jdatetime
 import math
 
@@ -419,6 +421,35 @@ class Coupon(models.Model):
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
+class FactorPostManager(models.Manager):
+    def user_total_sell(self, user):
+        return self.filter(FK_Product__FK_Shop__FK_ShopManager=user, Factor_Products__PaymentStatus=True
+                            ).aggregate(amont=Sum('FK_Product__Price'))
+
+    def current_week_user_total_sell(self, user, shop_slug):
+        now = jdatetime.datetime.now()
+        current_week_start_date =  now - jdatetime.timedelta(days=4)
+        return self.filter(FK_Product__FK_Shop__FK_ShopManager=user, Factor_Products__PaymentStatus=True, FK_Product__FK_Shop__Slug=shop_slug,
+                            Factor_Products__OrderDate__gt=str(current_week_start_date)).aggregate(amont=Sum('FK_Product__Price'))
+
+    def last_week_user_total_sell(self, user, shop_slug):
+        now = jdatetime.datetime.now()
+        current_week_start_date =  now - jdatetime.timedelta(days=4)
+        last_week_start_date = current_week_start_date - jdatetime.timedelta(days=7)
+        return self.filter(FK_Product__FK_Shop__FK_ShopManager=user, Factor_Products__PaymentStatus=True,
+                            Factor_Products__OrderDate__gt=str(last_week_start_date), FK_Product__FK_Shop__Slug=shop_slug,
+                            Factor_Products__OrderDate__lt=str(current_week_start_date)
+                            ).aggregate(amont=Sum('FK_Product__Price'))
+
+    def last_month_user_total_sell(self, user, shop_slug):
+        now = jdatetime.datetime.now()
+        week_start_date =  now - jdatetime.timedelta(days=4)
+        return self.filter(FK_Product__FK_Shop__FK_ShopManager=user, Factor_Products__PaymentStatus=True, FK_Product__FK_Shop__Slug=shop_slug,
+                            Factor_Products__OrderDate__gt=str(week_start_date)).aggregate(amont=Sum('FK_Product__Price'))
+
+
+
+
 # FactorPost (محصولات صورت حساب) Model
 class FactorPost(models.Model):
     ID=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
@@ -435,6 +466,7 @@ class FactorPost(models.Model):
     FK_AttrPrice=models.ManyToManyField(AttrPrice, verbose_name='ویژگی های انتخابی', related_name='attrPrice_Factor', blank=True)
     Description=models.TextField(verbose_name='توضیحات', blank=True, null=True)
     EndPrice=models.CharField(verbose_name='قیمت نهایی', max_length=15, default=0)
+    objects = FactorPostManager()
 
     def __str__(self):
         return "{} - {}".format(self.ID, self.FK_Product)
@@ -509,6 +541,15 @@ class FactorPost(models.Model):
     def product_image_thumbnail(self):
         return self.FK_Product.image_thumbnail_url
     @property
+    def jalali_prepare_date(self):
+        if self.FK_Product.PreparationDays:
+            date = self.Factor_Products.first().OrderDate + timedelta(days=self.FK_Product.PreparationDays)
+            prepare_date = jdatetime.date.fromgregorian(day = date.day, month = date.month, year = date.year)
+            prepare_date = prepare_date.strftime('%Y/%m/%d')
+        else:
+            prepare_date = None
+        return prepare_date
+    @property
     def id(self):
         return self.ID
     @property
@@ -532,6 +573,9 @@ class FactorPost(models.Model):
     @property
     def end_price(self):
         return self.EndPrice
+    @property
+    def product_status_value(self):
+        return self.get_status()
 
 
     # Ordering With DateCreate
@@ -541,6 +585,36 @@ class FactorPost(models.Model):
         verbose_name_plural = "محصول صورت حساب ها"
         
 #----------------------------------------------------------------------------------------------------------------------------------
+
+class FactorManager(models.Manager):
+    def uncompleted_user_factors(self, user):
+        return self.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) &
+                                     ~Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
+    def completed_user_factors(self, user):
+        return self.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) &
+                                     Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
+
+    def completed_user_shop_factors(self, user, shop_slug):
+        return self.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) &
+                                     Q(FK_FactorPost__FK_Product__FK_Shop__Slug=shop_slug) &
+                                     Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
+
+    def uncompleted_user_shop_factors(self, user, shop_slug):
+        return self.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) &
+                                     Q(FK_FactorPost__FK_Product__FK_Shop__Slug=shop_slug) &
+                                     ~Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
+    def unconfirmed_user_shop_factors(self, user, shop_slug):
+        return self.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) &
+                                    Q(FK_FactorPost__FK_Product__FK_Shop__Slug=shop_slug) &
+                                    Q(FK_FactorPost__ProductStatus='1'))
+    def get_user_factor(self, factor_id, user):
+        try:
+            return self.get(ID=factor_id, FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user)
+        except:
+            return None
+
+
+
 
 # Factor (صورت حساب) Model 
 class Factor(models.Model):
@@ -1162,6 +1236,8 @@ class Factor(models.Model):
     #     jalali_datetime =  jdatetime.datetime.fromgregorian(datetime=self.delivery_date)
     #     return jalali_datetime.strftime('%Y/%m/%d %H:%M')
 
+    objects = FactorManager()
+
     # Ordering With DateCreate
     class Meta:
         ordering = ('ID',)
@@ -1170,6 +1246,31 @@ class Factor(models.Model):
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
+class PostTrackingCodeManager(models.Manager):
+    pass
+
+class PostTrackingCode(models.Model):
+    class Meta:
+        verbose_name = 'بارکد پستی'
+        verbose_name_plural = 'بارکدهای پستی'
+    class PostTypes(models.TextChoices):
+        IRPOST = 'irpost', 'شرکت پست جمهوری اسلامی ایران'
+        TIPAX = 'tipax', 'تیپاکس'
+    class SendTypes(models.TextChoices):
+        IN_CITY = 'in_c', 'درون شهری'
+        NORMAL = 'norm', 'پست معمولی'
+        PAY_AT_DELIVER = 'pad', 'پس کرایه'
+    factor_post = models.ForeignKey(FactorPost, verbose_name='محصول', on_delete=models.CASCADE, related_name='barcodes')
+    barcode = models.CharField('بارکد', max_length=24, unique=True)
+    created_datetime = models.DateTimeField('تاریخ ایجاد بارکد', auto_now=False, auto_now_add=True)
+    post_price = models.DecimalField(verbose_name='هزینه ارسال', max_length=15, default='0', max_digits=8, decimal_places=0)
+    post_type = models.CharField('نوع پست', max_length=6, choices=PostTypes.choices, default=PostTypes.IRPOST)
+    send_type=models.CharField(verbose_name='وضعیت ارسال', max_length=4, choices=SendTypes.choices, default=SendTypes.NORMAL)
+    def __str__(self):
+        return self.barcode
+
+
+#----------------------------------------------------------------------------------------------------------------------------------
 # PostBarCode (بارکد) Model
 class PostBarCode (models.Model):
     FK_Factor=models.ForeignKey(Factor, on_delete=models.SET_NULL, verbose_name='شماره صورت حساب', related_name='Factor_PostBarCode', null=True)

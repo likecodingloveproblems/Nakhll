@@ -25,6 +25,9 @@ from django.utils.translation import ugettext_lazy as _
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
+
+OUTOFSTOCK_LIMIT_NUM = 5
+
 # Rename Method
 @deconstructible
 class PathAndRename():
@@ -585,6 +588,7 @@ class Shop(models.Model):
         default=list,
         blank=True,
         )
+    show_contact_info = models.BooleanField('نمایش اطلاعات تماس حجره', default=False)
 
     
     @property
@@ -628,8 +632,20 @@ class Shop(models.Model):
         return self.get_absolute_url
 
     @property
+    def description(self):
+        return self.Description
+
+    @property
     def image_thumbnail_url(self):
         return self.Image_thumbnail_url
+
+    @property
+    def sub_market(self):
+        return self.FK_SubMarket.all()
+
+    @property
+    def profile(self):
+        return self.FK_ShopManager.User_Profile
 
     def __str__(self):
         return "{}".format(self.Title)
@@ -732,8 +748,42 @@ class Shop(models.Model):
         verbose_name = "حجره"
         verbose_name_plural = "حجره ها"
 
-#----------------------------------------------------------------------------------------------------------------------------------
 
+#----------------------------------------------------------------------------------------------------------------------------------
+# ShopSocialMedia (شبکه‌های اجتماعی حجره) Model
+
+class ShopSocialMedia(models.Model):
+    class Meta:
+        verbose_name = 'شبکه اجتماعی حجره'
+        verbose_name_plural = 'شبکه‌های اجتماعی حجره'
+    def __str__(self):
+        return self.Shop.Slug
+    shop = models.OneToOneField(Shop, verbose_name='حجره', on_delete=models.CASCADE, related_name='social_media')
+    telegram = models.CharField('تلگرام', max_length=100, help_text='آی‌دی تلگرام بدون نام سایت', null=True, blank=True) 
+    instagram = models.CharField('اینستاگرام', max_length=100, help_text='آی‌دی اینستاگرام بدون نام سایت', null=True, blank=True) 
+
+#----------------------------------------------------------------------------------------------------------------------------------
+# ShopBankAccount (حساب‌های حجره) Model
+
+def iban_validator(value):
+    if not value.isdigit():
+        raise ValidationError(_(f'مقدار {value} باید فقط عدد باشد'))
+    if len(value) != 24:
+        raise ValidationError(_(f'مقدار {value} باید فقط 24 رقم باشد'))
+class ShopBankAccount(models.Model):
+    class Meta:
+        verbose_name = 'حساب بانکی حجره'
+        verbose_name_plural = 'حساب‌های حجره'
+    def __str__(self):
+        return self.Shop.Slug
+    shop = models.OneToOneField(Shop, verbose_name='حجره', on_delete=models.CASCADE, related_name='bank_account')
+    iban = models.CharField('شماره شبا', max_length=24, help_text='شماره شبا بدون IR', null=True, blank=True, validators=[iban_validator])
+    owner = models.CharField('صاحب حساب', max_length=100, null=True, blank=True)
+
+
+
+
+#----------------------------------------------------------------------------------------------------------------------------------
 # BankAccount (حساب بانکی) Model
 class BankAccount(models.Model):
     ID=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
@@ -883,11 +933,11 @@ class Attribute(models.Model):
 
 #----------------------------------------------------------------------------------------------------------------------------------
 class ProductManager(models.Manager):
-
+    FEW_HOURS_AGO = timezone.make_aware(datetime.datetime.now() - datetime.timedelta(hours=15))
     def get_most_discount_precentage_available_product(self):
         queryset = self.get_queryset()
         return queryset\
-            .filter(Publish=True, Available = True, Status__in=['1','2','3'])\
+            .filter(Publish=True, Available = True, Status__in=['1','2','3'],DateCreate__lt=self.FEW_HOURS_AGO)\
             .exclude(OldPrice=0)\
             .annotate(OldPrice_float=Cast(F('OldPrice'), FloatField()))\
             .annotate(Price_float=Cast(F('Price'), FloatField()))\
@@ -900,15 +950,13 @@ class ProductManager(models.Manager):
         return result[random_id]
 
     def get_last_created_products(self):
-        queryset = self.get_queryset()
-        return queryset\
-            .filter(Publish = True, Available = True, OldPrice = 0, Status__in = ['1', '2', '3'])\
+        return Product.objects\
+            .filter(Publish = True, Available = True, OldPrice = 0, Status__in = ['1', '2', '3'],DateCreate__lt=self.FEW_HOURS_AGO)\
                 .order_by('-DateCreate')[:12]
 
     def get_last_created_discounted_products(self):
-        queryset = self.get_queryset()
-        return queryset\
-            .filter(Publish = True, Available = True, Status__in = ['1', '2', '3'])\
+        return Product.objects\
+            .filter(Publish = True, Available = True, Status__in = ['1', '2', '3'],DateCreate__lt=self.FEW_HOURS_AGO)\
             .exclude(OldPrice=0)\
             .order_by('-DateCreate')[:16]
 
@@ -919,7 +967,8 @@ class ProductManager(models.Manager):
                 Publish = True,
                 Available = True,
                 OldPrice = 0,
-                Status__in = ['1', '2', '3']
+                Status__in = ['1', '2', '3'],
+                DateCreate__lt=self.FEW_HOURS_AGO
                 )\
             .order_by('?')[:16]
 
@@ -932,9 +981,9 @@ class ProductManager(models.Manager):
     def get_products_in_same_factor(self, id):
         queryset = self.get_queryset()
         try:
-            product = queryset.get(ID=id)
-            return queryset\
-                .filter(Factor_Product__Factor_Products__FK_FactorPost__FK_Product=product)\
+            product = Product.objects.get(ID=id)
+            return Product.objects\
+                .filter(Factor_Product__Factor_Products__FK_FactorPost__FK_Product=product,DateCreated__lt=self.FEW_HOURS_AGO)\
                 .exclude(ID = product.ID)\
                 .distinct()
         except:
@@ -944,14 +993,28 @@ class ProductManager(models.Manager):
         queryset = self.get_queryset()
         if order and order in ['total_sell', 'title']:
             try:
-                products = queryset.filter(FK_Shop=shop, FK_Shop__FK_ShopManager=user, Publish=True)
+                products = self.filter(FK_Shop=shop, FK_Shop__FK_ShopManager=user, Publish=True)
                 if order == 'total_sell':
                     return products.annotate(num=Count('Factor_Product')).order_by('-num')
                 elif order == 'title':
                     return products.order_by('Title')
             except:
                 pass
-        return queryset.filter(FK_Shop=shop, FK_Shop__FK_ShopManager=user)
+        return self.filter(FK_Shop=shop, FK_Shop__FK_ShopManager=user)
+    
+    def user_shop_active_products(self, user, shop_slug):
+        return self.filter(FK_Shop__FK_ShopManager=user, FK_Shop__Slug=shop_slug, Available=True, Publish=True)
+
+    def user_shop_inactive_products(self, user, shop_slug):
+        return self.filter(FK_Shop__FK_ShopManager=user, FK_Shop__Slug=shop_slug, Available=False, Publish=True)
+
+    def nearly_outofstock_products(self, user, shop_slug):
+        return self.filter(FK_Shop__FK_ShopManager=user, FK_Shop__Slug=shop_slug, Publish=True, Inventory__lt=OUTOFSTOCK_LIMIT_NUM)
+
+    def outofstock_products(self, user, shop_slug):
+        return self.filter(FK_Shop__FK_ShopManager=user, FK_Shop__Slug=shop_slug, Publish=True, Inventory__lt=1)
+
+
 
         
 # Product (محصول) Model
@@ -1114,6 +1177,10 @@ class Product(models.Model):
     @property
     def story(self):
         return self.Story
+
+    @property
+    def category(self):
+        return self.FK_Category.all()
 
     @property
     def post_range(self):
@@ -2364,6 +2431,7 @@ class Alert(models.Model):
         ('31', 'درخواست تسویه'),
         ('32', 'ثبت ویژگی انتخابی جدید'),
         ('33', 'حذف ویژگی انتخابی'),
+        ('34', 'ارسال سفارش‌های جداگانه'),
     )
     Part=models.CharField(verbose_name='بخش', choices=PART_TYPE, max_length=2, default='0')
     Slug=models.TextField(verbose_name='شناسه بخش', blank=True, null=True)
@@ -2495,3 +2563,27 @@ class City(models.Model):
         ordering = ('id',)   
         verbose_name = "شهر"
         verbose_name_plural = "شهر ها"
+
+
+class DashboardBannerManager(models.Manager):
+    def get_banners(self, banner_status):
+        return self.filter(publish_status=banner_status)
+class DashboardBanner(models.Model):
+    class Meta:
+        verbose_name = 'بنر داشبرد'
+        verbose_name_plural = 'بنرهای داشبرد'
+    class PublishStatuses(models.TextChoices):
+        PUBLISH = 'pub', 'منتشر شده'
+        PREVIEW = 'prv', 'پیش‌نمایش'
+    def __str__(self):
+        return self.image.name
+    
+    image = models.ImageField(verbose_name='عکس بنر', upload_to=PathAndRename('media/Pictures/Dashboard/Banner/'))
+    url = models.URLField(max_length=100, verbose_name='لینک بنر', null=True)
+    staff_user = models.ForeignKey(User, verbose_name='کارشناس', on_delete=models.SET_NULL, null=True, related_name='dashboard_banners')
+    created_datetime = models.DateTimeField(verbose_name='تاریخ ثبت', auto_now=False, auto_now_add=True)
+    publish_status = models.CharField(max_length=3, choices=PublishStatuses.choices, default=PublishStatuses.PUBLISH)
+    objects = DashboardBannerManager()
+
+
+

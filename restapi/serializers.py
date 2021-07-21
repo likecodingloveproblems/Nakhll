@@ -3,7 +3,7 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from nakhll_market.models import Profile , Product , Shop , SubMarket , Category , BankAccount , ShopBanner , Attribute , AttrProduct , AttrPrice , ProductBanner, PostRange , Message , User_Message_Status, OptinalAttribute, Details, State, BigCity, City
-from Payment.models import Campaign, Factor , Wallet , FactorPost , Transaction , PostBarCode , Coupon
+from Payment.models import Campaign, Factor , Wallet , FactorPost , Transaction , PostBarCode , Coupon, PostTrackingCode
 import re
 from rest_framework.exceptions import  ValidationError 
 from rest_framework.fields import CurrentUserDefault
@@ -231,15 +231,19 @@ class FactorPostSerializer(ModelSerializer):
 class SimpleFactorPostSerializer(ModelSerializer):
     # FK_Product = ProductTitleSerializer(read_only = True)
     product = SimpleProductSerializer(read_only = True)
+    barcodes = serializers.SlugRelatedField(slug_field='barcode', read_only=True, many=True)
     class Meta:
         model = FactorPost
         fields = [
             'product',
-            'ProductCount',
+            'product_count',
             'get_total_item_price',
-            'Description',
+            'description',
             'get_one_price',
-            'EndPrice',
+            'end_price',
+            'product_status',
+            'product_status_value',
+            'barcodes'
         ]
 
 
@@ -250,6 +254,7 @@ class FactorPostSummarySerializer(ModelSerializer):
         model = FactorPost
         fields = [
             'product_image_thumbnail',
+            'jalali_prepare_date',
         ]
 
 
@@ -310,6 +315,13 @@ class PostBarCodeSerializer(ModelSerializer):
             'bar_code',
             'post_price',
             'send_date',
+        ]
+
+class PostTrackingCodeWriteSerializer(ModelSerializer):
+    class Meta:
+        model = PostTrackingCode
+        fields = [
+             'barcode',
         ]
 
 

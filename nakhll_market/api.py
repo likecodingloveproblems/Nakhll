@@ -1,14 +1,18 @@
+from django.contrib.auth.models import User
+from django.http import response
 from django.http.response import Http404
+from django.shortcuts import get_object_or_404
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.exceptions import ValidationError
 from nakhll_market.models import (
-    AmazingProduct, Product, ProductBanner, Shop, Slider, Category, Market
+    Alert, AmazingProduct, Product, ProductBanner, Shop, Slider, Category, Market, State, BigCity, City, SubMarket
     )
 from nakhll_market.serializers import (
     AmazingProductSerializer, ProductDetailSerializer, ProductImagesSerializer,
-    ProductSerializer, ShopSerializer,SliderSerializer,
-    CategorySerializer, FullMarketSerializer, CreateShopSerializer,
-    ProductListSerializer, ProductCategorySerializer, ProductWriteSerializer,
+    ProductSerializer, ShopSerializer,SliderSerializer, ProductPriceWriteSerializer,
+    CategorySerializer, FullMarketSerializer, CreateShopSerializer, ProductInventoryWriteSerializer,
+    ProductListSerializer, ProductWriteSerializer, ShopAllSettingsSerializer,
+    ShopBankAccountSettingsSerializer, SocialMediaAccountSettingsSerializer, ProductSubMarketSerializer, SubMarketSerializer
     )
 from rest_framework import generics, routers, status, views, viewsets
 from rest_framework import permissions, filters, mixins
@@ -16,6 +20,8 @@ from django.db.models import Q, F, Count
 import random
 from nakhll.authentications import CsrfExemptSessionAuthentication
 from rest_framework.response import Response
+from django.utils.text import slugify
+from restapi.permissions import IsFactorOwner, IsProductOwner, IsShopOwner
 
 
 class SliderViewSet(viewsets.ReadOnlyModelViewSet):
@@ -93,12 +99,39 @@ class UserProductViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mix
     def get_queryset(self):
         queryset = Product.objects.filter(FK_Shop__FK_ShopManager=self.request.user).order_by('-DateCreate')
         return queryset
+
+    def generate_unique_slug(self, title):
+        ''' Generate new unique slug for Product Model 
+            NOTE: This fucntion should move to utils
+        '''
+        slug = slugify(title, allow_unicode=True)
+        counter = 1
+        new_slug = slug
+        while(Product.objects.filter(Slug=new_slug).exists()):
+            new_slug = f'{slug}_{counter}'
+            counter += 1
+        return new_slug
+
     def perform_create(self, serializer):
         data = serializer.validated_data
         shop = data.get('FK_Shop')
+        title = data.get('Title')
         if shop.FK_ShopManager != self.request.user:
             raise ValidationError({'details': 'Shop is not own by user'})
-        serializer.save()
+        slug = self.generate_unique_slug(title)
+        product_extra_fileds = {'Publish': True, 'Slug': slug}
+        # TODO: This behavior should be inhanced later
+        #! Check if price have dicount or not
+        #! Swap Price and OldPrice value if discount exists
+        #! Note that, request should use OldPrice as price with discount
+        old_price = data.get('OldPrice')
+        if old_price:
+            price = data.get('Price')
+            product = serializer.save(OldPrice=price, Price=old_price, **product_extra_fileds)
+        else:
+            product = serializer.save(**product_extra_fileds)
+        # TODO: Check if product created successfully and published and alerts created as well
+        Alert.objects.create(Part='7', FK_User=self.request.user, Slug=product.ID)
     permission_classes = [permissions.IsAuthenticated, ]
     authentication_classes = [CsrfExemptSessionAuthentication, ]
     lookup_field = 'Slug'
@@ -129,16 +162,13 @@ class MarketList(generics.ListAPIView):
 
 class GetShopWithSlug(views.APIView):
     permission_classes = [permissions.IsAuthenticated, ]
+    authentication_classes = [CsrfExemptSessionAuthentication, ]
 
     def get(self, request, format=None):
         shop_slug = request.GET.get('slug')
-        try:
-            shop = Shop.objects.get(Slug=shop_slug)
-        except Shop.DoesNotExist:
-            raise Http404
+        shop = get_object_or_404(Shop, Slug=shop_slug)
         serializer = ShopSerializer(shop)
         return Response(serializer.data)
-
 
 
 
@@ -149,14 +179,40 @@ class CreateShop(generics.CreateAPIView):
     authentication_classes = [CsrfExemptSessionAuthentication, ]
     def get_queryset(self):
         return Shop.objects.filter(FK_ShopManager=self.request.user)
-    def perform_create(self, serializer):
-        super().perform_create(serializer)
-        serializer.save(FK_ShopManager=self.request.user)
 
-                # TODO: Create Alerts
-                #
-                #
-                #
+    def generate_unique_slug(self, title):
+        ''' Generate new unique slug for Shop Model 
+            NOTE: This fucntion should move to utils
+        '''
+        slug = slugify(title, allow_unicode=True)
+        counter = 1
+        new_slug = slug
+        while(Shop.objects.filter(Slug=new_slug).exists()):
+            new_slug = f'{slug}_{counter}'
+            counter += 1
+        return new_slug
+
+    def perform_create(self, serializer):
+        # super().perform_create(serializer)
+        # TODO: REFACTOR: Replace state, bigcity and city id to string in front side,
+        # TODO: REFACTOR: and this gets do not need anymore
+        state_id = serializer.validated_data.get('State')
+        bigcity_id = serializer.validated_data.get('BigCity')
+        city_id = serializer.validated_data.get('City')
+        title = serializer.validated_data.get('Title')
+        slug = serializer.validated_data.get('Slug')
+        if not slug:
+            slug = self.generate_unique_slug(title)
+        elif Shop.objects.filter(Slug=slug).exists():
+            raise ValidationError({'details': 'شناسه حجره از قبل موجود است'})
+
+        state = get_object_or_404(State, id=state_id)
+        bigcity = get_object_or_404(BigCity, id=bigcity_id)
+        city = get_object_or_404(City, id=city_id)
+
+        new_shop = serializer.save(FK_ShopManager=self.request.user, Publish=True, 
+                                State=state.name, BigCity=bigcity.name, City=city.name, Slug=slug)
+        Alert.objects.create(Part='2', FK_User=self.request.user, Slug=new_shop.ID)
 
 
 
@@ -182,34 +238,29 @@ class CheckProductSlug(views.APIView):
             return Response({'product_slug': product.ID})
         except Product.DoesNotExist:
             return Response({'product_slug': None})
-class AddCategoryToProduct(views.APIView):
+class AddSubMarketToProduct(views.APIView):
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [CsrfExemptSessionAuthentication, ]
     def post(self, request, format=None):
         try:
-            serializer = ProductCategorySerializer(request.data)
-            product_slug = serializer.data.get('product')
-            categories_id = serializer.data.get('categories', [])
-            product = Product.objects.get(Slug=product_slug)
-            product_owner = product.FK_Shop.FK_ShopManager
-            if product_owner != request.user:
-                return Response({'details': 'Access Denied'}, status=status.HTTP_401_UNAUTHORIZED)
-            for category_id in categories_id:
-                category = Category.objects.get(id=category_id)
-                product.FK_Category.add(category)
+            serializer = ProductSubMarketSerializer(data=request.data)
+            if serializer.is_valid():
+                product_id = serializer.data.get('product')
+                submarket_ids = serializer.data.get('submarkets', [])
+                product = Product.objects.get(ID=product_id)
+                self.check_object_permissions(request, product)
+                for submarket_id in submarket_ids:
+                    submarket = SubMarket.objects.get(ID=submarket_id)
+                    submarket.Product_SubMarket.add(product)
 
-                # TODO: Create Alerts
-                #
-                #
-                #
+                # TODO: Check if created product alert display images and submarkets
+                # TODO: or I should create an alert for submarkets and images
 
-            return Response({'details': 'done'}, status=status.HTTP_200_OK)
+                return Response({'details': 'done'}, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'details': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
-    def get(self, request, format=None):
-        cats = Category.objects.all()
-        ser = CategorySerializer(cats, many=True)
-        return Response(ser.data)
 
 class AddImageToProduct(views.APIView):
     parser_classes = (MultiPartParser, FormParser)
@@ -219,12 +270,10 @@ class AddImageToProduct(views.APIView):
         try:
             serializer = ProductImagesSerializer(data=request.data)
             if serializer.is_valid() and 'images' in request.FILES:
-                product_slug = serializer.validated_data.get('product')
+                product_id = serializer.validated_data.get('product')
                 images = request.FILES.getlist('images')
-                product = Shop.objects.get(Slug=product_slug)
-                product_owner = product.FK_Shop.FK_ShopManager
-                if product_owner != request.user:
-                    return Response({'details': 'Access Denied'}, status=status.HTTP_401_UNAUTHORIZED)
+                product = Product.objects.get(ID=product_id)
+                self.check_object_permissions(request, product)
                 
                 # Save first image in product.NewImage
                 product_main_image = images[0]
@@ -232,16 +281,131 @@ class AddImageToProduct(views.APIView):
                 product.save()
 
                 # Save all images in product.Product_Banner
+                # Set Alert for each image
                 for image in images:
-                    ProductBanner.objects.create(FK_Product=product, Image=image)
+                    product_banner = ProductBanner.objects.create(FK_Product=product, Image=image)
+                    Alert.objects.create(Part='8', FK_User=request.user, Slug=product_banner.id)
 
-                # TODO: Create Alerts
-                #
-                #
-                #
 
                 return Response({'details': 'done'}, status=status.HTTP_200_OK)
-            return Response(serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'details': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
 
+
+class ShopMultipleUpdatePrice(views.APIView):
+    #TODO: Swap OldPrice and Price
+    permission_classes = [permissions.IsAuthenticated, ]
+    authentication_classes = [CsrfExemptSessionAuthentication, ]
+    def patch(self, request, format=None):
+        serializer = ProductPriceWriteSerializer(data=request.data, many=True)
+        user = request.user
+        if serializer.is_valid():
+            price_list = serializer.data
+            ready_for_update_products = []
+            for price_item in price_list:
+                try:
+                    product = Product.objects.get(Slug=price_item.get('Slug'))
+                    old_price = price_item.get('OldPrice')
+                    price = price_item.get('Price')
+                    if product.FK_Shop.FK_ShopManager == user:
+                        # TODO: This behavior should be inhanced later
+                        #! Check if price have dicount or not
+                        #! Swap Price and OldPrice value if discount exists
+                        #! Note that, request should use OldPrice as price with discount
+                        if old_price:
+                            product.OldPrice = price
+                            product.Price = old_price
+                        else:
+                            product.OldPrice = old_price
+                            product.Price = price
+                        ready_for_update_products.append(product)
+
+                except:
+                    pass
+            Product.objects.bulk_update(ready_for_update_products, ['Price', 'OldPrice'])
+            return Response({'details': 'done'})
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ShopMultipleUpdateInventory(views.APIView):
+    permission_classes = [permissions.IsAuthenticated, ]
+    authentication_classes = [CsrfExemptSessionAuthentication, ]
+    def patch(self, request, format=None):
+        serializer = ProductInventoryWriteSerializer(data=request.data, many=True)
+        user = request.user
+        # user = User.objects.get(id=72)
+        if serializer.is_valid():
+            price_list = serializer.data
+            ready_for_update_products = []
+            for inventory_item in price_list:
+                try:
+                    product = Product.objects.get(Slug=inventory_item.get('Slug'))
+                    inventory = inventory_item.get('Inventory')
+                    if product.FK_Shop.FK_ShopManager == user:
+                        product.Inventory = inventory
+                        ready_for_update_products.append(product)
+                except:
+                    pass
+            Product.objects.bulk_update(ready_for_update_products, ['Inventory'])
+            return Response({'details': 'done'})
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class AllShopSettings(views.APIView):
+    # TODO: Check this class entirely
+    permission_classes = [permissions.IsAuthenticated, IsShopOwner]
+    authentication_classes = [CsrfExemptSessionAuthentication,]
+    def get_object(self, shop_slug, user):
+        return get_object_or_404(Shop, Slug=shop_slug)
+    def get(self, request, shop_slug, format=None):
+        user = request.user
+        shop = self.get_object(shop_slug, user)
+        self.check_object_permissions(request, shop)
+        serializer = ShopAllSettingsSerializer(shop)
+        return Response(serializer.data)
+
+    def put(self, request, shop_slug, format=None):
+        user = request.user
+        shop = self.get_object(shop_slug, user)
+        self.check_object_permissions(request, shop)
+        serializer = ShopAllSettingsSerializer(data=request.data, instance=shop)
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data)
+
+class BankAccountShopSettings(views.APIView):
+    # TODO: Check this class entirely
+    permission_classes = [permissions.IsAuthenticated, ]
+    authentication_classes = [CsrfExemptSessionAuthentication,]
+    def get_object(self, shop_slug, user):
+        return get_object_or_404(Shop, Slug=shop_slug)
+    def put(self, request, shop_slug, format=None):
+        user = request.user
+        shop = self.get_object(shop_slug, user)
+        self.check_object_permissions(request, shop)
+        serializer = ShopBankAccountSettingsSerializer(data=request.data, instance=shop)
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data)
+
+class SocialMediaShopSettings(views.APIView):
+    # TODO: Check this class entirely
+    permission_classes = [permissions.IsAuthenticated, ]
+    authentication_classes = [CsrfExemptSessionAuthentication,]
+    def get_object(self, shop_slug, user):
+        return get_object_or_404(Shop, Slug=shop_slug)
+    def put(self, request, shop_slug, format=None):
+        user = request.user
+        shop = self.get_object(shop_slug, user)
+        self.check_object_permissions(request, shop)
+        serializer = SocialMediaAccountSettingsSerializer(data=request.data, instance=shop)
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data)
