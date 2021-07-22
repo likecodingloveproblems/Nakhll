@@ -539,7 +539,7 @@ class Shop(models.Model):
     FK_ShopManager=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='حجره دار', related_name='ShopManager', null=True)
     Title=models.CharField(max_length=100, verbose_name='عنوان حجره', db_index=True)
     FK_SubMarket=models.ManyToManyField(SubMarket, verbose_name='نام راسته', related_name='FatherSubMarket', blank=True)
-    Slug=models.SlugField(verbose_name='شناسه حجره', unique=True, db_index=True)
+    Slug=models.SlugField(verbose_name='شناسه حجره', unique=True, db_index=True, allow_unicode=True)
     Description=models.TextField(verbose_name='درباره حجره', blank=True)
     Image=models.ImageField(verbose_name='عکس حجره', upload_to=PathAndRename('media/Pictures/Markets/SubMarkets/Shops/'), help_text='عکس حجره را اینجا وارد کنید', default='static/Pictures/DefaultShop.png', null=True)
     Image_thumbnail = ImageSpecField(source='Image',
@@ -1043,7 +1043,7 @@ class Product(models.Model):
     objects = ProductManager()
     ID=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     Title=models.CharField(max_length=200, verbose_name='نام محصول', db_index=True)
-    Slug=models.SlugField(verbose_name='شناسه محصول', unique=True, db_index=True)
+    Slug=models.SlugField(verbose_name='شناسه محصول', unique=True, db_index=True, allow_unicode=True)
     FK_SubMarket=models.ForeignKey(SubMarket, verbose_name='نام راسته', related_name='Product_SubMarket', null=True, on_delete=models.SET_NULL)
     Story=models.TextField(verbose_name='داستان محصول', blank=True)
     Description=models.TextField(verbose_name='درباره محصول', blank=True)
