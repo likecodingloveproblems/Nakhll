@@ -178,6 +178,7 @@ class ProductListSerializer(serializers.ModelSerializer):
             'sub_market',
             'banners',
             'image_thumbnail_url',
+            # 'Image',
             'price',
             'shop',
             'old_price',
@@ -193,6 +194,12 @@ class ProductListSerializer(serializers.ModelSerializer):
             'publish',
             'available'
         ]
+    # Image = serializers.SerializerMethodField(method_name='get_absolute_image_url')
+    # def get_absolute_image_url(self, product):
+        # request = self.context.get('request')
+        # photo_url = product.Image.url if product.Image else None
+        # return request.build_absolute_uri(photo_url)
+
 class ProductWriteSerializer(serializers.ModelSerializer):
     FK_Shop = serializers.SlugRelatedField(slug_field='Slug', many=False, read_only=False, queryset=Shop.objects.all())
     class Meta:

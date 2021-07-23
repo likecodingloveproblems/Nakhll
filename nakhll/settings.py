@@ -325,3 +325,5 @@ CORS_ALLOW_HEADERS = os.environ.get('CORS_ALLOW_HEADERS',
                          dnt user-agent x-csrftoken x-requested-with').split(' ')
 CORS_ALLOW_METHODS = os.environ.get('CORS_ALLOW_METHODS',
                         'DELETE GET OPTIONS PATCH POST PUT').split(' ')
+
+DOMAIN_NAME = 'https://nakhll.com/'
