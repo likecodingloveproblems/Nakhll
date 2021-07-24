@@ -1,3 +1,4 @@
+from nakhll_market.serializer_fields import Base64ImageField
 from restapi.serializers import ProfileSerializer, UserDetailSerializer
 from django.contrib.auth.models import User
 from django.db.models import fields
@@ -250,7 +251,9 @@ class ProductSubMarketSerializer(serializers.Serializer):
 
 class ProductImagesSerializer(serializers.Serializer):
     product = serializers.UUIDField()
-    images = serializers.ImageField()
+    images = serializers.ListField(
+        child=Base64ImageField(max_length=None, use_url=True)
+    )
 
 class ShopFullSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer(read_only=True, many=False)
