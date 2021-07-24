@@ -134,7 +134,7 @@ class UserProductViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mix
         Alert.objects.create(Part='7', FK_User=self.request.user, Slug=product.ID)
     permission_classes = [permissions.IsAuthenticated, ]
     authentication_classes = [CsrfExemptSessionAuthentication, ]
-    lookup_field = 'Slug'
+    lookup_field = 'ID'
 
 
 class ProductFullDetailsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -263,15 +263,16 @@ class AddSubMarketToProduct(views.APIView):
             return Response({'details': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
 
 class AddImageToProduct(views.APIView):
-    parser_classes = (MultiPartParser, FormParser)
+    # parser_classes = (MultiPartParser, FormParser)
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [CsrfExemptSessionAuthentication, ]
     def post(self, request, format=None):
         try:
             serializer = ProductImagesSerializer(data=request.data)
-            if serializer.is_valid() and 'images' in request.FILES:
+            # if serializer.is_valid() and 'images' in request.FILES:
+            if serializer.is_valid():
                 product_id = serializer.validated_data.get('product')
-                images = request.FILES.getlist('images')
+                images = serializer.validated_data.get('images')
                 product = Product.objects.get(ID=product_id)
                 self.check_object_permissions(request, product)
                 

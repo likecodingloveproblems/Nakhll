@@ -12,6 +12,7 @@ from django.contrib.auth.models import User,Group
 from django.contrib.auth.models import (AbstractUser)
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
+from django.conf import settings
 from django.utils.deconstruct import deconstructible
 from django.utils import timezone
 import uuid, random, string, os, time
@@ -27,6 +28,11 @@ from imagekit.processors import ResizeToFill
 
 
 OUTOFSTOCK_LIMIT_NUM = 5
+def attach_domain(url):
+    domain = settings.DOMAIN_NAME
+    # Cut domain trailing slash
+    domain = domain if domain[-1] != '/' else domain[:-1]
+    return domain + url
 
 # Rename Method
 @deconstructible
@@ -114,7 +120,7 @@ class Market(models.Model):
 
     @property
     def image(self):
-        return self.Image.url
+        return attach_domain(self.Image.url)
 
     @property
     def slug(self):
@@ -379,7 +385,7 @@ class Category(models.Model):
         try:
             i = self.Image_thumbnail.url
             url = self.Image_thumbnail.url
-            return url
+            return attach_domain(url)
         except:
             url ="https://nakhll.com/media/Pictures/default.jpg"
             return url
@@ -539,7 +545,7 @@ class Shop(models.Model):
     FK_ShopManager=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='حجره دار', related_name='ShopManager', null=True)
     Title=models.CharField(max_length=100, verbose_name='عنوان حجره', db_index=True)
     FK_SubMarket=models.ManyToManyField(SubMarket, verbose_name='نام راسته', related_name='FatherSubMarket', blank=True)
-    Slug=models.SlugField(verbose_name='شناسه حجره', unique=True, db_index=True)
+    Slug=models.SlugField(verbose_name='شناسه حجره', unique=True, db_index=True, allow_unicode=True)
     Description=models.TextField(verbose_name='درباره حجره', blank=True)
     Image=models.ImageField(verbose_name='عکس حجره', upload_to=PathAndRename('media/Pictures/Markets/SubMarkets/Shops/'), help_text='عکس حجره را اینجا وارد کنید', default='static/Pictures/DefaultShop.png', null=True)
     Image_thumbnail = ImageSpecField(source='Image',
@@ -659,7 +665,7 @@ class Shop(models.Model):
         try:
             i = self.Image_thumbnail.url
             url = self.Image_thumbnail.url
-            return url
+            return attach_domain(url)
         except:
             url ="https://nakhll.com/media/Pictures/default.jpg"
             return url
@@ -699,7 +705,7 @@ class Shop(models.Model):
         try:
             i = self.Image_thumbnail.url
             url = self.Image_thumbnail.url
-            return url
+            return attach_domain(url)
         except:
             url ="https://nakhll.com/media/Pictures/default.jpg"
             return url
@@ -842,7 +848,7 @@ class ShopBanner (models.Model):
         try:
             i = self.Image_thumbnail.url
             url = self.Image_thumbnail.url
-            return url
+            return attach_domain(url)
         except:
             url ="static/images/banner_default.jpg"
             return url
@@ -1046,7 +1052,7 @@ class Product(models.Model):
     objects = ProductManager()
     ID=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     Title=models.CharField(max_length=200, verbose_name='نام محصول', db_index=True)
-    Slug=models.SlugField(verbose_name='شناسه محصول', unique=True, db_index=True)
+    Slug=models.SlugField(verbose_name='شناسه محصول', unique=True, db_index=True, allow_unicode=True)
     FK_SubMarket=models.ForeignKey(SubMarket, verbose_name='نام راسته', related_name='Product_SubMarket', null=True, on_delete=models.SET_NULL)
     Story=models.TextField(verbose_name='داستان محصول', blank=True)
     Description=models.TextField(verbose_name='درباره محصول', blank=True)
@@ -1364,7 +1370,7 @@ class Product(models.Model):
 
     def get_image(self):
         try:
-            return self.Image.url
+            return attach_domain(self.Image.url)
         except:
             return self.defautl_image_url()
 
@@ -1374,7 +1380,7 @@ class Product(models.Model):
     def Image_thumbnail_url(self):
         try:
             url = self.Image_thumbnail.url
-            return url
+            return attach_domain(url)
         except:
             url ="https://nakhll.com/media/Pictures/default.jpg"
             return url
@@ -1383,7 +1389,7 @@ class Product(models.Model):
         try:
             i = self.Image_medium.url
             url = self.Image_medium.url
-            return url
+            return attach_domain(url)
         except:
             url ="https://nakhll.com/media/Pictures/default.jpg"
             return url
@@ -1690,7 +1696,7 @@ class ProductBanner (models.Model):
         try:
             i = self.Image_medium.url
             url = self.Image_medium.url
-            return url
+            return attach_domain(url)
         except:
             url ="https://nakhll.com/media/Pictures/default.jpg"
             return url
@@ -2019,7 +2025,7 @@ class Profile(models.Model):
         try:
             i = self.Image_thumbnail.url
             url = self.Image_thumbnail.url
-            return url
+            return attach_domain(url)
         except:
             url = "https://nakhll.com/media/Pictures/avatar.png"
             return url
@@ -2028,7 +2034,7 @@ class Profile(models.Model):
         try:
             i = self.ImageNationalCard.url
             url = self.ImageNationalCard.url
-            return url
+            return attach_domain(url)
         except:
             url = "https://nakhll.com/static-django/images/image_upload.jpg"
             return url
@@ -2142,10 +2148,10 @@ class Profile(models.Model):
         return self.Bio
     @property
     def image(self):
-        return self.Image.url
+        return attach_domain(self.Image.url)
     @property
     def image_national_card(self):
-        return self.ImageNationalCard.url if self.ImageNationalCard else None
+        return attach_domain(self.ImageNationalCard.url) if self.ImageNationalCard else None
     @property
     def user_reference_code(self):
         return self.UserReferenceCode
@@ -2265,7 +2271,7 @@ class Slider(models.Model):
 
     def get_image(self):
         try:
-            return self.Image.url
+            return attach_domain(self.Image.url)
         except:
             return None
 
