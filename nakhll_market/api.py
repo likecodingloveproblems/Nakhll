@@ -134,7 +134,7 @@ class UserProductViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mix
         Alert.objects.create(Part='7', FK_User=self.request.user, Slug=product.ID)
     permission_classes = [permissions.IsAuthenticated, ]
     authentication_classes = [CsrfExemptSessionAuthentication, ]
-    lookup_field = 'Slug'
+    lookup_field = 'ID'
 
 
 class ProductFullDetailsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
