@@ -124,12 +124,13 @@ class UserProductViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mix
         #! Check if price have dicount or not
         #! Swap Price and OldPrice value if discount exists
         #! Note that, request should use OldPrice as price with discount
-        old_price = data.get('OldPrice')
+        # Convert price and old price from Toman to Rial to store in DB
+        old_price = data.get('OldPrice', 0) * 10
+        price = data.get('Price', 0) * 10
         if old_price:
-            price = data.get('Price')
             product = serializer.save(OldPrice=price, Price=old_price, **product_extra_fileds)
         else:
-            product = serializer.save(**product_extra_fileds)
+            product = serializer.save(OldPrice=old_price, Price=price, **product_extra_fileds)
         # TODO: Check if product created successfully and published and alerts created as well
         Alert.objects.create(Part='6', FK_User=self.request.user, Slug=product.ID)
     permission_classes = [permissions.IsAuthenticated, ]
@@ -278,7 +279,7 @@ class AddImageToProduct(views.APIView):
                 
                 # Save first image in product.NewImage
                 product_main_image = images[0]
-                product.NewImage = product_main_image
+                product.Image = product_main_image
                 product.save()
 
                 # Save all images in product.Product_Banner
