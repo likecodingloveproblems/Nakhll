@@ -589,24 +589,24 @@ class FactorPost(models.Model):
 class FactorManager(models.Manager):
     def uncompleted_user_factors(self, user):
         return self.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) & Q(PaymentStatus=True) &
-                            ~Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
+                            ~Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5))).order_by('-OrderDate')
     def completed_user_factors(self, user):
         return self.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) & Q(PaymentStatus=True) &
-                            Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
+                            Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5))).order_by('-OrderDate')
 
     def completed_user_shop_factors(self, user, shop_slug):
         return self.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) &
                             Q(FK_FactorPost__FK_Product__FK_Shop__Slug=shop_slug) & Q(PaymentStatus=True) &
-                            Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
+                            Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5))).order_by('-OrderDate')
 
     def uncompleted_user_shop_factors(self, user, shop_slug):
         return self.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) &
                             Q(FK_FactorPost__FK_Product__FK_Shop__Slug=shop_slug) & Q(PaymentStatus=True) &
-                            ~Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
+                            ~Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5))).order_by('-OrderDate')
     def unconfirmed_user_shop_factors(self, user, shop_slug):
         return self.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) &
                                     Q(FK_FactorPost__FK_Product__FK_Shop__Slug=shop_slug) &
-                                    Q(FK_FactorPost__ProductStatus='1') & Q(PaymentStatus=True))
+                                    Q(FK_FactorPost__ProductStatus='1') & Q(PaymentStatus=True)).order_by('-OrderDate')
     def get_user_factor(self, factor_id, user):
         try:
             return self.get(ID=factor_id, FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user)
