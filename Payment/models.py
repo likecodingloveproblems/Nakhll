@@ -588,25 +588,25 @@ class FactorPost(models.Model):
 
 class FactorManager(models.Manager):
     def uncompleted_user_factors(self, user):
-        return self.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) &
-                                     ~Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
+        return self.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) & Q(PaymentStatus=True) &
+                            ~Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
     def completed_user_factors(self, user):
-        return self.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) &
-                                     Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
+        return self.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) & Q(PaymentStatus=True) &
+                            Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
 
     def completed_user_shop_factors(self, user, shop_slug):
         return self.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) &
-                                     Q(FK_FactorPost__FK_Product__FK_Shop__Slug=shop_slug) &
-                                     Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
+                            Q(FK_FactorPost__FK_Product__FK_Shop__Slug=shop_slug) & Q(PaymentStatus=True) &
+                            Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
 
     def uncompleted_user_shop_factors(self, user, shop_slug):
         return self.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) &
-                                     Q(FK_FactorPost__FK_Product__FK_Shop__Slug=shop_slug) &
-                                     ~Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
+                            Q(FK_FactorPost__FK_Product__FK_Shop__Slug=shop_slug) & Q(PaymentStatus=True) &
+                            ~Q(Q(OrderStatus=0) | Q(OrderStatus=4) | Q(OrderStatus=5)))
     def unconfirmed_user_shop_factors(self, user, shop_slug):
         return self.filter(Q(FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user) &
                                     Q(FK_FactorPost__FK_Product__FK_Shop__Slug=shop_slug) &
-                                    Q(FK_FactorPost__ProductStatus='1'))
+                                    Q(FK_FactorPost__ProductStatus='1') & Q(PaymentStatus=True))
     def get_user_factor(self, factor_id, user):
         try:
             return self.get(ID=factor_id, FK_FactorPost__FK_Product__FK_Shop__FK_ShopManager=user)
