@@ -654,6 +654,10 @@ def add_user_bank_account_info(request):
 
 # Add New Shop In Shop-Manage
 def add_new_shop(request):
+    # Redirect to new NextJS panel
+    # Other codes after this return will not work
+    # and should be cleaned in future
+    return redirect('/fp/store/create/')
     # Check User Status
     if request.user.is_authenticated:
         if not (request.user.first_name and request.user.last_name):
