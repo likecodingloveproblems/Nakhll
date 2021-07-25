@@ -104,7 +104,7 @@ urlpatterns = [
     # Change Shop Banner Publish Status Path
     path('management/content/change-shop-banner-publish-status/<int:id>/', management_content_views.Change_Shop_Banner_Publish_Status, name='Change_Shop_Banner_Publish_Status'),
     # Show Product Info Path
-    path('management/content/show-product-info/<slug:Product_Slug>/', management_content_views.Show_Product_Info, name='Show_Product_Info'),
+    path('management/content/show-product-info/<Product_Slug>/', management_content_views.Show_Product_Info, name='Show_Product_Info'),
     # Change Product Banner Seen Status Path
     path('management/content/change-product-banner-seen-status/<int:id>/', management_content_views.Change_Product_Banner_Seen_Status, name='Change_Product_Banner_Seen_Status'),
     # Change Product Banner Publish Status Path
@@ -167,11 +167,11 @@ urlpatterns = [
 
     # ---------------------------------------------- Add Comment Section --------------------------------------------
     # Add New Comment In Product Path
-    path('comment/product/add-new/<slug:this_product>', views.AddNewCommentInProduct, name='AddNewProductComment'),
+    path('comment/product/add-new/<this_product>', views.AddNewCommentInProduct, name='AddNewProductComment'),
     # Add Replay Comment In Product Path
     path('comment/product/add-replay/<int:id>', views.AddReplayCommentInProduct, name='AddReplayProductComment'),
     # Add New Comment In Shop Path
-    path('comment/shop/add-new/<slug:this_shop>', views.AddNewCommentInShop, name='AddNewShopComment'),
+    path('comment/shop/add-new/<this_shop>', views.AddNewCommentInShop, name='AddNewShopComment'),
     # Add Replay Comment In Shop Path
     path('comment/shop/add-replay/<int:id>', views.AddReplayCommentInShop, name='AddReplayShopComment'),
     # ------------------------------------------------------ End -----------------------------------------------------
@@ -182,7 +182,7 @@ urlpatterns = [
     
     # ---------------------------------------------- Add Review Section ----------------------------------------------
     # Add New Review In Product Path
-    path('review/product/add-new/<slug:this_product>', views.AddNewReviewInProduct, name='AddNewProductReview'),
+    path('review/product/add-new/<this_product>', views.AddNewReviewInProduct, name='AddNewProductReview'),
     # ------------------------------------------------------ End -----------------------------------------------------
 
 
@@ -200,21 +200,21 @@ urlpatterns = [
     # Show Market and SubMarket path
     path('markets/', views.market, name='Markets'),
     # Submarket Path
-    path('markets/submarkets/<slug:submarket_slug>/', views.submarket, name='SubMarkets'),
+    path('markets/submarkets/<submarket_slug>/', views.submarket, name='SubMarkets'),
     # Category Path
     path('category/<str:slug>/<str:status>/<str:delta_price>/', views.category, name='show_category_page'),
     # Shop Detail
-    path('<slug:shop_slug>/', views.ShopsDetail, name='ShopsDetail'),
-    path('<slug:shop_slug>/redirect/<str:msg>/', views.ShopsDetail, name='Re_ShopsDetail'),
+    path('<shop_slug>/', views.ShopsDetail, name='ShopsDetail'),
+    path('<shop_slug>/redirect/<str:msg>/', views.ShopsDetail, name='Re_ShopsDetail'),
     # Product Path
-    path('product/<slug:shop_slug>/<slug:product_slug>/', views.ProductsDetail, name='ProductsDetail'),
-    path('product/<slug:shop_slug>/<slug:product_slug>/<str:status>/<str:msg>/', views.ProductsDetail, name='Re_ProductsDetail'),
+    path('product/<shop_slug>/<product_slug>/', views.ProductsDetail, name='ProductsDetail'),
+    path('product/<shop_slug>/<product_slug>/<str:status>/<str:msg>/', views.ProductsDetail, name='Re_ProductsDetail'),
     # Product Comment Like
     path('product/like/<int:id>/<int:type>/', views.ContentLike, name='ProductLike'),
     # Shop Comment Like
     path('shop/like/<int:id>', views.ShopCommentLike, name='ShopCommentLike'),
     # Tag Path
-    path('search/tag/<slug:tag_slug>/', views.TagDetail, name='TagDetail'),
+    path('search/tag/<tag_slug>/', views.TagDetail, name='TagDetail'),
     # Add New Comment Path
     re_path(r'^product/(?P<shop_slug>[-\w]+)/(?P<product_slug>[-\w]+)/add/comment/$', views.TagDetail, name='AddNewPRoductComment'),
     # Show All Shops
@@ -295,7 +295,7 @@ urlpatterns = [
     # Add New Product
     path('profile/shop-manager/add/product', profileviews.add_new_product, name='Shop_Manager_AddNewProduct'),
     # Edit Product Page
-    path('profile/shop-manager/edit/product/<slug:product_slug>/', profileviews.edit_product, name='Shop_Manager_EditProduct'),
+    path('profile/shop-manager/edit/product/<product_slug>/', profileviews.edit_product, name='Shop_Manager_EditProduct'),
     # Edit Product Info In Shop Managment
     # path('profile/shop-manager/edit/product/<slug:product_slug>', profileviews.EditeProduct, name='EditProduct'),
     # Show Product Details Page
@@ -306,24 +306,24 @@ urlpatterns = [
 
     # -----Product Banner Section-------
     # Add New Product Banner
-    path('profile/product/banner/add/<slug:product_slug>', profileviews.add_to_product_gallery, name='Shop_Manager_AddProductBanner'),
+    path('profile/product/banner/add/<product_slug>', profileviews.add_to_product_gallery, name='Shop_Manager_AddProductBanner'),
     # Delete Product Banner
     path('profile/product/banner/delete/<int:banner_id>', profileviews.delete_product_banner, name='DeleteProductBanner'),
     # Edit Product Banner
     path('profile/product/banner/edite/<int:banner_id>', profileviews.edit_product_banner, name='EditeProductBanner'),
     # Product Galery
-    path('profile/shop-manager/product-banner-list/<slug:product_slug>/', profileviews.show_product_gallery, name='Shop_Manager_ProductBannerList'),
+    path('profile/shop-manager/product-banner-list/<product_slug>/', profileviews.show_product_gallery, name='Shop_Manager_ProductBannerList'),
     # Change Status Shop Banner
     path('profile/shops/change_banner_status/<int:banner_id>', profileviews.change_product_banner_status, name='ChangeProductBannerStatus'),
     # -----End Product Banner Section-------
 
     # --------- Product Attribute -----------
     # Add Product Attribute Page
-    path('profile/shop-manager/add/product-attribute/<slug:product_slug>', profileviews.add_product_attribute, name='Shop_Manager_AddProductAttribute'),
+    path('profile/shop-manager/add/product-attribute/<product_slug>', profileviews.add_product_attribute, name='Shop_Manager_AddProductAttribute'),
     # Product Attribute List
-    path('profile/shop-manager/product-attribute-list/<slug:product_slug>/', profileviews.product_attribute_list, name='Shop_Manager_ProductAttributeList'),
+    path('profile/shop-manager/product-attribute-list/<product_slug>/', profileviews.product_attribute_list, name='Shop_Manager_ProductAttributeList'),
     # Add New Attribute
-    path('profile/shop-manager/add-new-attribute/<slug:product_slug>', profileviews.add_new_attribute, name='AddAttribute'),
+    path('profile/shop-manager/add-new-attribute/<product_slug>', profileviews.add_new_attribute, name='AddAttribute'),
     # Delete Attribute
     path('profile/shop-manager/delete-attribute/<int:attr_id>', profileviews.delete_product_attribute, name='Shop_Manager_DeleteAttribute'),
     # ------End Product Attribute------
@@ -331,9 +331,9 @@ urlpatterns = [
 
     # ---------- Product Attribute Price ---------
     # Add Attribute Price Page
-    path('profile/shop-manager/add-product-price-attribute/<slug:product_slug>', profileviews.add_product_attribute_price, name='Shop_Manager_ProductPriceAttribute'),
+    path('profile/shop-manager/add-product-price-attribute/<product_slug>', profileviews.add_product_attribute_price, name='Shop_Manager_ProductPriceAttribute'),
     # Attribute Price List
-    path('profile/shop-manager/product-price-attribute-list/<slug:product_slug>/', profileviews.product_attribute_price_list, name='Shop_Manager_ProductPriceAttributeList'),
+    path('profile/shop-manager/product-price-attribute-list/<product_slug>/', profileviews.product_attribute_price_list, name='Shop_Manager_ProductPriceAttributeList'),
     # Delete Attribute Price
     path('profile/shops/delete-price-attribute/<int:id>', profileviews.delete_product_attribute_price, name='DeleteAttributePrice'),
     # Change Attribute Price Status
@@ -345,15 +345,15 @@ urlpatterns = [
     # Add New Shop
     path('profile/shop-manager/add/shop', profileviews.add_new_shop, name='Shop_Manager_AddNewShop'),
     # Edit Shop Info In Shop Managment
-    path('profile/shop-manager/edit/shop/<slug:shop_slug>', profileviews.edit_shop_info, name='Shop_Manager_EditShop'),
+    path('profile/shop-manager/edit/shop/<shop_slug>', profileviews.edit_shop_info, name='Shop_Manager_EditShop'),
     # --------------- End --------------------
 
    
    # ---------------- Shop Banner -----------------
     # Add Shop Banner Page
-    path('profile/shop-manager/add/shop-banner/<slug:shop_slug>', profileviews.add_shop_banner, name='Shop_Manager_AddShopBanner'),
+    path('profile/shop-manager/add/shop-banner/<shop_slug>', profileviews.add_shop_banner, name='Shop_Manager_AddShopBanner'),
     # Shop Banner List
-    path('profile/shop-manager/shop-banner-list/<slug:shop_slug>/', profileviews.shop_banner_list, name='Shop_Manager_ShopBannerList'),
+    path('profile/shop-manager/shop-banner-list/<shop_slug>/', profileviews.shop_banner_list, name='Shop_Manager_ShopBannerList'),
     # Edit Shop Banner Info
     path('profile/shop-manager/edit/shop-banner/<int:banner_id>', profileviews.edit_shop_banner, name='Shop_Manager_EditShopBanner'),
     # Delete Shop Banner
