@@ -967,8 +967,8 @@ class ProductManager(models.Manager):
             .order_by('-DateCreate')[:16]
 
     def get_random_products(self):
-
-        return Product.objects\
+        queryset = self.get_queryset()
+        return queryset\
             .filter(
                 Publish = True,
                 Available = True,
@@ -979,11 +979,13 @@ class ProductManager(models.Manager):
             .order_by('?')[:16]
 
     def get_most_discount_precentage_products(self):
-        return Product.objects\
+        queryset = self.get_queryset()
+        return queryset\
             .get_most_discount_precentage_available_product()\
             .order_by('?')[:15]
 
     def get_products_in_same_factor(self, id):
+        queryset = self.get_queryset()
         try:
             product = Product.objects.get(ID=id)
             return Product.objects\
@@ -994,6 +996,7 @@ class ProductManager(models.Manager):
             return None
 
     def get_user_shop_products(self, user, shop, order=None):
+        queryset = self.get_queryset()
         if order and order in ['total_sell', 'title']:
             try:
                 products = self.filter(FK_Shop=shop, FK_Shop__FK_ShopManager=user, Publish=True)

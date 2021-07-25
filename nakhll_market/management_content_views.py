@@ -78,7 +78,7 @@ def baseData(request, activeSidebarMenu):
         {'id':'transaction', 'name':'تراکنش ها', 'url':reverse('nakhll_market:Transaction'), 'class':'fad fa-clipboard-list', 'isActive':False, 'staffOnly':False},
         {'id':'factor', 'name':' صورت حساب ها', 'url':reverse('nakhll_market:Factor'), 'class':'fas fa-file-invoice-dollar', 'isActive':False, 'staffOnly':False},
         {'id':'ticketing', 'name':'پشتیبانی', 'url':reverse('nakhll_market:Ticketing'), 'class':'fad fa-user-headset', 'isActive':False, 'staffOnly':False},
-        {'id':'userShop', 'name':'مدیریت حجره', 'url':reverse('nakhll_market:UserShops'), 'class':'fas fa-store', 'isActive':False, 'staffOnly':False},
+        {'id':'userShop', 'name':'مدیریت حجره', 'url':'/fp', 'class':'fas fa-store', 'isActive':False, 'staffOnly':False},
         {'id':'review', 'name':'نقدها و نظرات', 'url':reverse('nakhll_market:Review'), 'class':'fad fa-comments-alt', 'isActive':False, 'staffOnly':False},
         {'id':'alert', 'name':'هشدار ها', 'url':reverse('nakhll_market:Alert'), 'class':'fas fa-bell', 'isActive':False, 'staffOnly':True},
         {'id':'allUser', 'name':'کاربران', 'url':reverse('nakhll_market:Show_All_User_Info'), 'class':'fas fa-users', 'isActive':False, 'staffOnly':True},

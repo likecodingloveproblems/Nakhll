@@ -912,15 +912,30 @@
                                             <span class="price-prod">قیمت : <span> ریال </span> <span class="spanPrice" id="mainprice"> {{Product.Price|currency}} </span></>
 
                                             <div class="input-group number-spinner add-to-card-div">
-                                                
-                                                ‍‍`+ `${dataPp.status=="موجود نیست" ? ``: `<button type="submit" onclick="btnClickAddToCard()"  class="btn-add-prod"> <i class="fas fa-cart-plus"></i> افزودن به سبد خرید</button>`}`  +`
-                                                
-                                               
+                                                {% if Shop.show_contact_info %}
+                                                    <div class="col-6">
+                                                    ‍‍   `+ `${dataPp.status=="موجود نیست" ? ``: `<button type="submit" onclick="btnClickAddToCard()"  class="btn-add-prod"> <i class="fas fa-cart-plus"></i> افزودن به سبد خرید</button>`}`  +`
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <button type="button" onclick="showMobileNumber()"  class="btn-add-prod" style="background:#fff !important; color:#ef394e !important">نمایش اطلاعات تماس حجره دار</button>
+                                                    </div>
+                                                {% else %}
+                                                    ‍‍   `+ `${dataPp.status=="موجود نیست" ? ``: `<button type="submit" onclick="btnClickAddToCard()"  class="btn-add-prod"> <i class="fas fa-cart-plus"></i> افزودن به سبد خرید</button>`}`  +`
+                                                {% endif %}
 
                                             </div>
                                         </form>
-
                                     </div>
+                                    {% if Shop.show_contact_info %}
+                                    <div class="row p-4" style="display:none" id="MobileNumber">
+                                        <div class="col-6">
+                                            شماره موبایل :
+                                        </div>
+                                        <div class="col-6">
+                                            <a style="color:#ef394e" href="tel:{{Shop.FK_ShopManager.User_Profile.MobileNumber}}">{{Shop.FK_ShopManager.User_Profile.MobileNumber}}</a>
+                                        </div>
+                                    </div>
+                                    {% endif %}
                                     <div class="share-menu">
                                         <div class="share-icons-container">
                                             <div class="share-icon-main" data-html='true' data-container="body" data-toggle="popover" data-placement="right" data-content="<div class='share-icons'><div class='share-icon share-telegram'><a href='https://t.me/share/url?url=www.nakhll.com{{ Product.get_url }}&text=از محصول {{Product.Title}} در سایت بازار نخل دیدن کنید'<i class='fab fa-telegram'></i></a></div><div class='share-icon share-whatsapp'><a href='https://web.whatsapp.com/send?text=www.nakhll.com{{ Product.get_url }}   {{ Product.Title }} را در بازار نخل مشاهده کنید ... '><i class='fab fa-whatsapp'></i></a></div><a href='https://www.instagram.com/?url=www.nakhll.com{{ Product.get_url }}' target='_blank' rel='noopener'><div class='share-icon share-instagram'><i class='fab fa-instagram'></i></div></a><div class='share-icon share-twitter'><a href='https://twitter.com/intent/tweet?url=https://www.nakhll.com{{ Product.get_url }}'><i class='fab fa-twitter'></i></a></div><div class='share-icon share-attach' id='tcopy' onclick='copyboard()'><i class='far fa-link'  ></i></div></div>">
@@ -1179,6 +1194,13 @@ $(document).on('click', '.number-spinner button', function () {
 	btn.closest('.number-spinner').find('input').val(newVal);
 });
 var product_data = {id:'{{Product.ID}}', title:'{{Product.Title}}', price:'{{Product.Price}}', discount: '{{Product.get_discounted}}' }
+</script>
+
+<script>
+function showMobileNumber() {
+  var x = document.getElementById("MobileNumber");
+    x.style.display = "";
+}
 </script>
 
 {% block footer %}

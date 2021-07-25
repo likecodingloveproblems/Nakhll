@@ -643,9 +643,9 @@ def add_user_bank_account_info(request):
                     BankAccount.objects.create(FK_Profile=Profile.objects.get(FK_User=request.user),
                                                CreditCardNumber=CreditCardNumber, ShabaBankNumber=ShabaBankNumber,
                                                AccountOwner=AccountOwner)
-                    return redirect("nakhll_market:UserShops")
+                    return redirect("/fp")
                 else:
-                    return redirect("nakhll_market:UserShops")
+                    return redirect("/fp")
             except Exception as e:
                 return redirect("nakhll_market:error_500", error_text=str(e))
     else:
@@ -1018,7 +1018,7 @@ def edit_shop_info(request, shop_slug):
                     return render(request, 'nakhll_market/profile/pages/shopdetails.html', context)
                 else:
                     edit_shop_alert.delete()
-                    return redirect("nakhll_market:UserShops")
+                    return redirect("/fp")
             except Exception as e:
                 # Get User Info
 
