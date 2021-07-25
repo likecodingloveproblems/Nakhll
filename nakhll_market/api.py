@@ -131,7 +131,7 @@ class UserProductViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mix
         else:
             product = serializer.save(**product_extra_fileds)
         # TODO: Check if product created successfully and published and alerts created as well
-        Alert.objects.create(Part='7', FK_User=self.request.user, Slug=product.ID)
+        Alert.objects.create(Part='6', FK_User=self.request.user, Slug=product.ID)
     permission_classes = [permissions.IsAuthenticated, ]
     authentication_classes = [CsrfExemptSessionAuthentication, ]
     lookup_field = 'ID'
