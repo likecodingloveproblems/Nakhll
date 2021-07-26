@@ -285,7 +285,7 @@ class AddImageToProduct(views.APIView):
                 # Save all images in product.Product_Banner
                 # Set Alert for each image
                 for image in images:
-                    product_banner = ProductBanner.objects.create(FK_Product=product, Image=image)
+                    product_banner = ProductBanner.objects.create(FK_Product=product, Image=image, Publish=True)
                     Alert.objects.create(Part='8', FK_User=request.user, Slug=product_banner.id)
 
 
