@@ -97,6 +97,7 @@ class ProfileSerializer(ModelSerializer):
             'id',
             'user',
             'sex',
+            'birth_day',
             'counter_pre_code',
             'mobile_number',
             'zip_code',
