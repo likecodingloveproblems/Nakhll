@@ -2108,6 +2108,9 @@ class Profile(models.Model):
     def sex(self):
         return self.Sex
     @property
+    def birth_day(self):
+        return str(self.BrithDay)
+    @property
     def counter_pre_code(self):
         return self.CountrPreCode
     @property

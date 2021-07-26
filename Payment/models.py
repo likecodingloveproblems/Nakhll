@@ -430,22 +430,22 @@ class FactorPostManager(models.Manager):
         now = jdatetime.datetime.now()
         current_week_start_date =  now - jdatetime.timedelta(days=4)
         return self.filter(FK_Product__FK_Shop__FK_ShopManager=user, Factor_Products__PaymentStatus=True, FK_Product__FK_Shop__Slug=shop_slug,
-                            Factor_Products__OrderDate__gt=str(current_week_start_date)).aggregate(amont=Sum('FK_Product__Price'))
+                            Factor_Products__OrderDate__gt=str(current_week_start_date.togregorian())).aggregate(amont=Sum('FK_Product__Price'))
 
     def last_week_user_total_sell(self, user, shop_slug):
         now = jdatetime.datetime.now()
         current_week_start_date =  now - jdatetime.timedelta(days=4)
         last_week_start_date = current_week_start_date - jdatetime.timedelta(days=7)
         return self.filter(FK_Product__FK_Shop__FK_ShopManager=user, Factor_Products__PaymentStatus=True,
-                            Factor_Products__OrderDate__gt=str(last_week_start_date), FK_Product__FK_Shop__Slug=shop_slug,
-                            Factor_Products__OrderDate__lt=str(current_week_start_date)
+                            Factor_Products__OrderDate__gt=str(last_week_start_date.togregorian()), FK_Product__FK_Shop__Slug=shop_slug,
+                            Factor_Products__OrderDate__lt=str(current_week_start_date.togregorian())
                             ).aggregate(amont=Sum('FK_Product__Price'))
 
     def last_month_user_total_sell(self, user, shop_slug):
         now = jdatetime.datetime.now()
         week_start_date =  now - jdatetime.timedelta(days=4)
         return self.filter(FK_Product__FK_Shop__FK_ShopManager=user, Factor_Products__PaymentStatus=True, FK_Product__FK_Shop__Slug=shop_slug,
-                            Factor_Products__OrderDate__gt=str(week_start_date)).aggregate(amont=Sum('FK_Product__Price'))
+                            Factor_Products__OrderDate__gt=str(week_start_date.togregorian())).aggregate(amont=Sum('FK_Product__Price'))
 
 
 
