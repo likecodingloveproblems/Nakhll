@@ -455,6 +455,7 @@ class PostRange (models.Model):
 
 class ShopManager(models.Manager):
 
+    FEW_HOURS_AGO = timezone.make_aware(datetime.datetime.now() - datetime.timedelta(hours=15))
     def shop_managers_info(self):
         queryset = self.get_queryset()
         return queryset.values(
@@ -487,7 +488,7 @@ class ShopManager(models.Manager):
         now = timezone.now()
         one_week_ago = now - datetime.timedelta(days=7)
         return queryset\
-            .filter(Publish=True, Available=True)\
+            .filter(Publish=True, Available=True,DateCreate__lt=self.FEW_HOURS_AGO)\
             .filter(ShopProduct__Factor_Product__Factor_Products__OrderDate__gte=one_week_ago)\
             .annotate(number_sale=Sum('ShopProduct__Factor_Product__ProductCount'))\
             .order_by('-number_sale')[:5]
