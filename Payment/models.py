@@ -966,7 +966,10 @@ class Factor(models.Model):
         return c
 
     def get_products_price(self):
-        return (int(self.TotalPrice) + int(self.DiscountRate)) - int(self.PostPrice)
+        try:
+            return (int(self.TotalPrice) + int(self.DiscountRate)) - int(self.PostPrice)
+        except ValueError:
+            return 0
 
     # New Post Price
     def check_order_total_weight(self):
