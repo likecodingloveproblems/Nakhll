@@ -530,12 +530,29 @@ class ShopManager(models.Manager):
             FROM "nakhll_market_shop" 
             LEFT OUTER JOIN 
                 "nakhll_market_product" ON ("nakhll_market_shop"."ID" = "nakhll_market_product"."FK_Shop_id") 
-            WHERE ("nakhll_market_shop"."Available" AND "nakhll_market_shop"."Publish") 
-            GROUP BY "nakhll_market_shop"."ID" HAVING COUNT("nakhll_market_product"."ID") > 1  
+            WHERE ("nakhll_market_shop"."Available" AND "nakhll_market_shop"."Publish" 
+                    AND "nakhll_market_shop"."DateCreate" > now() - '15 hours'::INTERVAL)
+            GROUP BY "nakhll_market_shop"."ID" 
+            HAVING COUNT("nakhll_market_product"."ID") > 1  
             ORDER BY RANDOM() 
             LIMIT 12
         '''
-        return Shop.objects.raw(sql)
+        # METHOD A:
+        # return Shop.objects.raw(sql)
+
+        # METHOD B:
+        # shops = Shop.objects.filter(Publish=True, Available=True, ShopProduct__gt=1, DateCreate__lt=self.FEW_HOURS_AGO).order_by('?')[:12]
+
+        # METHOD C:
+
+
+
+        # METHOD D:
+        shop_ids = Shop.objects.filter(Publish=True, Available=True, DateCreate__lt=self.FEW_HOURS_AGO,
+                                       ShopProduct__gt=1).values_list('ID', flat=True)
+        random_id_list = random.sample(list(shop_ids), 12)
+        shops = Shop.objects.filter(ID__in=random_id_list)
+        return shops
 
 
 
