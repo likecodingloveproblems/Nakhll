@@ -41,7 +41,7 @@ class ProfileForm(forms.ModelForm):
             'class': 'form-control',
             'type':'number',
             'type' : 'text',
-            'readonly': True if profile.NationalCode else True,
+            'readonly': True if profile.NationalCode else False,
             'required': True
         })
 
