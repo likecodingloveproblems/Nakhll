@@ -37,21 +37,13 @@ class ProfileForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         profile = kwargs['instance']
-        if not profile.NationalCode in ['', None]:
-            self.fields['NationalCode'].widget = forms.TextInput(attrs={
-                'class': 'form-control',
-                'type':'number',
-                'type' : 'text',
-                'readonly': True,
-                'required': True
-            })
-        else:
-            self.fields['NationalCode'].widget = forms.TextInput(attrs={
-                'class': 'form-control',
-                'type':'number',
-                'type' : 'text',
-                'required': True
-             })
+        self.fields['NationalCode'].widget = forms.TextInput(attrs={
+            'class': 'form-control',
+            'type':'number',
+            'type' : 'text',
+            'readonly': True if profile.NationalCode else True,
+            'required': True
+        })
 
     class Meta:
         model= Profile
