@@ -1,12 +1,13 @@
+from django.shortcuts import get_object_or_404
 from nakhll_market.serializer_fields import Base64ImageField
 from restapi.serializers import ProfileSerializer, UserDetailSerializer
 from django.contrib.auth.models import User
-from django.db.models import fields
+from django.db.models import fields, query
 from rest_framework import serializers
 from rest_framework.relations import HyperlinkedIdentityField, HyperlinkedRelatedField
 from rest_framework.utils import field_mapping
 from nakhll_market.models import (
-    AmazingProduct, AttrPrice, AttrProduct, Attribute, BankAccount, ShopBankAccount, ShopSocialMedia,
+    Alert, AmazingProduct, AttrPrice, AttrProduct, Attribute, BankAccount, ShopBankAccount, ShopSocialMedia,
     Category, Market, PostRange, Product, ProductBanner, Profile, Shop, ShopBankAccount, Slider, Comment,
     SubMarket
     )
@@ -201,6 +202,70 @@ class ProductListSerializer(serializers.ModelSerializer):
         # photo_url = product.Image.url if product.Image else None
         # return request.build_absolute_uri(photo_url)
 
+class ProductSubMarketSerializer(serializers.Serializer):
+    product = serializers.UUIDField()
+    submarkets = serializers.ListField(
+        child=serializers.UUIDField()
+    )
+
+class ProductImagesSerializer(serializers.Serializer):
+    product = serializers.UUIDField()
+    images = serializers.ListField(
+        child=Base64ImageField(max_length=None, use_url=True)
+    )
+
+
+class Base64ImageSerializer(serializers.Serializer):
+    image = Base64ImageField(max_length=None, use_url=True)
+
+class ProductUpdateSerializer(serializers.ModelSerializer):
+    FK_Shop = serializers.SlugRelatedField(slug_field='Slug', many=False, read_only=False, queryset=Shop.objects.all())
+    FK_SubMarket = serializers.PrimaryKeyRelatedField(read_only=False, many=False, queryset=SubMarket.objects.all())
+    Product_Banner = Base64ImageSerializer(read_only=False, many=True)
+
+    class Meta:
+        model = Product
+        fields = [
+            'ID',
+            'Title',
+            'Inventory',
+            'Price',
+            'OldPrice',
+            'Net_Weight',
+            'Weight_With_Packing',
+            'Description',
+            'Status',
+            'PostRangeType',
+            'PreparationDays',
+            'FK_Shop',
+            'FK_SubMarket',
+            'Product_Banner'
+        ]
+    def update(self, instance, validated_data):
+        images = validated_data.get('Product_Banner')
+        if not images:
+            return instance
+        instance.Product_Banner.all().delete()
+        for image in images:
+            product_banner = ProductBanner.objects.create(FK_Product=instance, Image=image.get('image'), Publish=True)
+            Alert.objects.create(Part='8', Slug=product_banner.id)
+
+        instance.Title = validated_data.get('Title')
+        instance.Inventory = validated_data.get('Inventory')
+        instance.Price = validated_data.get('Price')
+        instance.OldPrice = validated_data.get('OldPrice')
+        instance.Net_Weight = validated_data.get('Net_Weight')
+        instance.Weight_With_Packing = validated_data.get('Weight_With_Packing')
+        instance.Description = validated_data.get('Description')
+        instance.Status = validated_data.get('Status')
+        instance.PostRangeType = validated_data.get('PostRangeType')
+        instance.PreparationDays = validated_data.get('PreparationDays')
+        instance.FK_Shop = validated_data.get('FK_Shop')
+        instance.FK_SubMarket = validated_data.get('FK_SubMarket')
+        instance.save()
+        return instance
+
+
 class ProductWriteSerializer(serializers.ModelSerializer):
     FK_Shop = serializers.SlugRelatedField(slug_field='Slug', many=False, read_only=False, queryset=Shop.objects.all())
     class Meta:
@@ -241,19 +306,6 @@ class ProductCategorySerializer(serializers.Serializer):
         child=serializers.IntegerField(min_value=0)
     )
 
-class ProductSubMarketSerializer(serializers.Serializer):
-    product = serializers.UUIDField()
-    submarkets = serializers.ListField(
-        child=serializers.UUIDField()
-    )
-
-
-
-class ProductImagesSerializer(serializers.Serializer):
-    product = serializers.UUIDField()
-    images = serializers.ListField(
-        child=Base64ImageField(max_length=None, use_url=True)
-    )
 
 class ShopFullSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer(read_only=True, many=False)

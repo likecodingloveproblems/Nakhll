@@ -9,7 +9,7 @@ from nakhll_market.models import (
     )
 from nakhll_market.serializers import (
     AmazingProductSerializer, ProductDetailSerializer, ProductImagesSerializer,
-    ProductSerializer, ShopSerializer,SliderSerializer, ProductPriceWriteSerializer,
+    ProductSerializer, ProductUpdateSerializer, ShopSerializer,SliderSerializer, ProductPriceWriteSerializer,
     CategorySerializer, FullMarketSerializer, CreateShopSerializer, ProductInventoryWriteSerializer,
     ProductListSerializer, ProductWriteSerializer, ShopAllSettingsSerializer,
     ShopBankAccountSettingsSerializer, SocialMediaAccountSettingsSerializer, ProductSubMarketSerializer, SubMarketSerializer
@@ -91,11 +91,18 @@ class MostSoldShopsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 class UserProductViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.ListModelMixin,
                             viewsets.GenericViewSet, mixins.UpdateModelMixin):
+    permission_classes = [permissions.IsAuthenticated, ]
+    authentication_classes = [CsrfExemptSessionAuthentication, ]
+    lookup_field = 'ID'
+
     def get_serializer_class(self):
-        if self.action in ['list', 'retrieve']:
+        if self.action == 'update':
+            return ProductUpdateSerializer
+        elif self.action in ['list', 'retrieve']:
             return ProductListSerializer
         else:
             return ProductWriteSerializer
+
     def get_queryset(self):
         queryset = Product.objects.filter(FK_Shop__FK_ShopManager=self.request.user).order_by('-DateCreate')
         return queryset
@@ -133,9 +140,24 @@ class UserProductViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mix
             product = serializer.save(OldPrice=old_price, Price=price, **product_extra_fileds)
         # TODO: Check if product created successfully and published and alerts created as well
         Alert.objects.create(Part='6', FK_User=self.request.user, Slug=product.ID)
-    permission_classes = [permissions.IsAuthenticated, ]
-    authentication_classes = [CsrfExemptSessionAuthentication, ]
-    lookup_field = 'ID'
+
+    def perform_update(self, serializer):
+        data = serializer.validated_data
+        ID = self.kwargs.get('ID')
+
+        # TODO: This behavior should be inhanced later
+        #! Check if price have dicount or not
+        #! Swap Price and OldPrice value if discount exists
+        #! Note that, request should use OldPrice as price with discount
+        # Convert price and old price from Toman to Rial to store in DB
+        old_price = data.get('OldPrice', 0) * 10
+        price = data.get('Price', 0) * 10
+        if old_price:
+            serializer.save(OldPrice=price, Price=old_price)
+        else:
+            serializer.save(OldPrice=old_price, Price=price)
+        # TODO: Check if product created successfully and published and alerts created as well
+        Alert.objects.create(Part='7', FK_User=self.request.user, Slug=ID)
 
 
 class ProductFullDetailsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
