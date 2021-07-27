@@ -1,7 +1,7 @@
 from django.urls import re_path, include, path
 from nakhll_market.api import (
     AddSubMarketToProduct, AllShopSettings, AmazingProductViewSet, CategoryViewSet, LastCreatedDiscountedProductsViewSet,
-    LastCreatedProductsViewSet, MostDiscountPrecentageProductsViewSet, ShopMultipleUpdateInventory, ShopMultipleUpdatePrice, SocialMediaShopSettings,
+    LastCreatedProductsViewSet, MostDiscountPrecentageProductsViewSet, ProfileImage, ShopMultipleUpdateInventory, ShopMultipleUpdatePrice, SocialMediaShopSettings,
     UserProductViewSet, ProductsInSameFactorViewSet, SliderViewSet,
     MostSoldShopsViewSet, RandomShopsViewSet, RandomProductsViewSet,
     MarketList, CreateShop, GetShopWithSlug, CheckShopSlug, CheckProductSlug,
@@ -45,4 +45,6 @@ urlpatterns = [
     path('product/check/', CheckProductSlug.as_view()),
     path('product/categories/', AddSubMarketToProduct.as_view()),
     path('product/images/', AddImageToProduct.as_view()),
+
+    path('profile/image/', ProfileImage.as_view()),
 ]

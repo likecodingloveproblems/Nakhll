@@ -8,7 +8,7 @@ from nakhll_market.models import (
     Alert, AmazingProduct, Product, ProductBanner, Shop, Slider, Category, Market, State, BigCity, City, SubMarket
     )
 from nakhll_market.serializers import (
-    AmazingProductSerializer, ProductDetailSerializer, ProductImagesSerializer,
+    AmazingProductSerializer, Base64ImageSerializer, ProductDetailSerializer, ProductImagesSerializer,
     ProductSerializer, ProductUpdateSerializer, ShopSerializer,SliderSerializer, ProductPriceWriteSerializer,
     CategorySerializer, FullMarketSerializer, CreateShopSerializer, ProductInventoryWriteSerializer,
     ProductListSerializer, ProductWriteSerializer, ShopAllSettingsSerializer,
@@ -433,3 +433,18 @@ class SocialMediaShopSettings(views.APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.data)
+
+class ProfileImage(views.APIView):
+    permission_classes = [permissions.IsAuthenticated, ]
+    authentication_classes = [CsrfExemptSessionAuthentication,]
+    def put(self, request, format=None):
+        user = request.user
+        serializer = Base64ImageSerializer(data=request.data)
+        if serializer.is_valid():
+            image = serializer.validated_data.get('image')
+            user.User_Profile.Image = image
+            user.User_Profile.save()
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data)
+

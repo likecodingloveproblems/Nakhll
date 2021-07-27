@@ -23,6 +23,7 @@ class ShopListHomeSerializer(ModelSerializer):
             'title',
             'slug',
             'image_thumbnail_url',
+            'image_thumbnail_url',
             'point',
             'available',
             'publish',
