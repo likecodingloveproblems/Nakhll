@@ -221,7 +221,7 @@ class Base64ImageSerializer(serializers.Serializer):
 class ProductUpdateSerializer(serializers.ModelSerializer):
     FK_Shop = serializers.SlugRelatedField(slug_field='Slug', many=False, read_only=False, queryset=Shop.objects.all())
     FK_SubMarket = serializers.PrimaryKeyRelatedField(read_only=False, many=False, queryset=SubMarket.objects.all())
-    Product_Banner = Base64ImageSerializer(read_only=False, many=True)
+    # Product_Banner = Base64ImageSerializer(read_only=False, many=True)
 
     class Meta:
         model = Product
@@ -239,16 +239,16 @@ class ProductUpdateSerializer(serializers.ModelSerializer):
             'PreparationDays',
             'FK_Shop',
             'FK_SubMarket',
-            'Product_Banner'
+            # 'Product_Banner'
         ]
     def update(self, instance, validated_data):
-        images = validated_data.get('Product_Banner')
-        if not images:
-            return instance
-        instance.Product_Banner.all().delete()
-        for image in images:
-            product_banner = ProductBanner.objects.create(FK_Product=instance, Image=image.get('image'), Publish=True)
-            Alert.objects.create(Part='8', Slug=product_banner.id)
+        # images = validated_data.get('Product_Banner')
+        # if not images:
+            # return instance
+        # instance.Product_Banner.all().delete()
+        # for image in images:
+            # product_banner = ProductBanner.objects.create(FK_Product=instance, Image=image.get('image'), Publish=True)
+            # Alert.objects.create(Part='8', Slug=product_banner.id)
 
         instance.Title = validated_data.get('Title')
         instance.Inventory = validated_data.get('Inventory')
