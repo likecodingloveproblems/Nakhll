@@ -114,6 +114,7 @@ ADMIN_REORDER = (
         'Payment.Wallet',
         'Payment.Factor',
         'Payment.PostBarCode',
+        'Payment.PostTrackingCode',
         'Payment.ManegerFactor',
         'Payment.Transaction',
         'Payment.Coupon',

@@ -8,6 +8,7 @@ from .models import  Wallet, \
                     FactorPost, \
                     Factor, \
                     PostBarCode, \
+                    PostTrackingCode, \
                     ManegerFactor, \
                     PecOrder, \
                     PecTransaction, \
@@ -58,6 +59,12 @@ class ManegerFactorAdmin(admin.ModelAdmin):
     list_filter=('Date',)
     readonly_fields = ('ManegerFactorNumber',)
     ordering=['Date','Price']
+#-------------------------------------------------
+#PostTrackingCode admin panel
+@admin.register(PostTrackingCode)
+class PostTrackingCodeAdmin(admin.ModelAdmin):
+    list_display=('id','factor_post','barcode','created_datetime','post_type', 'send_type')
+    ordering=['id']
 #-------------------------------------------------
 #PostBarCode admin panel
 @admin.register(PostBarCode)
