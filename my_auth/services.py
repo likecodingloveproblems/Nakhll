@@ -11,6 +11,7 @@ def validate_mobile_number(mobile_number, code) -> bool:
     if UserphoneValid.objects.filter(MobileNumber=mobile_number, ValidCode=code).exists():
         # user enter the correct register code
         user_phone_valid = UserphoneValid.objects.get(
+            
             MobileNumber=mobile_number)
         user_phone_valid.Validation = True
         user_phone_valid.save()
