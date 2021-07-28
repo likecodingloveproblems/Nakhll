@@ -307,6 +307,7 @@ class FactorListSerializer(ModelSerializer):
             'order_status',
             'factor_status',
             'user',
+            'max_due_date'
         ]
 
 class PostBarCodeSerializer(ModelSerializer):

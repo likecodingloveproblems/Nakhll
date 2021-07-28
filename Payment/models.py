@@ -1069,6 +1069,20 @@ class Factor(models.Model):
     def get_post_details(self):
         return self.Factor_PostBarCode.first()
 
+    @property
+    def max_due_date(self):
+        factor_posts = self.FK_FactorPost.values_list('FK_Product__PreparationDays', flat=True)
+        # Remove any None object in factor_posts, So max() can find maximum
+        safe_factor_posts = [factor_post for factor_post in factor_posts if factor_post]
+        # Return None if safe_factor_posts is empty or OrderDate not exist
+        if not (safe_factor_posts and self.OrderDate):
+            return None
+        max_days = max(safe_factor_posts)
+        due_date = self.OrderDate + timedelta(days=max_days)
+        # Jalalize
+        jalali_datetime = jdatetime.date.fromgregorian(date=due_date)
+        return jalali_datetime.strftime('%Y/%m/%d')
+
 
 
 
