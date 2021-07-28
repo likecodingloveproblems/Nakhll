@@ -358,7 +358,7 @@ class ShopAllSettingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shop
         fields = [
-            'Title', 'Slug', 'Description', 'FK_ShopManager', 'bank_account', 'social_media' 
+            'Title', 'Slug', 'Description', 'FK_ShopManager', 'bank_account', 'social_media', 'image_thumbnail_url' 
         ]
         extra_kwargs = {
             'Slug': {'validators': []},
