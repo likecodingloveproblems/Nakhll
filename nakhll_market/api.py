@@ -434,17 +434,20 @@ class SocialMediaShopSettings(views.APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.data)
 
-class ProfileImage(views.APIView):
+
+class ImageShopSettings(views.APIView):
     permission_classes = [permissions.IsAuthenticated, ]
     authentication_classes = [CsrfExemptSessionAuthentication,]
-    def put(self, request, format=None):
-        user = request.user
+    def get_object(self, shop_slug):
+        return get_object_or_404(Shop, Slug=shop_slug)
+    def put(self, request, shop_slug, format=None):
+        shop = self.get_object(shop_slug)
+        self.check_object_permissions(request, shop)
         serializer = Base64ImageSerializer(data=request.data)
         if serializer.is_valid():
             image = serializer.validated_data.get('image')
-            user.User_Profile.Image = image
-            user.User_Profile.save()
+            shop.Image = image
+            shop.save()
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.data)
-
