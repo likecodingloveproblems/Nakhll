@@ -42,7 +42,7 @@ class ProfileForm(forms.ModelForm):
             'type':'number',
             'type' : 'text',
             'readonly': True if profile.NationalCode else False,
-            'required': True
+            'required': False
         })
 
     class Meta:
