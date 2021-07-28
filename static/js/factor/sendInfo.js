@@ -983,10 +983,11 @@ checkFieldsSendInfo = function () {
         }
 
     } else {
-        $("#alert-div-inputNationalCode-Persian").show();
-        $("#alert-div-inputNationalCodeError-Persian").hide();
-        $("#alert-div-inputNationalCodeFormat-Persian").hide();
-        checks = false;
+        // Disabling NationalCode check if user ommit it
+        // $("#alert-div-inputNationalCode-Persian").show();
+        // $("#alert-div-inputNationalCodeError-Persian").hide();
+        // $("#alert-div-inputNationalCodeFormat-Persian").hide();
+        // checks = false;
     }
     if ($("#inputFirstName").val() === '') {
         $("#inputFirstName").addClass("inputshopempty");

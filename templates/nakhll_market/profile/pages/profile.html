@@ -258,7 +258,7 @@
 
                                 <div class="form-row">     
                                     <div class="form-group col-md-4">
-                                        <label for="inputSex">جنسیت <code>*</code></label>
+                                        <label for="inputSex">جنسیت </label>
                                         {{profile_form.Sex}}
                                     </div> 
 
@@ -283,14 +283,14 @@
 
                                 <div class="form-row">     
                                     <div class="form-group col-md-6">
-                                    <label for="inputNationalCode">کد ملی <code>*</code></label>
+                                    <label for="inputNationalCode">کد ملی </label>
                                         <fieldset>
                                           {{profile_form.NationalCode}}   
                                         </fieldset>
                                     </div>
 
                                     <div class="form-group col-md-6">
-                                        <label for="inputBrithDay">تاریخ تولد <code>*</code></label>  
+                                        <label for="inputBrithDay">تاریخ تولد </label>  
                                         {{profile_form.BrithDay}} 
                                         <script>
                                             $("#id_BrithDay").persianDatepicker({
@@ -303,7 +303,7 @@
 
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
-                                    <label for="inputState">استان <code>*</code></label>
+                                    <label for="inputState">استان </label>
                                         <select name="State" class="chosen-select-rtl form-control choose-state-chosen" id="inputprofState" required>
                                             {% if request.user.User_Profile.get_state_name %}
                                                 <option value="{{request.user.User_Profile.State}}" selected>{{request.user.User_Profile.get_state_name}}</option>
@@ -344,7 +344,7 @@
                                     </div>
 
                                     <div class="form-group col-md-6">
-                                    <label for="inputBigCity">شهرستان <code>*</code></label>
+                                    <label for="inputBigCity">شهرستان </label>
                                         <select name="BigCity" class="chosen-select-rtl form-control choose-bigcity-chosen" id="inputprofBigCity" required>
                                             {% if request.user.User_Profile.get_bigcity_name %}
                                                 <option value="{{request.user.User_Profile.BigCity}}" selected>{{request.user.User_Profile.get_bigcity_name}}</option>
@@ -354,7 +354,7 @@
                                     </div>
 
                                     <div class="form-group col-md-6">
-                                    <label for="inputCity">شهر <code>*</code></label>
+                                    <label for="inputCity">شهر </label>
                                         <select  name="City" class="chosen-select-rtl form-control choose-city-chosen" id="inputprofCity" required>
                                             {% if request.user.User_Profile.get_city_name %}
                                                 <option value="{{request.user.User_Profile.City}}" selected>{{request.user.User_Profile.get_city_name}}</option>
@@ -467,14 +467,14 @@
                                 })
                                 </script>
                                     <div class="form-group col-md-6">
-                                        <label for="inputZipCode">کد پستی <code>*</code></label>
+                                        <label for="inputZipCode">کد پستی</label>
                                           {{profile_form.ZipCode}}
                                     </div>
                                 </div>
 
                                 <div class="form-row">     
                                     <div class="form-group col-md-6">
-                                        <label for="inputAddress">آدرس <code>*</code></label>
+                                        <label for="inputAddress">آدرس</label>
                                           {{profile_form.Address}}
                                     </div>
 
@@ -486,7 +486,7 @@
 
                                 <div class="form-row">
                                     <div class="form-group col-md-5">
-                                        <label for="inputPhoneNumber">تلفن ثابت <code>*</code></label>
+                                        <label for="inputPhoneNumber">تلفن ثابت</label>
                                         {{profile_form.PhoneNumber}}
                                     </div>
 

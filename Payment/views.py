@@ -223,7 +223,7 @@ def Set_Send_Info(request):
                 request.user.last_name = Factor_LastName
                 request.user.save()
             if this_profile.NationalCode == None or this_profile.NationalCode == '':
-                this_profile.NationalCode = Factor_NationalCode
+                this_profile.NationalCode =  Factor_NationalCode if Factor_NationalCode else None
                 this_profile.save()
             Factor_MobileNumber = request.POST["Factor_MobileNumber"]
             # User Location Info
