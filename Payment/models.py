@@ -1285,6 +1285,7 @@ class PostTrackingCode(models.Model):
     send_type=models.CharField(verbose_name='وضعیت ارسال', max_length=4, choices=SendTypes.choices, default=SendTypes.NORMAL)
     def __str__(self):
         return self.barcode
+        
 
 
 #----------------------------------------------------------------------------------------------------------------------------------
