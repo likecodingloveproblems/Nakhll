@@ -1070,7 +1070,7 @@ class Product(models.Model):
     objects = ProductManager()
     ID=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     Title=models.CharField(max_length=200, verbose_name='نام محصول', db_index=True)
-    Slug=models.SlugField(verbose_name='شناسه محصول', unique=True, db_index=True, allow_unicode=True)
+    Slug=models.SlugField(max_length=200, verbose_name='شناسه محصول', unique=True, db_index=True, allow_unicode=True)
     FK_SubMarket=models.ForeignKey(SubMarket, verbose_name='نام راسته', related_name='Product_SubMarket', null=True, on_delete=models.SET_NULL)
     Story=models.TextField(verbose_name='داستان محصول', blank=True)
     Description=models.TextField(verbose_name='درباره محصول', blank=True)
