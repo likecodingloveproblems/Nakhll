@@ -958,6 +958,7 @@ class Attribute(models.Model):
 #----------------------------------------------------------------------------------------------------------------------------------
 class ProductManager(models.Manager):
     FEW_HOURS_AGO = timezone.make_aware(datetime.datetime.now() - datetime.timedelta(hours=15))
+
     def get_most_discount_precentage_available_product(self):
         queryset = self.get_queryset()
         return queryset\
@@ -997,8 +998,7 @@ class ProductManager(models.Manager):
             .order_by('?')[:16]
 
     def get_most_discount_precentage_products(self):
-        queryset = self.get_queryset()
-        return queryset\
+        return self\
             .get_most_discount_precentage_available_product()\
             .order_by('?')[:15]
 
