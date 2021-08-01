@@ -42,8 +42,9 @@ class ProfileForm(forms.ModelForm):
             'type':'number',
             'type' : 'text',
             'readonly': True if profile.NationalCode else False,
-            'required': False
         })
+        self.fields.get('BrithDay').required = False
+        self.fields.get('ZipCode').required = False
 
     class Meta:
         model= Profile
@@ -72,13 +73,11 @@ class ProfileForm(forms.ModelForm):
             'Sex': forms.Select(attrs={
                 'class': 'form-control',
                 'type':'text',
-                'required':True,
             }),
             'MobileNumber': forms.TextInput(attrs={
                 'class': 'form-control',
                 'type':'number',
                 'readonly' : 'readonly',
-                'required':True,
             }),
             'BrithDay': forms.TextInput(attrs={
                  'class': 'form-control',
@@ -92,12 +91,10 @@ class ProfileForm(forms.ModelForm):
             'ZipCode': forms.TextInput(attrs={
                 'class': 'form-control',
                 'type':'number',
-                'required':True,
             }),
             'Address': forms.TextInput(attrs={
                 'class': 'form-control',
                 'type':'text',
-                'required':True,
             }),
             'TutorialWebsite': forms.Select(attrs={
                 'class': 'form-control',
@@ -106,7 +103,6 @@ class ProfileForm(forms.ModelForm):
             'PhoneNumber': forms.TextInput(attrs={
                 'class': 'form-control',
                 'type':'Number',
-                'required':True,
             }),
             'CityPerCode': forms.TextInput(attrs={
                 'class': 'form-control',
