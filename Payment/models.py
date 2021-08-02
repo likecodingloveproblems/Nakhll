@@ -1079,9 +1079,10 @@ class Factor(models.Model):
             return None
         max_days = max(safe_factor_posts)
         due_date = self.OrderDate + timedelta(days=max_days)
-        # Jalalize
-        jalali_datetime = jdatetime.date.fromgregorian(date=due_date)
-        return jalali_datetime.strftime('%Y/%m/%d')
+        # NOTE: Jalalize disabled sice it will transferd to jalai in frontend
+        # jalali_datetime = jdatetime.date.fromgregorian(date=due_date)
+        # return jalali_datetime.strftime('%Y/%m/%d')
+        return due_date.strftime('%Y/%m/%d')
 
 
 

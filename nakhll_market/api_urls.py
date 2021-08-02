@@ -5,7 +5,7 @@ from nakhll_market.api import (
     UserProductViewSet, ProductsInSameFactorViewSet, SliderViewSet,
     MostSoldShopsViewSet, RandomShopsViewSet, RandomProductsViewSet,
     MarketList, CreateShop, GetShopWithSlug, CheckShopSlug, CheckProductSlug,
-    AddImageToProduct, ProductFullDetailsViewSet, BankAccountShopSettings
+    ProductBannerViewSet, AddImagesToProduct, ProductFullDetailsViewSet, BankAccountShopSettings
     )
 from rest_framework import routers
 
@@ -22,6 +22,7 @@ landing_router.register(r'most-sold-shops', MostSoldShopsViewSet, basename="most
 landing_router.register(r'random-shops', RandomShopsViewSet, basename="random-shops")
 landing_router.register(r'random-products', RandomProductsViewSet, basename="random-products")
 landing_router.register(r'products', UserProductViewSet, basename="products")
+landing_router.register(r'product_banner', ProductBannerViewSet, basename="product_banners")
 
 product_page_router = routers.DefaultRouter()
 product_page_router.register(r'details', ProductFullDetailsViewSet, basename="details")
@@ -45,5 +46,5 @@ urlpatterns = [
 
     path('product/check/', CheckProductSlug.as_view()),
     path('product/categories/', AddSubMarketToProduct.as_view()),
-    path('product/images/', AddImageToProduct.as_view()),
+    path('product/images/', AddImagesToProduct.as_view()),
 ]

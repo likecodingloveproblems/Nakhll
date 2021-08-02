@@ -214,6 +214,16 @@ class ProductImagesSerializer(serializers.Serializer):
         child=Base64ImageField(max_length=None, use_url=True)
     )
 
+class ProductBannerSerializer(serializers.ModelSerializer):
+    FK_Product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all(), pk_field=serializers.UUIDField(format='hex'))
+    Image = Base64ImageField(max_length=None, use_url=True)
+    class Meta:
+        model = ProductBanner
+        fields = [
+            'id', 'Image', 'FK_Product'
+        ]
+
+
 
 class Base64ImageSerializer(serializers.Serializer):
     image = Base64ImageField(max_length=None, use_url=True)

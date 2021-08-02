@@ -487,9 +487,13 @@ class ShopManager(models.Manager):
         number_of_days = 7
         now = timezone.now()
         one_week_ago = now - datetime.timedelta(days=7)
+        
+        # Exclude the ones that have been created less than 15 Hours ago
+        # Exclude Shops that have default Image
         return queryset\
-            .filter(Publish=True, Available=True,DateCreate__lt=self.FEW_HOURS_AGO)\
-            .filter(ShopProduct__Factor_Product__Factor_Products__OrderDate__gte=one_week_ago)\
+            .filter(Q(Publish=True), Q(Available=True),Q(DateCreate__lt=self.FEW_HOURS_AGO)\
+            ,Q(ShopProduct__Factor_Product__Factor_Products__OrderDate__gte=one_week_ago)\
+            ,~Q(Image='static/Pictures/DefaultShop.png'))\
             .annotate(number_sale=Sum('ShopProduct__Factor_Product__ProductCount'))\
             .order_by('-number_sale')[:5]
 
@@ -545,11 +549,12 @@ class ShopManager(models.Manager):
 
         # METHOD C:
 
-
-
         # METHOD D:
-        shop_ids = Shop.objects.filter(Publish=True, Available=True, DateCreate__lt=self.FEW_HOURS_AGO,
-                                       ShopProduct__gt=1).values_list('ID', flat=True)
+        shop_ids = Shop.objects.filter(Q(Publish=True), Q(Available=True), Q(ShopProduct__gt=1),
+                                       # Exclude the ones that have been created less than 15 Hours ago
+                                       Q(DateCreate__lt=self.FEW_HOURS_AGO),
+                                       # Exclude Shops that have default Image
+                                      ~Q(Image='static/Pictures/DefaultShop.png')).values_list('ID', flat=True)
         random_id_list = random.sample(list(shop_ids), 12)
         shops = Shop.objects.filter(ID__in=random_id_list)
         return shops
