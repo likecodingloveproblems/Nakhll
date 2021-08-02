@@ -1905,8 +1905,8 @@ header {
 .shop-list {
     height: 184px;
     margin-bottom: 30px;
-    /* background: linear-gradient(221deg, #fff, #d3d8dc); */
-    background: url(/static-django/images/bg-shop.jpg) top left no-repeat #fff;
+    background: linear-gradient(221deg, #7592a7, #d3d8dc);
+    /* background: url(/static-django/images/bg-shop.jpg) top left no-repeat #fff; */
     background-size: cover;
     border-radius: 5px;
     padding: 10px;
