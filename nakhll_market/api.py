@@ -3,7 +3,7 @@ from django.http import response
 from django.http.response import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, PermissionDenied, AuthenticationFailed
 from nakhll_market.models import (
     Alert, AmazingProduct, Product, ProductBanner, Shop, Slider, Category, Market, State, BigCity, City, SubMarket
     )
@@ -11,7 +11,7 @@ from nakhll_market.serializers import (
     AmazingProductSerializer, Base64ImageSerializer, ProductDetailSerializer, ProductImagesSerializer,
     ProductSerializer, ProductUpdateSerializer, ShopSerializer,SliderSerializer, ProductPriceWriteSerializer,
     CategorySerializer, FullMarketSerializer, CreateShopSerializer, ProductInventoryWriteSerializer,
-    ProductListSerializer, ProductWriteSerializer, ShopAllSettingsSerializer,
+    ProductListSerializer, ProductWriteSerializer, ShopAllSettingsSerializer, ProductBannerSerializer,
     ShopBankAccountSettingsSerializer, SocialMediaAccountSettingsSerializer, ProductSubMarketSerializer, SubMarketSerializer
     )
 from rest_framework import generics, routers, status, views, viewsets
@@ -21,7 +21,7 @@ import random
 from nakhll.authentications import CsrfExemptSessionAuthentication
 from rest_framework.response import Response
 from django.utils.text import slugify
-from restapi.permissions import IsFactorOwner, IsProductOwner, IsShopOwner
+from restapi.permissions import IsFactorOwner, IsProductOwner, IsShopOwner, IsProductBannerOwner
 
 
 class SliderViewSet(viewsets.ReadOnlyModelViewSet):
@@ -104,7 +104,9 @@ class UserProductViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mix
             return ProductWriteSerializer
 
     def get_queryset(self):
-        queryset = Product.objects.filter(FK_Shop__FK_ShopManager=self.request.user).order_by('-DateCreate')
+        queryset = Product.objects.filter(
+                            FK_Shop__FK_ShopManager=self.request.user
+                            ).order_by('-DateCreate')
         return queryset
 
     def generate_unique_slug(self, title):
@@ -285,7 +287,7 @@ class AddSubMarketToProduct(views.APIView):
         except:
             return Response({'details': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
 
-class AddImageToProduct(views.APIView):
+class AddImagesToProduct(views.APIView):
     # parser_classes = (MultiPartParser, FormParser)
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [CsrfExemptSessionAuthentication, ]
@@ -316,10 +318,23 @@ class AddImageToProduct(views.APIView):
         except:
             return Response({'details': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
 
+class ProductBannerViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, 
+                        mixins.DestroyModelMixin):
+    permission_classes = [permissions.IsAuthenticated, IsProductBannerOwner]
+    authentication_classes = [CsrfExemptSessionAuthentication, ]
+    lookup_field = 'id'
+    queryset = ProductBanner.objects.all()
+    serializer_class = ProductBannerSerializer
+
+    def perform_create(self, serializer):
+        product_banner = serializer.save(Publish=True)
+        Alert.objects.create(Part='8', FK_User=self.request.user,
+                             Slug=product_banner.id)
+
 
 class ShopMultipleUpdatePrice(views.APIView):
     #TODO: Swap OldPrice and Price
-    permission_classes = [permissions.IsAuthenticated, ]
+    permission_classes = [permissions.IsAuthenticated,]
     authentication_classes = [CsrfExemptSessionAuthentication, ]
     def patch(self, request, format=None):
         serializer = ProductPriceWriteSerializer(data=request.data, many=True)
