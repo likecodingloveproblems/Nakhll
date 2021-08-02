@@ -1442,7 +1442,7 @@ def RecordSendInfoAlert(request, id):
                 # Send Push notification
                 title = 'تایید ارسال مرسوله'
                 description = 'گزارش ارسال مرسوله برای صورت حساب  به شماره ' + factor.FactorNumber + 'تایید شده است.'
-                send_push_notification().run(title, description, profile.MobileNumber)
+                # send_push_notification().run(title, description, profile.MobileNumber)
                 SendPostCode(bar.User_Sender, factor.FactorNumber, bar.BarCode, Profile.objects.get(FK_User = factor.FK_User).MobileNumber)
         
         else:
@@ -1462,7 +1462,7 @@ def RecordSendInfoAlert(request, id):
                 # Send Push notification
                 title = 'عدم تایید ارسال مرسوله'
                 description = 'گزارش ارسال مرسوله برای صورت حساب  به شماره ' + factor.FactorNumber + 'تایید نشده است.'
-                send_push_notification().run(title, description, profile.MobileNumber)
+                # send_push_notification().run(title, description, profile.MobileNumber)
 
                 alert.Seen = True
                 alert.Status = False
@@ -1634,7 +1634,7 @@ def RecorFactorAlert(request, id):
                     # Send Push notification
                     title = 'سفارش جدید'
                     description = 'سفارش جدیدی به شماره ' + factor.FactorNumber + 'برای حجره شما ثبت شده است.'
-                    send_push_notification().run(title, description, profile.MobileNumber)
+                    # send_push_notification().run(title, description, profile.MobileNumber)
         else:
 
             if Dec != False:
@@ -1714,7 +1714,7 @@ def RecorAttributePriceAlert(request, id):
                 # Send Push notification
                 title = 'تایید ارزش ویژگی جدید'
                 description = 'ارزش ویژگی جدید شما تایید شد.'
-                send_push_notification().run(title, description, profile.MobileNumber)
+                # send_push_notification().run(title, description, profile.MobileNumber)
 
         else:
 
@@ -1724,7 +1724,7 @@ def RecorAttributePriceAlert(request, id):
                 # Send Push notification
                 title = 'عدم تایید ارزش ویژگی جدید'
                 description = 'ارزش ویژگی جدید شما تایید نشد.'
-                send_push_notification().run(title, description, profile.MobileNumber)
+                # send_push_notification().run(title, description, profile.MobileNumber)
 
                 # Set Info 
                 Des = Dec + '|' + str(attrprice.FK_Product.Title) + '|' + str(attrprice.Description) + '|' + str(attrprice.Value) + '|' + str(attrprice.ExtraPrice) + '|' + str(attrprice.Unit)
@@ -1763,7 +1763,7 @@ def RecorTicketReplayAlert(request, id):
             # Send Push notification
             title = 'تیکت جدید'
             description = 'تیکت شما پاسخ داده شد.'
-            send_push_notification().run(title, description, user_profile.MobileNumber)
+            # send_push_notification().run(title, description, user_profile.MobileNumber)
             # Send SMS
             SendAlertResponse('پاسخ-تیکت', Dec, user_profile.MobileNumber)
             return redirect("nakhll_market:Alert")
@@ -1888,14 +1888,14 @@ def RecorProductAlert(request, id):
                 # Send Push notification
                 title = 'تایید ویرایش محصول'
                 description = 'تغییرات محصول با شناسه ' + product.Slug + 'ثبت شد.'
-                send_push_notification().run(title, description, profile.MobileNumber)
+                # send_push_notification().run(title, description, profile.MobileNumber)
         else:
             if Dec != False:
                 SendAlertResponse('عدم-ثبت-ویراش-محصول', Dec, profile.MobileNumber)
                 # Send Push notification
                 title = 'عدم تایید ویرایش محصول'
                 description = 'تغییرات محصول با شناسه ' + product.Slug + 'تایید نشد.'
-                send_push_notification().run(title, description, profile.MobileNumber)
+                # send_push_notification().run(title, description, profile.MobileNumber)
 
                 alert = Alert.objects.get(Slug = id, Part ='7', Seen = False)
                 alert.Seen = True
@@ -1971,14 +1971,14 @@ def RecorShopAlert(request, id):
                 # Send Push notification
                 title = 'تایید ویرایش حجره'
                 description = 'تغییرات حجره با شناسه ' + shop.Slug + 'ثبت شد.'
-                send_push_notification().run(title, description, profile.MobileNumber)
+                # send_push_notification().run(title, description, profile.MobileNumber)
         else:
             if Dec != False:
                 SendAlertResponse('عدم-ثبت-ویراش-حجره', Dec, profile.MobileNumber)
                 # Send Push notification
                 title = 'عدم تایید ویرایش حجره'
                 description = 'تغییرات حجره با شناسه ' + shop.Slug + 'تایید نشد.'
-                send_push_notification().run(title, description, profile.MobileNumber)
+                # send_push_notification().run(title, description, profile.MobileNumber)
 
                 alert = Alert.objects.get(Slug = id, Part ='3', Seen = False)
                 alert.Seen = True
@@ -2027,7 +2027,7 @@ def RecordShopBannerAlert(request, id):
                 # Send Push notification
                 title = 'ثبت بنر حجره جدید'
                 description = 'بنر جدید حجره با شناسه ' + shop.Slug + 'تایید شد.'
-                send_push_notification().run(title, description, profile.MobileNumber)
+                # send_push_notification().run(title, description, profile.MobileNumber)
 
         else:
             if Dec != False:
@@ -2035,7 +2035,7 @@ def RecordShopBannerAlert(request, id):
                 # Send Push notification
                 title = 'عدم ثبت بنر حجره جدید'
                 description = 'بنر جدید حجره با شناسه ' + shop.Slug + 'تایید نشد.'
-                send_push_notification().run(title, description, profile.MobileNumber)
+                # send_push_notification().run(title, description, profile.MobileNumber)
 
                 # Set Info 
                 Des = Dec + '|' + str(banner.Title) + '|' + str(banner.Description) + '|' + str(banner.URL) + '|' + str(banner.BannerBuilder) + '|' + str(banner.BannerURL) + '|' + str(banner.Image)
@@ -2085,14 +2085,14 @@ def RecordShopAlert(request, id):
                 # Send Push notification
                 title = 'ثبت حجره جدید'
                 description = 'حجره جدید با شناسه ' + shop.Slug + 'تایید شد.'
-                send_push_notification().run(title, description, profile.MobileNumber)
+                # send_push_notification().run(title, description, profile.MobileNumber)
         else:
             if Dec != False:
                 SendAlertResponse('عدم-ایجاد-حجره-جدید', Dec, profile.MobileNumber)
                 # Send Push notification
                 title = 'عدم ثبت حجره جدید'
                 description = 'حجره جدید با شناسه ' + shop.Slug + 'تایید نشد.'
-                send_push_notification().run(title, description, profile.MobileNumber)
+                # send_push_notification().run(title, description, profile.MobileNumber)
 
                 alert = Alert.objects.get(Slug = id, Part = '2', Seen = False)
                 alert.Seen = True
@@ -2260,14 +2260,14 @@ def RecordEditeProductBannerAlert(request, id):
                 # Send Push notification
                 title = 'ثبت ویرایش بنر محصول'
                 description = 'ویرایش بنر محصول با شناسه ' + pro.Slug + 'تایید شد.'
-                send_push_notification().run(title, description, profile.MobileNumber)
+                # send_push_notification().run(title, description, profile.MobileNumber)
         else:
             if Dec != False:
                 SendAlertResponse('عدم-ثبت-ویراش-بنر-محصول', Dec, profile.MobileNumber)
                 # Send Push notification
                 title = 'عدم ثبت ویرایش بنر محصول'
                 description = 'ویرایش بنر محصول با شناسه ' + pro.Slug + 'تایید نشد.'
-                send_push_notification().run(title, description, profile.MobileNumber)
+                # send_push_notification().run(title, description, profile.MobileNumber)
 
                 alert = get_object_or_404(Alert, Slug = id, Part = '9', Seen = False)
                 alert.Seen = True
@@ -2331,14 +2331,14 @@ def RecordEditeShopBannerAlert(request, id):
                 # Send Push notification
                 title = 'ثبت ویرایش بنر حجره'
                 description = 'ویرایش بنر حجره با شناسه ' + shop.Slug + 'تایید شد.'
-                send_push_notification().run(title, description, profile.MobileNumber)
+                # send_push_notification().run(title, description, profile.MobileNumber)
         else:
             if Dec != False:
                 SendAlertResponse('عدم-ثبت-ویرایش-بنر-حجره', Dec, profile.MobileNumber)
                 # Send Push notification
                 title = 'عدم ثبت ویرایش بنر حجره'
                 description = 'ویرایش بنر حجره با شناسه ' + shop.Slug + 'تایید نشد.'
-                send_push_notification().run(title, description, profile.MobileNumber)
+                # send_push_notification().run(title, description, profile.MobileNumber)
 
                 alert = Alert.objects.get(Slug = id, Part ='5', Seen = False)
                 alert.Seen = True
@@ -2388,14 +2388,14 @@ def RecordProductAttributeAlert(request, id):
                 # Send Push notification
                 title = 'ثبت ویژگی جدید محصول'
                 description = 'ویژگی جدید برای محصول با شناسه ' + pro.Slug + 'تایید شد.'
-                send_push_notification().run(title, description, profile.MobileNumber)
+                # send_push_notification().run(title, description, profile.MobileNumber)
         else:
             if Dec != False:
                 SendAlertResponse('عدم-ثبت-ویژگی-جدید-برای-محصول', Dec, profile.MobileNumber)
                 # Send Push notification
                 title = 'عدم ثبت ویژگی جدید محصول'
                 description = 'ویژگی جدید برای محصول با شناسه ' + pro.Slug + 'تایید نشد.'
-                send_push_notification().run(title, description, profile.MobileNumber)
+                # send_push_notification().run(title, description, profile.MobileNumber)
 
                 # Set Info 
                 Des = Dec + '|' + str(attrprod.FK_Product.Title) + '|' + str(attrprod.FK_Attribute.Title) + '|' + str(attrprod.FK_Attribute.Unit) + '|' + str(attrprod.Value)
@@ -2490,14 +2490,14 @@ def RecordProducBannertAlert(request, id):
                 # Send Push notification
                 title = 'ایجاد بنر محصول جدید'
                 description = 'بنر جدید برای محصول با شناسه ' + pro.Slug + 'ایجاد شد.'
-                send_push_notification().run(title, description, profile.MobileNumber)
+                # send_push_notification().run(title, description, profile.MobileNumber)
         else:
             if Dec != False:
                 SendAlertResponse('عدم-ایجاد-بنر-محصول', Dec, profile.MobileNumber)
                 # Send Push notification
                 title = 'عدم ایجاد بنر محصول جدید'
                 description = 'بنر جدید برای محصول با شناسه ' + pro.Slug + 'ایجاد نشد.'
-                send_push_notification().run(title, description, profile.MobileNumber)
+                # send_push_notification().run(title, description, profile.MobileNumber)
 
                 # Set Info 
                 Des = Dec + '|' + str(banner.Title) + '|' + str(banner.Description) + '|' + str(banner.URL) + '|' + str(banner.BannerBuilder) + '|' + str(banner.BannerURL) + '|' + str(banner.Image) 
@@ -2548,14 +2548,14 @@ def RecordProductAlert(request, id):
                 # Send Push notification
                 title = 'ایجاد محصول جدید'
                 description = 'محصول جدیدی با شناسه ' + pro.Slug + 'ایجاد شد.'
-                send_push_notification().run(title, description, profile.MobileNumber)
+                # send_push_notification().run(title, description, profile.MobileNumber)
         else:
             if Dec != False:
                 SendAlertResponse('عدم-ایجاد-محصول-جدید', Dec, profile.MobileNumber)
                 # Send Push notification
                 title = 'عدم ایجاد محصول جدید'
                 description = 'محصول جدیدی با شناسه ' + pro.Slug + 'تایید نشد.'
-                send_push_notification().run(title, description, profile.MobileNumber)
+                # send_push_notification().run(title, description, profile.MobileNumber)
 
                 alert = get_object_or_404(Alert, Slug = id, Part ='6', Seen = False)
                 alert.Seen = True
@@ -2602,13 +2602,13 @@ def EditeNationalCardImageAlert(request, user_id):
             profile.ImageNationalCard = profile.ImageNationalCardUnverified 
             description = 'تصویر کارت ملی شما تایید شد!'
             SendAlertResponse(title, Dec, profile.MobileNumber)
-            send_push_notification().run(title, description, profile.MobileNumber)
+            # send_push_notification().run(title, description, profile.MobileNumber)
         else: # Deny changes
             profile.ImageNationalCardUnverified = None
             alert.Status = False
             description = f'تصویر کارت ملی شما تایید نشد! {Dec}'
             SendAlertResponse(title, Dec, profile.MobileNumber)
-            send_push_notification().run(title, description, profile.MobileNumber)
+            # send_push_notification().run(title, description, profile.MobileNumber)
         # Save changes
         profile.save()
         alert.save()
