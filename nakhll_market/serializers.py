@@ -220,7 +220,7 @@ class ProductBannerSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductBanner
         fields = [
-            'Image', 'FK_Product'
+            'id', 'Image', 'FK_Product'
         ]
 
 
