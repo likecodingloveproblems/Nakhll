@@ -89,25 +89,21 @@ class MostSoldShopsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return Shop.objects.most_last_week_sale_shops()
 
 
-class UserProductViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.ListModelMixin,
-                            viewsets.GenericViewSet, mixins.UpdateModelMixin):
-    permission_classes = [permissions.IsAuthenticated, ]
+class UserProductViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.CreateModelMixin,
+                         mixins.ListModelMixin, mixins.UpdateModelMixin):
+    permission_classes = [permissions.IsAuthenticated, IsProductOwner]
     authentication_classes = [CsrfExemptSessionAuthentication, ]
+    queryset = Product.objects.all().order_by('-DateCreate')
     lookup_field = 'ID'
 
     def get_serializer_class(self):
-        if self.action == 'update':
+        if self.action in ['update', 'partial_update']:
             return ProductUpdateSerializer
         elif self.action in ['list', 'retrieve']:
             return ProductListSerializer
         else:
             return ProductWriteSerializer
 
-    def get_queryset(self):
-        queryset = Product.objects.filter(
-                            FK_Shop__FK_ShopManager=self.request.user
-                            ).order_by('-DateCreate')
-        return queryset
 
     def generate_unique_slug(self, title):
         ''' Generate new unique slug for Product Model 
@@ -125,8 +121,11 @@ class UserProductViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mix
         data = serializer.validated_data
         shop = data.get('FK_Shop')
         title = data.get('Title')
+
+        # Check if target shop is owned by user or not
         if shop.FK_ShopManager != self.request.user:
             raise ValidationError({'details': 'Shop is not own by user'})
+
         slug = self.generate_unique_slug(title)
         product_extra_fileds = {'Publish': True, 'Slug': slug}
         # TODO: This behavior should be inhanced later
@@ -155,11 +154,13 @@ class UserProductViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mix
         old_price = data.get('OldPrice', 0) * 10
         price = data.get('Price', 0) * 10
         if old_price:
-            serializer.save(OldPrice=price, Price=old_price)
+            product = serializer.save(OldPrice=price, Price=old_price)
         else:
-            serializer.save(OldPrice=old_price, Price=price)
+            product = serializer.save(OldPrice=old_price, Price=price)
+
         # TODO: Check if product created successfully and published and alerts created as well
         Alert.objects.create(Part='7', FK_User=self.request.user, Slug=ID)
+
 
 
 class ProductFullDetailsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):

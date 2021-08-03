@@ -229,10 +229,9 @@ class Base64ImageSerializer(serializers.Serializer):
     image = Base64ImageField(max_length=None, use_url=True)
 
 class ProductUpdateSerializer(serializers.ModelSerializer):
-    FK_Shop = serializers.SlugRelatedField(slug_field='Slug', many=False, read_only=False, queryset=Shop.objects.all())
+    # FK_Shop = serializers.SlugRelatedField(slug_field='Slug', many=False, read_only=True)
     FK_SubMarket = serializers.PrimaryKeyRelatedField(read_only=False, many=False, queryset=SubMarket.objects.all())
-    # Product_Banner = Base64ImageSerializer(read_only=False, many=True)
-
+    Product_Banner = serializers.PrimaryKeyRelatedField(queryset=ProductBanner.objects.all(), many=True, read_only=False)
     class Meta:
         model = Product
         fields = [
@@ -247,31 +246,20 @@ class ProductUpdateSerializer(serializers.ModelSerializer):
             'Status',
             'PostRangeType',
             'PreparationDays',
-            'FK_Shop',
             'FK_SubMarket',
-            # 'Product_Banner'
+            'Product_Banner'
         ]
     def update(self, instance, validated_data):
-        # images = validated_data.get('Product_Banner')
-        # if not images:
-            # return instance
-        # instance.Product_Banner.all().delete()
-        # for image in images:
-            # product_banner = ProductBanner.objects.create(FK_Product=instance, Image=image.get('image'), Publish=True)
-            # Alert.objects.create(Part='8', Slug=product_banner.id)
+        # Direct assignment to the reverse side of a related set is prohibited, 
+        # so I am deleteing related ProductBanner objects to clean database from
+        # ProductBanners that have no Product assigned to
+        product_banners = validated_data.pop('Product_Banner')
+        deleted_banners = [banner.delete() 
+                           for banner in instance.Product_Banner.all() 
+                           if banner not in product_banners]
 
-        instance.Title = validated_data.get('Title')
-        instance.Inventory = validated_data.get('Inventory')
-        instance.Price = validated_data.get('Price')
-        instance.OldPrice = validated_data.get('OldPrice')
-        instance.Net_Weight = validated_data.get('Net_Weight')
-        instance.Weight_With_Packing = validated_data.get('Weight_With_Packing')
-        instance.Description = validated_data.get('Description')
-        instance.Status = validated_data.get('Status')
-        instance.PostRangeType = validated_data.get('PostRangeType')
-        instance.PreparationDays = validated_data.get('PreparationDays')
-        instance.FK_Shop = validated_data.get('FK_Shop')
-        instance.FK_SubMarket = validated_data.get('FK_SubMarket')
+        for prop in validated_data:
+            setattr(instance, prop, validated_data[prop])
         instance.save()
         return instance
 
