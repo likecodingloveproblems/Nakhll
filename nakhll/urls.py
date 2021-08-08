@@ -32,6 +32,7 @@ urlpatterns = [
     url(r'^cart/', include('Payment.urls' , namespace='Payment')),
     url(r'^app/api/', include('restapi.urls' , namespace='restapi')),
     path('accounting/', include('accounting.urls', namespace='accounting')),
+    path('torob/', include('torob_api.urls', namespace='torob')),
     # api version 1
     url(r'^api/v1/', include('nakhll_market.api_urls', namespace='nakhll_market_api')),
     # prometheus

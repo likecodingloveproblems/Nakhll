@@ -12,6 +12,7 @@ from django.contrib.auth.models import User,Group
 from django.contrib.auth.models import (AbstractUser)
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
+from django.core import serializers
 from django.conf import settings
 from django.utils.deconstruct import deconstructible
 from django.utils import timezone
@@ -1043,6 +1044,42 @@ class ProductManager(models.Manager):
     def outofstock_products(self, user, shop_slug):
         return self.filter(FK_Shop__FK_ShopManager=user, FK_Shop__Slug=shop_slug, Publish=True, Inventory__lt=1)
 
+    @staticmethod
+    def is_product_available(product, count):
+        ''' Check if product is available and published and also have enough items in stock '''
+        return \
+            product.Available and \
+            product.Publish and \
+            product.Inventory > count
+
+
+    def is_product_list_valid(self, product_list):
+        ''' Check if products in product_list is available, published and have enough in stock
+            Optimization is important here. What I do now is first check for availability and
+            being published all in one query; so if a product is not avaiable or published, it
+            rejects the product_list and return False. However if this step is passed, it will
+            check every product count one by one.
+            Maybe it could be better if I check for product availability and being published 
+            and product count one by one. I don't know...
+        '''
+        product_ids = [x.get('product').id for x in product_list]
+        if self.filter(Available=False, Publish=False, ID__in=product_ids).exist():
+            return False
+        for item in product_list:
+            product = item.get('product').get_from_db()
+            if product.Inventory < item.get('count'):
+                return False
+        return True
+
+    @staticmethod
+    def jsonify_product(product):
+        if type(product) == Product:
+            product = [product]
+        return serializers.serialize('json', product, ensure_ascii=False)
+        
+    def all_public_products(self):
+        return self.all()[:205]
+
 
 
         
@@ -1282,6 +1319,51 @@ class Product(models.Model):
     @property
     def post_range_type(self):
         return self.PostRangeType
+
+
+    ## These properties are created for Torob API
+    @property
+    def page_url(self):
+        return attach_domain(self.get_url())
+
+    @property
+    def page_unique(self):
+        return self.ID
+
+    @property
+    def subtitle(self):
+        return self.Slug
+
+    @property
+    def current_price(self):
+        return self.Price
+
+    @property
+    def availability(self):
+        available = self.Available and self.Publish
+        if available:
+            return 'instock'
+        return ''
+
+    @property
+    def category_name(self):
+        #TODO: this must be changed to category name in future
+        # return self.FK_Category.all()[0].Name
+        return self.FK_SubMarket.Title
+
+    @property
+    def image_link(self):
+        if self.Image:
+            return attach_domain(self.Image.url)
+
+    @property
+    def short_desc(self):
+        return self.Description
+
+    
+
+    
+
 
     def __str__(self):
         return "{}".format(self.Title)
