@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     'captcha',
     'django_prometheus',
     'django_extensions',
+    'cart',
 ]
 
 MIDDLEWARE = [

@@ -30,6 +30,7 @@ urlpatterns = [
     path('', include('nakhll_market.urls', namespace='nakhll_market')),
     url(r'^tinymce/', include('tinymce.urls')),
     url(r'^cart/', include('Payment.urls' , namespace='Payment')),
+    url(r'^cart2/', include('cart.urls' , namespace='cart_new')),
     url(r'^app/api/', include('restapi.urls' , namespace='restapi')),
     path('accounting/', include('accounting.urls', namespace='accounting')),
     # api version 1

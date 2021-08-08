@@ -12,6 +12,7 @@ from django.contrib.auth.models import User,Group
 from django.contrib.auth.models import (AbstractUser)
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
+from django.core import serializers
 from django.conf import settings
 from django.utils.deconstruct import deconstructible
 from django.utils import timezone
@@ -1042,6 +1043,40 @@ class ProductManager(models.Manager):
 
     def outofstock_products(self, user, shop_slug):
         return self.filter(FK_Shop__FK_ShopManager=user, FK_Shop__Slug=shop_slug, Publish=True, Inventory__lt=1)
+
+    @staticmethod
+    def is_product_available(product, count):
+        ''' Check if product is available and published and also have enough items in stock '''
+        return \
+            product.Available and \
+            product.Publish and \
+            product.Inventory > count
+
+
+    def is_product_list_valid(self, product_list):
+        ''' Check if products in product_list is available, published and have enough in stock
+            Optimization is important here. What I do now is first check for availability and
+            being published all in one query; so if a product is not avaiable or published, it
+            rejects the product_list and return False. However if this step is passed, it will
+            check every product count one by one.
+            Maybe it could be better if I check for product availability and being published 
+            and product count one by one. I don't know...
+        '''
+        product_ids = [x.get('product').id for x in product_list]
+        if self.filter(Available=False, Publish=False, ID__in=product_ids).exist():
+            return False
+        for item in product_list:
+            product = item.get('product').get_from_db()
+            if product.Inventory < item.get('count'):
+                return False
+        return True
+
+    @staticmethod
+    def jsonify_product(product):
+        if type(product) == Product:
+            product = [product]
+        return serializers.serialize('json', product, ensure_ascii=False)
+        
 
 
 
