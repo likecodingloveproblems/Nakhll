@@ -216,6 +216,20 @@
                                 </div>
                             </div>
                         {% endif %}
+
+                        {% if profile_form.errors %}
+                            <div class="col-xl-12 xol-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <i class="far fa-exclamation-circle"></i><strong>
+                                        ویرایش اطلاعات کاربری با خطا همراه بود. لطفا خطاهای کنونی را بررسی کنید.
+                                    </strong>
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            </div>
+ 
+                        {% endif %}
                     </div>
                 </div>
 
@@ -248,11 +262,17 @@
                                     <div class="form-group col-md-6">
                                         <label for="inputFirstName">نام <code>*</code></label>
                                         {{user_form.first_name}}
+                                        {% if user_form.first_name.errors %}
+                                        <div style="color: red">{{user_form.first_name.errors}}</div>
+                                        {% endif %}
                                     </div>
 
                                     <div class="form-group col-md-6">
                                         <label for="inputLastName">نام خانوادگی <code>*</code></label>
                                         {{user_form.last_name}}
+                                        {% if user_form.last_name.errors %}
+                                        <div style="color: red">{{user_form.last_name.errors}}</div>
+                                        {% endif %}
                                     </div>
                                 </div>
 
@@ -260,11 +280,17 @@
                                     <div class="form-group col-md-4">
                                         <label for="inputSex">جنسیت </label>
                                         {{profile_form.Sex}}
+                                        {% if profile_form.Sex.errors %}
+                                        <div style="color: red">{{profile_form.Sex.errors}}</div>
+                                        {% endif %}
                                     </div> 
 
                                      <div class="form-group col-md-8">
                                         <label for="Bio">درباره من</label>
                                         {{profile_form.Bio}}
+                                        {% if profile_form.Bio.errors %}
+                                        <div style="color: red">{{profile_form.Bio.errors}}</div>
+                                        {% endif %}
                                     </div>  
                                 </div>   
                                 
@@ -273,11 +299,17 @@
                                     <div class="form-group col-md-6">
                                         <label for="inputusername">نام کاربری </label>
                                         {{profile_form.MobileNumber}}
+                                        {% if profile_form.MobileNumber.errors %}
+                                        <div style="color: red">{{profile_form.MobileNumber.errors}}</div>
+                                        {% endif %}
                                     </div>
 
                                     <div class="form-group col-md-6">
                                         <label for="inputEmail">ایمیل </label>
                                         {{user_form.email}}
+                                        {% if user_form.email.errors %}
+                                        <div style="color: red">{{user_form.email.errors}}</div>
+                                        {% endif %}
                                     </div>
                                 </div>
 
@@ -287,6 +319,9 @@
                                         <fieldset>
                                           {{profile_form.NationalCode}}   
                                         </fieldset>
+                                        {% if profile_form.NationalCode.errors %}
+                                        <div style="color: red">{{profile_form.NationalCode.errors}}</div>
+                                        {% endif %}
                                     </div>
 
                                     <div class="form-group col-md-6">
@@ -298,6 +333,9 @@
                                                 endDate:"today"
                                             });
                                         </script>
+                                        {% if profile_form.BrithDay.errors %}
+                                        <div style="color: red">{{profile_form.BrithDay.errors}}</div>
+                                        {% endif %}
                                     </div>
                                 </div>
 
@@ -341,6 +379,9 @@
                                             <option value="31">چهارمحال وبختیاری</option>
                                             <option value="32">البرز</option>
                                         </select>
+                                        {% if profile_form.State.errors %}
+                                        <div style="color: red">{{profile_form.State.errors}}</div>
+                                        {% endif %}
                                     </div>
 
                                     <div class="form-group col-md-6">
@@ -351,6 +392,9 @@
                                             {% endif %}
                                             <option value="0">شهرستان خود را انتخاب نمائید...</option>
                                         </select>
+                                        {% if profile_form.BigCity.errors %}
+                                        <div style="color: red">{{profile_form.BigCity.errors}}</div>
+                                        {% endif %}
                                     </div>
 
                                     <div class="form-group col-md-6">
@@ -361,6 +405,9 @@
                                             {% endif %}
                                             <option value="0">شهر خود را انتخاب نمائید...</option>
                                         </select>
+                                        {% if profile_form.City.errors %}
+                                        <div style="color: red">{{profile_form.City.errors}}</div>
+                                        {% endif %}
                                     </div>
                                     <script>
                                         var selectedState;
@@ -469,6 +516,9 @@
                                     <div class="form-group col-md-6">
                                         <label for="inputZipCode">کد پستی</label>
                                           {{profile_form.ZipCode}}
+                                        {% if profile_form.ZipCode.errors %}
+                                        <div style="color: red">{{profile_form.ZipCode.errors}}</div>
+                                        {% endif %}
                                     </div>
                                 </div>
 
@@ -476,11 +526,17 @@
                                     <div class="form-group col-md-6">
                                         <label for="inputAddress">آدرس</label>
                                           {{profile_form.Address}}
+                                        {% if profile_form.Address.errors %}
+                                        <div style="color: red">{{profile_form.Address.errors}}</div>
+                                        {% endif %}
                                     </div>
 
                                     <div class="form-group col-md-6">
                                         <label for="inputTutorialWebsite">نحوه آشنایی با سایت</label>
                                            {{profile_form.TutorialWebsite}}
+                                        {% if profile_form.TutorialWebsite.errors %}
+                                        <div style="color: red">{{profile_form.TutorialWebsite.errors}}</div>
+                                        {% endif %}
                                     </div>
                                 </div>
 
@@ -488,17 +544,26 @@
                                     <div class="form-group col-md-5">
                                         <label for="inputPhoneNumber">تلفن ثابت</label>
                                         {{profile_form.PhoneNumber}}
+                                        {% if profile_form.PhoneNumber.errors %}
+                                        <div style="color: red">{{profile_form.PhoneNumber.errors}}</div>
+                                        {% endif %}
                                     </div>
 
                                     <div class="form-group col-md-1">
                                         <label for="inputCityPerCode">پیش شماره</label>
                                         {{profile_form.CityPerCode}}
+                                        {% if profile_form.CityPerCode.errors %}
+                                        <div style="color: red">{{profile_form.CityPerCode.errors}}</div>
+                                        {% endif %}
                                     </div>
 
                                     <div class="form-group col-md-5">
                                         <label for="inputMobileNumber">شماره موبایل</label>
                                         <fieldset>
                                            {{profile_form.MobileNumber}}
+                                        {% if profile_form.MobileNumber.errors %}
+                                        <div style="color: red">{{profile_form.MobileNumber.errors}}</div>
+                                        {% endif %}
                                         </fieldset>
                                     </div>
 
@@ -506,6 +571,9 @@
                                         <label for="inputCountrPreCode">کد کشور</label>
                                         <fieldset>
                                           {{profile_form.CountrPreCode}}
+                                        {% if profile_form.CountrPreCode.errors %}
+                                        <div style="color: red">{{profile_form.CountrPreCode.errors}}</div>
+                                        {% endif %}
                                         </fieldset>
                                     </div>
                                 </div>
