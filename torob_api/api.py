@@ -1,4 +1,5 @@
 import math
+from urllib.parse import unquote
 from rest_framework import views, permissions, status
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
@@ -39,6 +40,8 @@ class TorobAllProducts(GenericAPIView):
     def get_queryset(self, page_url=None, page_unique=None):
         if page_url:
             slug = page_url.split('/')[-2]
+            # Convert URL Encoded chars to UTF-8 
+            slug = unquote(slug)
             return Product.objects.filter(Slug=slug)
         elif page_unique:
             return Product.objects.filter(ID=page_unique)

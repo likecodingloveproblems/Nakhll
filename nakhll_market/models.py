@@ -1078,7 +1078,7 @@ class ProductManager(models.Manager):
         return serializers.serialize('json', product, ensure_ascii=False)
         
     def all_public_products(self):
-        return self.all()[:205]
+        return self.filter(Publish=True, Available=True).order_by('-DateUpdate')
 
 
 
