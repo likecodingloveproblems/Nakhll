@@ -31,7 +31,7 @@ class CartItemReadSerializer(serializers.ModelSerializer):
 
 
 class CartSerializer(serializers.ModelSerializer):
-    items = CartItemReadSerializer(many=True, read_only=True)
+    ordered_items = CartItemReadSerializer(many=True, read_only=True)
     class Meta:
         model = Cart
         fields = ('user', 'guest_unique_id', 'status', 'created_datetime', 'change_status_datetime', 'ordered_items', 'get_diffrences')
