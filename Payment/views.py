@@ -927,9 +927,13 @@ def unsuccessful(request):
 
 
 # Add Product To Cart With Attribute Price Page
-@login_required
+# @login_required
 @csrf_exempt
 def AddProductToCartWithAttrPrice(request, ID):
+    # Simply redirect to new cart api 
+    res = redirect('cart_new:api_cart_items-add', pk=ID)
+    rev = reverse('Payment:cartdetail')
+    return redirect(rev)
     # Get This Product
     this_product = get_object_or_404(Product, ID = ID)
     if request.method == 'POST':
