@@ -65,7 +65,21 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
     def partial_update(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)
 
-
+    @action(detail=True, methods=['GET'], name='Add item to active cart')
+    def add(self, request, pk):
+        user, guid = get_user_or_guest(self.request)
+        cart = CartManager.user_active_cart(user, guid)
+        data = {
+            'product': pk,
+            'count': 1
+        } 
+        serializer_class = self.get_serializer_class()
+        serializer = serializer_class(data=data)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            return Response(serializer.data)
+        return Response(serializer.errors)
+        
 
 
     def perform_create(self, serializer):
