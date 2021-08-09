@@ -117,7 +117,10 @@ class Cart(models.Model):
             last_items_json != new_items_json,
             last_items_json, new_items_json)
 
-
+    @property
+    def ordered_items(self):
+        ''' Return all cart items in order by shop'''
+        return self.items.order_by('-product__FK_Shop')
 
 
 
