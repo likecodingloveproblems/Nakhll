@@ -94,6 +94,16 @@ class Cart(models.Model):
     objects = CartManager()
 
     @property
+    def total_discount(self):
+        discounts = []
+        for item in self.items.all():
+            price = item.product.Price 
+            old_price = item.product.OldPrice or price
+            discount = (old_price - price) * item.count
+            discounts.append(discount)
+        return sum(discounts)
+
+    @property
     def total_price(self):
         return sum([item.product.Price * item.count for item in self.items.all()])
 
