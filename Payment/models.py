@@ -1186,7 +1186,11 @@ class Factor(models.Model):
 
     @property
     def total_price(self):
-        return self.TotalPrice
+        total = 0
+        for FactorPost in self.FK_FactorPost.all():
+            price = FactorPost.get_total_item_price()
+            total += price
+        return int(total)
 
     @property
     def payment_status(self):
