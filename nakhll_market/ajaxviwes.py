@@ -484,6 +484,15 @@ def check_user_bank_account_info(request):
 
 # Add To Cart WithOur Price Attribute With Ajax
 def add_to_cart_without_price_attribute(request):
+    # Redirect to new Cart module 
+    response_data = {}
+    ID = request.POST.get("product_id")
+    if ID:
+        return redirect('cart_new:api_cart_items-add', pk=ID)
+    response_data['status'] = False
+    response_data['code'] = '404'
+    response_data['msg'] = 'Product Not Available'
+    return JsonResponse(response_data)
     response_data = {}
     try:
         if Product.objects.filter(ID = request.POST.get("product_id")).exists():
@@ -541,6 +550,21 @@ def add_to_cart_without_price_attribute(request):
 
 # Add To Cart With Price Attribute With Ajax
 def add_to_cart_with_price_attribute(request):
+    # Redirect to new Cart module 
+    response_data = {}
+    ID = request.POST.get("product_id")
+    if ID:
+        return redirect('cart_new:api_cart_items-add', pk=ID)
+    response_data['status'] = False
+    response_data['code'] = '404'
+    response_data['msg'] = 'Product Not Available'
+    return JsonResponse(response_data)
+
+
+
+
+
+
     response_data = {}
     if request.user.is_authenticated:
         try:

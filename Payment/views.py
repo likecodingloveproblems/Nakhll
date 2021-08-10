@@ -1,3 +1,4 @@
+import requests as rq
 from django.shortcuts import render, redirect, get_object_or_404, reverse
 from django.http import HttpResponse, HttpResponseRedirect
 
@@ -755,6 +756,9 @@ def verify(request):
 
 
 def add_to_cart(request ,ID):
+    # Simply redirect to new cart api 
+    return redirect('cart_new:api_cart_items-add', pk=ID)
+
     if request.user.is_authenticated :
         item = get_object_or_404(Product, ID = ID)
         if (item.Status != '4') and (item.Inventory != 0):
@@ -931,9 +935,12 @@ def unsuccessful(request):
 @csrf_exempt
 def AddProductToCartWithAttrPrice(request, ID):
     # Simply redirect to new cart api 
-    res = redirect('cart_new:api_cart_items-add', pk=ID)
-    rev = reverse('Payment:cartdetail')
-    return redirect(rev)
+    protocol = "https://" if request.is_secure() else "http://"
+    domain = request.META['HTTP_HOST']
+    url = reverse('cart_new:api_cart_items-add', args=(ID,))
+    request = rq.get(f'{protocol}{domain}{url}')
+    # TODO: Change to url of new cart next js app
+    return redirect('cart_new:api_carts-my')
     # Get This Product
     this_product = get_object_or_404(Product, ID = ID)
     if request.method == 'POST':
