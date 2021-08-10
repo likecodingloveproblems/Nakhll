@@ -133,54 +133,63 @@
         $.ajax(
             {
                 type: 'POST',
-                url: '{% url "nakhll_market:add_to_cart_with_price_attribute" %}',
+                // url: '{% url "nakhll_market:add_to_cart_with_price_attribute" %}',
+                // data: {
+                //     product_id : product_ID ,
+                //     attrpriceitem : attrprice_list ,
+                //     csrfmiddlewaretoken : $('input[name=csrfmiddlewaretoken]').val(),
+                // },
+                url: '{% url "cart_new:api_cart_items-list" %}',
                 data: {
-                    product_id : product_ID ,
-                    attrpriceitem : attrprice_list ,
-                    csrfmiddlewaretoken : $('input[name=csrfmiddlewaretoken]').val(),
+                    product: product_ID,
+                    count: 1,
                 },
                 success: function (json) {
-                    if (json.status) {
-                        if (json.code === '200') {
-                            $('#title-modal-add-to-cart').html(" انجام شد ...");
-                            $('#text-modal-add-to-cart').html("<i class='fas fa-check ok-add-cart'></i><br> محصول در سبدخرید شما موجود است، به تعداد آن افزوده شد.");
-                            $("#go-to-card").show();
-                            $('#add-to-cart-modal').modal('show');
-                        }
-                        else if (json.code === '201') {
-                            $('#title-modal-add-to-cart').html("انجام شد ...");
-                            $('#text-modal-add-to-cart').html("<i class='fas fa-check ok-add-cart'></i><br> محصول موردنظر با موفقیت به سبدخرید شما اضافه شد.");
-                            $("#go-to-card").show();
-                            $('#add-to-cart-modal').modal('show');
-                        }
-                    }
-                    else {
-                        if (json.code === '404') {
-                            $('#title-modal-add-to-cart').html("خطا");
-                            $('#text-modal-add-to-cart').html("<i class='far fa-times cancel-add-cart'></i><br>موجودی محصول کافی نمی باشد ...");
-                            $("#go-to-card").show();
-                            $('#add-to-cart-modal').modal('show');
-                        }
-                        else if (json.code === '500') {
-                            $('#title-modal-add-to-cart').html("خطا");
-                            $('#text-modal-add-to-cart').html("<i class='far fa-times cancel-add-cart'></i><br> خطایی رخ داده است <br>" + json.msg );
-                            $("#go-to-card").show();
-                            $('#add-to-cart-modal').modal('show');
-                        }
-                        else if (json.code === '400') {
-                            $('#title-modal-add-to-cart').html("خطا");
-                            $('#text-modal-add-to-cart').html("<i class='far fa-times cancel-add-cart'></i><br> محصول مورد نظر یافت نشد.");
-                            $("#go-to-card").show();
-                            $('#add-to-cart-modal').modal('show');
-                        }
-                        else if (json.code === '401') {
-                            $('#title-modal-add-to-cart').html("خطا");
-                            $('#text-modal-add-to-cart').html("<i class='far fa-times cancel-add-cart'></i><br> ابتدا به حساب کاربری خود وارد شوید و یا ثبت نام کنید ...");
-                            $("#go-to-card").hide();
-                            $('#add-to-cart-modal').modal('show');
-                        }
-                    }
-                    shopping_cart();
+                    $('#title-modal-add-to-cart').html("انجام شد ...");
+                    $('#text-modal-add-to-cart').html("<i class='fas fa-check ok-add-cart'></i><br> محصول موردنظر با موفقیت به سبدخرید شما اضافه شد.");
+                    $("#go-to-card").show();
+                    $('#add-to-cart-modal').modal('show');
+                    // if (json.status) {
+                    //     if (json.code === '200') {
+                    //         $('#title-modal-add-to-cart').html(" انجام شد ...");
+                    //         $('#text-modal-add-to-cart').html("<i class='fas fa-check ok-add-cart'></i><br> محصول در سبدخرید شما موجود است، به تعداد آن افزوده شد.");
+                    //         $("#go-to-card").show();
+                    //         $('#add-to-cart-modal').modal('show');
+                    //     }
+                    //     else if (json.code === '201') {
+                    //         $('#title-modal-add-to-cart').html("انجام شد ...");
+                    //         $('#text-modal-add-to-cart').html("<i class='fas fa-check ok-add-cart'></i><br> محصول موردنظر با موفقیت به سبدخرید شما اضافه شد.");
+                    //         $("#go-to-card").show();
+                    //         $('#add-to-cart-modal').modal('show');
+                    //     }
+                    // }
+                    // else {
+                    //     if (json.code === '404') {
+                    //         $('#title-modal-add-to-cart').html("خطا");
+                    //         $('#text-modal-add-to-cart').html("<i class='far fa-times cancel-add-cart'></i><br>موجودی محصول کافی نمی باشد ...");
+                    //         $("#go-to-card").show();
+                    //         $('#add-to-cart-modal').modal('show');
+                    //     }
+                    //     else if (json.code === '500') {
+                    //         $('#title-modal-add-to-cart').html("خطا");
+                    //         $('#text-modal-add-to-cart').html("<i class='far fa-times cancel-add-cart'></i><br> خطایی رخ داده است <br>" + json.msg );
+                    //         $("#go-to-card").show();
+                    //         $('#add-to-cart-modal').modal('show');
+                    //     }
+                    //     else if (json.code === '400') {
+                    //         $('#title-modal-add-to-cart').html("خطا");
+                    //         $('#text-modal-add-to-cart').html("<i class='far fa-times cancel-add-cart'></i><br> محصول مورد نظر یافت نشد.");
+                    //         $("#go-to-card").show();
+                    //         $('#add-to-cart-modal').modal('show');
+                    //     }
+                    //     else if (json.code === '401') {
+                    //         $('#title-modal-add-to-cart').html("خطا");
+                    //         $('#text-modal-add-to-cart').html("<i class='far fa-times cancel-add-cart'></i><br> ابتدا به حساب کاربری خود وارد شوید و یا ثبت نام کنید ...");
+                    //         $("#go-to-card").hide();
+                    //         $('#add-to-cart-modal').modal('show');
+                    //     }
+                    // }
+                    // shopping_cart();
                 },
                 error: function () {
                     $('#title-modal-add-to-cart').html("خطا");
