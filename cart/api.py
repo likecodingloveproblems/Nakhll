@@ -92,7 +92,7 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
         return Response(cart_serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-    @action(detail=True, methods=['DELETE'], name='Remove item from active cart')
+    @action(detail=True, methods=['GET'], name='Remove item from active cart')
     def remove(self, request, pk):
         item = self.get_object()
 
