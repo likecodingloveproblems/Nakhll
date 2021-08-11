@@ -1,5 +1,5 @@
 import math
-from urllib.parse import unquote
+from django.shortcuts import redirect
 from rest_framework import views, permissions, status
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
@@ -37,12 +37,15 @@ class TorobAllProducts(GenericAPIView):
     queryset = Product.objects.all_public_products()
     page_size = 100
 
+    def get(self, request, pk, format=None):
+        product = self.get_object()
+        return redirect(product.get_absolute_url())
+        
+
     def get_queryset(self, page_url=None, page_unique=None):
         if page_url:
-            slug = page_url.split('/')[-2]
-            # Convert URL Encoded chars to UTF-8 
-            slug = unquote(slug)
-            return Product.objects.filter(Slug=slug)
+            ID = page_url.split('/')[-2]
+            return Product.objects.filter(ID=ID)
         elif page_unique:
             return Product.objects.filter(ID=page_unique)
         else:

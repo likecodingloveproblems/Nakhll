@@ -1324,7 +1324,8 @@ class Product(models.Model):
     ## These properties are created for Torob API
     @property
     def page_url(self):
-        return attach_domain(self.get_url())
+        url = f'torob/products/{self.ID}/'
+        return attach_domain(url)
 
     @property
     def page_unique(self):
