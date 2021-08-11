@@ -2517,7 +2517,7 @@ class FactorDetails(APIView):
         factor_id = request.GET.get('factor_id', 0)
         factor = get_object_or_404(Factor,ID=factor_id) 
         self.check_object_permissions(request, factor)
-        serializer = FactorAllDetailsSerializer(factor)
+        serializer = FactorAllDetailsSerializer(factor, context={'request': request})
         return Response(serializer.data)
 
 
