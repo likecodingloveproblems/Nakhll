@@ -345,6 +345,15 @@ class FactorAllDetailsSerializer(ModelSerializer):
     # staff = ProfileSerializer(read_only=True, many=False)
     # staff_checkout = ProfileSerializer(read_only=True, many=False)
 
+    total_user_price = serializers.SerializerMethodField()
+    def get_total_user_price(self, obj):
+        user = self.context.get('request').user
+        total = 0
+        for factor_post in FactorPost.objects.filter(Factor_Products=obj, FK_Product__FK_Shop__FK_ShopManager=user):
+            price = factor_post.get_total_item_price()
+            total += price
+        return total
+
     class Meta:
         model = Factor
         fields = [
@@ -375,7 +384,7 @@ class FactorAllDetailsSerializer(ModelSerializer):
             # Total Price
             # Count
 
-            'total_price',
+            'total_user_price',
             # Deliver Total Price
             # Wage
             # Checkout Price
