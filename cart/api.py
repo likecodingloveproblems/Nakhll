@@ -68,6 +68,18 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(cart_serializer.data)
         return Response(cart_serializer.data, status=status.HTTP_204_NO_CONTENT, headers=headers)
 
+    @action(detail=True, methods=['GET'], name='Delete whole cart item')
+    def delete(self, request, pk):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+
+        user, guid = get_user_or_guest(self.request)
+        cart_serializer = CartSerializer(CartManager.user_active_cart(user, guid))
+        headers = self.get_success_headers(cart_serializer.data)
+        return Response(cart_serializer.data, status=status.HTTP_200_OK, headers=headers)
+
+
+
     def update(self, request, *args, **kwargs):
         return super().update(request, *args, **kwargs)
 
