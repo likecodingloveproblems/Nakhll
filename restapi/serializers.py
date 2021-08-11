@@ -179,9 +179,11 @@ class ProductTitleSerializer(ModelSerializer):
 
 
 class SimpleProductSerializer(ModelSerializer):
+    shop = serializers.SlugRelatedField(read_only = True, slug_field = 'Slug')
     class Meta:
         model = Product
         fields = [
+            'shop',
             'title',
             'price', 
             'old_price',
@@ -230,6 +232,12 @@ class FactorPostSerializer(ModelSerializer):
             'EndPrice',
         ]
 
+class FilteredFactorPostListSerializer(serializers.ListSerializer):
+    def to_representation(self, data):
+        user = self.context.get('request').user
+        data = data.filter(FK_Product__FK_Shop__FK_ShopManager = user)
+        return super(FilteredFactorPostListSerializer, self).to_representation(data)
+
 class SimpleFactorPostSerializer(ModelSerializer):
     # FK_Product = ProductTitleSerializer(read_only = True)
     product = SimpleProductSerializer(read_only = True)
@@ -247,7 +255,7 @@ class SimpleFactorPostSerializer(ModelSerializer):
             'product_status_value',
             'barcodes'
         ]
-
+        list_serializer_class = FilteredFactorPostListSerializer
 
 
 
