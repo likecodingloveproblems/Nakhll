@@ -20,6 +20,9 @@ class CartItemSerializer(serializers.ModelSerializer):
 class CartItemReadSerializer(serializers.ModelSerializer):
     cart = serializers.PrimaryKeyRelatedField(read_only=True)
     product = ProductSerializer(read_only=True, many=False)
+    total_price = serializers.SerializerMethodField()
+    def get_total_price(self, obj):
+        return obj.product.price * obj.count
     class Meta:
         model = CartItem
         # fields = ('cart', 'product', 'count', 'product_last_known_state')
