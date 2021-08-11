@@ -60,7 +60,13 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
         return super().create(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
-        return super().destroy(request, *args, **kwargs)
+        instance = self.get_object()
+        self.perform_destroy(instance)
+
+        user, guid = get_user_or_guest(self.request)
+        cart_serializer = CartSerializer(CartManager.user_active_cart(user, guid))
+        headers = self.get_success_headers(cart_serializer.data)
+        return Response(cart_serializer.data, status=status.HTTP_204_NO_CONTENT, headers=headers)
 
     def update(self, request, *args, **kwargs):
         return super().update(request, *args, **kwargs)
@@ -79,8 +85,11 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
         serializer = serializer_class(data=data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+        user, guid = get_user_or_guest(self.request)
+        cart_serializer = CartSerializer(CartManager.user_active_cart(user, guid))
+        headers = self.get_success_headers(cart_serializer.data)
+        return Response(cart_serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
     @action(detail=True, methods=['DELETE'], name='Remove item from active cart')
@@ -93,7 +102,11 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
             item.count = item.count - 1
             item.save()
 
-        return Response(status=status.HTTP_204_NO_CONTENT)
+
+        user, guid = get_user_or_guest(self.request)
+        cart_serializer = CartSerializer(CartManager.user_active_cart(user, guid))
+        headers = self.get_success_headers(cart_serializer.data)
+        return Response(cart_serializer.data, status=status.HTTP_204_NO_CONTENT, headers=headers)
 
 
     def perform_create(self, serializer):
