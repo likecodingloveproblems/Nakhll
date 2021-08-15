@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(make_int),
+        # migrations.RunPython(make_int),
         migrations.AlterField(
             model_name='product',
             name='OldPrice',

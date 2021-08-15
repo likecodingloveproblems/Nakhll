@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     'django_prometheus',
     'django_extensions',
     'cart',
+    'coupon',
 ]
 
 MIDDLEWARE = [
