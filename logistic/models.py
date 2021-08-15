@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from nakhll_market.models import State, BigCity, City
 from logistic.managers import AddressManager
+from logistic.interfaces import PostPriceSettingInterface
 
 
 # Create your models here.
@@ -24,3 +25,17 @@ class Address(models.Model):
         return f'{self.user}: {self.address}'
 
 
+class PostPriceSetting(models.Model, PostPriceSettingInterface):
+    ''' Post price settings '''
+    class Meta:
+        verbose_name = _('تنظیمات قیمت پستی')
+        verbose_name_plural = _('تنظیمات قیمت پستی')
+    user = models.ForeignKey(User, verbose_name=_('کاربر'), related_name='post_price_settings', on_delete=models.SET_NULL, null=True)
+    inside_city_price = models.PositiveIntegerField(verbose_name=_('قیمت پست درون شهری (ریال)'), default=150000)
+    outside_city_price = models.PositiveIntegerField(verbose_name=_('قیمت پست برون شهری (ریال)'), default=200000)
+    extra_weight_fee = models.PositiveIntegerField(verbose_name=_('قیمت به ازای هر کیلو اضافه (ریال)'), default=20000)
+    created_datetime = models.DateTimeField(verbose_name=_('تاریخ ایجاد'), auto_now_add=True)
+    updated_datetime = models.DateTimeField(verbose_name=_('تاریخ بروزرسانی'), auto_now=True)
+    def __str__(self):
+        return f'{self.user}: {self.inside_city_price} تومان'
+    
