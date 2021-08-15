@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
+from logistic.models import PostPriceSetting
 import os
 from django.urls.base import reverse_lazy
 import sentry_sdk
@@ -112,7 +113,13 @@ ADMIN_REORDER = (
         'nakhll_market.Alert',
         'nakhll_market.AmazingProduct'
     )},
-
+    {
+        'app': 'logistic',
+        'models': (
+            'logistic.Address',
+            'logistic.PostPriceSetting',
+        )
+    },
     {'app': 'Payment', 'label': 'بخش مالی','models':(
         'Payment.Wallet',
         'Payment.Factor',
