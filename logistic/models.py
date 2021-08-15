@@ -20,6 +20,9 @@ class Address(models.Model):
     address = models.TextField(verbose_name=_('آدرس'))
     zip_code = models.CharField(verbose_name=_('کد پستی'), max_length=10)
     phone_number = models.CharField(verbose_name=_('تلفن ثابت'), max_length=11)
+    receiver_full_name = models.CharField(verbose_name=_('نام و نام خانوادگی گیرنده'), max_length=200)
+    receiver_mobile_number = models.CharField(verbose_name=_('تلفن همراه گیرنده'), max_length=11)
+
     objects = AddressManager()
     def __str__(self):
         return f'{self.user}: {self.address}'
