@@ -31,6 +31,7 @@ urlpatterns = [
     url(r'^tinymce/', include('tinymce.urls')),
     url(r'^cart/', include('Payment.urls' , namespace='Payment')),
     url(r'^cart2/', include('cart.urls' , namespace='cart_new')),
+    url(r'^logistic/', include('logistic.urls' , namespace='logistic')),
     url(r'^app/api/', include('restapi.urls' , namespace='restapi')),
     path('accounting/', include('accounting.urls', namespace='accounting')),
     # api version 1
