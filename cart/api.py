@@ -66,7 +66,7 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
         user, guid = get_user_or_guest(self.request)
         cart_serializer = CartSerializer(CartManager.user_active_cart(user, guid))
         headers = self.get_success_headers(cart_serializer.data)
-        return Response(cart_serializer.data, status=status.HTTP_204_NO_CONTENT, headers=headers)
+        return Response(cart_serializer.data, status=status.HTTP_200_OK, headers=headers)
 
     @action(detail=True, methods=['GET'], name='Delete whole cart item')
     def delete(self, request, pk):
@@ -118,7 +118,7 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
         user, guid = get_user_or_guest(self.request)
         cart_serializer = CartSerializer(CartManager.user_active_cart(user, guid))
         headers = self.get_success_headers(cart_serializer.data)
-        return Response(cart_serializer.data, status=status.HTTP_204_NO_CONTENT, headers=headers)
+        return Response(cart_serializer.data, status=status.HTTP_200_OK, headers=headers)
 
 
     def perform_create(self, serializer):
