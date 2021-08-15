@@ -1,5 +1,4 @@
 from rest_framework.validators import ValidationError
-from logistic.models import PostPriceSetting
 
 
 class PostPriceSettingInterface:
@@ -10,13 +9,6 @@ class PostPriceSettingInterface:
         After inharitance, self variable reference to a setting object
         which contains prices to calculate post_price.
     '''
-
-    def _get_post_price_setting(self):
-        ''' Get latest post price setting object or generate a new one'''
-        setting = PostPriceSetting.objects.all().order_by('-id').first()
-        if not setting:
-            setting = PostPriceSetting.objects.create()
-        return setting
 
 
     def _is_vaild_shop_post_range(self, shop, user_address):
