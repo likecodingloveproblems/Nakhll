@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
-from nakhll_market.models import State, BigCity, City
+from nakhll_market.models import BankAccount, State, BigCity, City
 from logistic.managers import AddressManager
 from logistic.interfaces import PostPriceSettingInterface
 
@@ -19,7 +19,7 @@ class Address(models.Model):
     city = models.ForeignKey(City, verbose_name=_('شهر'), related_name='addresses', on_delete=models.CASCADE)
     address = models.TextField(verbose_name=_('آدرس'))
     zip_code = models.CharField(verbose_name=_('کد پستی'), max_length=10)
-    phone_number = models.CharField(verbose_name=_('تلفن ثابت'), max_length=11)
+    phone_number = models.CharField(verbose_name=_('تلفن ثابت'), max_length=11, null=True, blank=True)
     receiver_full_name = models.CharField(verbose_name=_('نام و نام خانوادگی گیرنده'), max_length=200)
     receiver_mobile_number = models.CharField(verbose_name=_('تلفن همراه گیرنده'), max_length=11)
 
