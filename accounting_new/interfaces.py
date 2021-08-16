@@ -1,0 +1,3 @@
+
+class AccountingInterface:
+    pass
