@@ -49,20 +49,9 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
         user, guid = get_user_or_guest(self.request)
         return CartItem.objects.user_cartitems(user, guid)
 
-
-    def retrieve(self, request, *args, **kwargs):
-        return super().retrieve(request, *args, **kwargs)
-
-    def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
-
-    def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
-
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
-
         user, guid = get_user_or_guest(self.request)
         cart_serializer = CartSerializer(CartManager.user_active_cart(user, guid))
         headers = self.get_success_headers(cart_serializer.data)
@@ -72,19 +61,10 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
     def delete(self, request, pk):
         instance = self.get_object()
         self.perform_destroy(instance)
-
         user, guid = get_user_or_guest(self.request)
         cart_serializer = CartSerializer(CartManager.user_active_cart(user, guid))
         headers = self.get_success_headers(cart_serializer.data)
         return Response(cart_serializer.data, status=status.HTTP_200_OK, headers=headers)
-
-
-
-    def update(self, request, *args, **kwargs):
-        return super().update(request, *args, **kwargs)
-
-    def partial_update(self, request, *args, **kwargs):
-        return super().partial_update(request, *args, **kwargs)
 
     @action(detail=True, methods=['GET'], name='Add item to active cart')
     def add(self, request, pk):
