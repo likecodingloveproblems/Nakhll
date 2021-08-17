@@ -13,9 +13,10 @@ from accounting_new.managers import AccountingManager
 
 class Invoice(models.Model, AccountingInterface):
     class Statuses(models.TextChoices):
-        ACTIVE = 'active', _('فعال')
-        PAYED = 'payed', _('پرداخت شده')
-        FAILURE = 'failure', _('خطا')
+        COMPLETING = 'completing', _('در حال تکمیل')
+        PAYING = 'paying', _('در حال پرداخت')
+        FAILURE = 'failure', _('پرداخت ناموفق')
+        SUCCESS = 'success', _('پرداخت موفق')
     class Meta:
         verbose_name = _('فاکتور')
         verbose_name_plural = _('فاکتورها')
@@ -23,7 +24,7 @@ class Invoice(models.Model, AccountingInterface):
     source_module = models.CharField(_('مبدا'), max_length=50, null=True, blank=True,
             help_text=_('نام ماژولی که این فاکتور رو ایجاد کرده است. به عنوان مثال: cart'))
     status = models.CharField(_('وضعیت فاکتور'), max_length=10, 
-            default=Statuses.ACTIVE, choices=Statuses.choices)
+            default=Statuses.COMPLETING, choices=Statuses.choices)
     cart = models.ForeignKey(Cart, on_delete=models.PROTECT, related_name='factors', 
             verbose_name=_('سبد خرید'))
     address = models.ForeignKey(Address, on_delete=models.PROTECT, null=True,
@@ -32,6 +33,26 @@ class Invoice(models.Model, AccountingInterface):
             blank=True, related_name='invoices', verbose_name=_('کوپن'))
     created_datetime = models.DateTimeField(_('تاریخ ایجاد فاکتور'), auto_now_add=True)
     last_payment_request = models.DateTimeField(_('آخرین درخواست پرداخت'), null=True, blank=True)
+
+    @property
+    def user(self):
+        return self.cart.user
+
+    @property
+    def total_price(self):
+        return self.cart.total_price
+
+    @property
+    def products(self):
+        return self.cart.products
+
+    @property
+    def shops(self):
+        return self.cart.shops
+
+    @property
+    def shop_total_weight(self):
+        return self.cart.cart_weight
 
 
 
