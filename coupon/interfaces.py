@@ -9,23 +9,23 @@ from coupon.validators import (DateTimeValidator, CountValidator, PriceValidator
 class CouponValidation:
     ALL_VALIDATORS = '__all__'
 
-    def __call__(self, user, factor, validators=ALL_VALIDATORS):
+    def __call__(self, user, invoice, validators=ALL_VALIDATORS):
         self._user = user
-        self._factor = factor
+        self._invoice = invoice
         self._validators = validators
 
     def get_validators(self):
-        assert hasattr(self, '_validators'), 'You must call coupon object with user, factor and validators first'
+        assert hasattr(self, '_validators'), 'You must call coupon object with user, invoice and validators first'
             
         if self._validators == self.ALL_VALIDATORS:
             self._validators = [
                 DateTimeValidator(),
                 CountValidator(self._user),
-                PriceValidator(self._factor),
-                ProductValidator(self._factor),
+                PriceValidator(self._invoice),
+                ProductValidator(self._invoice),
                 PublishValidator(),
                 UserValidator(self._user),
-                ShopValidator(self._factor)
+                ShopValidator(self._invoice)
             ]
         return self._validators
 
@@ -34,6 +34,8 @@ class CouponValidation:
     def is_valid(self):
         # if hasattr(self, '_errors'):
             # return True if len(self._errors) == 0 else False
+
+        # TODO: Check if this coupon is in an active invoice or not
 
         self._errors = []
         for validator in self.get_validators():
