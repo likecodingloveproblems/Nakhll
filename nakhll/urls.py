@@ -34,6 +34,7 @@ urlpatterns = [
     url(r'^logistic/', include('logistic.urls' , namespace='logistic')),
     url(r'^app/api/', include('restapi.urls' , namespace='restapi')),
     path('accounting/', include('accounting.urls', namespace='accounting')),
+    path('accounting_new/', include('accounting_new.urls', namespace='accounting_new')),
     # api version 1
     url(r'^api/v1/', include('nakhll_market.api_urls', namespace='nakhll_market_api')),
     # prometheus
