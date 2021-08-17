@@ -112,6 +112,35 @@ class Cart(models.Model):
             old_prices.append(old_price * item.count)
         return sum(old_prices)
 
+    @property
+    def shops(self):
+        # TODO: Needs improvement
+        shops = []
+        for item in self.items.all():
+            shop = item.product.FK_Shop
+            if shop not in shops:
+                shops.append(shop)
+        return shops
+
+    @property
+    def products(self):
+        # TODO: Needs improvement
+        products = []
+        for item in self.items.all():
+            products.append(item.product)
+        return products
+
+    @property
+    def cart_weight(self):
+        # TODO: Needs improvement
+        total_weight = 0
+        for item in self.items.all():
+            try:
+                product_weight = int(item.product.Weight_With_Packing)
+            except:
+                product_weight = 0
+            total_weight += product_weight
+        return total_weight
 
     @property
     def total_price(self):
