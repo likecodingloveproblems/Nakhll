@@ -18,9 +18,9 @@ class DateTimeValidator:
         now = make_aware(datetime.now())
         valid_from = coupon.valid_from
         valid_to = coupon.valid_to
-        if valid_from > now:
+        if valid_from and valid_from > now:
             raise ValidationError(_('زمان استفاده از این کوپن تخفیف نرسیده است'))
-        if valid_to < now:
+        if valid_to and valid_to < now:
             raise ValidationError(_('زمان استفاده از این کوپن تخفیف به پایان رسیده است'))
 
 class PublishValidator:
@@ -41,7 +41,7 @@ class UserValidator:
     def __init__(self, user):
         self.user = user
     def __call__(self, coupon):
-        if coupon.users and self.user not in coupon.users.all():
+        if coupon.users.all() and self.user not in coupon.users.all():
             raise ValidationError(_('این کوپن برای شما فعال نمی باشد.'))
 
 class ShopValidator:
