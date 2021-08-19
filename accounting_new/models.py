@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from nakhll_market.models import Product
 from cart.models import Cart
-from logistic.models import Address
+from logistic.models import Address, PostPriceSetting
 from coupon.models import Coupon
 from accounting_new.interfaces import AccountingInterface
 from accounting_new.managers import AccountingManager
@@ -53,6 +53,18 @@ class Invoice(models.Model, AccountingInterface):
     @property
     def shop_total_weight(self):
         return self.cart.cart_weight
+
+    @property
+    def logistic_price(self):
+        post_setting, is_created = PostPriceSetting.objects.get_or_create()
+        return post_setting.get_post_price(self)
+
+    @property
+    def logistic_errors(self):
+        post_setting, is_created = PostPriceSetting.objects.get_or_create()
+        return post_setting.get_out_of_range_products(self)
+
+
 
 
 
