@@ -64,6 +64,15 @@ class Invoice(models.Model, AccountingInterface):
         post_setting, is_created = PostPriceSetting.objects.get_or_create()
         return post_setting.get_out_of_range_products(self)
 
+    @property
+    def coupon_details(self):
+        coupon = self.coupon
+        if coupon:
+            coupon(self.cart.user, self)
+            coupon.is_valid()
+            return {'result': coupon.final_price, 'errors': coupon.errors}
+        return {}
+
 
 
 
