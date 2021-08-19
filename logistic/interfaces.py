@@ -35,6 +35,8 @@ class PostPriceSettingInterface:
             raise ValidationError(msg)
 
         user_address = factor.address
+        if not user_address:
+            return []
         out_of_range_products = []
         for product in factor.products:
             if not self._is_vaild_product_post_range(product, user_address):
@@ -59,6 +61,8 @@ class PostPriceSettingInterface:
     def _get_factor_post_range_price(self, factor):
         ''' Get post range price from factor '''
         user_address = factor.address
+        if not user_address:
+            return None
         total_post_price = 0
         for shop in factor.shops:
             total_post_price += self._get_shop_post_price(shop, user_address)
