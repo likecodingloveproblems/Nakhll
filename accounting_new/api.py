@@ -36,10 +36,7 @@ class InvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
         invoice = self.get_object()
         if not invoice:
             active_cart = CartManager.user_active_cart(request.user)
-            data = {
-                'cart': active_cart.id,
-                'address': None
-            }
+            data = {'cart': active_cart.id }
             serializer = self.get_serializer(data=data)
             serializer.is_valid(raise_exception=True)
             invoice = self.perform_create(serializer)

@@ -10,8 +10,8 @@ from nakhll_market.serializers import UserSerializer
 
 class InvoiceWriteSerializer(serializers.ModelSerializer):
     cart = serializers.PrimaryKeyRelatedField(queryset=Cart.objects.all())
-    address = serializers.PrimaryKeyRelatedField(queryset=Address.objects.all())
-    coupon = serializers.SlugRelatedField(slug_field='code', queryset=Coupon.objects.all())
+    address = serializers.PrimaryKeyRelatedField(queryset=Address.objects.all(), required=False)
+    coupon = serializers.SlugRelatedField(slug_field='code', queryset=Coupon.objects.all(), required=False)
 
     class Meta:
         model = Invoice
