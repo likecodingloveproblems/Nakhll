@@ -1341,7 +1341,10 @@ class Product(models.Model):
 
     @property
     def availability(self):
-        available = self.Available and self.Publish
+        available = (self.Available and
+                    self.Publish and
+                    (self.Status != '4') and
+                    self.inventory)
         if available:
             return 'instock'
         return ''
