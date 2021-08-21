@@ -78,7 +78,7 @@ class InvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
         coupon(request.user, invoice)
         if coupon.is_valid():
             serializer.save()
-        return Response({'result': coupon.final_price, 'errors': coupon.errors}, status=status.HTTP_200_OK)
+        return Response({'result': coupon.final_price, 'total_invoice_price': coupon.total_invoice_price, 'errors': coupon.errors}, status=status.HTTP_200_OK)
 
     
     @action(methods=['PATCH'], detail=False)

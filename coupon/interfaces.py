@@ -73,6 +73,10 @@ class CouponValidation:
         assert hasattr(self, '_final_price'), 'You should call .is_valid() on coupon first'
         self._final_price = value
 
+    @property
+    def total_invoice_price(self):
+        return self.invoice.total_price
+
 
     @property
     def errors(self):
