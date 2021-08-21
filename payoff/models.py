@@ -18,14 +18,20 @@ class Transaction(models.Model):
 
     invoice = models.ForeignKey(Invoice, verbose_name=_('فاکتور'), on_delete=models.SET_NULL, null=True)
     amount = models.DecimalField(_('مبلغ (ریال)'), max_digits=15, decimal_places=0)
+    order_number = models.CharField(_('شماره سفارش'), max_length=50, null=True, blank=True)
     created_datetime = models.DateTimeField(_('تاریخ ایجاد تراکنش'), auto_now_add=True)
     payoff_datetime = models.DateTimeField(_('تاریخ پرداخت'), null=True, blank=True)
     desceription = models.TextField(_('توضیحات'), null=True, blank=True)
     ipg = models.CharField(max_length=5, choices=IPGTypes.choices, default=IPGTypes.PEC, verbose_name=_('درگاه پرداخت'))
-    status = models.CharField(max_length=50, verbose_name=_('وضعیت'), null=True)
+    token_request_status = models.CharField(max_length=50, verbose_name=_('وضعیت'), null=True)
     token = models.CharField(_('توکن'), max_length=200, null=True)
-    message = models.TextField(_('پیام'), null=True)
+    token_request_message = models.TextField(_('پیام'), null=True)
     mobile = models.CharField(max_length=20, verbose_name=_('تلفن همراه'), null=True)
+
+    def is_succeed(self):
+        if self.result and self.result.status == 0 and self.result.rrn > 0:
+            return True
+        return False
 
 
 class TransactionResult(models.Model):
