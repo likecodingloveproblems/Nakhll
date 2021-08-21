@@ -71,9 +71,15 @@ class Invoice(models.Model, AccountingInterface):
             coupon(self.cart.user, self)
             coupon.is_valid()
             return {'result': coupon.final_price, 'errors': coupon.errors}
-        return {}
+        return {'result': 0, 'errors': []}
 
-
+    @property
+    def final_price(self):
+        ''' Total amount of cart_price + logistic - coupon '''
+        cart_total_price = self.cart.total_price
+        logistic_price = self.logistic_price
+        coupon_price = self.coupon_details.get('result')
+        return cart_total_price + logistic_price - coupon_price
 
 
 
