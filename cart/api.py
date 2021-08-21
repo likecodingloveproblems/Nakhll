@@ -122,7 +122,10 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
             count = count + cart_item.count
 
         if not ProductManager.is_product_available(product, count):
-            raise ValidationError(_('محصول در دسترس نیست و یا به تعداد کافی از این محصول در انبار وجود ندارد'))
+            raise ValidationError(_('محصول در دسترس نیست'))
+
+        if not ProductManager.has_enough_items_in_stock(product, count):
+            raise ValidationError(_('فروشنده قادر به تامین کالا به میزان درخواستی شما نمی‌باشد'))
 
         # Make product jsonify take some time, so it should be after validation
         product_jsonify = ProductManager.jsonify_product(product)
