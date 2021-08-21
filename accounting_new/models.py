@@ -78,7 +78,7 @@ class Invoice(models.Model, AccountingInterface):
         ''' Total amount of cart_price + logistic - coupon '''
         cart_total_price = self.cart.total_price
         logistic_price = self.logistic_price
-        coupon_price = self.coupon_details.get('result')
+        coupon_price = self.coupon_details.get('result') or 0
         return cart_total_price + logistic_price - coupon_price
 
 
