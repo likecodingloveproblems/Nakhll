@@ -75,7 +75,10 @@ class CouponValidation:
 
     @property
     def total_invoice_price(self):
-        return self.invoice.total_price
+        invoices = self.invoices.all()
+        if invoices:
+            return invoices[0].total_price
+        return 0
 
 
     @property

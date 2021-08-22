@@ -7,7 +7,7 @@ class CountValidator:
     def __init__(self, user):
         self.user = user
     def __call__(self, coupon):
-        max_usage = coupon.max_count
+        max_usage = coupon.total_max_count
         user_usage = coupon.usages.filter(user=self.user).count()
         if user_usage >= max_usage:
             message = _(f'شما تابحال {user_usage} بار از این کوپن استفاده کرده اید و دیگر اجازه استفاده آن را ندارید.')
@@ -15,12 +15,12 @@ class CountValidator:
 
 class DateTimeValidator:
     def __call__(self, coupon):
-        now = make_aware(date.now())
+        now = make_aware(datetime.now())
         valid_from = coupon.valid_from
         valid_to = coupon.valid_to
-        if valid_from and valid_from > now:
+        if valid_from and valid_from > now.date():
             raise ValidationError(_('زمان استفاده از این کوپن تخفیف نرسیده است'))
-        if valid_to and valid_to < now:
+        if valid_to and valid_to < now.date():
             raise ValidationError(_('زمان استفاده از این کوپن تخفیف به پایان رسیده است'))
 
 class AvailableValidator:
