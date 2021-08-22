@@ -144,7 +144,12 @@ class Cart(models.Model):
 
     @property
     def total_price(self):
-        return sum([item.product.Price * item.count for item in self.items.all()])
+        prices= []
+        for item in self.items.all():
+            price = item.product.Price 
+            prices.append(price * item.count)
+        return sum(prices)
+
 
     def check_cart_items(self):
         ''' Check for changes and product statuses in every item in cart, show changes for now '''
