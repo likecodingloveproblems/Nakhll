@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from django.utils.translation import ugettext as _
 from django.utils.timezone import make_aware
 from rest_framework.validators import ValidationError
@@ -15,7 +15,7 @@ class CountValidator:
 
 class DateTimeValidator:
     def __call__(self, coupon):
-        now = make_aware(datetime.now())
+        now = make_aware(date.now())
         valid_from = coupon.valid_from
         valid_to = coupon.valid_to
         if valid_from and valid_from > now:
@@ -23,9 +23,9 @@ class DateTimeValidator:
         if valid_to and valid_to < now:
             raise ValidationError(_('زمان استفاده از این کوپن تخفیف به پایان رسیده است'))
 
-class PublishValidator:
+class AvailableValidator:
     def __call__(self, coupon):
-        if not coupon.is_publish:
+        if not coupon.available:
             raise ValidationError(_('این کوپن فعال  نیست'))
 
 class PriceValidator:
@@ -48,13 +48,13 @@ class ShopValidator:
     def __init__(self, factor):
         self.shops = factor.shops
     def __call__(self, coupon):
-        if coupon.shop and coupon.shop not in self.shops:
-            raise ValidationError(_('این کوپن تنها در حجره‌ {coupon.shop} فعال می‌باشد.'))
+        if coupon.shops.all() and self.shops not in coupon.shops.all():
+            raise ValidationError(_('این کوپن در این حجره‌ها فعال نمی‌باشد.'))
 
 class ProductValidator:
     def __init__(self, factor):
         self.products = factor.products
     def __call__(self, coupon):
-        if coupon.product and coupon.product not in self.products:
-            raise ValidationError(_('این کوپن تنها برای محصول {coupon.product} فعال می‌باشد.'))
+        if coupon.products.all() and self.products not in coupon.products.all():
+            raise ValidationError(_('این کوپن برای این محصولات فعال نمی‌باشد.'))
 
