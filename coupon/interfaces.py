@@ -2,7 +2,7 @@ from datetime import datetime
 from django.utils.timezone import make_aware
 from rest_framework.validators import ValidationError
 from coupon.validators import (DateTimeValidator, CountValidator, PriceValidator,
-                               ProductValidator, PublishValidator, UserValidator,
+                               ProductValidator, AvailableValidator, UserValidator,
                                ShopValidator, )
 
 
@@ -23,7 +23,7 @@ class CouponValidation:
                 CountValidator(self._user),
                 PriceValidator(self._invoice),
                 ProductValidator(self._invoice),
-                PublishValidator(),
+                AvailableValidator(),
                 UserValidator(self._user),
                 ShopValidator(self._invoice)
             ]
