@@ -1047,10 +1047,12 @@ class ProductManager(models.Manager):
     @staticmethod
     def is_product_available(product, count):
         ''' Check if product is available and published and also have enough items in stock '''
-        return \
-            product.Available and \
-            product.Publish and \
-            product.Inventory > count
+        return product.Available and product.Publish and product.Inventory >= count and product.Status != '4'
+
+    @staticmethod
+    def has_enough_items_in_stock(product, count):
+        ''' Check if product have enough items in stock '''
+        return product.Inventory >= count
 
 
     def is_product_list_valid(self, product_list):
