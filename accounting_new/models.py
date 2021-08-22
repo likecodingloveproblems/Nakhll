@@ -81,5 +81,11 @@ class Invoice(models.Model, AccountingInterface):
         coupon_price = self.coupon_details.get('result') or 0
         return cart_total_price + logistic_price - coupon_price
 
+    def close(self):
+        self.status = self.Statuses.SUCCESS
+        self.save()
 
+    def initialize_payment(self):
+        self.status = self.Statuses.PAYING
+        self.save()
 
