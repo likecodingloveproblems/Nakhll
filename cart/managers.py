@@ -20,6 +20,14 @@ class CartManager(models.Manager):
             if user else \
             self.filter(guest_unique_id=guid or uuid.uuid4())
 
+    def close(self):
+        self.status = cart_models.Cart.Statuses.CLOSED
+        self.save()
+        # reduce product count in stock
+        for cart_item in self.items.all():
+            cart_item.product.Inventory -= cart_item.count
+            cart_item.product.save()
+
 
     @staticmethod
     def convert_guest_to_user_cart(user, guid):
