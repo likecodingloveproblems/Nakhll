@@ -1375,7 +1375,8 @@ class Product(models.Model):
             "3" : 'سفارشی سازی فروش',
             "4" : 'موجود نیست',
         }
-        return Status[self.Status]
+        return Status[self.Status] if (self.Status == '1' and self.inventory)\
+             or (self.Status in ['2', '3']) else Status['4']
 
     def get_sendtype(self):
         SendType = {
