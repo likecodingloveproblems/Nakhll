@@ -1342,7 +1342,8 @@ class Product(models.Model):
     @property
     def availability(self):
         return 'instock' if self.Available and self.Publish and\
-                self.Status != '4' and self.inventory else ''
+                            (self.Status == '1' and self.inventory) or\
+                            (self.Status in ['2', '3']) else ''
 
     @property
     def category_name(self):
