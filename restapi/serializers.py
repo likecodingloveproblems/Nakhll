@@ -332,7 +332,8 @@ class PostTrackingCodeWriteSerializer(ModelSerializer):
     class Meta:
         model = PostTrackingCode
         fields = [
-             'barcode',
+            'post_type',
+            'barcode',
         ]
 
 
