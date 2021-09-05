@@ -33,6 +33,7 @@ urlpatterns = [
     url(r'^app/api/', include('restapi.urls' , namespace='restapi')),
     path('accounting/', include('accounting.urls', namespace='accounting')),
     path('torob/', include('torob_api.urls', namespace='torob')),
+    path('goto/', include('url_redirector.urls', namespace='url_redirector')),
     # api version 1
     url(r'^api/v1/', include('nakhll_market.api_urls', namespace='nakhll_market_api')),
     # prometheus
