@@ -15,4 +15,6 @@ class Url(models.Model):
     creator = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_('ایجاد کننده'), null=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('تاریخ ایجاد'))
     updated_at = models.DateTimeField(auto_now=True, verbose_name=_('تاریخ ویرایش'))
+    def __str__(self):
+        return f'{self.code} --> {self.destination_url}'
 
