@@ -5,7 +5,7 @@ from nakhll_market.api import (
     UserProductViewSet, ProductsInSameFactorViewSet, SliderViewSet,
     MostSoldShopsViewSet, RandomShopsViewSet, RandomProductsViewSet,
     MarketList, CreateShop, GetShopWithSlug, CheckShopSlug, CheckProductSlug,
-    ProductBannerViewSet, AddImagesToProduct, ProductFullDetailsViewSet, BankAccountShopSettings
+    ProductBannerViewSet, AddImagesToProduct, ProductDetailsViewSet, BankAccountShopSettings, ProductCommentsViewSet, ProductRelatedItemsViewSet,
     )
 from rest_framework import routers
 
@@ -25,7 +25,9 @@ landing_router.register(r'products', UserProductViewSet, basename="products")
 landing_router.register(r'product_banner', ProductBannerViewSet, basename="product_banners")
 
 product_page_router = routers.DefaultRouter()
-product_page_router.register(r'details', ProductFullDetailsViewSet, basename="details")
+product_page_router.register(r'details', ProductDetailsViewSet, basename="details")
+product_page_router.register(r'comments', ProductCommentsViewSet, basename="details")
+product_page_router.register(r'related_products', ProductRelatedItemsViewSet, basename="details")
 
 urlpatterns = [
     path('landing/', include(landing_router.urls)),

@@ -5,10 +5,10 @@ from django.shortcuts import get_object_or_404
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.exceptions import ValidationError, PermissionDenied, AuthenticationFailed
 from nakhll_market.models import (
-    Alert, AmazingProduct, Product, ProductBanner, Shop, Slider, Category, Market, State, BigCity, City, SubMarket
+    Alert, AmazingProduct, Comment, Product, ProductBanner, Shop, Slider, Category, Market, State, BigCity, City, SubMarket
     )
 from nakhll_market.serializers import (
-    AmazingProductSerializer, Base64ImageSerializer, ProductDetailSerializer, ProductImagesSerializer,
+    AmazingProductSerializer, Base64ImageSerializer, ProductCommentSerializer, ProductDetailSerializer, ProductImagesSerializer,
     ProductSerializer, ProductUpdateSerializer, ShopSerializer,SliderSerializer, ProductPriceWriteSerializer,
     CategorySerializer, FullMarketSerializer, CreateShopSerializer, ProductInventoryWriteSerializer,
     ProductListSerializer, ProductWriteSerializer, ShopAllSettingsSerializer, ProductBannerSerializer,
@@ -22,6 +22,7 @@ from nakhll.authentications import CsrfExemptSessionAuthentication
 from rest_framework.response import Response
 from django.utils.text import slugify
 from restapi.permissions import IsFactorOwner, IsProductOwner, IsShopOwner, IsProductBannerOwner
+from nakhll_market.paginators import StandardPagination
 
 
 class SliderViewSet(viewsets.ReadOnlyModelViewSet):
@@ -163,12 +164,51 @@ class UserProductViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mix
 
 
 
-class ProductFullDetailsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class ProductDetailsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductDetailSerializer
     permission_classes = [permissions.AllowAny, ]
     lookup_field = 'Slug'
     queryset = Product.objects.select_related('FK_SubMarket', 'FK_Shop')
 
+class ProductCommentsViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    serializer_class = ProductCommentSerializer
+    permission_classes = [permissions.AllowAny, ]
+    lookup_field = 'FK_Product__Slug'
+    product_slug = None
+    def get_queryset(self):
+        filter_query = {self.lookup_field: self.product_slug, 'FK_Pater': None}
+        return Comment.objects.filter(**filter_query).select_related('FK_Product')
+
+    def retrieve(self, request, *args, **kwargs):
+        self.product_slug = self.kwargs.get(self.lookup_field)
+        return self.list(request, *args, **kwargs)
+
+    def list(self, request, *args, **kwargs):
+        if not self.product_slug:
+            raise Http404
+        return super().list(request, *args, **kwargs)
+        
+
+class ProductRelatedItemsViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    pagination_class = StandardPagination
+    serializer_class = ProductSerializer
+    permission_classes = [permissions.AllowAny, ]
+    lookup_field = 'Slug'
+    product = None
+
+    def get_queryset(self):
+        return Product.objects.filter(
+                    Available = True, Publish = True, Status__in = ['1', '2', '3'],
+                    FK_Category__in = self.product.FK_Category.all())
+
+    def retrieve(self, request, *args, **kwargs):
+        self.product = Product.objects.get(Slug=self.kwargs.get(self.lookup_field))
+        return self.list(request, *args, **kwargs)
+
+    def list(self, request, *args, **kwargs):
+        if not self.product:
+            raise Http404
+        return super().list(request, *args, **kwargs)
 
 
 class ProductsInSameFactorViewSet(generics.ListAPIView):

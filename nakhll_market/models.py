@@ -717,6 +717,10 @@ class Shop(models.Model):
     def image_thumbnail_url(self):
         return self.Image_thumbnail_url
 
+    @property
+    def total_products(self):
+        return self.get_products().count()
+
     def __str__(self):
         return "{}".format(self.Title)
 
@@ -772,6 +776,7 @@ class Shop(models.Model):
 
     def get_shop_manager_full_name(self):
         return '{} {}'.format(self.FK_ShopManager.first_name, self.FK_ShopManager.last_name)
+
 
     class Meta:
         ordering = ('DateCreate','Title',)  
@@ -1294,7 +1299,7 @@ class Product(models.Model):
 
     @property
     def comments(self):
-        return self.Product_Comment.all()
+        return self.Product_Comment.filter(FK_Pater=None)
 
     @property
     def shop(self):
@@ -1862,6 +1867,10 @@ class Comment(models.Model):
             return 'مثبت'
         else:
             return 'منفی'
+    @property
+    def comment_replies(self):
+        if self.Comment_Pater:
+            return self.Comment_Pater.all()
         
     def get_status(self):
         if self.Available:

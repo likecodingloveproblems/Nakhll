@@ -31,8 +31,8 @@ class ShopSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shop
         fields = [
-            'slug', 'title', 'url', 'image_thumbnail_url',
-            'state', 'show_contact_info', 'publish', 'available'
+            'slug', 'title', 'url', 'image_thumbnail_url', 'DateCreate', 'total_products',
+            'state', 'big_city', 'city', 'show_contact_info', 'publish', 'available'
         ]
 
 class CreateShopSerializer(serializers.ModelSerializer):
@@ -111,13 +111,18 @@ class CommentSerializer(serializers.ModelSerializer):
 class ProductCommentSerializer(serializers.ModelSerializer):
     user = UserSerializer(many=False, read_only=True)
     reply = CommentSerializer(many=False, read_only=True)
+    comment_replies = serializers.SerializerMethodField()
     class Meta:
         model = Comment
         fields = [
             'user', 'description', 'number_like',
-            'reply', 'date_create',
+            'reply', 'date_create', 'comment_replies',
         ]
 
+    def get_comment_replies(self, obj):
+        if obj.Comment_Pater:
+            replies = obj.Comment_Pater
+            return CommentSerializer(replies, many=True).data
 class MarketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Market
@@ -141,11 +146,9 @@ class PostRangeSerializer(serializers.ModelSerializer):
         ]
 
 class ProductDetailSerializer(serializers.HyperlinkedModelSerializer):
-    related_products = ProductSerializer(many=True, read_only=True)
     attributes = AttrProductSerializer(many=True, read_only=True)
     attributes_price = AttrPriceSerializer(many=True, read_only=True)
     banners = ProductBannerSerializer(many=True, read_only=True)
-    comments = ProductCommentSerializer(many=True , read_only=True)
     sub_market = SubMarketSerializer(many=False, read_only=True)
     shop = ShopSerializer(many=False, read_only=False)
     post_range = PostRangeSerializer(many=True, read_only=True)
@@ -153,13 +156,12 @@ class ProductDetailSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Product
         fields = [
-            'id', 'title', 'image', 'description', 'slug', 'price',
-            'available', 'publish', 'discount', 'related_products',
-            'attributes', 'attributes_price', 'banners', 'reviews',
+            'id', 'title', 'description', 'slug', 'price', 'old_price',
+            'available', 'publish', 'discount', 'shop',
+            'attributes', 'attributes_price', 'banners', 'reviews', 'inventory',
             'net_weight', 'weight_with_packing',  'length_with_packing',
-            'height_with_packaging', 'story', 'width_with_packing','comments',
+            'height_with_packaging', 'story', 'width_with_packing', 'PreparationDays',
             'status', 'exception_post_range', 'post_range', 'sub_market',
-            'shop',
         ]
 
 
