@@ -12,9 +12,14 @@ class Url(models.Model):
     destination_url = models.URLField(verbose_name=_('آدرس مقصد'), default='https://nakhll.com/')
     description = models.TextField(verbose_name=_('توضیحات'), blank=True)
     url_code = models.UUIDField(verbose_name=_('کد آدرس'), unique=True, default=uuid4)
-    creator = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_('ایجاد کننده'), null=True)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_('ایجاد کننده'), null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('تاریخ ایجاد'))
     updated_at = models.DateTimeField(auto_now=True, verbose_name=_('تاریخ ویرایش'))
     def __str__(self):
-        return f'{self.code} --> {self.destination_url}'
+        return f'{self.url_code} --> {self.destination_url}'
+
+    def get_new_address(self):
+        return f'https://nakhll.com/goto/{self.url_code}'
+    get_new_address.short_description = _('آدرس جدید')
+    get_new_address.admin_order_field = 'url_code'
 
