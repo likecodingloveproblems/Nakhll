@@ -1289,6 +1289,19 @@ class PostTrackingCode(models.Model):
     post_price = models.DecimalField(verbose_name='هزینه ارسال', max_length=15, default='0', max_digits=8, decimal_places=0)
     post_type = models.CharField('نوع پست', max_length=6, choices=PostTypes.choices, default=PostTypes.IRPOST)
     send_type=models.CharField(verbose_name='وضعیت ارسال', max_length=4, choices=SendTypes.choices, default=SendTypes.NORMAL)
+
+    def get_factor(self):
+        factors = self.factor_post.Factor_Products.all() 
+        factor_list = [factor.FactorNumber for factor in factors]
+        return '\n'.join(factor_list)
+    get_factor.short_description = 'فاکتور'
+    get_factor.admin_order_field = 'factor_post'
+
+    def get_sender(self):
+        return self.factor_post.FK_Product.FK_Shop.FK_ShopManager.get_full_name()
+    get_sender.short_description = 'فرستنده'
+    get_sender.admin_order_field = 'factor_post__FK_Product__FK_Shop__ShopManager__User__last_name'
+
     def __str__(self):
         return self.barcode
         
