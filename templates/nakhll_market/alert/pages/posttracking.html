@@ -259,6 +259,27 @@
                             </div>
                             <br>
                             <div class="hr-line-alert"></div>
+                            <div class="row">
+                                <div class="col-xl-12 col-12">
+                                    <form method="POST">
+                                        {% csrf_token %}
+                                        <div class="custom-control custom-radio custom-control-inline">
+                                            <input type="radio" id="accept-btn" name="accept-btn"  value="1" class="custom-control-input" checked>
+                                            <label class="custom-control-label" for="accept-btn">تایید</label>
+                                        </div>
+                                        <div class="custom-control custom-radio custom-control-inline">
+                                            <input type="radio" id="customRadioInline2" name="accept-btn" value="0" class="custom-control-input">
+                                            <label class="custom-control-label" for="customRadioInline2">عدم تایید</label>
+                                        </div>
+                                        <br>
+                                        <div class="form-group mg-10">
+                                            <label for="descriptionalert">توضیحات :</label>
+                                            <textarea class="form-control" name="Des" id="descriptionalert" rows="1" required></textarea>
+                                        </div>
+                                        <button class="btn btn-primary btn-left">ثبت</button>
+                                    </form>
+                                </div> 
+                            </div> 
                             <div class="clearfix"></div>
                         </div>
                     </div>

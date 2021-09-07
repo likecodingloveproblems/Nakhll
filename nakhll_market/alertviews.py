@@ -1,3 +1,4 @@
+from django.http.response import Http404
 from nakhll.settings import KAVENEGAR_KEY
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
@@ -2639,17 +2640,47 @@ def PostTrackingCodeAlert(request, id):
     # -------------------------------------------------------------------
     # get PostTracking with barcode
     alert = Alert.objects.get(id=id)
-    post_tracking = get_object_or_404(PostTrackingCode, barcode=alert.Slug)
-    products = FactorPost.objects.filter(barcodes__barcode=post_tracking.barcode)
+    tracking = PostTrackingCode.objects.filter(barcode=alert.Slug).first()
+    if tracking:
+        slug = tracking.factor_post.Factor_Products.all()[0].id 
+    else:
+        slug = alert.Slug
+    factor = get_object_or_404(Factor, ID=slug)
+    # TODO: Many issue in this part related to business logic
+    user_profile = factor.FK_User.User_Profile
+    shop_profile = factor.FK_FactorPost.all()[0].FK_Product.FK_Shop.FK_ShopManager.User_Profile
+    title = 'ارسال-محصول'
+    post_tracking = PostTrackingCode.objects.filter(factor_post__Factor_Products__ID=slug).first()
+    if request.method == 'GET':
+        products = FactorPost.objects.filter(barcodes__barcode=post_tracking.barcode)
+        context = {
+            'This_User_Profile':this_profile,
+            'This_User_Inverntory': this_inverntory,
+            'Options': options,
+            'MenuList':navbar,
+            'post_tracking': post_tracking,
+            'products': products,
+        }
+            
+        return render(request, 'nakhll_market/alert/pages/posttracking.html', context)
+    else:
+        Type = request.POST.get("accept-btn", None)
+        Dec = request.POST.get("Des", None)
+        alert.Seen = True
+        alert.Description = Dec
+        alert.FK_Staff = request.user
+        if Type == '1': # Accept incomming changes
+            alert.Status = True
+            user_message = f'محصول خریداری شده شما با کد رهگیری {post_tracking.barcode} ارسال شد'
+            SendAlertResponse(title, Dec, shop_profile.MobileNumber)
+            SendAlertResponse(title, user_message, user_profile.MobileNumber)
+        else: # Deny changes
+            shop_profile_message = f'بارکد ثبت شده مورد تایید نیست. توضیحات: {Dec}'
+            alert.Status = False
+            SendAlertResponse(title, shop_profile_message, shop_profile.MobileNumber)
+        # Save changes
+        alert.save()
+        return redirect("nakhll_market:Alert")
 
-    context = {
-        'This_User_Profile':this_profile,
-        'This_User_Inverntory': this_inverntory,
-        'Options': options,
-        'MenuList':navbar,
-        'post_tracking': post_tracking,
-        'products': products,
-    }
-        
-    return render(request, 'nakhll_market/alert/pages/posttracking.html', context)
+       
 
