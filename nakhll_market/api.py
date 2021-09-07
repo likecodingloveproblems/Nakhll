@@ -23,6 +23,8 @@ from rest_framework.response import Response
 from django.utils.text import slugify
 from restapi.permissions import IsFactorOwner, IsProductOwner, IsShopOwner, IsProductBannerOwner
 from nakhll_market.paginators import StandardPagination
+from nakhll_market.filters import ProductFilter
+from django_filters import rest_framework as restframework_filters
 
 
 class SliderViewSet(viewsets.ReadOnlyModelViewSet):
@@ -162,6 +164,15 @@ class UserProductViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mix
         # TODO: Check if product created successfully and published and alerts created as well
         Alert.objects.create(Part='7', FK_User=self.request.user, Slug=ID)
 
+
+class ProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    pagination_class = StandardPagination
+    filter_class = ProductFilter
+    filter_backends = (restframework_filters.DjangoFilterBackend, )
+    serializer_class = ProductListSerializer
+    permission_classes = [permissions.AllowAny, ]
+    queryset = Product.objects.select_related('FK_SubMarket', 'FK_Shop')
+    ordering_fields = ('Title', 'Price', 'DiscountPercentage', 'DateCreate', )
 
 
 class ProductDetailsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):

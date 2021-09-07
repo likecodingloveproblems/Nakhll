@@ -3,7 +3,7 @@ from nakhll_market.api import (
     AddSubMarketToProduct, AllShopSettings, AmazingProductViewSet, CategoryViewSet, ImageShopSettings, LastCreatedDiscountedProductsViewSet,
     LastCreatedProductsViewSet, MostDiscountPrecentageProductsViewSet, ShopMultipleUpdateInventory, ShopMultipleUpdatePrice, SocialMediaShopSettings,
     UserProductViewSet, ProductsInSameFactorViewSet, SliderViewSet,
-    MostSoldShopsViewSet, RandomShopsViewSet, RandomProductsViewSet,
+    MostSoldShopsViewSet, RandomShopsViewSet, RandomProductsViewSet, ProductsViewSet,
     MarketList, CreateShop, GetShopWithSlug, CheckShopSlug, CheckProductSlug,
     ProductBannerViewSet, AddImagesToProduct, ProductDetailsViewSet, BankAccountShopSettings, ProductCommentsViewSet, ProductRelatedItemsViewSet,
     )
@@ -25,12 +25,14 @@ landing_router.register(r'products', UserProductViewSet, basename="products")
 landing_router.register(r'product_banner', ProductBannerViewSet, basename="product_banners")
 
 product_page_router = routers.DefaultRouter()
+product_page_router.register(r'', ProductsViewSet, basename="all_products")
 product_page_router.register(r'details', ProductDetailsViewSet, basename="details")
-product_page_router.register(r'comments', ProductCommentsViewSet, basename="details")
-product_page_router.register(r'related_products', ProductRelatedItemsViewSet, basename="details")
+product_page_router.register(r'comments', ProductCommentsViewSet, basename="comments")
+product_page_router.register(r'related_products', ProductRelatedItemsViewSet, basename="related_products")
 
 urlpatterns = [
     path('landing/', include(landing_router.urls)),
+    path('products/', include(product_page_router.urls)),
     path('product-page/', include(product_page_router.urls)),
     path('product-page/same-factor/<uuid:ID>/', ProductsInSameFactorViewSet.as_view()),
 

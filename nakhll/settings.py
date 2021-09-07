@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'oauth2_provider',
     'rest_framework',
     'rest_framework.authtoken',
+    'django_filters',
     'imagekit',
     'compressor',
     'mathfilters',
@@ -75,6 +76,7 @@ INSTALLED_APPS = [
     'coupon',
     'logistic',
     'accounting_new',
+    'payoff',
 ]
 
 MIDDLEWARE = [
