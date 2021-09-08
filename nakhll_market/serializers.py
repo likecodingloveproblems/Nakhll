@@ -169,7 +169,8 @@ class ProductListSerializer(serializers.ModelSerializer):
     # FK_User = serializers.SlugRelatedField(slug_field='username', queryset=User.objects.all())
     category = CategorySerializer(many=True, read_only=True)
     sub_market = SubMarketSerializer(read_only=True)
-    shop = serializers.SlugRelatedField(slug_field='Slug', read_only=True)
+    # shop = serializers.SlugRelatedField(slug_field='Slug', read_only=True)
+    shop = ShopSerializer(read_only=True)
     banners = ProductBannerSerializer(read_only=True, many=True)
     class Meta:
         model = Product
@@ -196,7 +197,8 @@ class ProductListSerializer(serializers.ModelSerializer):
             'average_user_point',
             'total_sell',
             'publish',
-            'available'
+            'available',
+            'discount',
         ]
     # Image = serializers.SerializerMethodField(method_name='get_absolute_image_url')
     # def get_absolute_image_url(self, product):
