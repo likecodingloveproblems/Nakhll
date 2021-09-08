@@ -7,8 +7,8 @@ from rest_framework import serializers
 from rest_framework.relations import HyperlinkedIdentityField, HyperlinkedRelatedField
 from rest_framework.utils import field_mapping
 from nakhll_market.models import (
-    Alert, AmazingProduct, AttrPrice, AttrProduct, Attribute, BankAccount, ShopBankAccount, ShopSocialMedia,
-    Category, Market, PostRange, Product, ProductBanner, Profile, Shop, ShopBankAccount, Slider, Comment,
+    Alert, AmazingProduct, AttrPrice, AttrProduct, Attribute, BankAccount, BigCity, City, ShopBankAccount, ShopSocialMedia,
+    Category, Market, PostRange, Product, ProductBanner, Profile, Shop, ShopBankAccount, Slider, Comment, State,
     SubMarket
     )
 
@@ -439,4 +439,22 @@ class ProductInventoryWriteSerializer(serializers.ModelSerializer):
             'Slug': {'validators': []},
         }
 
+
+class CityFullSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = City
+        fields = ['id', 'name', ]
+
+
+class BigCityFullSerializer(serializers.ModelSerializer):
+    city = CityFullSerializer(read_only=True, many=True)
+    class Meta:
+        model = BigCity
+        fields = ['id', 'name', 'city']
+
+class StateFullSeraializer(serializers.ModelSerializer):
+    big_city = BigCityFullSerializer(read_only=True, many=True)
+    class Meta:
+        model = State
+        fields = ['id', 'name', 'big_city']
 

@@ -12,7 +12,7 @@ from nakhll_market.serializers import (
     ProductSerializer, ProductUpdateSerializer, ShopSerializer,SliderSerializer, ProductPriceWriteSerializer,
     CategorySerializer, FullMarketSerializer, CreateShopSerializer, ProductInventoryWriteSerializer,
     ProductListSerializer, ProductWriteSerializer, ShopAllSettingsSerializer, ProductBannerSerializer,
-    ShopBankAccountSettingsSerializer, SocialMediaAccountSettingsSerializer, ProductSubMarketSerializer, SubMarketSerializer
+    ShopBankAccountSettingsSerializer, SocialMediaAccountSettingsSerializer, ProductSubMarketSerializer, StateFullSeraializer, SubMarketSerializer
     )
 from rest_framework import generics, routers, status, views, viewsets
 from rest_framework import permissions, filters, mixins
@@ -518,3 +518,9 @@ class ImageShopSettings(views.APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.data)
+
+
+class StateFullViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+    permission_classes = [permissions.AllowAny, ]
+    queryset = State.objects.all()
+    serializer_class = StateFullSeraializer

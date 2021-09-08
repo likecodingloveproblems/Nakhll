@@ -1,7 +1,7 @@
 from django.urls import re_path, include, path
 from nakhll_market.api import (
     AddSubMarketToProduct, AllShopSettings, AmazingProductViewSet, CategoryViewSet, ImageShopSettings, LastCreatedDiscountedProductsViewSet,
-    LastCreatedProductsViewSet, MostDiscountPrecentageProductsViewSet, ShopMultipleUpdateInventory, ShopMultipleUpdatePrice, SocialMediaShopSettings,
+    LastCreatedProductsViewSet, MostDiscountPrecentageProductsViewSet, ShopMultipleUpdateInventory, ShopMultipleUpdatePrice, SocialMediaShopSettings, StateFullViewSet,
     UserProductViewSet, ProductsInSameFactorViewSet, SliderViewSet,
     MostSoldShopsViewSet, RandomShopsViewSet, RandomProductsViewSet, ProductsViewSet,
     MarketList, CreateShop, GetShopWithSlug, CheckShopSlug, CheckProductSlug,
@@ -30,6 +30,9 @@ product_page_router.register(r'details', ProductDetailsViewSet, basename="detail
 product_page_router.register(r'comments', ProductCommentsViewSet, basename="comments")
 product_page_router.register(r'related_products', ProductRelatedItemsViewSet, basename="related_products")
 
+util_router = routers.DefaultRouter()
+util_router.register(r'states', StateFullViewSet, basename="states")
+
 urlpatterns = [
     path('landing/', include(landing_router.urls)),
     path('products/', include(product_page_router.urls)),
@@ -37,6 +40,7 @@ urlpatterns = [
     path('product-page/same-factor/<uuid:ID>/', ProductsInSameFactorViewSet.as_view()),
 
     path('markets/', MarketList.as_view()),
+    path('util/', include(util_router.urls)),
 
     path('shop/', GetShopWithSlug.as_view()),
     path('shop/<shop_slug>/settings/', AllShopSettings.as_view()),
