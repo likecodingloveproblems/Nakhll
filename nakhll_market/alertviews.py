@@ -2667,6 +2667,7 @@ def PostTrackingCodeAlert(request, id):
         Type = request.POST.get("accept-btn", None)
         Dec = request.POST.get("Des", None)
         alert.Seen = True
+        Dec = f'فاکتور {factor.FactorNumber}: {Dec}'
         alert.Description = Dec
         alert.FK_Staff = request.user
         if Type == '1': # Accept incomming changes
@@ -2675,7 +2676,7 @@ def PostTrackingCodeAlert(request, id):
             SendAlertResponse(title, Dec, shop_profile.MobileNumber)
             SendAlertResponse(title, user_message, user_profile.MobileNumber)
         else: # Deny changes
-            shop_profile_message = f'بارکد ثبت شده مورد تایید نیست. توضیحات: {Dec}'
+            shop_profile_message = f'بارکد ثبت شده برای فاکتور {factor.FactorNumber} مورد تایید نیست. توضیحات: {Dec}'
             alert.Status = False
             SendAlertResponse(title, shop_profile_message, shop_profile.MobileNumber)
         # Save changes
