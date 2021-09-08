@@ -168,7 +168,7 @@ class UserProductViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mix
 class ProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     pagination_class = StandardPagination
     filter_class = ProductFilter
-    filter_backends = (restframework_filters.DjangoFilterBackend, )
+    filter_backends = (restframework_filters.DjangoFilterBackend, filters.OrderingFilter)
     serializer_class = ProductListSerializer
     permission_classes = [permissions.AllowAny, ]
     queryset = Product.objects.select_related('FK_SubMarket', 'FK_Shop')
