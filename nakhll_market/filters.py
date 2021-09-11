@@ -30,7 +30,7 @@ class ProductFilter(filters.FilterSet):
         return queryset.filter(Status__in=AVAILABLE_IDS, Inventory__gt=0)
 
     def filter_category(self, queryset, name, value):
-        return queryset.filter(FK_SubMarket=value)
+        return queryset.filter(FK_SubMarket__in=value.split(',')) if value else queryset
 
     def filter_state(self, queryset, name, value):
         return queryset.filter(FK_Shop__State__in=value.split(',')) if value else queryset
