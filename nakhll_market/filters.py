@@ -9,6 +9,7 @@ class ProductFilter(filters.FilterSet):
     available = filters.BooleanFilter(method='filter_available')
     category = filters.CharFilter(method='filter_category')
     city = filters.CharFilter(method='filter_city')
+    big_city = filters.CharFilter(method='filter_big_city')
     discounted = filters.BooleanFilter(method='filter_discounted')
 
     class Meta:
@@ -29,6 +30,9 @@ class ProductFilter(filters.FilterSet):
 
     def filter_category(self, queryset, name, value):
         return queryset.filter(FK_SubMarket=value)
+
+    def filter_big_city(self, queryset, name, value):
+        return queryset.filter(FK_Shop__BigCity__in=value.split(',')) if value else queryset
 
     def filter_city(self, queryset, name, value):
         return queryset.filter(FK_Shop__City__in=value.split(',')) if value else queryset
