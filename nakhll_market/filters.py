@@ -9,10 +9,11 @@ class ProductFilter(filters.FilterSet):
     available = filters.BooleanFilter(method='filter_available')
     category = filters.CharFilter(method='filter_category')
     city = filters.CharFilter(method='filter_city')
+    discounted = filters.BooleanFilter(method='filter_discounted')
 
     class Meta:
         model = Product
-        fields = ['search', 'min_price', 'max_price', 'ready', 'available', 'category', 'city']
+        fields = ['search', 'min_price', 'max_price', 'ready', 'available', 'category', 'city', 'discounted']
 
     def filter_ready(self, queryset, name, value):
         READY_IN_STOCK = '1'
@@ -31,3 +32,6 @@ class ProductFilter(filters.FilterSet):
 
     def filter_city(self, queryset, name, value):
         return queryset.filter(FK_Shop__City=value)
+
+    def filter_discounted(self, queryset, name, value):
+        return queryset.filter(OldPrice__gt=0) if value else queryset
