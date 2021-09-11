@@ -31,7 +31,7 @@ class ProductFilter(filters.FilterSet):
         return queryset.filter(FK_SubMarket=value)
 
     def filter_city(self, queryset, name, value):
-        return queryset.filter(FK_Shop__City=value)
+        return queryset.filter(FK_Shop__City__in=value.split(',')) if value else queryset
 
     def filter_discounted(self, queryset, name, value):
         return queryset.filter(OldPrice__gt=0) if value else queryset
