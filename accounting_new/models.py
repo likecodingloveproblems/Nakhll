@@ -91,17 +91,7 @@ class Invoice(models.Model, AccountingInterface):
         self.payment_unique_id = uuid4()
         self.last_payment_request = datetime.now()
         self.save()
-        data = {
-            'invoice': self.invoice,
-            'amount': self.invoice.final_price,
-            'order_nubmer': str(self.invoice.payment_unique_id),
-            'mobile': self.invoice.address.receiver_mobile_number,
-            'description': _('پرداخت فاکتور %s') % self.invoice.id,
-            'ipg': bank_port,
-        }
-        payment = Payment(data)
-        transaction = payment.initiate_payment()
-        # TODO: can save this transaction in invoice
+        payment = Payment.from_invoice(self, bank_port)
 
 
 

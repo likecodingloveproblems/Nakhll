@@ -19,7 +19,7 @@ class Transaction(models.Model):
     order_number = models.CharField(_('شماره سفارش'), max_length=50, null=True, blank=True)
     created_datetime = models.DateTimeField(_('تاریخ ایجاد تراکنش'), auto_now_add=True)
     payoff_datetime = models.DateTimeField(_('تاریخ پرداخت'), null=True, blank=True)
-    desceription = models.TextField(_('توضیحات'), null=True, blank=True)
+    description = models.TextField(_('توضیحات'), null=True, blank=True)
     ipg = models.CharField(max_length=5, choices=IPGTypes.choices, default=IPGTypes.PEC, verbose_name=_('درگاه پرداخت'))
     token_request_status = models.CharField(max_length=50, verbose_name=_('وضعیت'), null=True)
     token = models.CharField(_('توکن'), max_length=200, null=True)

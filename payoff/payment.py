@@ -1,3 +1,4 @@
+import os
 from abc import ABC, abstractmethod
 from django.shortcuts import redirect
 from django.conf import settings
@@ -39,8 +40,8 @@ class Pec(PaymentMethod):
     def __init__(self, transaction):
         super().__init__(transaction)
         # TODO: These errors should be handled better with better messages
-        pec_pin = settings.get('PEC_PIN')
-        callback_url = settings.get('CALLBACKURL')
+        pec_pin = os.environ.get('PEC_PIN')
+        callback_url = format(os.environ.get('CALLBACKURL'))
         if not pec_pin:
             raise ValidationError(_('در حال حاضر امکان اتصال به درگاه بانکی وجود ندارد'))
         if not callback_url:
@@ -51,10 +52,13 @@ class Pec(PaymentMethod):
 
     def _initiate_payment(self, transaction):
         ''' Get invoice, exchange with token and redirect user to payment page '''
+        print(f'IN: payoff > payment.py > Pec class > _initate_payment')
         token = self._get_token(transaction)
+        print(f'\t token: {token}')
+        print('\n>>>>>>>>>>>>>>>>Redirecting<<<<<<<<<<<<<<<<<<<\n')
         return redirect(f'https://pec.shaparak.ir/NewIPG/?token={token}')
 
-    def complete_payment(self, transaction):
+    def _complete_payment(self, transaction):
         ''' save IGP to DB, Check validation and send confrim/reverse request to IPG '''
         if self.transaction.is_succeed():
             self._validate_transaction(transaction)
@@ -88,16 +92,19 @@ class Pec(PaymentMethod):
             Coupon should be unapplied from invoice
         '''
 
-    def _get_sale_serivce():
+    def _get_sale_serivce(self):
         # TODO we must handle exceptions of SOAP connections
         return Client('https://pec.shaparak.ir/NewIPGServices/Sale/SaleService.asmx?wsdl')
 
-    def _get_confirm_service():
+    def _get_confirm_service(self):
         # TODO we must handle exceptions of SOAP connections
         return Client('https://pec.shaparak.ir/NewIPGServices/Confirm/ConfirmService.asmx?wsdl')
 
     def _get_token(self, transaction):
         ''' Get sale service and send invocie data to it, return token if invoice data is valid '''
+        print(f'IN: payoff > payment.py > Pec class > _get_token')
+        print(f'\t transaction: {transaction}')
+        print(f'\t transaction: {transaction.__dict__}')
         ClientSaleRequestData = self._get_client_sale_request_data()
         request_data = ClientSaleRequestData(
                 LoginAccount=self.pec_pin,
@@ -108,7 +115,9 @@ class Pec(PaymentMethod):
                 Originator=transaction.mobile)
         saleService = self._get_sale_serivce()
         result = saleService.service.SalePaymentRequest(request_data)
+        print(f'\t result: {result}')
         self._save_sale_payment_result(result)
+
         if result.get('status') != 0 or result.get('Token', 0) <= 0:
             raise ValidationError(_('خطایی در پرداخت رخ داده است'))
         return result.get('token')
@@ -140,15 +149,18 @@ class ZarinPal(PaymentMethod):
 
 
 class Payment:
-    # def __init__(self, request):
-        # self.request = request
+    def __init__(self, data, *args, **kwargs):
+        self.data = data
 
-    def initiate_payment(self, data):
-        self.transaction = Transaction.objects.create(**data)
-        ipg_class = self._get_ipg_class(self.transaction.ipg_type)
-        print(f'////IPG class: {ipg_class}')
-        ipg = ipg_class()
-        print(f'////READY for initiate payment: {self.transaction}\n')
+    def initiate_payment(self):
+        print(f'\n\nIN: payoff > payment.py > Peyment > _initate_payment')
+        print(f'\t data: {self.data}')
+        self.transaction = Transaction.objects.create(**self.data)
+        print(f'\t Transaction created: {self.transaction}')
+        ipg_class = self._get_ipg_class(self.transaction.ipg)
+        print(f'\tIPG class: {ipg_class}')
+        ipg = ipg_class(self.transaction)
+        print(f'\t READY for initiate payment: {self.transaction}\n')
         ipg._initiate_payment(self.transaction)
         return self.transaction
 
