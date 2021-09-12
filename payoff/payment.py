@@ -11,25 +11,33 @@ from zeep import Client
 class PaymentMethod(ABC):
     def __init__(self, transaction):
         self.transaction = transaction
-        self.client = Client(settings.PAYMENT_WSDL)
-        self.payment_method = self.client.get_type('ns0:PaymentMethod')
-        self.payment_method_type = self.client.get_type('ns0:PaymentMethodType')
+        # self.client = Client(settings.PAYMENT_WSDL)
+        # self.payment_method = self.client.get_type('ns0:PaymentMethod')
+        # self.payment_method_type = self.client.get_type('ns0:PaymentMethodType')
 
-    def get_payment_method(self):
-        return self.payment_method(
-            paymentMethodType=self.payment_method_type(
-                id=self.transaction.payment_method
-            )
-        )
+    # def get_payment_method(self):
+    #     return self.payment_method(
+    #         paymentMethodType=self.payment_method_type(
+    #             id=self.transaction.payment_method
+    #         )
+    #     )
     
     @abstractmethod
-    def do_transaction(self, transaction):
-        pass
+    def _initiate_payment(self, transaction):
+        ''' Generate ipg url and redirect user to that url '''
 
+    @abstractmethod
+    def _complete_payment(self, transaction):
+        ''' Handle returned user from IPG 
+        
+            Validate IPG response and update transaction result, connect data
+            to transaction object
+        '''
 
 class Pec(PaymentMethod):
 
-    def __init__(self):
+    def __init__(self, transaction):
+        super().__init__(transaction)
         # TODO: These errors should be handled better with better messages
         pec_pin = settings.get('PEC_PIN')
         callback_url = settings.get('CALLBACKURL')
@@ -41,7 +49,7 @@ class Pec(PaymentMethod):
         self.callback_url = callback_url
 
 
-    def initiate_payment(self, transaction):
+    def _initiate_payment(self, transaction):
         ''' Get invoice, exchange with token and redirect user to payment page '''
         token = self._get_token(transaction)
         return redirect(f'https://pec.shaparak.ir/NewIPG/?token={token}')
@@ -62,8 +70,6 @@ class Pec(PaymentMethod):
                                             # send email and sms to customer and shop owner, reduce stock, etc.
                                             # create an order for shop owner to send product to customer
 
-
-
     def _validate_transaction(self, transaction):
         ''' Send request to IGP validation url and validate transaction '''
         token = transaction.token
@@ -76,8 +82,11 @@ class Pec(PaymentMethod):
             # TODO: create alert for support to handle this
             pass
 
-
-
+    def _reverse_transaction(self, transaction):
+        ''' Send a request to IPG to reverse transaction and rollback changes in db
+        
+            Coupon should be unapplied from invoice
+        '''
 
     def _get_sale_serivce():
         # TODO we must handle exceptions of SOAP connections
@@ -130,28 +139,31 @@ class ZarinPal(PaymentMethod):
 
 
 
-class Payment():
-    def __init__(self, request):
-        self.request = request
+class Payment:
+    # def __init__(self, request):
+        # self.request = request
 
+    def initiate_payment(self, data):
+        self.transaction = Transaction.objects.create(**data)
+        ipg_class = self._get_ipg_class(self.transaction.ipg_type)
+        print(f'////IPG class: {ipg_class}')
+        ipg = ipg_class()
+        print(f'////READY for initiate payment: {self.transaction}\n')
+        ipg._initiate_payment(self.transaction)
+        return self.transaction
 
-    def get_ipg_class(self, ipg_type):
+    def _get_ipg_class(self, ipg_type):
         if ipg_type == Transaction.IPGTypes.PEC:
             return Pec
         if ipg_type == Transaction.IPGTypes.ZARINPAL:
             return ZarinPal
 
-    def start_payment_process(self, data):
-        self.transaction = Transaction.objects.create(**data)
-        ipg_class = self.get_ipg_class(self.transaction.ipg_type)
-        ipg = ipg_class()
-        ipg.initiate_payment(self.transaction)
 
 
     def transaction_callback(self, data):
         transaction_result = TransactionResult.objects.create(**data)
         try:
-            transaction = Transaction.objects.get(invoice_id=data.get('order_id'))
+            transaction = Transaction.objects.get(order_number=data.get('order_id'))
             transaction_result.transaction = transaction
             transaction_result.save()
 
@@ -159,9 +171,9 @@ class Payment():
             ipg = ipg_class()
             ipg.complete_payment(transaction_result)
         except:
-            self.no_transaction_error(transaction_result)
+            self._no_transaction_error(transaction_result)
 
 
 
-    def no_transaction_error(self, transaction_result):
+    def _no_transaction_error(self, transaction_result):
         ''' Set alert for admin to check this transaction '''

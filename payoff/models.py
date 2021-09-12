@@ -1,6 +1,5 @@
 from django.db import models
 from django.utils.translation import ugettext as _
-from accounting_new.models import Invoice
 
 # Create your models here.
 
@@ -16,7 +15,6 @@ class Transaction(models.Model):
         return '{} - {} - {}'.format(self.id, self.amount, self.created_datetime)
 
 
-    invoice = models.ForeignKey(Invoice, verbose_name=_('فاکتور'), on_delete=models.SET_NULL, null=True)
     amount = models.DecimalField(_('مبلغ (ریال)'), max_digits=15, decimal_places=0)
     order_number = models.CharField(_('شماره سفارش'), max_length=50, null=True, blank=True)
     created_datetime = models.DateTimeField(_('تاریخ ایجاد تراکنش'), auto_now_add=True)

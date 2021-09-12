@@ -3,18 +3,18 @@ from payoff.models import Transaction
 from .payment import Payment
 
 
-def send_request(request, invoice, bank_port=None):
-    invoice.initialize_payment()
-    data = {
-        'invoice': invoice,
-        'amount': invoice.final_price,
-        'order_nubmer': str(invoice.id),
-        'mobile': invoice.address.receiver_mobile_number,
-        'description': _('پرداخت فاکتور %s') % invoice.id,
-        'ipg': bank_port or Transaction.IPGTypes.PEC,
-    }
-    payment = Payment(request)
-    payment.start_payment_process(data)
+# def send_request(request, invoice, bank_port=None):
+#     invoice.initialize_payment()
+#     data = {
+#         'invoice': invoice,
+#         'amount': invoice.final_price,
+#         'order_nubmer': str(invoice.id),
+#         'mobile': invoice.address.receiver_mobile_number,
+#         'description': _('پرداخت فاکتور %s') % invoice.id,
+#         'ipg': bank_port or Transaction.IPGTypes.PEC,
+#     }
+#     payment = Payment(request)
+#     payment.start_payment_process(data)
 
 
  
