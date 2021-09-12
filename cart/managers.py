@@ -74,4 +74,4 @@ class CartItemManager(models.Manager):
 
 
 # Importing a module in the bottom of file prevents circular import error
-import cart.models as cart_models
+from cart import models as cart_models
