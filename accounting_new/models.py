@@ -1,13 +1,15 @@
 from datetime import datetime
+from payoff.payment import Payment
+from uuid import uuid4
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from nakhll_market.models import Product
 from cart.models import Cart
 from logistic.models import Address, PostPriceSetting
-from coupon.models import Coupon
 from accounting_new.interfaces import AccountingInterface
 from accounting_new.managers import AccountingManager
+from payoff.models import Transaction
 
 # Create your models here.
 
@@ -29,10 +31,9 @@ class Invoice(models.Model, AccountingInterface):
             verbose_name=_('سبد خرید'))
     address = models.ForeignKey(Address, on_delete=models.PROTECT, null=True,
             blank=True, related_name='invoices', verbose_name=_('آدرس'))
-    coupon = models.ForeignKey(Coupon, on_delete=models.PROTECT, null=True,
-            blank=True, related_name='invoices', verbose_name=_('کوپن'))
     created_datetime = models.DateTimeField(_('تاریخ ایجاد فاکتور'), auto_now_add=True)
     last_payment_request = models.DateTimeField(_('آخرین درخواست پرداخت'), null=True, blank=True)
+    payment_unique_id = models.UUIDField(_('شماره درخواست پرداخت'), null=True, blank=True)
 
     @property
     def user(self):
@@ -85,7 +86,22 @@ class Invoice(models.Model, AccountingInterface):
         self.status = self.Statuses.SUCCESS
         self.save()
 
-    def initialize_payment(self):
+    def send_to_payment(self, bank_port=Transaction.IPGTypes.PEC):
         self.status = self.Statuses.PAYING
+        self.payment_unique_id = uuid4()
+        self.last_payment_request = datetime.now()
         self.save()
+        data = {
+            'invoice': self.invoice,
+            'amount': self.invoice.final_price,
+            'order_nubmer': str(self.invoice.payment_unique_id),
+            'mobile': self.invoice.address.receiver_mobile_number,
+            'description': _('پرداخت فاکتور %s') % self.invoice.id,
+            'ipg': bank_port,
+        }
+        payment = Payment(data)
+        transaction = payment.initiate_payment()
+        # TODO: can save this transaction in invoice
+
+
 

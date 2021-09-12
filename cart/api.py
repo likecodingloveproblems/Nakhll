@@ -7,8 +7,8 @@ from django.utils.translation import ugettext as _
 from rest_framework import permissions, viewsets, mixins
 from nakhll.authentications import CsrfExemptSessionAuthentication
 from nakhll_market.models import ProductManager
-from cart.models import Cart, CartItem, CartTransmission
-from cart.serializers import CartSerializer, CartItemSerializer, CartTransmissionSerializer
+from cart.models import Cart, CartItem
+from cart.serializers import CartSerializer, CartItemSerializer
 from cart.utils import get_user_or_guest
 from cart.permissions import IsCartOwner, IsCartItemOwner
 
@@ -153,14 +153,14 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
     permission_classes = [IsCartItemOwner, ]
 
 
-class CartTransmissionViewSet(viewsets.ModelViewSet):
-    serializer_class = CartTransmissionSerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, ]
-    permission_classes = [IsCartItemOwner, ]
-    queryset = CartTransmission.objects.all()
+# class CartTransmissionViewSet(viewsets.ModelViewSet):
+#     serializer_class = CartTransmissionSerializer
+#     authentication_classes = [CsrfExemptSessionAuthentication, ]
+#     permission_classes = [IsCartItemOwner, ]
+#     queryset = CartTransmission.objects.all()
 
-    def perform_create(self, serializer):
-        serializer.save()
+#     def perform_create(self, serializer):
+#         serializer.save()
 
 
 # 1- there is an api to send cart to accounting, which in first of it I should check all items in factor

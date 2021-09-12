@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from cart.models import Cart, CartItem, CartTransmission
+from cart.models import Cart, CartItem
 from nakhll_market.models import Product
 from nakhll_market.serializers import ProductSerializer
 
@@ -44,8 +44,8 @@ class CartSerializer(serializers.ModelSerializer):
         model = Cart
         fields = ('user', 'guest_unique_id', 'total_price', 'total_old_price', 'created_datetime', 'ordered_items', 'get_diffrences')
 
-class CartTransmissionSerializer(serializers.ModelSerializer):
-    cart = serializers.PrimaryKeyRelatedField(queryset=CartTransmission.objects.all(), read_only=False, many=False)
-    class Meta:
-        model = CartTransmission
-        fields = ('cart', )
+# class CartTransmissionSerializer(serializers.ModelSerializer):
+#     cart = serializers.PrimaryKeyRelatedField(queryset=CartTransmission.objects.all(), read_only=False, many=False)
+#     class Meta:
+#         model = CartTransmission
+#         fields = ('cart', )

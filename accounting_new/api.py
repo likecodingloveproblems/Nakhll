@@ -27,20 +27,22 @@ class InvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
         else:
             return InvoiceWriteSerializer
 
+    def create_invoice(self, request):
+        active_cart = CartManager.user_active_cart(request.user)
+        data = {'cart': active_cart.id }
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        return self.perform_create(serializer)
+
+
+
     def get_object(self):
         return Invoice.objects.filter(cart__user=self.request.user, status=Invoice.Statuses.COMPLETING).first()
         
 
     def create(self, request, *args, **kwargs):
         ''' each user can only have one invoice with status of completing '''
-        invoice = self.get_object()
-        if not invoice:
-            active_cart = CartManager.user_active_cart(request.user)
-            data = {'cart': active_cart.id }
-            serializer = self.get_serializer(data=data)
-            serializer.is_valid(raise_exception=True)
-            invoice = self.perform_create(serializer)
-
+        invoice = self.get_object() or self.create_invoice(request)
         serializer = InvoiceReadSerializer(invoice)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK, headers=headers)
@@ -106,7 +108,7 @@ class InvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
         pass
 
     @action(methods=['GET'], detail=False)
-    def initiate_payment(self, requsest):
+    def pay(self, requsest):
         ''' Get an invoice and send it to payment app
         
             Request for invoice should came from owner.
@@ -120,5 +122,7 @@ class InvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
             A celery should check for invocies with paying status every hour.
             Invoice should sent to payment status to initiate payment
         '''
-        pass
+        invoice = self.get_object() or self.create_invoice(requsest)
+        invoice.send_to_payment()
+
 

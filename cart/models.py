@@ -189,7 +189,7 @@ class CartItem(models.Model):
         'محصول'), on_delete=models.CASCADE, related_name='cart_items')
     count = models.PositiveSmallIntegerField(verbose_name=_('تعداد'))
     added_datetime = models.DateTimeField(_('زمان اضافه شدن'), auto_now_add=True)
-    product_last_known_state = models.JSONField(encoder=DjangoJSONEncoder)
+    product_last_state = models.JSONField(encoder=DjangoJSONEncoder)
     objects = CartItemManager()
 
     @property
@@ -202,14 +202,6 @@ class CartItem(models.Model):
 
     def get_cartitem_changes(self):
         ''' Check for any changes, show them to user and save new product state as last_known_state '''
-        pass
 
    
 
-class CartTransmission(models.Model):
-    class Meta:
-        verbose_name = _('ارسال سبد خرید')
-        verbose_name_plural = _('ارسال‌های سبد خرید')
-    
-    cart = models.ForeignKey(Cart, verbose_name=_('سبد خرید'), on_delete=models.CASCADE, related_name='transmissions')
-    datetime = models.DateTimeField(_('زمان ارسال'), auto_now_add=True)
