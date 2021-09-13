@@ -67,8 +67,8 @@ class Pec(PaymentMethod):
         print(f'IN: payoff > payment.py > Pec class > _initate_payment')
         token_object = self._get_token_object()
         self._save_token_object(token_object)
-        if not self.is_token_valid(token_object):
-            raise ValidationError(_('خطایی در پرداخت رخ داده است'))
+        if not self.is_token_object_valid(token_object):
+            raise ValidationError(f'{token_object.Status} {token_object.Message}')
         print(f'\t token: {token_object.Token}')
         print('\n>>>>>>>>>>>>>>>>Redirecting<<<<<<<<<<<<<<<<<<<\n')
         return redirect(f'https://pec.shaparak.ir/NewIPG/?token={token_object.Token}')
@@ -186,7 +186,7 @@ class Payment:
         print(f'\tIPG class: {ipg_class}')
         ipg = ipg_class(self.transaction)
         print(f'\t READY for initiate payment: {self.transaction}\n')
-        ipg._initiate_payment(self.transaction)
+        ipg._initiate_payment()
         return self.transaction
 
     def _get_ipg_class(self, ipg_type):
