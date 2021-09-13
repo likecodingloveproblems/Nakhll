@@ -186,8 +186,7 @@ class Payment:
         print(f'\tIPG class: {ipg_class}')
         ipg = ipg_class(self.transaction)
         print(f'\t READY for initiate payment: {self.transaction}\n')
-        ipg._initiate_payment()
-        return self.transaction
+        return ipg._initiate_payment()
 
     def _get_ipg_class(self, ipg_type):
         if ipg_type == Transaction.IPGTypes.PEC:
