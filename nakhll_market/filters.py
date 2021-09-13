@@ -1,5 +1,5 @@
 from django_filters import rest_framework as filters
-from nakhll_market.models import Product
+from nakhll_market.models import BigCity, City, Product, State
 
 class ProductFilter(filters.FilterSet):
     min_price = filters.NumberFilter(field_name="Price", lookup_expr='gte')
@@ -33,13 +33,16 @@ class ProductFilter(filters.FilterSet):
         return queryset.filter(FK_SubMarket__in=value.split(',')) if value else queryset
 
     def filter_state(self, queryset, name, value):
-        return queryset.filter(FK_Shop__State__in=value.split(',')) if value else queryset
+        states = State.objects.filter(id__in=value.split(',')).values_list('name', flat=True)
+        return queryset.filter(FK_Shop__State__in=states)
 
     def filter_big_city(self, queryset, name, value):
-        return queryset.filter(FK_Shop__BigCity__in=value.split(',')) if value else queryset
+        big_cities = BigCity.objects.filter(id__in=value.split(',')).values_list('name', flat=True)
+        return queryset.filter(FK_Shop__BigCity__in=big_cities)
 
     def filter_city(self, queryset, name, value):
-        return queryset.filter(FK_Shop__City__in=value.split(',')) if value else queryset
+        cities = City.objects.filter(id__in=value.split(',')).values_list('name', flat=True)
+        return queryset.filter(FK_Shop__City__in=cities)
 
     def filter_discounted(self, queryset, name, value):
         return queryset.filter(OldPrice__gt=0) if value else queryset
