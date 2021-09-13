@@ -48,15 +48,83 @@ class Pec(PaymentMethod):
             raise ValidationError(_('در حال حاضر امکان اتصال به درگاه بانکی وجود ندارد'))
         self.pec_pin = pec_pin
         self.callback_url = callback_url
+        self.sale_service = self.__get_sale_serivce()
+        self.sale_request_data = self.__get_client_sale_request_data()
+
+    def __get_sale_serivce(self):
+        # TODO we must handle exceptions of SOAP connections
+        return Client('https://pec.shaparak.ir/NewIPGServices/Sale/SaleService.asmx?wsdl')
+
+    def __get_client_sale_request_data(self):
+        ClientSaleRequestData = self.sale_service.get_type('ns0:ClientSaleRequestData')
+        return ClientSaleRequestData
 
 
-    def _initiate_payment(self, transaction):
+
+
+    def _initiate_payment(self):
         ''' Get invoice, exchange with token and redirect user to payment page '''
         print(f'IN: payoff > payment.py > Pec class > _initate_payment')
-        token = self._get_token(transaction)
-        print(f'\t token: {token}')
+        token_object = self._get_token_object()
+        self._save_token_object(token_object)
+        if not self.is_token_valid(token_object):
+            raise ValidationError(_('خطایی در پرداخت رخ داده است'))
+        print(f'\t token: {token_object.Token}')
         print('\n>>>>>>>>>>>>>>>>Redirecting<<<<<<<<<<<<<<<<<<<\n')
-        return redirect(f'https://pec.shaparak.ir/NewIPG/?token={token}')
+        return redirect(f'https://pec.shaparak.ir/NewIPG/?token={token_object.Token}')
+
+    def _get_token_object(self):
+        ''' Get sale service and send invocie data to it, return token if invoice data is valid '''
+        print(f'IN: payoff > payment.py > Pec class > _get_token')
+        print(f'\t transaction: {self.transaction}')
+        print(f'\t transaction: {self.transaction.__dict__}')
+
+        token_request_object = self._generate_token_request_object()
+        print(f'\t token_request_object: {token_request_object}')
+        print(f'\t token request object type: {type(token_request_object)}')
+
+        token_response_object = self._get_token_response_object(token_request_object)
+        print(f'\t token_response_object: {token_response_object}')
+        print(f'\t token response object type: {type(token_response_object)}')
+        
+        return token_response_object
+
+        
+    def _generate_token_request_object(self):
+        return self.sale_request_data(
+            LoginAccount=self.pec_pin,
+            Amount=self.transaction.amount,
+            OrderId=self.transaction.order_number,
+            CallBackUrl=self.callback_url,
+            AdditionalData=self.transaction.description,
+            Originator=self.transaction.mobile)
+
+    def _get_token_response_object(self, token_request):
+        ''' Send token request to IPG and return response object '''
+        return self.sale_service.service.SalePaymentRequest(token_request)
+
+
+    def __get_confirm_service(self):
+        # TODO we must handle exceptions of SOAP connections
+        return Client('https://pec.shaparak.ir/NewIPGServices/Confirm/ConfirmService.asmx?wsdl')
+
+
+    def is_token_object_valid(self, token_object):
+        ''' Check if token is valid '''
+        SUCCESS_STATUS_NUMBER = 0
+        return False if token_object.Status != SUCCESS_STATUS_NUMBER or token_object.Token <= 0 else True
+
+    def _save_token_object(self, token_object):
+        ''' Store result of token request from IPG to DB'''
+        print(f'\t _save_sale_payment_result:')
+        print(f'\t token object is: {token_object}')
+        print(f'\t token object type is: {type(token_object)}')
+        print(f'\t token object attributes are: {dir(token_object)}')
+        self.transaction.token_request_status =token_object.Status
+        self.transaction.token_request_message = token_object.Message
+        self.transaction.token = token_object.Token
+        self.transaction.save()
+
 
     def _complete_payment(self, transaction):
         ''' save IGP to DB, Check validation and send confrim/reverse request to IPG '''
@@ -91,49 +159,6 @@ class Pec(PaymentMethod):
         
             Coupon should be unapplied from invoice
         '''
-
-    def _get_sale_serivce(self):
-        # TODO we must handle exceptions of SOAP connections
-        return Client('https://pec.shaparak.ir/NewIPGServices/Sale/SaleService.asmx?wsdl')
-
-    def _get_confirm_service(self):
-        # TODO we must handle exceptions of SOAP connections
-        return Client('https://pec.shaparak.ir/NewIPGServices/Confirm/ConfirmService.asmx?wsdl')
-
-    def _get_token(self, transaction):
-        ''' Get sale service and send invocie data to it, return token if invoice data is valid '''
-        print(f'IN: payoff > payment.py > Pec class > _get_token')
-        print(f'\t transaction: {transaction}')
-        print(f'\t transaction: {transaction.__dict__}')
-        ClientSaleRequestData = self._get_client_sale_request_data()
-        request_data = ClientSaleRequestData(
-                LoginAccount=self.pec_pin,
-                Amount=transaction.amount,
-                OrderId=transaction.order_number,
-                CallBackUrl=self.callback_url,
-                AdditionalData=transaction.description,
-                Originator=transaction.mobile)
-        saleService = self._get_sale_serivce()
-        result = saleService.service.SalePaymentRequest(request_data)
-        print(f'\t result: {result}')
-        self._save_sale_payment_result(result)
-
-        if result.get('status') != 0 or result.get('Token', 0) <= 0:
-            raise ValidationError(_('خطایی در پرداخت رخ داده است'))
-        return result.get('token')
-
-    def _save_sale_payment_result(self, result):
-        ''' Store result of token request from IPG to DB'''
-        self.transaction.token_request_status = result.get('status')
-        self.transaction.token_request_message = result.get('message')
-        self.transaction.token = result.get('token')
-        self.transaction.save()
-
-    def _get_client_sale_request_data(self):
-        saleService = self._get_sale_serivce()
-        ClientSaleRequestData = saleService.get_type('ns0:ClientSaleRequestData')
-        return ClientSaleRequestData
-
 
 class ZarinPal(PaymentMethod):
     def __init__(self):

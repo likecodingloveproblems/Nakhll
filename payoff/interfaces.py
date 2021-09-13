@@ -2,7 +2,7 @@ from django.utils.translation import ugettext as _
 from payoff.payment import Payment
 
 
-class PayoffInterface:
+class PaymentInterface:
     ''' Interface for converting models to payoff class data '''
 
     @staticmethod
