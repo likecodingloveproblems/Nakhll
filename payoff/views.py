@@ -1,4 +1,4 @@
-from uuid import uuid4
+from uuid import uuid1
 from django.shortcuts import render
 from payoff.payment import Payment
 from payoff.interfaces import PaymentInterface
@@ -6,15 +6,16 @@ from payoff.interfaces import PaymentInterface
 # Create your views here.
 
 def test_pec(request):
-    order_number = str(uuid4())
+    amount = request.GET.get('amount', '10000')
+    mobile = request.GET.get('mobile', '09384918664')
+    order_number = int(str(uuid1().int>>64)[2:18])
     data = {
-        'amount': 100000,
-        'order_nubmer': order_number,
+        'amount': int(amount),
+        'order_number': order_number,
         'description': f'پرداخت فاکتور {order_number}',
-        'ipg': 'PEC',
-        'mobile': '09384918664',
+        'ipg': 'pec',
+        'mobile': mobile,
     }
-    payment = Payment()
-    payment.initiate_payment(data)
-    return payment
+    payment = Payment(data)
+    return payment.initiate_payment()
 
