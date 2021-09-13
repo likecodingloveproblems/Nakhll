@@ -39,6 +39,7 @@ urlpatterns = [
     url(r'^api/v1/', include('nakhll_market.api_urls', namespace='nakhll_market_api')),
     # prometheus
     url('', include('django_prometheus.urls')),
+    path('payoff', include('payoff.urls', namespace='payoff')),
 ]
 
 if settings.DEBUG:
