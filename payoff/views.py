@@ -3,6 +3,7 @@ from django.shortcuts import render
 from payoff.payment import Payment
 from payoff.interfaces import PaymentInterface
 from payoff.models import Transaction
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 
@@ -21,7 +22,7 @@ def test_pec(request):
     }
     return Payment.initiate_payment(data)
 
-
+@csrf_exempt
 def test_pec_callback(request):
     #TODO: Check if shaparak send this request or not
     return Payment.payment_callback(request.POST, ipg_type=Transaction.IPGTypes.PEC)
