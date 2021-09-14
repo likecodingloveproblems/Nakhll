@@ -144,8 +144,8 @@ class Pec(PaymentMethod):
             'rrn': data.get('RRN', 0),
             'status': data.get('status', 200),
             'hash_card_number': data.get('HashCardNumber', ''),
-            'amount': self._parse_amount(data.get('Amount', 0)),
-            'discounted_amount': self._parse_amount(data.get('SwAmount', 0)),
+            'amount': self._parse_amount(data.get('Amount', '0')),
+            'discounted_amount': self._parse_amount(data.get('SwAmount', '0')),
         }
 
     def _parse_amount(self, amount):
