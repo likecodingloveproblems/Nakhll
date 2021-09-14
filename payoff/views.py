@@ -1,21 +1,27 @@
-from uuid import uuid1
+from datetime import datetime
 from django.shortcuts import render
 from payoff.payment import Payment
 from payoff.interfaces import PaymentInterface
+from payoff.models import Transaction
 
 # Create your views here.
 
 def test_pec(request):
     amount = request.GET.get('amount', '10000')
     mobile = request.GET.get('mobile', '09384918664')
-    order_number = int(str(uuid1().int>>64)[2:18])
+    order_number = int(datetime.now().timestamp() * 1000000)
     data = {
+        'referrer_model': 'Invoice',
+        'referrer_app': 'accounting_new',
         'amount': int(amount),
         'order_number': order_number,
         'description': f'پرداخت فاکتور {order_number}',
-        'ipg': 'pec',
+        'ipg': Transaction.IPGTypes.PEC,
         'mobile': mobile,
     }
-    payment = Payment(data)
-    return payment.initiate_payment()
+    return Payment.initiate_payment(data)
 
+
+def test_pec_callback(request):
+    #TODO: Check if shaparak send this request or not
+    return Payment.payment_callback(request.POST, ipg_type=Transaction.IPGTypes.PEC)

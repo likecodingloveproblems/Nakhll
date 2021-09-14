@@ -88,10 +88,20 @@ class Invoice(models.Model, AccountingInterface):
 
     def send_to_payment(self, bank_port=Transaction.IPGTypes.PEC):
         self.status = self.Statuses.PAYING
-        self.payment_unique_id = uuid4()
+        self.payment_unique_id = int(datetime.now().timestamp() * 1000000)
         self.last_payment_request = datetime.now()
         self.save()
         payment = Payment.from_invoice(self, bank_port)
 
+    @staticmethod
+    def complete_payment(transaction):
+        ''' Payment is succeeded'''
+        transaction.invoice.cart.close() # TODO: This should change cart status to complete
+        transaction.invoice.close() # TODO: This should change invoice status to complete, create alert,
+                                            # send email and sms to customer and shop owner, reduce stock, etc.
+                                            # create an order for shop owner to send product to customer
+    @staticmethod
+    def revert_payment(transaction):
+        ''' Payment is failed'''
 
 

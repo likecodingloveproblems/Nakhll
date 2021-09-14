@@ -9,6 +9,8 @@ class PaymentInterface:
     def from_invoice(invoice, bank_port):
         ''' Convert invoice to payoff class data '''
         data = {
+            'referrer_model': invoice._meta.model.__name__,
+            'referrer_app': invoice._meta.app_label,
             'amount': invoice.final_price,
             'order_nubmer': str(invoice.payment_unique_id),
             'description': _('پرداخت فاکتور %s') % invoice.id,

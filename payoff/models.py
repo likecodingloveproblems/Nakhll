@@ -15,6 +15,8 @@ class Transaction(models.Model):
         return '{} - {} - {}'.format(self.id, self.amount, self.created_datetime)
 
 
+    referrer_model = models.CharField(_('مدل ارجاع دهنده'), max_length=255, null=True, blank=True)
+    referrer_app = models.CharField(_('ماژول ارجاع دهنده'), max_length=255, null=True, blank=True)
     amount = models.DecimalField(_('مبلغ (ریال)'), max_digits=15, decimal_places=0)
     order_number = models.CharField(_('شماره سفارش'), max_length=50, null=True, blank=True)
     created_datetime = models.DateTimeField(_('تاریخ ایجاد تراکنش'), auto_now_add=True)
@@ -43,5 +45,5 @@ class TransactionResult(models.Model):
     hash_card_number = models.CharField(_('شماره کارت هش شده'), max_length=200, null=True)
     amount = models.CharField(_('مبلغ (ریال)'), max_length=200, null=True)
     discounted_amount = models.CharField(_('میزان تخفیف'), max_length=200, null=True)
-    strace_no = models.CharField(_('شماره trace'), max_length=200, null=True)
+    created_datetime = models.DateTimeField(_('تاریخ ایجاد تراکنش'), auto_now_add=True)
 
