@@ -9,12 +9,12 @@ from payoff.models import Transaction
 def test_pec(request):
     amount = request.GET.get('amount', '10000')
     mobile = request.GET.get('mobile', '09384918664')
-    order_number = int(datetime.now().timestamp() * 1000000)
+    order_number = str(datetime.now().timestamp() * 1000000).strip()
     data = {
         'referrer_model': 'Invoice',
         'referrer_app': 'accounting_new',
         'amount': int(amount),
-        'order_number': order_number,
+        'order_number': int(order_number),
         'description': f'پرداخت فاکتور {order_number}',
         'ipg': Transaction.IPGTypes.PEC,
         'mobile': mobile,
