@@ -9,7 +9,7 @@ from payoff.models import Transaction
 def test_pec(request):
     amount = request.GET.get('amount', '10000')
     mobile = request.GET.get('mobile', '09384918664')
-    order_number = str(datetime.now().timestamp() * 1000000).strip()
+    order_number = str(int(datetime.now().timestamp() * 1000000)).strip()
     data = {
         'referrer_model': 'Invoice',
         'referrer_app': 'accounting_new',
