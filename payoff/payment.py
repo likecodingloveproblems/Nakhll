@@ -66,8 +66,8 @@ class Pec(PaymentMethod):
             raise ValidationError(f'{token_object.Status} {token_object.Message}')
         print(f'\t token: {token_object.Token}')
         print('\n>>>>>>>>>>>>>>>>Redirecting<<<<<<<<<<<<<<<<<<<\n')
-        return redirect(f'https://pec.shaparak.ir/NewIPG/?token=\
-            {token_object.Token}')
+        url = f'https://pec.shaparak.ir/NewIPG/?token={token_object.Token}'
+        return redirect(url)
 
     def _get_token_object(self):
         ''' Get sale service and send invocie data to it, return token if 
