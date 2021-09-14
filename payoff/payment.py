@@ -138,14 +138,14 @@ class Pec(PaymentMethod):
         print(f'\t data: {data}')
         print(f'\t type: {type(data)}')
         return {
-            'token': data['Token'],
-            'order_id': data['OrderId'],
-            'terminal_no': data['TerminalNo'],
-            'rrn': data['RRN'],
-            'status': data['status'],
-            'hash_card_number': data['HashCardNumber'],
-            'amount': self._parse_amount(data['Amount']),
-            'discounted_amount': self._parse_amount(data['SwAmount']),
+            'token': data.get('Token', 0),
+            'order_id': data.get('OrderId', 0),
+            'terminal_no': data.get('TerminalNo', 0),
+            'rrn': data.get('RRN', 0),
+            'status': data.get('status', 200),
+            'hash_card_number': data.get('HashCardNumber', ''),
+            'amount': self._parse_amount(data.get('Amount', 0)),
+            'discounted_amount': self._parse_amount(data.get('SwAmount', 0)),
         }
 
     def _parse_amount(self, amount):
@@ -233,7 +233,7 @@ class Payment:
 
     @staticmethod
     def payment_callback(data, ipg_type):
-        ipg_class = Payment.get_ipg_class(ipg_type)
+        ipg_class = Payment._get_ipg_class(ipg_type)
         ipg = ipg_class()
         return ipg.callback(data)
 
