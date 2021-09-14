@@ -41,7 +41,7 @@ class TransactionResult(models.Model):
     order_id = models.CharField(_('شماره سفارش'), max_length=200, null=True)
     terminal_no = models.CharField(_('شماره پایانه'), max_length=200, null=True)
     rrn = models.CharField(_('RNN'), max_length=200, null=True)
-    status = models.CharField(_('وضعیت'), max_length=200, null=True)
+    status = models.IntegerField(_('وضعیت'), default=200)
     hash_card_number = models.CharField(_('شماره کارت هش شده'), max_length=200, null=True)
     amount = models.CharField(_('مبلغ (ریال)'), max_length=200, null=True)
     discounted_amount = models.CharField(_('میزان تخفیف'), max_length=200, null=True)

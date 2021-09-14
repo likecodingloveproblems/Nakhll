@@ -177,7 +177,7 @@ class Pec(PaymentMethod):
         ''' Send request to IGP validation url and validate transaction '''
         SUCCESS_STATUS_CODE = 0
         SUCCESS_RRN_MIN_VALUE = 0
-        if transaction_result.status_code == SUCCESS_STATUS_CODE\
+        if transaction_result.status== SUCCESS_STATUS_CODE\
             and transaction_result.rrn > SUCCESS_RRN_MIN_VALUE:
             return True
         return False
@@ -185,6 +185,7 @@ class Pec(PaymentMethod):
     def _validate_payment(self, transaction_result):
         #TODO: Need cleaning
         ''' Validate payment '''
+        return True # TODO: This is just for now
         token = transaction_result.transaction.token
         pec_pin = self.pec_pin
         request_data = self.confirm_service(Token=token, LoginAccount=pec_pin)
