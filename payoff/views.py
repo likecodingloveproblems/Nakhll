@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from django.http.response import HttpResponse
 from django.shortcuts import render
@@ -27,4 +28,4 @@ def test_pec(request):
 def test_pec_callback(request):
     #TODO: Check if shaparak send this request or not
     result = Payment.payment_callback(request.POST, ipg_type=Transaction.IPGTypes.PEC)
-    return HttpResponse(result.__dict__)
+    return HttpResponse(json.dumps(result.__dict__), content_type='application/json')
