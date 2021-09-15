@@ -1,4 +1,5 @@
 from datetime import datetime
+from django.http.response import HttpResponse
 from django.shortcuts import render
 from payoff.payment import Payment
 from payoff.interfaces import PaymentInterface
@@ -25,4 +26,5 @@ def test_pec(request):
 @csrf_exempt
 def test_pec_callback(request):
     #TODO: Check if shaparak send this request or not
-    return Payment.payment_callback(request.POST, ipg_type=Transaction.IPGTypes.PEC)
+    result = Payment.payment_callback(request.POST, ipg_type=Transaction.IPGTypes.PEC)
+    return HttpResponse(result.__dict__)

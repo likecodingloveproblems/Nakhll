@@ -204,6 +204,7 @@ class Pec(PaymentMethod):
         model_name = transaction_result.transaction.referrer_model
         referrer_model = apps.get_model(app_label, model_name) 
         referrer_model.complete_payment(transaction_result.transaction)
+        return transaction_result
 
     def _revert_transaction(self, transaction_result):
         ''' Send transaction_result to referrer model to finish purchase process'''
@@ -211,6 +212,7 @@ class Pec(PaymentMethod):
         model_name = transaction_result.transaction.referrer_model
         referrer_model = apps.get_model(app_label, model_name) 
         referrer_model.revert_payment(transaction_result.transaction)
+        return transaction_result
 
 
 
