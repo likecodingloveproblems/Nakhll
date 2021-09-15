@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404
 from nakhll_market.serializer_fields import Base64ImageField
 from restapi.serializers import ProfileSerializer, UserDetailSerializer
 from django.contrib.auth.models import User
+from django.utils import timezone
 from django.db.models import fields, query
 from rest_framework import serializers
 from rest_framework.relations import HyperlinkedIdentityField, HyperlinkedRelatedField
@@ -28,12 +29,16 @@ class CategorySerializer(serializers.ModelSerializer):
         ]
 
 class ShopSerializer(serializers.ModelSerializer):
+    registered_months = serializers.SerializerMethodField()
     class Meta:
         model = Shop
         fields = [
             'slug', 'title', 'url', 'image_thumbnail_url', 'DateCreate', 'total_products',
-            'state', 'big_city', 'city', 'show_contact_info', 'publish', 'available'
+            'state', 'big_city', 'city', 'show_contact_info', 'publish', 'available', 'registered_months'
         ]
+    def get_registered_months(self, obj):
+        ''' Calculate months from DateCreate till now '''
+        return (timezone.now() - obj.DateCreate).days // 30
 
 class CreateShopSerializer(serializers.ModelSerializer):
     class Meta:
