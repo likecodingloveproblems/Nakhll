@@ -30,4 +30,5 @@ def test_pec_callback(request):
     result = Payment.payment_callback(request.POST, ipg_type=Transaction.IPGTypes.PEC)
     result_dict = result.__dict__
     result_dict['_state'] = None
+    result_dict['created_datetime'] = None
     return HttpResponse(json.dumps(result_dict), content_type='application/json')
