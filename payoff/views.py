@@ -28,4 +28,6 @@ def test_pec(request):
 def test_pec_callback(request):
     #TODO: Check if shaparak send this request or not
     result = Payment.payment_callback(request.POST, ipg_type=Transaction.IPGTypes.PEC)
-    return HttpResponse(json.dumps(result.__dict__), content_type='application/json')
+    result_dict = result.__dict__
+    result_dict['_state'] = None
+    return HttpResponse(json.dumps(result_dict), content_type='application/json')
