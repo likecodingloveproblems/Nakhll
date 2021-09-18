@@ -80,6 +80,7 @@ class ShopAdmin(admin.ModelAdmin):
     search_fields=('Title','Slug')
     ordering=['ID','DateCreate','DateUpdate']
     inlines=[ShopBannerInline, ShopMovieInline,]
+    raw_id_fields = ('FK_ShopManager', )
 #-------------------------------------------------
 #Attribute admin panel
 @admin.register(Attribute)
