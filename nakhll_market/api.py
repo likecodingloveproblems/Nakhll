@@ -1,4 +1,6 @@
 from django.contrib.auth.models import User
+from django.db.models.expressions import Case, When
+from django.db.models import Value, IntegerField
 from django.http import response
 from django.http.response import Http404
 from django.shortcuts import get_object_or_404
@@ -171,8 +173,17 @@ class ProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     filter_backends = (restframework_filters.DjangoFilterBackend, filters.OrderingFilter)
     serializer_class = ProductListSerializer
     permission_classes = [permissions.AllowAny, ]
-    queryset = Product.objects.select_related('FK_SubMarket', 'FK_Shop')
-    ordering_fields = ('Title', 'Price', 'DiscountPercentage', 'DateCreate', )
+    ordering_fields = ('Title', 'Price', 'DiscountPrecentage', 'DateCreate', )
+
+    def get_queryset(self):
+        queryset = Product.objects.select_related('FK_SubMarket', 'FK_Shop')
+        queryset = queryset.annotate(DiscountPrecentage=Case(
+            When(OldPrice__gt=0, then=(
+                (F('OldPrice') - F('Price')) * 100 / F('OldPrice'))
+            ),
+            default=0)
+        )
+        return queryset
 
 
 class ProductDetailsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
