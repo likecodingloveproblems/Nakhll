@@ -153,23 +153,32 @@ class Cart(models.Model):
 
     def check_cart_items(self):
         ''' Check for changes and product statuses in every item in cart, show changes for now '''
+        # TODO
         return None
 
     @property
     def get_diffrences(self):
-        ''' Compare current and last state of products in the cart and show diffrences 
-            TODO: Discuss needed for:
-            For now, I just comapre them and return them both as comparing one by one
-            should be done in another module (maybe a third-party). 
+        ''' Compare current and latest state of products in the cart and show diffrences 
         '''
         # TODO: Check functionallity deeply
-        items = self.cart_items.all()
-        last_items_json = f"[{','.join([item.product_last_known_state for item in items])}]"
-        products = [item.product for item in items]
-        new_items_json = serializers.serialize('json', products, ensure_ascii=False)
-        return (
-            last_items_json != new_items_json,
-            last_items_json, new_items_json)
+        items = self.items.all()
+        diffs = {}
+        for item in items:
+            diff = self.__get_item_diffs(item.product, item.product_last_state)
+            if diff:
+                diffs[item.product_last_state.get('Title')] = diff
+        return diffs
+
+    @staticmethod
+    def __get_item_diffs(item, item_json):
+        diffs = []
+        for key in item_json:
+           old = item_json[key] 
+           new = getattr(item, key)
+           if old != new:
+               diffs.append({'prop': key, 'old': old, 'new': new})
+        return diffs
+
 
     @property
     def ordered_items(self):

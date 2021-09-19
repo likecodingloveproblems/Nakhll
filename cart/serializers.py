@@ -53,4 +53,4 @@ class CartSerializer(serializers.ModelSerializer):
 class ProductLastStateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['Price', 'OldPrice', 'Status', 'Inventory', 'PreparationDays', 'Publish', 'Title']
+        fields = ['Price', 'OldPrice', 'Status', 'PreparationDays', 'Publish', 'Title']
