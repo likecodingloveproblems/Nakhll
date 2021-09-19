@@ -14,7 +14,7 @@ class CartItemSerializer(serializers.ModelSerializer):
         model = CartItem
         # fields = ('cart', 'product', 'count', 'product_last_known_state')
         fields = '__all__'
-        read_only_fields = ('product_last_known_state', )
+        read_only_fields = ('product_last_state', )
 
 
 class CartItemReadSerializer(serializers.ModelSerializer):
@@ -49,3 +49,8 @@ class CartSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = CartTransmission
 #         fields = ('cart', )
+
+class ProductLastStateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ['Price', 'OldPrice', 'Status', 'Inventory', 'PreparationDays', 'Publish', 'Title']

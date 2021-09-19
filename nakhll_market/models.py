@@ -1078,12 +1078,6 @@ class ProductManager(models.Manager):
                 return False
         return True
 
-    @staticmethod
-    def jsonify_product(product):
-        if type(product) == Product:
-            product = [product]
-        return serializers.serialize('json', product, ensure_ascii=False)
-        
 
 
 

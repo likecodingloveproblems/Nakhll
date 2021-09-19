@@ -8,7 +8,7 @@ from rest_framework import permissions, viewsets, mixins
 from nakhll.authentications import CsrfExemptSessionAuthentication
 from nakhll_market.models import ProductManager
 from cart.models import Cart, CartItem
-from cart.serializers import CartSerializer, CartItemSerializer
+from cart.serializers import CartSerializer, CartItemSerializer, ProductLastStateSerializer
 from cart.utils import get_user_or_guest
 from cart.permissions import IsCartOwner, IsCartItemOwner
 
@@ -128,11 +128,11 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
             raise ValidationError(_('فروشنده قادر به تامین کالا به میزان درخواستی شما نمی‌باشد'))
 
         # Make product jsonify take some time, so it should be after validation
-        product_jsonify = ProductManager.jsonify_product(product)
+        product_jsonify = ProductLastStateSerializer(product)
 
         if cart_item:
             cart_item.count = count
-            cart_item.product_last_known_state = product_jsonify
+            cart_item.product_last_state = product_jsonify.data
             cart_item.save()
         else:
             serializer.save(cart=active_cart, product_last_known_state=product_jsonify)
@@ -141,12 +141,12 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
     def perform_update(self, serializer):
         # TODO: check if permissions are correct
         user, guid = get_user_or_guest(self.request)
-        product = serializer.validated_data.get('product')
+        cart_item = self.get_object()
         count = serializer.validated_data.get('count')
-        if not ProductManager.is_product_available(product, count):
+        if not ProductManager.is_product_available(cart_item.product, count):
             raise ValidationError(_('محصول در دسترس نیست و یا به تعداد کافی از این محصول در انبار وجود ندارد'))
-        product_jsonify = ProductManager.jsonify_product(product)
-        serializer.save(product_last_known_state=product_jsonify)
+        product_jsonify = ProductLastStateSerializer(cart_item.product)
+        serializer.save(product_last_state=product_jsonify.data)
 
     serializer_class = CartItemSerializer
     authentication_classes = [CsrfExemptSessionAuthentication, ]
