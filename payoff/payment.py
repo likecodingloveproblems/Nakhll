@@ -7,7 +7,7 @@ from django.utils.translation import ugettext as _
 from rest_framework.response import Response
 from rest_framework.validators import ValidationError
 from payoff.models import Transaction, TransactionResult
-from payoff.exceptions import NoTransactionException
+from payoff.exceptions import NoCompletePaymentMethodException, NoTransactionException
 from zeep import Client
 
 
@@ -203,8 +203,11 @@ class Pec(PaymentMethod):
         app_label = transaction_result.transaction.referrer_app
         model_name = transaction_result.transaction.referrer_model
         referrer_model = apps.get_model(app_label, model_name) 
+        if not hasattr(referrer_model, 'complete_payment'):
+            raise NoCompletePaymentMethodException()
         referrer_model.complete_payment(transaction_result.transaction)
         return transaction_result
+        
 
     def _revert_transaction(self, transaction_result):
         ''' Send transaction_result to referrer model to finish purchase process'''
