@@ -1,26 +1,31 @@
 from rest_framework import serializers
 from coupon.models import Coupon, CouponUsage
+from nakhll_market.models import Product
 
 
 
-# class CouponSerializers(serializers.ModelSerializer):
-#     cart = serializers.PrimaryKeyRelatedField(read_only=True)
-#     product = serializers.PrimaryKeyRelatedField(many=False, read_only=False, queryset=Product.objects.all())
-#     class Meta:
-#         model = Coupon
-#         fields = (
-#             'code',
-#             'valid_from',
-#             'valid_to',
-#             'max_count',
-#             'is_publish',
-#             'price',
-#             'min_price',
-#             'max_price',
-#             'user',
-#             'shop',
-#             'product',
-#             'description',
-#         )
+class CouponSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Coupon
+        fields = (
+            'code',
+            'title',
+            'amout',
+            'max_amout',
+            'precentage',
+            'available',
+            'price',
+            'description',
+        )
 
 
+class CouponUsageSerializer(serializers.ModelSerializer):
+    coupon = serializers.SlugRelatedField(slug_field='code', read_only=True, many=False)
+    class Meta:
+        model = CouponUsage
+        fields = (
+            'coupon',
+            'used_datetime',
+            'price_applied',
+        )
+ 

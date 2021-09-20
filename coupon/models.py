@@ -23,7 +23,7 @@ class Coupon(models.Model, CouponValidation):
     title = models.CharField(_('عنوان'), max_length=100, null=True, blank=True)
     description = models.TextField(_('توضیحات'), null=True, blank=True )
     amount = models.IntegerField(_('مبلغ تخفیف'), default=0)
-    max_amount = models.IntegerField(_('مبلغ ارزش بالا'), default=0)
+    max_amount = models.IntegerField(_('حداکثر تخفیف قابل اعمال'), default=0)
     presentage = models.IntegerField(_('درصد تخفیف'), default=0)
     creator = models.ForeignKey(User, verbose_name=_('سازنده کوپن'), on_delete=models.SET_NULL, null=True, blank=True, related_name='coupon_creator')
     available=models.BooleanField(verbose_name='وضعیت ثبت کوپن', choices=AvailableStatuses.choices, default=True)

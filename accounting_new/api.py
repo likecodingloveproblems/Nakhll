@@ -47,9 +47,6 @@ class InvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK, headers=headers)
 
-    def update(self, request, *args, **kwargs):
-        return super().update(request, *args, **kwargs)
-
     def perform_create(self, serializer):
         invoice = serializer.save()
         #TODO: Create alert
@@ -71,16 +68,16 @@ class InvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
             'completing' and user address is filled.
             Send this invoice with coupon to coupon app and get amount of 
             discount that should applied, or errors if there is any. Coupon
-            should be saved in factor for future reference
+            should be applied and saved in factor for future reference
         '''
         invoice = self.get_object()
         serializer = InvoiceWriteSerializer(instance=invoice, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         coupon = serializer.validated_data.get('coupon')
-        coupon(request.user, invoice)
-        if coupon.is_valid():
+        if coupon.is_valid(invoice):
             serializer.save()
-        return Response({'result': coupon.final_price, 'total_invoice_price': coupon.total_invoice_price, 'errors': coupon.errors}, status=status.HTTP_200_OK)
+            coupon.apply(invoice)
+        return Response({'result': coupon.final_price, 'errors': coupon.errors}, status=status.HTTP_200_OK)
 
     
     @action(methods=['PATCH'], detail=False)
@@ -104,8 +101,6 @@ class InvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
         post_price = logistic.get_post_price(invoice)
         return Response({'post_price': post_price, 'out_of_range': out_of_range_shops}, status=status.HTTP_200_OK)
 
-
-        pass
 
     @action(methods=['GET'], detail=False)
     def pay(self, requsest):

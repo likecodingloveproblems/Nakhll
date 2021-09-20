@@ -10,7 +10,7 @@ from coupon.exceptions import (AvailableException, BudgetException, CountExcepti
 class AvailableValidator:
     def __call__(self, coupon):
         if not coupon.available:
-            raise AvailableException(coupon)
+            raise AvailableException(coupon, _('Coupon is not available'))
 
 
 class MaxUserCountValidator:
@@ -20,23 +20,23 @@ class MaxUserCountValidator:
         max_usage = coupon.constraint.max_usage_per_user 
         user_usage = coupon.usages.filter(invoice__user=self.user).aggregate(Sum('count'))['count__sum']
         if user_usage >= max_usage:
-            raise MaxUserCountException(coupon, self.user)
+            raise MaxUserCountException(coupon, _('Maximum usage per user for this coupon reached'), self.user)
 
 class MaxCountValidator:
     def __call__(self, coupon):
         max_usage = coupon.constraint.max_usage
         usage = coupon.usages.count()
         if usage >= max_usage:
-            raise MaxCountException(coupon)
+            raise MaxCountException(coupon, _('Maximum usage for this coupon reached'))
 
 
 class DateTimeValidator:
     def __call__(self, coupon):
-        now = make_aware(datetime.now())
+        now = datetime.now().date()
         valid_from = coupon.constraint.valid_from
         valid_to = coupon.constraint.valid_to
         if valid_from and valid_from > now or valid_to and valid_to < now:
-            raise DateTimeException(coupon, valid_from, valid_to)
+            raise DateTimeException(coupon, _('Datetime validation error'), valid_from, valid_to)
 
 class PriceValidator:
     def __init__(self, invoice):
@@ -44,7 +44,7 @@ class PriceValidator:
     def __call__(self, coupon):
         if coupon.constraint.max_purchase_amount and self.total_invoice_price > coupon.constraint.max_purchase_amount\
             or coupon.constraint.min_purchase_amount and self.total_invoice_price < coupon.constraint.min_purchase_amount:
-            raise PriceException(coupon, self.total_invoice_price)
+            raise PriceException(coupon, _('Price Error'), self.total_invoice_price)
 
 class CountValidator:
     def __init__(self, invoice):
@@ -52,32 +52,32 @@ class CountValidator:
     def __call__(self, coupon):
         if coupon.constraint.max_purchase_count and self.total_invoice_count > coupon.constraint.max_purchase_count\
             or coupon.constraint.min_purchase_count and self.total_invoice_count < coupon.constraint.min_purchase_count:
-            raise CountException(coupon, self.total_invoice_count)
+            raise CountException(coupon, _('Count error'), self.total_invoice_count)
 
 class UserValidator:
     def __init__(self, user):
         self.user = user
     def __call__(self, coupon):
         if coupon.constraint.users.all() and self.user not in coupon.constraint.users.all():
-            raise UserException(coupon, self.user)
+            raise UserException(coupon, _('User error'), self.user)
 
 class ShopValidator:
     def __init__(self, invoice):
         self.shops = invoice.shops
     def __call__(self, coupon):
         if coupon.constraint.shops.all() and self.shops not in coupon.constraint.shops.all():
-            raise ShopException(coupon, self.shops)
+            raise ShopException(coupon, _('ShopValidator'), self.shops)
 
 class ProductValidator:
     def __init__(self, invoice):
         self.products = invoice.products
     def __call__(self, coupon):
         if coupon.constraint.products.all() and self.products not in coupon.constraint.products.all():
-            raise ProductException(coupon, self.products)
+            raise ProductException(coupon, _('ProductValidator'), self.products)
 
 class BudgetValidator:
     def __call__(self, coupon):
         coupon_total_usage = coupon.usages.aggregate(Sum('price_applied'))['price_applied__sum']
         if coupon_total_usage and coupon.constraint.budget and self.budget < coupon_total_usage:
-            raise BudgetException(coupon, self.budget)
+            raise BudgetException(coupon, _('BudgetError'), self.budget)
 

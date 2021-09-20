@@ -5,6 +5,7 @@ from cart.serializers import CartSerializer
 from logistic.models import Address
 from logistic.serializers import AddressSerializer
 from coupon.models import Coupon
+from coupon.serializers import CouponUsageSerializer
 from nakhll_market.serializers import UserSerializer
 
 
@@ -25,7 +26,7 @@ class InvoiceWriteSerializer(serializers.ModelSerializer):
 class InvoiceReadSerializer(serializers.ModelSerializer):
     cart = CartSerializer(many=False, read_only=True)
     address = AddressSerializer(many=False, read_only=True)
-    coupon = serializers.SlugRelatedField(slug_field='code', read_only=True)
+    coupon_usages = CouponUsageSerializer(read_only=True, many=True)
     user = UserSerializer(many=False, read_only=True)
     class Meta:
         model = Invoice
@@ -35,7 +36,7 @@ class InvoiceReadSerializer(serializers.ModelSerializer):
             'address',
             'user',
             'status',
-            'coupon',
+            'coupon_usages',
             'coupon_details',
             'logistic_price',
             'logistic_errors',

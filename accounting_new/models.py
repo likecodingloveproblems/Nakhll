@@ -66,13 +66,12 @@ class Invoice(models.Model, AccountingInterface):
         return post_setting.get_out_of_range_products(self)
 
     @property
-    def coupon_details(self):
-        coupon = self.coupon
-        if coupon:
-            coupon(self.cart.user, self)
-            coupon.is_valid()
-            return {'result': coupon.final_price, 'errors': coupon.errors}
-        return {'result': 0, 'errors': []}
+    def coupons_total_price(self):
+        final_price = 0
+        usages = self.usages.all()
+        for usage in usages:
+            final_price += usage.price_applied
+        return final_price
 
     @property
     def final_price(self):

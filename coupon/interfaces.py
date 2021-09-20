@@ -4,10 +4,6 @@ from rest_framework.validators import ValidationError
 from coupon.validators import (BudgetValidator, DateTimeValidator, MaxCountValidator, MaxUserCountValidator, 
                                ProductValidator, AvailableValidator, UserValidator, PriceValidator,
                                ShopValidator, )
-from coupon.exceptions import (AvailableException, BudgetException, CountException, UserException,
-                               ShopException, DateTimeException, MaxCountException,
-                               MaxUserCountException, PriceException, ProductException)
-
 
 
 class CouponValidation:
@@ -32,7 +28,7 @@ class CouponValidation:
 
 
 
-    def is_valid(self, invoice, validators=ALL_VALIDATORS):
+    def is_valid(self, invoice, validators=ALL_VALIDATORS, raise_exception=False):
         self._user = invoice.cart.user
         self._invoice = invoice
         self._validators = validators
@@ -41,32 +37,13 @@ class CouponValidation:
 
         # TODO: Check if this coupon is in an active invoice or not
 
+        self._final_price = None
         self._errors = []
         for validator in self._get_validators():
             try:
                 validator(self)
-            except ProductException:
-                self._errors.append('ProductException')
-            except PriceException:
-                self._errors.append('PriceException')
-            except MaxUserCountException:
-                self._errors.append('MaxUserCountException')
-            except MaxCountException:
-                self._errors.append('MaxCountException')
-            except DateTimeException:
-                self._errors.append('DateTimeException')
-            except ShopException:
-                self._errors.append('ShopException')
-            except UserException:
-                self._errors.append('UserException')
-            except CountException:
-                self._errors.append('CountException')
-            except BudgetException:
-                self._errors.append('BudgetException')
-            except AvailableException:
-                self._errors.append('AvailableException')
-            except ValidationError as exc:
-                self._errors.append(exc.args)
+            except Exception as e:
+                self._errors.append(e.message)
         return not self._errors
 
     def get_final_price(self):
@@ -74,13 +51,21 @@ class CouponValidation:
         self._final_price = None
         if len(self._errors) == 0:
             # TODO: Some calculations
-            self.final_price = self.price
+            return self.__calculate_coupon_price()
+
+    def __calculate_coupon_price(self):
+        if self.amount:
+            return self.amount
+        if self.presentage:
+            amount = self.presentage * self._invoice.cart.total_price / 100
+            return min(amount, self.max_amount) or amount
+        return 0
 
     def apply(self, invoice):
-       if hasattr(self, '_final_price') and self._final_price is not None:
+        self.final_price = self.get_final_price()
+        if self.final_price:
            self.usages.create(
-               user=self._user,
-               used_date=make_aware(datetime.now()),
+               used_datetime=make_aware(datetime.now()),
                price_applied=self._final_price,
                invoice=invoice,
            )
@@ -88,7 +73,7 @@ class CouponValidation:
     @property
     def final_price(self):
         assert hasattr(self, '_final_price'), 'You should call .is_valid() on coupon first'
-        return self._final_price
+        return self._final_price or 0
 
     @final_price.setter
     def final_price(self, value):
