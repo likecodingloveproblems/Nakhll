@@ -37,7 +37,6 @@ class InvoiceReadSerializer(serializers.ModelSerializer):
             'user',
             'status',
             'coupon_usages',
-            'coupon_details',
             'logistic_price',
             'logistic_errors',
             'final_price',
