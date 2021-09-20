@@ -27,7 +27,17 @@ def test_pec(request):
 @csrf_exempt
 def test_pec_callback(request):
     #TODO: Check if shaparak send this request or not
-    result = Payment.payment_callback(request.POST, ipg_type=Transaction.IPGTypes.PEC)
+    sample_data = {
+        'Token': request.GET.get('token') or 12863129837,
+        'OrderId': request.GET.get('order') or 98712341264,
+        'TerminalNo':  request.GET.get('term') or 1321,
+        'RRN': request.GET.get('rrn') or 357823,
+        'Status': request.GET.get('status') or 0,
+        'HashCardNumber': request.GET.get('card') or '585983***9490',
+        'Amount': request.GET.get('amount') or '120000',
+    }
+    # result = Payment.payment_callback(request.POST, ipg_type=Transaction.IPGTypes.PEC)
+    result = Payment.payment_callback(sample_data, ipg_type=Transaction.IPGTypes.PEC)
     result_dict = result.__dict__
     result_dict['_state'] = None
     result_dict['created_datetime'] = None
