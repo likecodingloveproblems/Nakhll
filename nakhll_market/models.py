@@ -26,6 +26,8 @@ import datetime
 from django.utils.translation import ugettext_lazy as _
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
+import jdatetime
+
 
 
 OUTOFSTOCK_LIMIT_NUM = 5
@@ -1850,7 +1852,8 @@ class Comment(models.Model):
 
     @property
     def date_create(self):
-        return self.DateCreate
+        jalali_datetime = jdatetime.datetime.fromgregorian(datetime=self.DateCreate, locale='fa_IR')
+        return jalali_datetime.strftime('%Y/%m/%d %H:%M')
 
     @property
     def type(self):
