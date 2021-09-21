@@ -12,7 +12,6 @@ class CartItemSerializer(serializers.ModelSerializer):
     product = serializers.PrimaryKeyRelatedField(many=False, read_only=False, queryset=Product.objects.all())
     class Meta:
         model = CartItem
-        # fields = ('cart', 'product', 'count', 'product_last_known_state')
         fields = '__all__'
         read_only_fields = ('product_last_state', )
 
@@ -30,9 +29,8 @@ class CartItemReadSerializer(serializers.ModelSerializer):
         return obj.product.price * obj.count
     class Meta:
         model = CartItem
-        # fields = ('cart', 'product', 'count', 'product_last_known_state')
         fields = '__all__'
-        read_only_fields = ('product_last_known_state', )
+        read_only_fields = ('product_last_state', )
 
 
 

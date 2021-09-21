@@ -135,7 +135,7 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
             cart_item.product_last_state = product_jsonify.data
             cart_item.save()
         else:
-            serializer.save(cart=active_cart, product_last_known_state=product_jsonify)
+            serializer.save(cart=active_cart, product_last_state=product_jsonify.data)
 
 
     def perform_update(self, serializer):
