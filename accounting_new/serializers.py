@@ -28,6 +28,7 @@ class InvoiceReadSerializer(serializers.ModelSerializer):
     address = AddressSerializer(many=False, read_only=True)
     coupon_usages = CouponUsageSerializer(read_only=True, many=True)
     user = UserSerializer(many=False, read_only=True)
+    final_price = serializers.SerializerMethodField()
     class Meta:
         model = Invoice
         fields = (
@@ -40,5 +41,9 @@ class InvoiceReadSerializer(serializers.ModelSerializer):
             'logistic_price',
             'logistic_errors',
             'final_price',
+            'coupons_total_price'
         )
+
+    def get_final_price(self, obj):
+        return obj.cart.total_price + obj.logistic_price - obj.coupons_total_price
 

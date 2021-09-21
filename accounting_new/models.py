@@ -68,7 +68,7 @@ class Invoice(models.Model, AccountingInterface):
     @property
     def coupons_total_price(self):
         final_price = 0
-        usages = self.usages.all()
+        usages = self.coupon_usages.all()
         for usage in usages:
             final_price += usage.price_applied
         return final_price
