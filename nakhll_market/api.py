@@ -11,7 +11,7 @@ from nakhll_market.models import (
     )
 from nakhll_market.serializers import (
     AmazingProductSerializer, Base64ImageSerializer, ProductCommentSerializer, ProductDetailSerializer, ProductImagesSerializer,
-    ProductSerializer, ProductUpdateSerializer, ShopSerializer,SliderSerializer, ProductPriceWriteSerializer,
+    ProductSerializer, ProductUpdateSerializer, ShopProductSerializer, ShopSerializer,SliderSerializer, ProductPriceWriteSerializer,
     CategorySerializer, FullMarketSerializer, CreateShopSerializer, ProductInventoryWriteSerializer,
     ProductListSerializer, ProductWriteSerializer, ShopAllSettingsSerializer, ProductBannerSerializer,
     ShopBankAccountSettingsSerializer, SocialMediaAccountSettingsSerializer, ProductSubMarketSerializer, StateFullSeraializer, SubMarketSerializer
@@ -92,6 +92,27 @@ class MostSoldShopsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def get_queryset(self):
         return Shop.objects.most_last_week_sale_shops()
+
+class ShopProductsViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.ListModelMixin):
+    serializer_class = ShopProductSerializer
+    permission_classes = [permissions.AllowAny, ]
+    product_slug = None
+    lookup_field = 'FK_Shop__Slug'
+
+    def get_queryset(self):
+        filter_query = {self.lookup_field: self.product_slug, 'Publish': True, 'Available': True}
+        return Product.objects.filter(**filter_query)
+
+    def retrieve(self, request, *args, **kwargs):
+        self.product_slug = self.kwargs.get(self.lookup_field)
+        return self.list(request, *args, **kwargs)
+
+    def list(self, request, *args, **kwargs):
+        if not self.product_slug:
+            raise Http404
+        return super().list(request, *args, **kwargs)
+     
+
 
 
 class UserProductViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.CreateModelMixin,

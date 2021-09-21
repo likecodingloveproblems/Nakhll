@@ -465,3 +465,13 @@ class StateFullSeraializer(serializers.ModelSerializer):
         model = State
         fields = ['id', 'name', 'big_city']
 
+class ShopProductsSerializer(serializers.ModelSerializer):
+    ShopProduct = ProductSerializer(read_only=True, many=True)
+    class Meta:
+        model = Shop
+        fields = ['id', 'title', 'slug', 'url', 'image_thumbnail_url', 'state', 'ShopProduct']
+
+class ShopProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ['id', 'title', 'slug', 'image_thumbnail_url', 'price', 'old_price',  ]

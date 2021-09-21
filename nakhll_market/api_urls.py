@@ -4,7 +4,7 @@ from nakhll_market.api import (
     LastCreatedProductsViewSet, MostDiscountPrecentageProductsViewSet, ShopMultipleUpdateInventory, ShopMultipleUpdatePrice, SocialMediaShopSettings, StateFullViewSet,
     UserProductViewSet, ProductsInSameFactorViewSet, SliderViewSet,
     MostSoldShopsViewSet, RandomShopsViewSet, RandomProductsViewSet, ProductsViewSet,
-    MarketList, CreateShop, GetShopWithSlug, CheckShopSlug, CheckProductSlug,
+    MarketList, CreateShop, GetShopWithSlug, CheckShopSlug, CheckProductSlug, ShopProductsViewSet,
     ProductBannerViewSet, AddImagesToProduct, ProductDetailsViewSet, BankAccountShopSettings, ProductCommentsViewSet, ProductRelatedItemsViewSet,
     )
 from rest_framework import routers
@@ -22,6 +22,7 @@ landing_router.register(r'most-sold-shops', MostSoldShopsViewSet, basename="most
 landing_router.register(r'random-shops', RandomShopsViewSet, basename="random-shops")
 landing_router.register(r'random-products', RandomProductsViewSet, basename="random-products")
 landing_router.register(r'products', UserProductViewSet, basename="products")
+landing_router.register(r'shop_products', ShopProductsViewSet, basename="shop_products")
 landing_router.register(r'product_banner', ProductBannerViewSet, basename="product_banners")
 
 product_page_router = routers.DefaultRouter()
