@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from nakhll_market.serializer_fields import Base64ImageField
-from restapi.serializers import ProfileSerializer, UserDetailSerializer
+from restapi.serializers import BigCitySerializer, ProfileSerializer, UserDetailSerializer
 from django.contrib.auth.models import User
 from django.db.models import fields, query
 from rest_framework import serializers
@@ -175,7 +175,7 @@ class ProductListSerializer(serializers.ModelSerializer):
     sub_market = SubMarketSerializer(read_only=True)
     shop = serializers.SlugRelatedField(slug_field='Slug', read_only=True)
     banners = ProductBannerSerializer(read_only=True, many=True)
-    post_range_cities = serializers.SlugRelatedField(slug_field='name', many=True, read_only=True)
+    post_range_cities = BigCitySerializer(many=True, read_only=True)
     class Meta:
         model = Product
         fields = [
