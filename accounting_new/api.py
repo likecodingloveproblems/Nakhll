@@ -1,3 +1,4 @@
+from cart.serializers import ProductLastStateSerializer
 from datetime import datetime, timedelta
 from logistic.models import PostPriceSetting
 from django.contrib.auth.models import User
@@ -37,12 +38,13 @@ class InvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
 
 
     def get_object(self):
-        return Invoice.objects.filter(cart__user=self.request.user, status=Invoice.Statuses.COMPLETING).first()
+        invoice = Invoice.objects.filter(cart__user=self.request.user, status=Invoice.Statuses.COMPLETING).first()
+        return invoice or self.create_invoice(self.request)
         
 
     def create(self, request, *args, **kwargs):
         ''' each user can only have one invoice with status of completing '''
-        invoice = self.get_object() or self.create_invoice(request)
+        invoice = self.get_object()
         serializer = InvoiceReadSerializer(invoice)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK, headers=headers)
@@ -95,7 +97,7 @@ class InvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
         invoice = self.get_object()
         serializer = InvoiceWriteSerializer(instance=invoice, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        serializer.save(cart=invoice.cart)
         logistic, is_created = PostPriceSetting.objects.get_or_create()
         out_of_range_shops = logistic.get_out_of_range_products(invoice)
         post_price = logistic.get_post_price(invoice)
@@ -103,7 +105,7 @@ class InvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
 
 
     @action(methods=['GET'], detail=False)
-    def pay(self, requsest):
+    def pay(self, request):
         ''' Get an invoice and send it to payment app
         
             Request for invoice should came from owner.
@@ -117,7 +119,24 @@ class InvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
             A celery should check for invocies with paying status every hour.
             Invoice should sent to payment status to initiate payment
         '''
-        invoice = self.get_object() or self.create_invoice(requsest)
+        # TODO: editing items in active cart when cart sent to accounting should be denied
+        # TODO: gettings diffrences is not implemented completely
+        invoice = self.get_object()
+        is_differ = invoice.cart.get_diffrences
+        if is_differ:
+            
+            return Response({'error': 'تغییراتی در سبد خرید شما به وجود آمده است. لطفا سبد خرید را بررسی کنید'}, status=status.HTTP_400_BAD_REQUEST)
         invoice.send_to_payment()
+
+    @action(methods=['GET'], detail=False)
+    def confirm_changes(self, request):
+        ''' User confirms for changes made to product and update product_last_state '''
+        invoice = self.get_object()
+        cart = invoice.cart
+        for item in cart.items.all():
+            item.product_last_state = ProductLastStateSerializer(item.product).data
+            item.save()
+        return Response({'result': 'success'}, status=status.HTTP_200_OK)
+
 
 

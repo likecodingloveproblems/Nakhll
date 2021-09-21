@@ -26,14 +26,6 @@ class UserCartViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
         user, guid = get_user_or_guest(self.request)
         return CartManager.user_active_cart(user, guid)
 
-    @action(detail=False, methods=['POST', 'GET'], name='Send active cart to accounting')
-    def send_to_accounting(self, request):
-        # TODO: editing items in active cart when cart sent to accounting should be denied
-        # TODO: gettings diffrences is not implemented completely
-        cart = self.get_object()
-        is_differ, old, new = cart.get_diffrences()
-        if is_differ:
-            raise ValidationError('Differ')
         
     @action(detail=False, methods=['GET'], name='View current user active cart')
     def my(self, request):

@@ -10,6 +10,7 @@ from logistic.models import Address, PostPriceSetting
 from accounting_new.interfaces import AccountingInterface
 from accounting_new.managers import AccountingManager
 from payoff.models import Transaction
+from payoff.interfaces import PaymentInterface
 
 # Create your models here.
 
@@ -90,7 +91,7 @@ class Invoice(models.Model, AccountingInterface):
         self.payment_unique_id = int(datetime.now().timestamp() * 1000000)
         self.last_payment_request = datetime.now()
         self.save()
-        payment = Payment.from_invoice(self, bank_port)
+        PaymentInterface.from_invoice(self, bank_port)
 
     @staticmethod
     def complete_payment(transaction):
