@@ -4,6 +4,7 @@ from rest_framework.validators import ValidationError
 from coupon.validators import (BudgetValidator, DateTimeValidator, MaxCountValidator, MaxUserCountValidator, 
                                ProductValidator, AvailableValidator, UserValidator, PriceValidator,
                                ShopValidator, )
+from coupon.exceptions import CouponException
 
 
 class CouponValidation:
@@ -42,7 +43,7 @@ class CouponValidation:
         for validator in self._get_validators():
             try:
                 validator(self)
-            except Exception as e:
+            except CouponException as e:
                 self._errors.append(e.message)
         return not self._errors
 
