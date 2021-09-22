@@ -1419,7 +1419,7 @@ class Product(models.Model):
     def get_discounted(self):
         # Get Discounted
         try:
-            return (self.OldPrice - self.Price) * 100 / self.OldPrice
+            return int((self.OldPrice - self.Price) * 100 / self.OldPrice)
         except:
             return 0
 
