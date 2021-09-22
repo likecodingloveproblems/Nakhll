@@ -211,7 +211,7 @@ class ProductListSerializer(serializers.ModelSerializer):
             'publish',
             'available',
             'discount',
-            'post_range_cities'
+            'post_range_cities',
         ]
     # Image = serializers.SerializerMethodField(method_name='get_absolute_image_url')
     # def get_absolute_image_url(self, product):
