@@ -2697,6 +2697,14 @@ class City(models.Model):
         verbose_name = "شهر"
         verbose_name_plural = "شهر ها"
 
+    @property
+    def value(self):
+        return self.id
+
+    @property
+    def label(self):
+        return self.name
+
 
 class DashboardBannerManager(models.Manager):
     def get_banners(self, banner_status):
