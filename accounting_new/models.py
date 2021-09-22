@@ -95,13 +95,22 @@ class Invoice(models.Model, AccountingInterface):
 
     @staticmethod
     def complete_payment(transaction):
-        ''' Payment is succeeded'''
-        transaction.invoice.cart.close() # TODO: This should change cart status to complete
-        transaction.invoice.close() # TODO: This should change invoice status to complete, create alert,
-                                            # send email and sms to customer and shop owner, reduce stock, etc.
-                                            # create an order for shop owner to send product to customer
+        ''' Payment is succeeded
+
+            TODO:
+            1- set invoice status to success
+            2- set invoice cart to done
+            3- send email and sms to customer and shop owner
+            4- reduce stock of products
+        '''
+
+
     @staticmethod
     def revert_payment(transaction):
-        ''' Payment is failed'''
+        ''' Payment is failed
+        
+            TODO:
+            1- unset all coupons
+        '''
 
 
