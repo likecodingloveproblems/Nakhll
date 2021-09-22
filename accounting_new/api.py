@@ -79,7 +79,7 @@ class InvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
         if coupon.is_valid(invoice):
             serializer.save()
             coupon.apply(invoice)
-        return Response({'result': coupon.final_price, 'errors': coupon.errors}, status=status.HTTP_200_OK)
+        return Response({'coupon': coupon.code, 'result': coupon.final_price, 'errors': coupon.errors}, status=status.HTTP_200_OK)
 
     @action(methods=['PATCH'], detail=False)
     def unset_coupon(self, request):
