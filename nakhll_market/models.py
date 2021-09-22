@@ -1170,7 +1170,7 @@ class Product(models.Model):
     FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='تایید کننده', related_name='Product_Accept', blank=True, null=True) 
     FK_Tag=models.ManyToManyField(Tag, verbose_name='تگ ها', related_name='Product_Tag', blank=True)
     PreparationDays = models.PositiveSmallIntegerField(verbose_name='زمان آماده‌سازی', null=True)
-    post_range_cities = models.ManyToManyField('BigCity', related_name='products', verbose_name=_('شهرهای قابل ارسال'))
+    post_range_cities = models.ManyToManyField('City', related_name='products', verbose_name=_('شهرهای قابل ارسال'))
 
 
     @property
