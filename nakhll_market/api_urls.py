@@ -56,4 +56,6 @@ urlpatterns = [
     path('product/check/', CheckProductSlug.as_view()),
     path('product/categories/', AddSubMarketToProduct.as_view()),
     path('product/images/', AddImagesToProduct.as_view()),
+
+    # path('torob/products/', TorobAllProducts.as_view()),
 ]

@@ -179,9 +179,11 @@ class ProductTitleSerializer(ModelSerializer):
 
 
 class SimpleProductSerializer(ModelSerializer):
+    shop = serializers.SlugRelatedField(read_only = True, slug_field = 'Slug')
     class Meta:
         model = Product
         fields = [
+            'shop',
             'title',
             'price', 
             'old_price',
@@ -230,6 +232,12 @@ class FactorPostSerializer(ModelSerializer):
             'EndPrice',
         ]
 
+class FilteredFactorPostListSerializer(serializers.ListSerializer):
+    def to_representation(self, data):
+        user = self.context.get('request').user
+        data = data.filter(FK_Product__FK_Shop__FK_ShopManager = user)
+        return super(FilteredFactorPostListSerializer, self).to_representation(data)
+
 class SimpleFactorPostSerializer(ModelSerializer):
     # FK_Product = ProductTitleSerializer(read_only = True)
     product = SimpleProductSerializer(read_only = True)
@@ -247,7 +255,7 @@ class SimpleFactorPostSerializer(ModelSerializer):
             'product_status_value',
             'barcodes'
         ]
-
+        list_serializer_class = FilteredFactorPostListSerializer
 
 
 
@@ -324,7 +332,8 @@ class PostTrackingCodeWriteSerializer(ModelSerializer):
     class Meta:
         model = PostTrackingCode
         fields = [
-             'barcode',
+            'post_type',
+            'barcode',
         ]
 
 
@@ -336,6 +345,15 @@ class FactorAllDetailsSerializer(ModelSerializer):
     # campaign = CampaignSerializer(read_only=True, many=False)
     # staff = ProfileSerializer(read_only=True, many=False)
     # staff_checkout = ProfileSerializer(read_only=True, many=False)
+
+    total_user_price = serializers.SerializerMethodField()
+    def get_total_user_price(self, obj):
+        user = self.context.get('request').user
+        total = 0
+        for factor_post in FactorPost.objects.filter(Factor_Products=obj, FK_Product__FK_Shop__FK_ShopManager=user):
+            price = factor_post.get_total_item_price()
+            total += price
+        return total
 
     class Meta:
         model = Factor
@@ -367,7 +385,7 @@ class FactorAllDetailsSerializer(ModelSerializer):
             # Total Price
             # Count
 
-            'total_price',
+            'total_user_price',
             # Deliver Total Price
             # Wage
             # Checkout Price

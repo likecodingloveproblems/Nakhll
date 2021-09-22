@@ -3170,8 +3170,8 @@ class UpdateUserDashboard(LoginRequiredMixin, TemplateView):
             profile_form.save()
             user_form.save()
 
-        else:
-            profile_form = ProfileForm(instance=request.user.User_Profile)
+        # else:
+            # profile_form = ProfileForm(instance=request.user.User_Profile)
         context = {
             'profile_form' : profile_form,
             'user_form' : user_form,

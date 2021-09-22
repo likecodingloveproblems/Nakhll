@@ -80,6 +80,8 @@ INSTALLED_APPS = [
     'logistic',
     'accounting_new',
     'payoff',
+    'torob_api',
+    'url_redirector',
 ]
 
 MIDDLEWARE = [
@@ -149,6 +151,7 @@ ADMIN_REORDER = (
     {'app': 'auth','label':'کاربران و دسترسی ها'},
     
     {'app': 'sites','label':'دسترسی SiteMap'},
+    {'app': 'url_redirector', 'label': 'تغییر دهنده Url'},
     
 )
 

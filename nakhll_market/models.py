@@ -1059,7 +1059,10 @@ class ProductManager(models.Manager):
     @staticmethod
     def has_enough_items_in_stock(product, count):
         ''' Check if product have enough items in stock '''
-        return product.Inventory >= count
+        return \
+            product.Available and \
+            product.Publish and \
+            product.Inventory > count
 
 
     def is_product_list_valid(self, product_list):
@@ -1080,6 +1083,14 @@ class ProductManager(models.Manager):
                 return False
         return True
 
+    @staticmethod
+    def jsonify_product(product):
+        if type(product) == Product:
+            product = [product]
+        return serializers.serialize('json', product, ensure_ascii=False)
+        
+    def all_public_products(self):
+        return self.filter(Publish=True, Available=True).order_by('-DateUpdate')
 
 
 
@@ -1159,6 +1170,7 @@ class Product(models.Model):
     FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='تایید کننده', related_name='Product_Accept', blank=True, null=True) 
     FK_Tag=models.ManyToManyField(Tag, verbose_name='تگ ها', related_name='Product_Tag', blank=True)
     PreparationDays = models.PositiveSmallIntegerField(verbose_name='زمان آماده‌سازی', null=True)
+    post_range_cities = models.ManyToManyField('BigCity', related_name='products', verbose_name=_('شهرهای قابل ارسال'))
 
 
     @property
@@ -1321,6 +1333,51 @@ class Product(models.Model):
     def post_range_type(self):
         return self.PostRangeType
 
+
+    ## These properties are created for Torob API
+    @property
+    def page_url(self):
+        url = f'/torob/products/{self.ID}/'
+        return attach_domain(url)
+
+    @property
+    def page_unique(self):
+        return self.ID
+
+    @property
+    def subtitle(self):
+        return self.Slug
+
+    @property
+    def current_price(self):
+        return self.Price
+
+    @property
+    def availability(self):
+        return 'instock' if self.Available and self.Publish and\
+                            (self.Status == '1' and self.inventory) or\
+                            (self.Status in ['2', '3']) else ''
+
+    @property
+    def category_name(self):
+        #TODO: this must be changed to category name in future
+        # return self.FK_Category.all()[0].Name
+        return self.FK_SubMarket.Title
+
+    @property
+    def image_link(self):
+        if self.Image:
+            return attach_domain(self.Image.url)
+
+    @property
+    def short_desc(self):
+        return self.Description
+
+    
+
+    
+
+
     def __str__(self):
         return "{}".format(self.Title)
 
@@ -1331,7 +1388,8 @@ class Product(models.Model):
             "3" : 'سفارشی سازی فروش',
             "4" : 'موجود نیست',
         }
-        return Status[self.Status]
+        return Status[self.Status] if (self.Status == '1' and self.inventory)\
+             or (self.Status in ['2', '3']) else Status['4']
 
     def get_sendtype(self):
         SendType = {

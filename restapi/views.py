@@ -2374,7 +2374,7 @@ class ShopUncompeletedFactors(ListAPIView):
         shop_slug = self.kwargs.get('shop_slug')
         shop = get_object_or_404(Shop, Slug=shop_slug)
         self.check_object_permissions(self.request, shop)
-        return Factor.objects.uncompleted_user_shop_factors(user, shop_slug)
+        return Factor.objects.uncompleted_user_shop_factors(user, shop_slug).distinct()
 
 class ShopProductList(ListAPIView):
     serializer_class = ProductListSerializer
@@ -2517,7 +2517,7 @@ class FactorDetails(APIView):
         factor_id = request.GET.get('factor_id', 0)
         factor = get_object_or_404(Factor,ID=factor_id) 
         self.check_object_permissions(request, factor)
-        serializer = FactorAllDetailsSerializer(factor)
+        serializer = FactorAllDetailsSerializer(factor, context={'request': request})
         return Response(serializer.data)
 
 
@@ -2560,21 +2560,23 @@ class ChangeFactorToSent(APIView):
     permission_classes = [IsAuthenticated, IsFactorOwner]
     authentication_classes = [CsrfExemptSessionAuthentication, ]
     def get_object(self, factor_id):
-        return get_object_or_404(Factor,ID=factor_id) 
+        factor = get_object_or_404(Factor,ID=factor_id) 
+        self.check_object_permissions(self.request, factor)
+        return factor
 
     def post(self, request, factor_id):
         serializer = PostTrackingCodeWriteSerializer(data=request.data)
         if serializer.is_valid():
             barcode = serializer.validated_data.get('barcode')
+            post_type = serializer.validated_data.get('post_type') or PostTrackingCode.PostTypes.IRPOST
             factor = self.get_object(factor_id)
-            self.check_object_permissions(request, factor)
             factor_posts = factor.FK_FactorPost.filter(FK_Product__FK_Shop__FK_ShopManager=request.user)
 
             # Change factor_posts status and add post barcode to them
             factor_post_list = []
             for factor_post in factor_posts:
                 factor_post.ProductStatus = '3'
-                PostTrackingCode.objects.create(factor_post=factor_post, barcode=barcode)
+                PostTrackingCode.objects.create(factor_post=factor_post, barcode=barcode, post_type=post_type)
                 factor_post_list.append(factor_post)
             FactorPost.objects.bulk_update(factor_post_list, ['ProductStatus'])
 
@@ -2600,7 +2602,7 @@ class ChangeFactorToSent(APIView):
             #! TODO: specefically for PostTrackingCode model. For now I just create Alert and save the rest 
             #! TODO: for later
             #! TODO: Another problem is what should be saved to Slug field?
-            Alert.objects.get_or_create(Part='34', FK_User=request.user, Slug=barcode)
+            Alert.objects.get_or_create(Part='34', FK_User=request.user, Slug=factor_id)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

@@ -63,7 +63,7 @@ class ManegerFactorAdmin(admin.ModelAdmin):
 #PostTrackingCode admin panel
 @admin.register(PostTrackingCode)
 class PostTrackingCodeAdmin(admin.ModelAdmin):
-    list_display=('id','factor_post','barcode','created_datetime','post_type', 'send_type')
+    list_display=('id','get_factor', 'get_sender', 'factor_post','barcode','created_datetime')
     ordering=['id']
 #-------------------------------------------------
 #PostBarCode admin panel

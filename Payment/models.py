@@ -1186,7 +1186,11 @@ class Factor(models.Model):
 
     @property
     def total_price(self):
-        return self.TotalPrice
+        total = 0
+        for FactorPost in self.FK_FactorPost.all():
+            price = FactorPost.get_total_item_price()
+            total += price
+        return int(total)
 
     @property
     def payment_status(self):
@@ -1274,16 +1278,30 @@ class PostTrackingCode(models.Model):
     class PostTypes(models.TextChoices):
         IRPOST = 'irpost', 'شرکت پست جمهوری اسلامی ایران'
         TIPAX = 'tipax', 'تیپاکس'
+        WITHIN_CITY = 'incity', 'درون شهری'
     class SendTypes(models.TextChoices):
         IN_CITY = 'in_c', 'درون شهری'
         NORMAL = 'norm', 'پست معمولی'
         PAY_AT_DELIVER = 'pad', 'پس کرایه'
     factor_post = models.ForeignKey(FactorPost, verbose_name='محصول', on_delete=models.CASCADE, related_name='barcodes')
-    barcode = models.CharField('بارکد', max_length=24, unique=True)
+    barcode = models.CharField('بارکد', max_length=24, unique=True, null=True)
     created_datetime = models.DateTimeField('تاریخ ایجاد بارکد', auto_now=False, auto_now_add=True)
     post_price = models.DecimalField(verbose_name='هزینه ارسال', max_length=15, default='0', max_digits=8, decimal_places=0)
     post_type = models.CharField('نوع پست', max_length=6, choices=PostTypes.choices, default=PostTypes.IRPOST)
     send_type=models.CharField(verbose_name='وضعیت ارسال', max_length=4, choices=SendTypes.choices, default=SendTypes.NORMAL)
+
+    def get_factor(self):
+        factors = self.factor_post.Factor_Products.all() 
+        factor_list = [factor.FactorNumber for factor in factors]
+        return '\n'.join(factor_list)
+    get_factor.short_description = 'فاکتور'
+    get_factor.admin_order_field = 'factor_post'
+
+    def get_sender(self):
+        return self.factor_post.FK_Product.FK_Shop.FK_ShopManager.get_full_name()
+    get_sender.short_description = 'فرستنده'
+    get_sender.admin_order_field = 'factor_post__FK_Product__FK_Shop__ShopManager__User__last_name'
+
     def __str__(self):
         return self.barcode
         
