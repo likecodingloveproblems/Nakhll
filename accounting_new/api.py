@@ -81,6 +81,25 @@ class InvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
             coupon.apply(invoice)
         return Response({'result': coupon.final_price, 'errors': coupon.errors}, status=status.HTTP_200_OK)
 
+    @action(methods=['PATCH'], detail=False)
+    def unset_coupon(self, request):
+        ''' Unset coupon from invoice
+        
+            Get invoice with pk as id, insure that invoice belogs to user
+            that requested for it, and also insure the invoice status is
+            'completing' and user address is filled.
+            Send this invoice with coupon to coupon app and get amount of 
+            discount that should applied, or errors if there is any. Coupon
+            should be applied and saved in factor for future reference
+        '''
+        invoice = self.get_object()
+        serializer = InvoiceWriteSerializer(instance=invoice, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        coupon = serializer.validated_data.get('coupon')
+        coupon_usage = invoice.coupon_usages.filter(coupon=coupon).first()
+        coupon_usage.delete()
+        serializer.save()
+        return Response({'result': 0}, status=status.HTTP_200_OK)
     
     @action(methods=['PATCH'], detail=False)
     def set_address(self, request):
