@@ -291,9 +291,7 @@ class MarketList(generics.ListAPIView):
 
 class SubMarketList(generics.ListAPIView):
     permission_classes = [permissions.AllowAny, ]
-
-    def get_serializer_class(self):
-        return SubMarketProductSerializer
+    serializer_class = SubMarketProductSerializer
 
     def get_queryset(self):
         query = self.request.GET.get('q')
