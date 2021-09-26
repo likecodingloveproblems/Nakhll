@@ -2,7 +2,7 @@ from django.urls import re_path, include, path
 from nakhll_market.api import (
     AddSubMarketToProduct, AllShopSettings, AmazingProductViewSet, CategoryViewSet, ImageShopSettings, LastCreatedDiscountedProductsViewSet,
     LastCreatedProductsViewSet, MostDiscountPrecentageProductsViewSet, ShopMultipleUpdateInventory, ShopMultipleUpdatePrice, SocialMediaShopSettings, StateFullViewSet,
-    UserProductViewSet, ProductsInSameFactorViewSet, SliderViewSet,
+    UserProductViewSet, ProductsInSameFactorViewSet, SliderViewSet, SubMarketList,
     MostSoldShopsViewSet, RandomShopsViewSet, RandomProductsViewSet, ProductsViewSet,
     MarketList, CreateShop, GetShopWithSlug, CheckShopSlug, CheckProductSlug, ShopProductsViewSet,
     ProductBannerViewSet, AddImagesToProduct, ProductDetailsViewSet, BankAccountShopSettings, ProductCommentsViewSet, ProductRelatedItemsViewSet,
@@ -41,6 +41,7 @@ urlpatterns = [
     path('product-page/same-factor/<uuid:ID>/', ProductsInSameFactorViewSet.as_view()),
 
     path('markets/', MarketList.as_view()),
+    path('sub_markets/', SubMarketList.as_view()),
     path('util/', include(util_router.urls)),
 
     path('shop/', GetShopWithSlug.as_view()),

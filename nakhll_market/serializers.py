@@ -135,6 +135,17 @@ class MarketSerializer(serializers.ModelSerializer):
             'title', 'url', 'id',
         ]
 
+class SubMarketProductSerializer(serializers.ModelSerializer):
+    product_count = serializers.SerializerMethodField()
+    class Meta:
+        model = SubMarket
+        fields = [
+            'title', 'url', 'id', 'product_count'
+        ]
+    def get_product_count(self, obj):
+        return obj.product_count
+
+
 class SubMarketSerializer(serializers.ModelSerializer):
     market = MarketSerializer(many=False, read_only=False)
     class Meta:
@@ -306,6 +317,10 @@ class ProductWriteSerializer(serializers.ModelSerializer):
 
 class FullMarketSerializer(serializers.ModelSerializer):
     submarkets = SubMarketSerializer(many=True, read_only=True)
+    # submarkets = serializers.SerializerMethodField()
+    def get_submarkets(self, obj):
+        query = self.context.get('query')
+        return [submarket.id for submarket in obj.submarkets.all()]
     class Meta:
         model = Market
         fields = [

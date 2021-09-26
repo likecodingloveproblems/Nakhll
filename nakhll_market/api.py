@@ -14,7 +14,7 @@ from nakhll_market.serializers import (
     ProductSerializer, ProductUpdateSerializer, ShopProductSerializer, ShopSerializer,SliderSerializer, ProductPriceWriteSerializer,
     CategorySerializer, FullMarketSerializer, CreateShopSerializer, ProductInventoryWriteSerializer,
     ProductListSerializer, ProductWriteSerializer, ShopAllSettingsSerializer, ProductBannerSerializer,
-    ShopBankAccountSettingsSerializer, SocialMediaAccountSettingsSerializer, ProductSubMarketSerializer, StateFullSeraializer, SubMarketSerializer
+    ShopBankAccountSettingsSerializer, SocialMediaAccountSettingsSerializer, ProductSubMarketSerializer, StateFullSeraializer, SubMarketProductSerializer, SubMarketSerializer
     )
 from rest_framework import generics, routers, status, views, viewsets
 from rest_framework import permissions, filters, mixins
@@ -271,7 +271,39 @@ class ProductsInSameFactorViewSet(generics.ListAPIView):
 class MarketList(generics.ListAPIView):
     serializer_class = FullMarketSerializer
     permission_classes = [permissions.AllowAny, ]
-    queryset = Market.objects.filter(Available=True, Publish=True)
+    # queryset = Market.objects.filter(Available=True, Publish=True)
+        
+    def list(self, request, *args, **kwargs):
+        query = self.request.GET.get('query')
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        # serializer = self.get_serializer(queryset, many=True, context={'query': query})
+        return Response(serializer.data)
+
+    def get_queryset(self):
+        query = self.request.GET.get('query')
+        if query:
+            queryset = Market.objects.filter(FatherMarket__Product_SubMarket__Title__contains=query, Available=True, Publish=True)
+            # queryset = SubMarket.objects.filter(Product_SubMarket__Title__contains=query, Available=True, Publish=True)
+            queryset = queryset.annotate(product_count=Count('FatherMarket__Product_SubMarket'))
+            return queryset.order_by('product_count')
+        return Market.objects.filter(Available=True, Publish=True)
+
+class SubMarketList(generics.ListAPIView):
+    permission_classes = [permissions.AllowAny, ]
+
+    def get_serializer_class(self):
+        return SubMarketProductSerializer
+
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        queryset = SubMarket.objects.filter(Available=True, Publish=True)
+        if query:
+            queryset = queryset.filter(Product_SubMarket__Title__contains=query)
+        queryset = queryset.annotate(product_count=Count('Product_SubMarket'))
+        return queryset.order_by('-product_count')
+
+
 
 
 class GetShopWithSlug(views.APIView):
