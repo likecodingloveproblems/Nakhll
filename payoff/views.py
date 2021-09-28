@@ -18,7 +18,7 @@ def test_pec(request):
         'referrer_app': 'accounting_new',
         'amount': int(amount),
         'order_number': int(order_number),
-        'description': f'پرداخت فاکتور {order_number}',
+        'description': f'Paying invioce {order_number}',
         'ipg': Transaction.IPGTypes.PEC,
         'mobile': mobile,
     }
