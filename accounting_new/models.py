@@ -28,7 +28,7 @@ class Invoice(models.Model, AccountingInterface):
             help_text=_('نام ماژولی که این فاکتور رو ایجاد کرده است. به عنوان مثال: cart'))
     status = models.CharField(_('وضعیت فاکتور'), max_length=10, 
             default=Statuses.COMPLETING, choices=Statuses.choices)
-    cart = models.ForeignKey(Cart, on_delete=models.PROTECT, related_name='factors', 
+    cart = models.OneToOneField(Cart, on_delete=models.PROTECT, related_name='invoice', 
             verbose_name=_('سبد خرید'))
     address = models.ForeignKey(Address, on_delete=models.PROTECT, null=True,
             blank=True, related_name='invoices', verbose_name=_('آدرس'))
@@ -111,6 +111,7 @@ class Invoice(models.Model, AccountingInterface):
         
             TODO:
             1- unset all coupons
+            2- set invoice status to completing
         '''
 
 
