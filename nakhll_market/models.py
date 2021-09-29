@@ -1062,7 +1062,7 @@ class ProductManager(models.Manager):
         return \
             product.Available and \
             product.Publish and \
-            product.Inventory > count
+            product.Inventory >= count
 
 
     def is_product_list_valid(self, product_list):
