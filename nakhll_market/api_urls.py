@@ -2,7 +2,7 @@ from django.urls import re_path, include, path
 from nakhll_market.api import (
     AddSubMarketToProduct, AllShopSettings, AmazingProductViewSet, CategoryViewSet, ImageShopSettings, LastCreatedDiscountedProductsViewSet,
     LastCreatedProductsViewSet, MostDiscountPrecentageProductsViewSet, ShopMultipleUpdateInventory, ShopMultipleUpdatePrice, SocialMediaShopSettings, StateFullViewSet,
-    UserProductViewSet, ProductsInSameFactorViewSet, SliderViewSet, SubMarketList,
+    UserProductViewSet, ProductsInSameFactorViewSet, SliderViewSet, SubMarketList, UserProfileViewSet,
     MostSoldShopsViewSet, RandomShopsViewSet, RandomProductsViewSet, ProductsViewSet,
     MarketList, CreateShop, GetShopWithSlug, CheckShopSlug, CheckProductSlug, ShopProductsViewSet,
     ProductBannerViewSet, AddImagesToProduct, ProductDetailsViewSet, BankAccountShopSettings, ProductCommentsViewSet, ProductRelatedItemsViewSet,
@@ -34,6 +34,9 @@ product_page_router.register(r'related_products', ProductRelatedItemsViewSet, ba
 util_router = routers.DefaultRouter()
 util_router.register(r'states', StateFullViewSet, basename="states")
 
+profile_router = routers.DefaultRouter()
+profile_router.register(r'', UserProfileViewSet, basename="profile")
+
 urlpatterns = [
     path('landing/', include(landing_router.urls)),
     path('products/', include(product_page_router.urls)),
@@ -57,6 +60,8 @@ urlpatterns = [
     path('product/check/', CheckProductSlug.as_view()),
     path('product/categories/', AddSubMarketToProduct.as_view()),
     path('product/images/', AddImagesToProduct.as_view()),
+
+    path('profile/', include(profile_router.urls)),
 
     # path('torob/products/', TorobAllProducts.as_view()),
 ]

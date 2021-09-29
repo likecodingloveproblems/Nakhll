@@ -1,3 +1,4 @@
+from restapi.serializers import ProfileSerializer
 from django.contrib.auth.models import User
 from django.db.models.aggregates import Sum
 from django.db.models.expressions import Case, When
@@ -11,7 +12,7 @@ from nakhll_market.models import (
     Alert, AmazingProduct, Comment, Product, ProductBanner, Shop, Slider, Category, Market, State, BigCity, City, SubMarket
     )
 from nakhll_market.serializers import (
-    AmazingProductSerializer, Base64ImageSerializer, ProductCommentSerializer, ProductDetailSerializer, ProductImagesSerializer,
+    AmazingProductSerializer, Base64ImageSerializer, NewProfileSerializer, ProductCommentSerializer, ProductDetailSerializer, ProductImagesSerializer,
     ProductSerializer, ProductUpdateSerializer, ShopProductSerializer, ShopSerializer,SliderSerializer, ProductPriceWriteSerializer,
     CategorySerializer, FullMarketSerializer, CreateShopSerializer, ProductInventoryWriteSerializer,
     ProductListSerializer, ProductWriteSerializer, ShopAllSettingsSerializer, ProductBannerSerializer,
@@ -19,6 +20,7 @@ from nakhll_market.serializers import (
     )
 from rest_framework import generics, routers, status, views, viewsets
 from rest_framework import permissions, filters, mixins
+from rest_framework.decorators import action
 from django.db.models import Q, F, Count
 import random
 from nakhll.authentications import CsrfExemptSessionAuthentication
@@ -602,3 +604,26 @@ class StateFullViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
     permission_classes = [permissions.AllowAny, ]
     queryset = State.objects.all()
     serializer_class = StateFullSeraializer
+
+
+class UserProfileViewSet(viewsets.GenericViewSet):
+    '''Viewset for user profile api like settings, fav list, orders, etc '''
+    permission_classes = [permissions.IsAuthenticated, ]
+    queryset = User.objects.all()
+    serializer_class = ProfileSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication]
+
+    @action(detail=False, methods=['get', 'patch'])
+    def me(self, request):
+        user = request.user
+        serializer = NewProfileSerializer(user.User_Profile)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['patch'])
+    def edit_me(self, request):
+        user = request.user
+        serializer = NewProfileSerializer(user.User_Profile, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

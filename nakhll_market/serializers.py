@@ -502,3 +502,29 @@ class ShopProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ['id', 'title', 'slug', 'image_thumbnail_url', 'price', 'old_price', 'discount',]
+
+class NewProfileSerializer(serializers.ModelSerializer):
+    WalletManager = serializers.ReadOnlyField(source='WalletManager.Inventory')
+    FK_User = UserSerializer(many=False, read_only=False)
+    Image = Base64ImageField()
+    class Meta:
+        model = Profile
+        fields = ['id', 'NationalCode', 'MobileNumber', 'FK_User', 'BrithDay', 'Image', 'WalletManager']
+        read_only_fields = ['MobileNumber']
+        extra_kwargs = {
+            'NationalCode': {'validators': []},
+        }
+        
+    def update(self, instance, validated_data):
+        image = validated_data.pop('Image')
+        if image:
+            instance.Image = image
+        user = validated_data.pop('FK_User')
+        instance.user.first_name = user.get('first_name')
+        instance.user.last_name = user.get('last_name')
+        for prop in validated_data:
+            setattr(instance, prop, validated_data[prop])
+        instance.save()
+        return instance
+
+
