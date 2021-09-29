@@ -15,7 +15,7 @@ class ProductFilter(filters.FilterSet):
 
     class Meta:
         model = Product
-        fields = ['search', 'min_price', 'max_price', 'ready', 'available', 'category', 'city', 'discounted']
+        fields = ['search', 'min_price', 'max_price', 'ready', 'available', 'category', 'city', 'discounted', 'is_advertisement', ]
 
     def filter_ready(self, queryset, name, value):
         READY_IN_STOCK = '1'

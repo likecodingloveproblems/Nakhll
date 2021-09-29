@@ -55,7 +55,7 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = [
             'image_thumbnail_url', 'url', 'old_price', 'price', 'slug',
-            'title', 'status', 'discount', 'id', 'shop', 'discount'
+            'title', 'status', 'discount', 'id', 'shop', 'discount', 'is_advertisement'
         ]
 
 class AmazingProductSerializer(serializers.ModelSerializer):
@@ -223,6 +223,7 @@ class ProductListSerializer(serializers.ModelSerializer):
             'available',
             'discount',
             'post_range_cities',
+            'is_advertisement',
         ]
     # Image = serializers.SerializerMethodField(method_name='get_absolute_image_url')
     # def get_absolute_image_url(self, product):
