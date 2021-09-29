@@ -55,7 +55,7 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = [
             'image_thumbnail_url', 'url', 'old_price', 'price', 'slug',
-            'title', 'status', 'discount', 'id', 'shop'
+            'title', 'status', 'discount', 'id', 'shop', 'discount'
         ]
 
 class AmazingProductSerializer(serializers.ModelSerializer):
