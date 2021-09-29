@@ -47,6 +47,7 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
         user, guid = get_user_or_guest(self.request)
         cart_serializer = CartSerializer(CartManager.user_active_cart(user, guid))
         headers = self.get_success_headers(cart_serializer.data)
+        self.__clear_invoice()
         return Response(cart_serializer.data, status=status.HTTP_200_OK, headers=headers)
 
     @action(detail=True, methods=['GET'], name='Delete whole cart item')
@@ -56,6 +57,7 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
         user, guid = get_user_or_guest(self.request)
         cart_serializer = CartSerializer(CartManager.user_active_cart(user, guid))
         headers = self.get_success_headers(cart_serializer.data)
+        self.__clear_invoice()
         return Response(cart_serializer.data, status=status.HTTP_200_OK, headers=headers)
 
     @action(detail=True, methods=['GET'], name='Add item to active cart')
@@ -90,6 +92,7 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
         user, guid = get_user_or_guest(self.request)
         cart_serializer = CartSerializer(CartManager.user_active_cart(user, guid))
         headers = self.get_success_headers(cart_serializer.data)
+        self.__clear_invoice()
         return Response(cart_serializer.data, status=status.HTTP_200_OK, headers=headers)
 
 
@@ -105,9 +108,9 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
             update in in case that is exists
         '''
         user, guid = get_user_or_guest(self.request)
+        active_cart = CartManager.user_active_cart(user, guid)
         product = serializer.validated_data.get('product')
         count = serializer.validated_data.get('count')
-        active_cart = CartManager.user_active_cart(user, guid)
 
         cart_item = CartItem.objects.filter(product=product, cart=active_cart).first()
         if cart_item:
@@ -128,7 +131,21 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
             cart_item.save()
         else:
             serializer.save(cart=active_cart, product_last_state=product_jsonify.data)
+        self.__clear_invoice()
 
+    def __clear_invoice(self):
+        ''' Unset coupons and address related to this cart invoice '''
+        cart = self.get_active_cart()
+        invoice = cart.invoice
+        invoice.address = None
+        for usage in invoice.coupon_usages.all():
+            usage.delete()
+        invoice.save()
+
+    def get_active_cart(self):
+        user, guid = get_user_or_guest(self.request)
+        active_cart = CartManager.user_active_cart(user, guid)
+        return active_cart
 
     def perform_update(self, serializer):
         # TODO: check if permissions are correct
@@ -139,21 +156,8 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
             raise ValidationError(_('محصول در دسترس نیست و یا به تعداد کافی از این محصول در انبار وجود ندارد'))
         product_jsonify = ProductLastStateSerializer(cart_item.product)
         serializer.save(product_last_state=product_jsonify.data)
+        self.__clear_invoice()
 
     serializer_class = CartItemSerializer
     authentication_classes = [CsrfExemptSessionAuthentication, ]
     permission_classes = [IsCartItemOwner, ]
-
-
-# class CartTransmissionViewSet(viewsets.ModelViewSet):
-#     serializer_class = CartTransmissionSerializer
-#     authentication_classes = [CsrfExemptSessionAuthentication, ]
-#     permission_classes = [IsCartItemOwner, ]
-#     queryset = CartTransmission.objects.all()
-
-#     def perform_create(self, serializer):
-#         serializer.save()
-
-
-# 1- there is an api to send cart to accounting, which in first of it I should check all items in factor
-# 2- Should I send active cart to accounting or accounting ask for it? 
