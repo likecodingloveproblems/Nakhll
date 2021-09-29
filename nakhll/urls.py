@@ -39,6 +39,7 @@ urlpatterns = [
     path('goto/', include('url_redirector.urls', namespace='url_redirector')),
     # api version 1
     url(r'^api/v1/', include('nakhll_market.api_urls', namespace='nakhll_market_api')),
+    url(r'^api/v1/', include('custom_list.urls', namespace='custom_list')),
     # prometheus
     url('', include('django_prometheus.urls')),
     path('payoff/', include('payoff.urls', namespace='payoff')),

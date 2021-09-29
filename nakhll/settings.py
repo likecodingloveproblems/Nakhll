@@ -82,6 +82,7 @@ INSTALLED_APPS = [
     'payoff',
     'torob_api',
     'url_redirector',
+    'custom_list',
 ]
 
 MIDDLEWARE = [
