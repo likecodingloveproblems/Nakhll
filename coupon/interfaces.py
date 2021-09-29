@@ -63,8 +63,8 @@ class CouponValidation:
         return 0
 
     def apply(self, invoice):
-        self.final_price = self.get_final_price()
-        if self.final_price:
+        self._final_price = self.get_final_price()
+        if self._final_price:
            self.usages.create(
                used_datetime=make_aware(datetime.now()),
                price_applied=self._final_price,
