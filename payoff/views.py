@@ -26,7 +26,9 @@ def test_pec(request):
 
 @csrf_exempt
 def test_pec_callback(request):
-    #TODO: Check if shaparak send this request or not
+    if not request.META['HTTP_ORIGIN'].startswith('https://pec.shaparak.ir')\
+        or not request.META['HTTP_REFERER'].startswith('https://pec.shaparak.ir'):
+        raise Exception('Invalid origin or referer')
     sample_data = {
         'Token': request.GET.get('token') or 12863129837,
         'OrderId': request.GET.get('order') or 98712341264,

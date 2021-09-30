@@ -1594,6 +1594,14 @@ class Product(models.Model):
     def get_shop_slug(self):
         return self.FK_Shop.Slug
 
+    def reduce_stock(self, count):
+        ''' Reduce from inventory of this product '''
+        if self.Inventory < count:
+            # TODO: Send alert to staff to handle situation
+            pass
+        self.Inventory -= count
+        self.save()
+
     class Meta:
         ordering = ('DateCreate','Title',)   
         verbose_name = "محصول"

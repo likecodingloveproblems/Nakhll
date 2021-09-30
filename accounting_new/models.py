@@ -1,16 +1,14 @@
-from datetime import datetime
-from payoff.payment import Payment
 from uuid import uuid4
+from datetime import datetime
 from django.db import models
-from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
-from nakhll_market.models import Product
-from cart.models import Cart
-from logistic.models import Address, PostPriceSetting
-from accounting_new.interfaces import AccountingInterface
-from accounting_new.managers import AccountingManager
+from nakhll_market.interface import AlertInterface
 from payoff.models import Transaction
 from payoff.interfaces import PaymentInterface
+from cart.models import Cart
+from accounting_new.interfaces import AccountingInterface
+from logistic.models import Address, PostPriceSetting
+from sms.services import Kavenegar
 
 # Create your models here.
 
@@ -18,6 +16,8 @@ class Invoice(models.Model, AccountingInterface):
     class Statuses(models.TextChoices):
         COMPLETING = 'completing', _('در حال تکمیل')
         PAYING = 'paying', _('در حال پرداخت')
+        PREPATING_PRODUCT = 'preparing_product', _('در حال آماده سازی')
+        AWAITING_STORE_APPROVAL = 'AWAITING_SHOP_APPROV', _('در انتظار تأیید فروشگاه')
         FAILURE = 'failure', _('پرداخت ناموفق')
         SUCCESS = 'success', _('پرداخت موفق')
     class Meta:
@@ -26,7 +26,7 @@ class Invoice(models.Model, AccountingInterface):
 
     source_module = models.CharField(_('مبدا'), max_length=50, null=True, blank=True,
             help_text=_('نام ماژولی که این فاکتور رو ایجاد کرده است. به عنوان مثال: cart'))
-    status = models.CharField(_('وضعیت فاکتور'), max_length=10, 
+    status = models.CharField(_('وضعیت فاکتور'), max_length=20, 
             default=Statuses.COMPLETING, choices=Statuses.choices)
     cart = models.OneToOneField(Cart, on_delete=models.PROTECT, related_name='invoice', 
             verbose_name=_('سبد خرید'))
@@ -82,10 +82,6 @@ class Invoice(models.Model, AccountingInterface):
         coupon_price = self.coupon_details.get('result') or 0
         return cart_total_price + logistic_price - coupon_price
 
-    def close(self):
-        self.status = self.Statuses.SUCCESS
-        self.save()
-
     def send_to_payment(self, bank_port=Transaction.IPGTypes.PEC):
         self.status = self.Statuses.PAYING
         self.payment_unique_id = int(datetime.now().timestamp() * 1000000)
@@ -93,25 +89,33 @@ class Invoice(models.Model, AccountingInterface):
         self.save()
         PaymentInterface.from_invoice(self, bank_port)
 
+    def complete_payment(self):
+        ''' Payment is succeeded '''
+        self.cart.archive()
+        self.cart.reduce_inventory()
+        self.send_notifications()
+        self.status = self.Statuses.AWAITING_STORE_APPROVAL
+        self.save()
+
+    def send_notifications(self):
+        ''' Send SMS to user and shop_owner and create alert for staff'''
+        shops = self.cart.items.all().values_list('product__FK_Shop', flat=True).distinct()
+        for shop in shops:
+            Kavenegar.shop_new_order(shop.FK_ShopManager.UserProfile.phone_number, self.id)
+        AlertInterface.new_order(self)
+
     @staticmethod
-    def complete_payment(transaction):
-        ''' Payment is succeeded
+    def revert_payment(self):
+        ''' Payment is failed'''
+        self.unset_coupons()
+        self.status = self.Statuses.COMPLETING
+        self.save()
 
-            TODO:
-            1- set invoice status to success
-            2- set invoice cart to done
-            3- send email and sms to customer and shop owner
-            4- reduce stock of products
-        '''
+    def unset_coupons(self):
+        ''' Delete all coupon usages from invoice '''
+        coupon_usages = self.coupon_usages.all()
+        for coupon_usage in coupon_usages:
+            coupon_usage.delete()
 
-
-    @staticmethod
-    def revert_payment(transaction):
-        ''' Payment is failed
-        
-            TODO:
-            1- unset all coupons
-            2- set invoice status to completing
-        '''
 
 

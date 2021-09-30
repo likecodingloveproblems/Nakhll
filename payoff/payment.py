@@ -1,11 +1,10 @@
 import os
 from abc import ABC, abstractmethod
 from django.shortcuts import redirect
-from django.conf import settings
 from django.apps import apps
 from django.utils.translation import ugettext as _
-from rest_framework.response import Response
 from rest_framework.validators import ValidationError
+from nakhll_market.interface import AlertInterface
 from payoff.models import Transaction, TransactionResult
 from payoff.exceptions import NoCompletePaymentMethodException, NoTransactionException
 from zeep import Client
@@ -42,7 +41,9 @@ class Pec(PaymentMethod):
         self.callback_url = callback_url
         self.sale_service = self.__get_sale_serivce()
         self.sale_request_data = self.__get_client_sale_request_data()
+        self.reverse_request_data = self.__get_client_reversal_request_data()
         self.confirm_service = self.__get_confirm_service()
+        self.reverse_service = self.__get_reverse_service()
 
     def __get_sale_serivce(self):
         return Client(
@@ -52,9 +53,17 @@ class Pec(PaymentMethod):
         return Client(
             'https://pec.shaparak.ir/NewIPGServices/Confirm/ConfirmService.asmx?wsdl')
 
+    def __get_reverse_service():
+        reverseService = Client('https://pec.shaparak.ir/NewIPGServices/Reverse/ReversalService.asmx?wsdl')
+        return reverseService
+
     def __get_client_sale_request_data(self):
         return self.sale_service.get_type('ns0:ClientSaleRequestData')
         
+    def __get_client_reversal_request_data(self):
+        return self.reverse_service.get_type('ns0:ClientReversalRequestData')
+
+
 
     def initiate_payment(self, data):
         ''' Get invoice, exchange with token and redirect user to payment page '''
@@ -185,7 +194,6 @@ class Pec(PaymentMethod):
     def _validate_payment(self, transaction_result):
         #TODO: Need cleaning
         ''' Validate payment '''
-        return True # TODO: This is just for now
         token = transaction_result.transaction.token
         pec_pin = self.pec_pin
         request_data = self.confirm_service(Token=token, LoginAccount=pec_pin)
@@ -211,11 +219,29 @@ class Pec(PaymentMethod):
 
     def _revert_transaction(self, transaction_result):
         ''' Send transaction_result to referrer model to finish purchase process'''
+        self.__send_reverse_request(transaction_result)
+        self.__reverse_referer_payment(transaction_result)
+        return transaction_result
+
+    def __reverse_referer_payment(self, transaction_result):
+        ''' Send transaction_result to referrer model to cancel purchase process'''
         app_label = transaction_result.transaction.referrer_app
         model_name = transaction_result.transaction.referrer_model
         referrer_model = apps.get_model(app_label, model_name) 
         referrer_model.revert_payment(transaction_result.transaction)
-        return transaction_result
+
+    def __send_reverse_request(self, transaction_result):
+        requestData = self.reverse_request_data(LoginAccount=self.pec_pin, Token=transaction_result.token)
+        res = self.reverse_service.service.ReversalRequest(requestData)
+        if res:
+            transaction_result.reverse_token = res.get('Token', 0)
+            transaction_result.reverse_status = res.get('Status', 0)
+            transaction_result.reverse_message = res.get('Message', '')
+            transaction_result.save()
+        else:
+            AlertInterface.no_reverse_request(transaction_result)
+        return res
+
 
 
 

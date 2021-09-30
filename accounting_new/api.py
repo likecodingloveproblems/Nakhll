@@ -1,3 +1,4 @@
+from rest_framework.exceptions import ValidationError
 from cart.serializers import ProductLastStateSerializer
 from datetime import datetime, timedelta
 from logistic.models import PostPriceSetting
@@ -38,9 +39,14 @@ class InvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
 
 
     def get_object(self):
-        invoice = Invoice.objects.filter(cart__user=self.request.user, status=Invoice.Statuses.COMPLETING).first()
-        return invoice or self.create_invoice(self.request)
-        
+        # TODO: System must support multi invoice per user (more on clickup#1fu8awk)
+        active_cart = CartManager.user_active_cart(self.request.user)
+        invoice = Invoice.objects.filter(cart=active_cart).first() or self.create_invoice(self.request)
+        if invoice.status == Invoice.Statuses.PAYING:
+            raise ValidationError('فاکتور شما در حال پرداخت می‌باشد و امکان دسترسی به آن وجود ندارد')
+        invoice.status = Invoice.Statuses.COMPLETING
+        invoice.save()
+        return invoice
 
     def create(self, request, *args, **kwargs):
         ''' each user can only have one invoice with status of completing '''

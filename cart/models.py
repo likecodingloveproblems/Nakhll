@@ -185,6 +185,18 @@ class Cart(models.Model):
         ''' Return all cart items in order by shop'''
         return self.items.order_by('-product__FK_Shop')
 
+    def archive(self):
+        ''' Archive this cart '''
+        self.status = self.Statuses.CLOSED
+        self.save()
+
+    def reduce_inventory(self):
+        ''' Reduce bought items from shops stock '''
+        cart_items = self.items.all()
+        for item in cart_items:
+            item.product.reduce_stock(item.count)
+            
+
 
 
 class CartItem(models.Model):
