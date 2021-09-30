@@ -33,8 +33,8 @@ class ShopSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shop
         fields = [
-            'slug', 'title', 'url', 'image_thumbnail_url', 'DateCreate', 'total_products',
-            'state', 'big_city', 'city', 'show_contact_info', 'publish', 'available', 'registered_months'
+            'slug', 'title', 'url', 'image_thumbnail_url', 'total_products',
+            'state', 'big_city', 'city', 'registered_months'
         ]
     def get_registered_months(self, obj):
         ''' Calculate months from DateCreate till now '''

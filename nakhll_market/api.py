@@ -318,7 +318,7 @@ class SubMarketList(generics.ListAPIView):
 
 
 class GetShopWithSlug(views.APIView):
-    permission_classes = [permissions.IsAuthenticated, ]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, ]
     authentication_classes = [CsrfExemptSessionAuthentication, ]
 
     def get(self, request, format=None):
@@ -326,6 +326,15 @@ class GetShopWithSlug(views.APIView):
         shop = get_object_or_404(Shop, Slug=shop_slug)
         serializer = ShopSerializer(shop)
         return Response(serializer.data)
+
+class GetShop(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, ]
+    authentication_classes = [CsrfExemptSessionAuthentication, ]
+    serializer_class = ShopSerializer
+    queryset = Shop.objects.filter(Available=True, Publish=True)
+    lookup_field = 'Slug'
+
+
 
 
 

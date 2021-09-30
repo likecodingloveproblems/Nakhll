@@ -3,7 +3,7 @@ from nakhll_market.api import (
     AddSubMarketToProduct, AllShopSettings, AmazingProductViewSet, CategoryViewSet, ImageShopSettings, LastCreatedDiscountedProductsViewSet,
     LastCreatedProductsViewSet, MostDiscountPrecentageProductsViewSet, ShopMultipleUpdateInventory, ShopMultipleUpdatePrice, SocialMediaShopSettings, StateFullViewSet,
     UserProductViewSet, ProductsInSameFactorViewSet, SliderViewSet, SubMarketList, UserProfileViewSet,
-    MostSoldShopsViewSet, RandomShopsViewSet, RandomProductsViewSet, ProductsViewSet,
+    MostSoldShopsViewSet, RandomShopsViewSet, RandomProductsViewSet, ProductsViewSet, GetShop,
     MarketList, CreateShop, GetShopWithSlug, CheckShopSlug, CheckProductSlug, ShopProductsViewSet,
     ProductBannerViewSet, AddImagesToProduct, ProductDetailsViewSet, BankAccountShopSettings, ProductCommentsViewSet, ProductRelatedItemsViewSet,
     )
@@ -48,6 +48,7 @@ urlpatterns = [
     path('util/', include(util_router.urls)),
 
     path('shop/', GetShopWithSlug.as_view()),
+    path('shop/<Slug>/', GetShop.as_view({'get': 'retrieve'})),
     path('shop/<shop_slug>/settings/', AllShopSettings.as_view()),
     path('shop/<shop_slug>/settings/bank_account/', BankAccountShopSettings.as_view()),
     path('shop/<shop_slug>/settings/social_media/', SocialMediaShopSettings.as_view()),
