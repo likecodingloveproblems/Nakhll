@@ -48,12 +48,12 @@ urlpatterns = [
     path('util/', include(util_router.urls)),
 
     path('shop/', GetShopWithSlug.as_view()),
-    path('shop/<Slug>/', GetShop.as_view({'get': 'retrieve'})),
     path('shop/<shop_slug>/settings/', AllShopSettings.as_view()),
     path('shop/<shop_slug>/settings/bank_account/', BankAccountShopSettings.as_view()),
     path('shop/<shop_slug>/settings/social_media/', SocialMediaShopSettings.as_view()),
     path('shop/<shop_slug>/settings/avatar/', ImageShopSettings.as_view()),
     path('shop/create/', CreateShop.as_view()),
+    path('shop/<Slug>/', GetShop.as_view({'get': 'retrieve'})),
     path('shop/check/', CheckShopSlug.as_view()),
     path('shop/multiple-update/price/', ShopMultipleUpdatePrice.as_view()),
     path('shop/multiple-update/inventory/', ShopMultipleUpdateInventory.as_view()),
