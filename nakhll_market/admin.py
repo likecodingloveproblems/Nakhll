@@ -1,7 +1,7 @@
 from typing import Dict, Optional
 from django.contrib import admin
 from django.http import HttpRequest, HttpResponse
-from .models import (AmazingProduct, Tag, Market, MarketBanner, SubMarket, 
+from .models import (AmazingProduct, LandingPageSchema, Tag, Market, MarketBanner, SubMarket, 
                      SubMarketBanner,BankAccount, Category ,PostRange, Shop, 
                      ShopBanner, ShopMovie, Attribute, AttrPrice, AttrProduct, 
                      Product, ProductBanner, ProductMovie, Comment, Profile, 
@@ -219,3 +219,9 @@ class DashboardBannerAdmin(admin.ModelAdmin):
     ordering=['id','created_datetime','publish_status']
     # inlines=[AttrProductInline, ProductBannerInline, ProductMovieInline]
 
+@admin.register(LandingPageSchema)
+class LandingPageSchemaAdmin(admin.ModelAdmin):
+    list_display=('component_type', 'title', 'subtitle', 'image', 'url', 'data', 'order', 'publish_status')
+    list_filter=('publish_status','created_datetime', 'order')
+    search_fields=('title','component_type', 'subtitle', 'url', 'data')
+    ordering=['publish_status', 'created_datetime']

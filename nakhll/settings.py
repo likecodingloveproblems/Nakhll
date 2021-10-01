@@ -83,6 +83,7 @@ INSTALLED_APPS = [
     'torob_api',
     'url_redirector',
     'custom_list',
+    'colorfield',
 ]
 
 MIDDLEWARE = [
@@ -119,7 +120,8 @@ ADMIN_REORDER = (
         'nakhll_market.Slider',
         'nakhll_market.Option_Meta',
         'nakhll_market.Alert',
-        'nakhll_market.AmazingProduct'
+        'nakhll_market.AmazingProduct',
+        'nakhll_market.LandingPageSchema',
     )},
     {
         'app': 'logistic',
