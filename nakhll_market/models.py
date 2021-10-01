@@ -2748,7 +2748,7 @@ class LandingPageSchema(models.Model):
         BANNER = 1, 'بنر'
         TEXT = 2, 'کارت محصول'
     def __str__(self):
-        return 'type:{}, order:{}, data:{}'.format(self.component_type, self.order, self.data)
+        return 'type:{}, order:{}, data:{}'.format(self.get_component_type_display(), self.order, self.data)
     
     component_type = models.IntegerField(verbose_name='نوع برنامه بندی', choices=ComponentTypes.choices, default=ComponentTypes.BANNER)
     data = models.URLField(verbose_name='داده ها', max_length=255)
