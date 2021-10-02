@@ -2374,7 +2374,7 @@ class ShopUncompeletedFactors(ListAPIView):
         shop_slug = self.kwargs.get('shop_slug')
         shop = get_object_or_404(Shop, Slug=shop_slug)
         self.check_object_permissions(self.request, shop)
-        return Factor.objects.uncompleted_user_shop_factors(user, shop_slug)
+        return Factor.objects.uncompleted_user_shop_factors(user, shop_slug).distinct()
 
 class ShopProductList(ListAPIView):
     serializer_class = ProductListSerializer

@@ -11,5 +11,6 @@ urlpatterns = [
     path('user-stats/' , views.UserStats.as_view() , name='user_stats'),
     path('shop-info/' , views.ShopInformation.as_view() , name='shop-information'),
     path('factor-stats/' , views.FactorStats.as_view() , name='factor-stats'),
+    path('customer-report/' , views.CustomerPurchaseReport.as_view() , name='customer-report'),
     
 ]

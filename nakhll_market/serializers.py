@@ -1,13 +1,13 @@
 from django.shortcuts import get_object_or_404
 from nakhll_market.serializer_fields import Base64ImageField
-from restapi.serializers import ProfileSerializer, UserDetailSerializer
+from restapi.serializers import BigCitySerializer, ProfileSerializer, UserDetailSerializer
 from django.contrib.auth.models import User
 from django.db.models import fields, query
 from rest_framework import serializers
 from rest_framework.relations import HyperlinkedIdentityField, HyperlinkedRelatedField
 from rest_framework.utils import field_mapping
 from nakhll_market.models import (
-    Alert, AmazingProduct, AttrPrice, AttrProduct, Attribute, BankAccount, ShopBankAccount, ShopSocialMedia,
+    Alert, AmazingProduct, AttrPrice, AttrProduct, Attribute, BankAccount, BigCity, City, ShopBankAccount, ShopSocialMedia,
     Category, Market, PostRange, Product, ProductBanner, Profile, Shop, ShopBankAccount, Slider, Comment,
     SubMarket
     )
@@ -140,6 +140,12 @@ class PostRangeSerializer(serializers.ModelSerializer):
             'state', 'big_city', 'city'
         ]
 
+class SimplePostRangeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostRange
+        fields = ['city', ]
+
+
 class ProductDetailSerializer(serializers.HyperlinkedModelSerializer):
     related_products = ProductSerializer(many=True, read_only=True)
     attributes = AttrProductSerializer(many=True, read_only=True)
@@ -169,6 +175,7 @@ class ProductListSerializer(serializers.ModelSerializer):
     sub_market = SubMarketSerializer(read_only=True)
     shop = serializers.SlugRelatedField(slug_field='Slug', read_only=True)
     banners = ProductBannerSerializer(read_only=True, many=True)
+    post_range_cities = BigCitySerializer(many=True, read_only=True)
     class Meta:
         model = Product
         fields = [
@@ -194,7 +201,8 @@ class ProductListSerializer(serializers.ModelSerializer):
             'average_user_point',
             'total_sell',
             'publish',
-            'available'
+            'available',
+            'post_range_cities'
         ]
     # Image = serializers.SerializerMethodField(method_name='get_absolute_image_url')
     # def get_absolute_image_url(self, product):
@@ -232,6 +240,7 @@ class ProductUpdateSerializer(serializers.ModelSerializer):
     # FK_Shop = serializers.SlugRelatedField(slug_field='Slug', many=False, read_only=True)
     FK_SubMarket = serializers.PrimaryKeyRelatedField(read_only=False, many=False, queryset=SubMarket.objects.all())
     Product_Banner = serializers.PrimaryKeyRelatedField(queryset=ProductBanner.objects.all(), many=True, read_only=False)
+    post_range = serializers.PrimaryKeyRelatedField(source='post_range_cities', read_only=False, many=True, queryset=BigCity.objects.all())
     class Meta:
         model = Product
         fields = [
@@ -247,7 +256,8 @@ class ProductUpdateSerializer(serializers.ModelSerializer):
             'PostRangeType',
             'PreparationDays',
             'FK_SubMarket',
-            'Product_Banner'
+            'Product_Banner',
+            'post_range'
         ]
     def update(self, instance, validated_data):
         # Direct assignment to the reverse side of a related set is prohibited, 
@@ -266,6 +276,7 @@ class ProductUpdateSerializer(serializers.ModelSerializer):
 
 class ProductWriteSerializer(serializers.ModelSerializer):
     FK_Shop = serializers.SlugRelatedField(slug_field='Slug', many=False, read_only=False, queryset=Shop.objects.all())
+    post_range = serializers.PrimaryKeyRelatedField(source='post_range_cities', read_only=False, many=True, queryset=BigCity.objects.all())
     class Meta:
         model = Product
         fields = [
@@ -280,7 +291,8 @@ class ProductWriteSerializer(serializers.ModelSerializer):
             'Status',
             'PostRangeType',
             'PreparationDays',
-            'FK_Shop'
+            'FK_Shop',
+            'post_range'
         ]
 
 class FullMarketSerializer(serializers.ModelSerializer):
