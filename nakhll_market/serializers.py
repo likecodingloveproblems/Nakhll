@@ -10,7 +10,7 @@ from rest_framework.utils import field_mapping
 from nakhll_market.models import (
     Alert, AmazingProduct, AttrPrice, AttrProduct, Attribute, BankAccount, BigCity, City, ShopBankAccount, ShopSocialMedia,
     Category, Market, PostRange, Product, ProductBanner, Profile, Shop, ShopBankAccount, Slider, Comment, State,
-    SubMarket
+    SubMarket, LandingPageSchema,
     )
 
 # landing serializers
@@ -531,4 +531,8 @@ class NewProfileSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-
+class LandingPageSchemaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LandingPageSchema
+        fields = ['id', 'component_type', 'data', 'title', 'subtitle', 'url', 'background_color',
+                'image', 'publish_status', 'order']

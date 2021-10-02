@@ -9,14 +9,16 @@ from django.shortcuts import get_object_or_404
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.exceptions import ValidationError, PermissionDenied, AuthenticationFailed
 from nakhll_market.models import (
-    Alert, AmazingProduct, Comment, Product, ProductBanner, Shop, Slider, Category, Market, State, BigCity, City, SubMarket
+    Alert, AmazingProduct, Comment, Product, ProductBanner, Shop, Slider, Category, Market, State, BigCity, City, SubMarket,
+    LandingPageSchema,
     )
 from nakhll_market.serializers import (
     AmazingProductSerializer, Base64ImageSerializer, NewProfileSerializer, ProductCommentSerializer, ProductDetailSerializer, ProductImagesSerializer,
     ProductSerializer, ProductUpdateSerializer, ShopProductSerializer, ShopSerializer,SliderSerializer, ProductPriceWriteSerializer,
     CategorySerializer, FullMarketSerializer, CreateShopSerializer, ProductInventoryWriteSerializer,
     ProductListSerializer, ProductWriteSerializer, ShopAllSettingsSerializer, ProductBannerSerializer,
-    ShopBankAccountSettingsSerializer, SocialMediaAccountSettingsSerializer, ProductSubMarketSerializer, StateFullSeraializer, SubMarketProductSerializer, SubMarketSerializer
+    ShopBankAccountSettingsSerializer, SocialMediaAccountSettingsSerializer, ProductSubMarketSerializer, StateFullSeraializer, SubMarketProductSerializer, SubMarketSerializer,
+    LandingPageSchemaSerializer,
     )
 from rest_framework import generics, routers, status, views, viewsets
 from rest_framework import permissions, filters, mixins
@@ -636,3 +638,8 @@ class UserProfileViewSet(viewsets.GenericViewSet):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class LandingPageSchemaViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+    permission_classes = [permissions.AllowAny, ]
+    queryset = LandingPageSchema.objects.get_published_schema()
+    serializer_class = LandingPageSchemaSerializer

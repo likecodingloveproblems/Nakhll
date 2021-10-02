@@ -27,7 +27,7 @@ from django.utils.translation import ugettext_lazy as _
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 import jdatetime
-
+from colorfield.fields import ColorField
 
 
 OUTOFSTOCK_LIMIT_NUM = 5
@@ -2738,5 +2738,31 @@ class DashboardBanner(models.Model):
     publish_status = models.CharField(max_length=3, choices=PublishStatuses.choices, default=PublishStatuses.PUBLISH)
     objects = DashboardBannerManager()
 
-
-
+class LandingPageSchemaManager(models.Manager):
+    def get_published_schema(self):
+        return self.filter(publish_status=LandingPageSchema.PublishStatuses.PUBLISH).order_by('order')
+class LandingPageSchema(models.Model):
+    class Meta:
+        verbose_name = 'برنامه بندی صفحه اول'
+        verbose_name_plural = 'برنامه بندی صفحه اول'
+    class PublishStatuses(models.TextChoices):
+        PUBLISH = 'pub', 'منتشر شده'
+        PREVIEW = 'prv', 'پیش‌نمایش'
+    class ComponentTypes(models.IntegerChoices):
+        BANNER = 1, 'بنر'
+        TEXT = 2, 'کارت محصول'
+    def __str__(self):
+        return 'type:{}, order:{}, data:{}'.format(self.get_component_type_display(), self.order, self.data)
+    
+    component_type = models.IntegerField(verbose_name='نوع برنامه بندی', choices=ComponentTypes.choices, default=ComponentTypes.BANNER)
+    data = models.URLField(verbose_name='داده ها', max_length=255)
+    title = models.CharField(verbose_name='عنوان', max_length=127, null=True, blank=True)
+    subtitle = models.CharField(verbose_name='زیر عنوان', max_length=127, null=True, blank=True)
+    url = models.URLField(max_length=100, verbose_name='لینک', null=True, blank=True)
+    background_color = ColorField(verbose_name='رنگ پس زمینه', null=True, blank=True)
+    image = models.ImageField(verbose_name='عکس', upload_to=PathAndRename('media/Pictures/LandingPage/Schema/'), null=True, blank=True)
+    order = models.IntegerField(verbose_name='ترتیب', default=0)
+    staff_user = models.ForeignKey(User, verbose_name='کارشناس', on_delete=models.SET_NULL, null=True, blank=True, related_name='landing_page_schemas')
+    created_datetime = models.DateTimeField(verbose_name='تاریخ ثبت', auto_now=False, auto_now_add=True)
+    publish_status = models.CharField(max_length=3, choices=PublishStatuses.choices, default=PublishStatuses.PUBLISH)
+    objects = LandingPageSchemaManager()
