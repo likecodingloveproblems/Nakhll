@@ -2,6 +2,7 @@ from uuid import uuid4
 from datetime import datetime
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.core.serializers.json import DjangoJSONEncoder
 from nakhll_market.interface import AlertInterface
 from payoff.models import Transaction
 from payoff.interfaces import PaymentInterface
@@ -32,6 +33,7 @@ class Invoice(models.Model, AccountingInterface):
             verbose_name=_('سبد خرید'))
     address = models.ForeignKey(Address, on_delete=models.PROTECT, null=True,
             blank=True, related_name='invoices', verbose_name=_('آدرس'))
+    address_json = models.JSONField(_('آدرس ثبت شده نهایی'), null=True, blank=True, encoder=DjangoJSONEncoder)
     created_datetime = models.DateTimeField(_('تاریخ ایجاد فاکتور'), auto_now_add=True)
     last_payment_request = models.DateTimeField(_('آخرین درخواست پرداخت'), null=True, blank=True)
     payment_unique_id = models.UUIDField(_('شماره درخواست پرداخت'), null=True, blank=True)
@@ -94,9 +96,17 @@ class Invoice(models.Model, AccountingInterface):
         self.cart.archive()
         self.cart.reduce_inventory()
         self.send_notifications()
+        self.save_address_as_json()
         self.status = self.Statuses.AWAITING_STORE_APPROVAL
         self.save()
 
+    def save_address_as_json(self):
+        ''' Save invoice address as json to prevent address loss in case of editing'''
+        address_json = self.address.to_json() 
+        self.address_json = address_json
+        self.save()
+
+    
     def send_notifications(self):
         ''' Send SMS to user and shop_owner and create alert for staff'''
         shops = self.cart.items.all().values_list('product__FK_Shop', flat=True).distinct()

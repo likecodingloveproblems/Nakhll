@@ -1,3 +1,4 @@
+import json
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
@@ -26,6 +27,18 @@ class Address(models.Model):
     objects = AddressManager()
     def __str__(self):
         return f'{self.user}: {self.address}'
+    def to_json(self):
+        address_data = {
+            'state': self.state.name,
+            'big_city': self.big_city.name,
+            'city': self.city.name,
+            'address': self.address,
+            'zip_code': self.zip_code,
+            'phone_number': self.phone_number,
+            'receiver_full_name': self.receiver_full_name,
+            'receiver_mobile_number': self.receiver_mobile_number
+        }
+        return json.dumps(address_data)
 
 
 class PostPriceSetting(models.Model, PostPriceSettingInterface):
