@@ -44,7 +44,7 @@ class InvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
         invoice = Invoice.objects.filter(cart=active_cart).first() or self.create_invoice(self.request)
         if invoice.status == Invoice.Statuses.PAYING:
             raise ValidationError('فاکتور شما در حال پرداخت می‌باشد و امکان دسترسی به آن وجود ندارد')
-        invoice.status = Invoice.Statuses.COMPLETING
+        invoice.status = Invoice.Statuses.AWAIT_PAYING
         invoice.save()
         return invoice
 

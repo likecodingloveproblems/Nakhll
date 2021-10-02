@@ -14,6 +14,7 @@ class Address(models.Model):
     class Meta:
         verbose_name = _('آدرس')
         verbose_name_plural = _('آدرس‌ها')
+    old_id = models.UUIDField(null=True, blank=True)
     user = models.ForeignKey(User, verbose_name=_('کاربر'), related_name='addresses', on_delete=models.CASCADE)
     state = models.ForeignKey(State, verbose_name=_('استان'), related_name='addresses', on_delete=models.CASCADE)
     big_city = models.ForeignKey(BigCity, verbose_name=_('شهرستان'), related_name='addresses', on_delete=models.CASCADE)

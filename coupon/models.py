@@ -1,8 +1,8 @@
-from datetime import datetime
-from django.contrib.auth.models import User
-from django.utils.timezone import make_aware
-from django.utils.translation import ugettext_lazy as _
 from django.db import models
+from django.contrib.auth.models import User
+from django.utils.timezone import make_aware, now
+from django.utils.translation import ugettext_lazy as _
+from django.core.serializers.json import DjangoJSONEncoder
 from rest_framework.validators import ValidationError
 from nakhll_market.models import Category, Shop, Product
 from accounting_new.models import Invoice
@@ -31,6 +31,7 @@ class Coupon(models.Model, CouponValidation):
     created_at = models.DateTimeField(_('تاریخ ثبت'), auto_now_add=True)
     updated_at = models.DateTimeField(_('تاریخ بروزرسانی'), auto_now=True)
     objects = CouponManager()
+    # extra_data = models.TextField(_('اطلاعات اضافی'), null=True, blank=True)
     def __str__(self):
         return self.code
 
@@ -43,15 +44,17 @@ class CouponConstraint(models.Model):
     shops = models.ManyToManyField(Shop, verbose_name=_('حجره'), related_name='coupons')
     products = models.ManyToManyField(Product, verbose_name=_('محصول'), related_name='coupons')
     # categories = models.ManyToManyField(Category, verbose_name=_('دسته بندی'), related_name='coupons')
-    valid_from = models.DateField(_('تاریخ شروع'), default=datetime.now, null=True, blank=True)
+    valid_from = models.DateField(_('تاریخ شروع'), default=now, null=True, blank=True)
     valid_to = models.DateField(_('تاریخ پایان'), null=True, blank=True)
     budget = models.IntegerField(_('بودجه کل کوپن'), default=0)
     max_usage_per_user = models.IntegerField(default=1, verbose_name=_('حداکثر دفعات استفاده کاربر'))
     max_usage = models.IntegerField(default=5, verbose_name=_('حداکثر دفعات استفاده'))
-    min_purchase_amount = models.IntegerField(_('حداقل مقدار خرید'), null=True, blank=True)
+    min_purchase_amount = models.BigIntegerField(_('حداقل مقدار خرید'), null=True, blank=True)
     min_purchase_count = models.IntegerField(_('حداقل تعداد خرید'), null=True, blank=True)
-    max_purchase_amount = models.IntegerField(_('حداکثر مقدار خرید'), null=True, blank=True)
+    max_purchase_amount = models.BigIntegerField(_('حداکثر مقدار خرید'), null=True, blank=True)
     max_purchase_count = models.IntegerField(_('حداکثر تعداد خرید'), null=True, blank=True)
+    
+    extra_data = models.JSONField(_('اطلاعات اضافه'), null=True, blank=True, encoder=DjangoJSONEncoder)
 
 
    
@@ -62,7 +65,7 @@ class CouponUsage(models.Model):
         verbose_name_plural = _('استفاده از کوپن های تخفیف')
     invoice = models.ForeignKey(Invoice, verbose_name=_('سفارش'), related_name='coupon_usages', on_delete=models.CASCADE)
     coupon = models.ForeignKey(Coupon, verbose_name=_('کوپن تخفیف'), on_delete=models.CASCADE, related_name='usages')
-    used_datetime = models.DateTimeField(_('تاریخ استفاده'), default=datetime.now)
+    used_datetime = models.DateTimeField(_('تاریخ استفاده'), default=now)
     price_applied = models.IntegerField(_('تخفیف اعمال شده'), default=0)
     objects = CouponUsageManager
     def __str__(self):

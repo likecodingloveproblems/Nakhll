@@ -79,8 +79,10 @@ class Cart(models.Model):
         verbose_name = _('سبد خرید')
         verbose_name_plural = _('سبدهای خرید')
     class Statuses(models.TextChoices):
-        IN_PROGRESS = 'prog', _('در حال اجرا')
-        CLOSED = 'fact', _('بسته شده')
+        IN_PROGRESS = 'running', _('در حال اجرا')
+        ARCHIVED = 'archived', _('بایگانی شده')
+
+    old_id = models.UUIDField(null=True, blank=True)
     user = models.ForeignKey(User, verbose_name=_(
         'کاربر'), on_delete=models.CASCADE, related_name='cart', null=True)
     #// sessions will be deleted in django by clearsession command, so we assign 
@@ -88,9 +90,10 @@ class Cart(models.Model):
     #// session = models.ForeignKey(Session, verbose_name=_('Session کاربر'), on_delete=models.CASCADE, null=True)
     # In Token auth, no session used, so I should use a unique id instead of session
     guest_unique_id = models.CharField(_('شناسه کاربر مهمان'), max_length=100, null=True, blank=True)
-    status = models.CharField(max_length=4, verbose_name=_('وضعیت سبد خرید'), choices=Statuses.choices, default=Statuses.IN_PROGRESS)
+    status = models.CharField(max_length=10, verbose_name=_('وضعیت سبد خرید'), choices=Statuses.choices, default=Statuses.IN_PROGRESS)
     created_datetime = models.DateTimeField(verbose_name=_('تاریخ ثبت سبد خرید'), auto_now_add=True)
     change_status_datetime = models.DateTimeField(verbose_name=_('تاریخ تغییر وضعیت سبد'), null=True)
+    extra_data = models.JSONField(null=True, encoder=DjangoJSONEncoder)
     objects = CartManager()
 
     @property
@@ -172,6 +175,8 @@ class Cart(models.Model):
     @staticmethod
     def __get_item_diffs(item, item_json):
         diffs = []
+        if not item_json:
+            return []
         for key in item_json:
            old = item_json[key] 
            new = getattr(item, key)
@@ -210,8 +215,9 @@ class CartItem(models.Model):
         'محصول'), on_delete=models.CASCADE, related_name='cart_items')
     count = models.PositiveSmallIntegerField(verbose_name=_('تعداد'))
     added_datetime = models.DateTimeField(_('زمان اضافه شدن'), auto_now_add=True)
-    product_last_state = models.JSONField(encoder=DjangoJSONEncoder)
+    product_last_state = models.JSONField(null=True, encoder=DjangoJSONEncoder)
     objects = CartItemManager()
+    extra_data = models.JSONField(null=True, encoder=DjangoJSONEncoder)
 
     @property
     def get_total_old_price(self):

@@ -15,20 +15,24 @@ from sms.services import Kavenegar
 
 class Invoice(models.Model, AccountingInterface):
     class Statuses(models.TextChoices):
-        COMPLETING = 'completing', _('در حال تکمیل')
+        AWAIT_PAYING = 'awaiting_paying', _('در انتظار پرداخت')
         PAYING = 'paying', _('در حال پرداخت')
+        AWAIT_SHOP_APPROVAL = 'wait_store_approv', _('در انتظار تأیید فروشگاه')
         PREPATING_PRODUCT = 'preparing_product', _('در حال آماده سازی')
-        AWAITING_STORE_APPROVAL = 'AWAITING_SHOP_APPROV', _('در انتظار تأیید فروشگاه')
-        FAILURE = 'failure', _('پرداخت ناموفق')
-        SUCCESS = 'success', _('پرداخت موفق')
+        AWAIT_CUSTOMER_APPROVAL = 'wait_customer_approv', _('در انتظار تأیید مشتری')
+        AWAIT_SHOP_CHECKOUT = 'wait_store_checkout', _('در انتظار تسویه با فروشگاه') 
+        COMPLETED = 'completed', _('تکمیل شده')
+        CANCELED = 'canceled', _('لغو شده')
     class Meta:
         verbose_name = _('فاکتور')
         verbose_name_plural = _('فاکتورها')
 
     source_module = models.CharField(_('مبدا'), max_length=50, null=True, blank=True,
             help_text=_('نام ماژولی که این فاکتور رو ایجاد کرده است. به عنوان مثال: cart'))
+    old_id = models.UUIDField(null=True, blank=True)
+    FctorNumber = models.CharField(_('شماره فاکتور'), max_length=50, null=True, blank=True, unique=True)
     status = models.CharField(_('وضعیت فاکتور'), max_length=20, 
-            default=Statuses.COMPLETING, choices=Statuses.choices)
+            default=Statuses.AWAIT_PAYING, choices=Statuses.choices)
     cart = models.OneToOneField(Cart, on_delete=models.PROTECT, related_name='invoice', 
             verbose_name=_('سبد خرید'))
     address = models.ForeignKey(Address, on_delete=models.PROTECT, null=True,
@@ -37,6 +41,7 @@ class Invoice(models.Model, AccountingInterface):
     created_datetime = models.DateTimeField(_('تاریخ ایجاد فاکتور'), auto_now_add=True)
     last_payment_request = models.DateTimeField(_('آخرین درخواست پرداخت'), null=True, blank=True)
     payment_unique_id = models.UUIDField(_('شماره درخواست پرداخت'), null=True, blank=True)
+    extra_data = models.JSONField(null=True, blank=True, encoder=DjangoJSONEncoder)
 
     @property
     def user(self):
@@ -97,7 +102,7 @@ class Invoice(models.Model, AccountingInterface):
         self.cart.reduce_inventory()
         self.send_notifications()
         self.save_address_as_json()
-        self.status = self.Statuses.AWAITING_STORE_APPROVAL
+        self.status = self.Statuses.AWAIT_STORE_APPROVAL
         self.save()
 
     def save_address_as_json(self):
