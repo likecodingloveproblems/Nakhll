@@ -1,5 +1,6 @@
 from io import BytesIO
 from django.db.models.expressions import Case, Value, When
+from django.contrib.postgres.aggregates.general import StringAgg
 from django.http import HttpResponse
 from xlsxwriter.workbook import Workbook
 from django.views import View
@@ -214,6 +215,19 @@ class FactorStats(GroupRequiredMixin, View):
             'Location', 'City', 'BigCity', 'State', 'PhoneNumber', 'FK_Coupon__SerialNumber',
             'DiscountType','PostPrice', 'TotalPrice', 'PaymentStatus', 'OrderDate',
             'OrderStatus', 'Checkout', 'Publish'
+        )
+        return ExcelResponse(
+            data=queryset
+        )
+class CustomerPurchaseReport(GroupRequiredMixin, View):
+    group_required = u"factor-stats"
+
+    def get(self, request):
+        queryset = Factor.objects.filter(PaymentStatus=True)
+        queryset = queryset.annotate(products_list=StringAgg('FK_FactorPost__FK_Product__Title', delimiter=', '))
+        queryset = queryset.values(
+            'FactorNumber', 'FK_User__username', 'FK_User__first_name', 'FK_User__last_name',
+            'MobileNumber', 'Address', 'Location', 'City', 'BigCity', 'State', 'products_list',
         )
         return ExcelResponse(
             data=queryset
