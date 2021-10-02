@@ -42,8 +42,8 @@ class InvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
         # TODO: System must support multi invoice per user (more on clickup#1fu8awk)
         active_cart = CartManager.user_active_cart(self.request.user)
         invoice = Invoice.objects.filter(cart=active_cart).first() or self.create_invoice(self.request)
-        if invoice.status == Invoice.Statuses.PAYING:
-            raise ValidationError('فاکتور شما در حال پرداخت می‌باشد و امکان دسترسی به آن وجود ندارد')
+        # if invoice.status == Invoice.Statuses.PAYING:
+            # raise ValidationError('فاکتور شما در حال پرداخت می‌باشد و امکان دسترسی به آن وجود ندارد')
         invoice.status = Invoice.Statuses.AWAIT_PAYING
         invoice.save()
         return invoice
