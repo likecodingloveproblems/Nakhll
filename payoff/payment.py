@@ -40,10 +40,10 @@ class Pec(PaymentMethod):
         self.pec_pin = pec_pin
         self.callback_url = callback_url
         self.sale_service = self.__get_sale_serivce()
-        self.sale_request_data = self.__get_client_sale_request_data()
-        self.reverse_request_data = self.__get_client_reversal_request_data()
         self.confirm_service = self.__get_confirm_service()
         self.reverse_service = self.__get_reverse_service()
+        self.sale_request_data = self.__get_client_sale_request_data()
+        self.reverse_request_data = self.__get_client_reversal_request_data()
 
     def __get_sale_serivce(self):
         return Client(
@@ -53,7 +53,7 @@ class Pec(PaymentMethod):
         return Client(
             'https://pec.shaparak.ir/NewIPGServices/Confirm/ConfirmService.asmx?wsdl')
 
-    def __get_reverse_service():
+    def __get_reverse_service(self):
         reverseService = Client('https://pec.shaparak.ir/NewIPGServices/Reverse/ReversalService.asmx?wsdl')
         return reverseService
 
