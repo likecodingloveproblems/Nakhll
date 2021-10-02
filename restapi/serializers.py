@@ -749,4 +749,11 @@ class CitySerializer(ModelSerializer):
         fields = ['id', 'name', 'value', 'label']
 
 
+class ProfileImageSerializer(ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = [
+            'Image_thumbnail_url',
+        ]
+
 

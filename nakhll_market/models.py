@@ -678,6 +678,10 @@ class Shop(models.Model):
     @property
     def profile(self):
         return self.FK_ShopManager.User_Profile
+    
+    @property
+    def banners(self):
+        return self.get_banners()
 
     def __str__(self):
         return "{}".format(self.Title)

@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from nakhll_market.serializer_fields import Base64ImageField
-from restapi.serializers import BigCitySerializer, CitySerializer, ProfileSerializer, UserDetailSerializer
+from restapi.serializers import BigCitySerializer, CitySerializer, ProfileImageSerializer, ProfileSerializer, ShopBannerSerializer, UserDetailSerializer
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.db.models import fields, query
@@ -21,6 +21,13 @@ class SliderSerializer(serializers.ModelSerializer):
             'url', 'image', 'title', 'show_info', 'description', 'location',
             ]
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'first_name', 'last_name', 
+        ]
+
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
@@ -30,11 +37,14 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class ShopSerializer(serializers.ModelSerializer):
     registered_months = serializers.SerializerMethodField()
+    FK_ShopManager = UserSerializer(read_only=True)
+    profile = ProfileImageSerializer(read_only=True)
+    banners = ShopBannerSerializer(many=True, read_only=True)
     class Meta:
         model = Shop
         fields = [
-            'slug', 'title', 'url', 'image_thumbnail_url', 'total_products',
-            'state', 'big_city', 'city', 'registered_months'
+            'slug', 'title', 'url', 'image_thumbnail_url', 'total_products', 'profile',
+            'state', 'big_city', 'city', 'registered_months', 'FK_ShopManager', 'banners'
         ]
     def get_registered_months(self, obj):
         ''' Calculate months from DateCreate till now '''
@@ -95,13 +105,6 @@ class ProductBannerSerializer(serializers.ModelSerializer):
         model = ProductBanner
         fields = [
             'image', 'id'
-        ]
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = [
-            'first_name', 'last_name',
         ]
 
 class CommentSerializer(serializers.ModelSerializer):
