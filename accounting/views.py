@@ -219,15 +219,19 @@ class FactorStats(GroupRequiredMixin, View):
         return ExcelResponse(
             data=queryset
         )
-class CustomerPurchaseReport(GroupRequiredMixin, View):
-    group_required = u"factor-stats"
+class CustomerPurchaseReport( View):
+    # group_required = u"factor-stats"
 
     def get(self, request):
         queryset = Factor.objects.filter(PaymentStatus=True)
         queryset = queryset.annotate(products_list=StringAgg('FK_FactorPost__FK_Product__Title', delimiter=', '))
+        queryset = queryset.annotate(shop_list=StringAgg('FK_FactorPost__FK_Product__FK_Shop__Title', delimiter=', '))
+        queryset = queryset.annotate(market_list=StringAgg('FK_FactorPost__FK_Product__FK_Shop__FK_SubMarket__FK_Market__Title', delimiter=', '))
+        queryset = queryset.annotate(submarket_list=StringAgg('FK_FactorPost__FK_Product__FK_Shop__FK_SubMarket__Title', delimiter=', '))
         queryset = queryset.values(
             'FactorNumber', 'FK_User__username', 'FK_User__first_name', 'FK_User__last_name',
             'MobileNumber', 'Address', 'Location', 'City', 'BigCity', 'State', 'products_list',
+            'market_list', 'submarket_list', 'shop_list',
         )
         return ExcelResponse(
             data=queryset
