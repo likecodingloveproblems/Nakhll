@@ -1,3 +1,4 @@
+from nakhll_market.views import search
 from django.contrib import admin
 from .models import  Wallet, \
                     Transaction, \
@@ -30,6 +31,7 @@ class FactorAdmin(admin.ModelAdmin):
     list_filter=('OrderDate','DeliveryDate','PaymentStatus','OrderStatus','Checkout')
     readonly_fields = ('FactorNumber',)
     ordering=['OrderDate','DeliveryDate','Checkout','TotalPrice','FactorNumber']
+    search_fields = ('FactorNumber', )
 #-------------------------------------------------
 #Installment admin panel
 @admin.register(Installment)
@@ -70,6 +72,7 @@ class PostTrackingCodeAdmin(admin.ModelAdmin):
 @admin.register(PostBarCode)
 class PostBarCodeAdmin(admin.ModelAdmin):
     list_display=('id','FK_Factor','User_Sender','PostPrice','BarCode')
+    search_fields = ('FK_Factor__FactorNumber', )
     ordering=['id']
 #-------------------------------------------------
 #Campaign admin panel
