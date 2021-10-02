@@ -219,8 +219,8 @@ class FactorStats(GroupRequiredMixin, View):
         return ExcelResponse(
             data=queryset
         )
-class CustomerPurchaseReport( View):
-    # group_required = u"factor-stats"
+class CustomerPurchaseReport(GroupRequiredMixin, View):
+    group_required = u"factor-stats"
 
     def get(self, request):
         queryset = Factor.objects.filter(PaymentStatus=True)
