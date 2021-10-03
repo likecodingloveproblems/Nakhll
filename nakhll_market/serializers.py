@@ -545,10 +545,12 @@ class ProductThumbnailSerializers(serializers.ModelSerializer):
         fields = ['id', 'title', 'slug', 'image_thumbnail_url', 'price', 'old_price', 'discount',]
 
 class UserOrderSerializer(serializers.ModelSerializer):
-    products = ProductThumbnailSerializers(read_only=True, many=True)
+    products = ProductSerializer(read_only=True, many=True)
     receiver_name = serializers.ReadOnlyField(source='address.receiver_full_name')
     receiver_mobile = serializers.ReadOnlyField(source='address.receiver_mobile_number')
     address = AddressSerializer(read_only=True)
     class Meta:
         model = Invoice
-        fields = ('id', 'FactorNumber', 'products', 'address_json', 'address', 'created_datetime', 'total_price', 'status', 'receiver_name', 'receiver_mobile')
+        fields = ('id', 'FactorNumber', 'products', 'address_json', 'address', 'created_datetime', 
+                  'final_invoice_price', 'final_coupon_price', 'final_logistic_price', 'status',
+                  'receiver_name', 'receiver_mobile')

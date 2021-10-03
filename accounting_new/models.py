@@ -38,6 +38,9 @@ class Invoice(models.Model, AccountingInterface):
     address = models.ForeignKey(Address, on_delete=models.PROTECT, null=True,
             blank=True, related_name='invoices', verbose_name=_('آدرس'))
     address_json = models.JSONField(_('آدرس ثبت شده نهایی'), null=True, blank=True, encoder=DjangoJSONEncoder)
+    final_invoice_price = models.DecimalField(_('مبلغ نهایی فاکتور'), max_digits=12, decimal_places=0, default=0)
+    final_coupon_price = models.DecimalField(_('مبلغ نهایی کوپن'), max_digits=12, decimal_places=0, default=0)
+    final_logistic_price = models.DecimalField(_('مبلغ نهایی حمل و نقل'), max_digits=12, decimal_places=0, default=0)
     created_datetime = models.DateTimeField(_('تاریخ ایجاد فاکتور'), auto_now_add=True)
     last_payment_request = models.DateTimeField(_('آخرین درخواست پرداخت'), null=True, blank=True)
     payment_unique_id = models.UUIDField(_('شماره درخواست پرداخت'), null=True, blank=True)

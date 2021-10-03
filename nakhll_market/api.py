@@ -641,12 +641,15 @@ class UserProfileViewSet(viewsets.GenericViewSet):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class UserOrderHistory(viewsets.GenericViewSet, mixins.ListModelMixin):
+class UserOrderHistory(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
     permission_classes = [permissions.IsAuthenticated, IsInvoiceOwner]
     queryset = Invoice.objects.all()
     serializer_class = UserOrderSerializer
     def get_queryset(self):
         return Invoice.objects.filter(cart__user=self.request.user)
+    def get_object(self):
+        return get_object_or_404(Invoice, cart__user=self.request.user)
+
 
 class LandingPageSchemaViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
     permission_classes = [permissions.AllowAny, ]
