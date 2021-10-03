@@ -505,9 +505,10 @@ class ShopProductsSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'slug', 'url', 'image_thumbnail_url', 'state', 'ShopProduct']
 
 class ShopProductSerializer(serializers.ModelSerializer):
+    FK_Shop = ShopSerializer(read_only=True)
     class Meta:
         model = Product
-        fields = ['id', 'title', 'slug', 'image_thumbnail_url', 'price', 'old_price', 'discount',]
+        fields = ['id', 'title', 'slug', 'image_thumbnail_url', 'FK_Shop', 'price', 'old_price', 'discount',]
 
 class NewProfileSerializer(serializers.ModelSerializer):
     wallet = serializers.ReadOnlyField(source='FK_User.WalletManager.Inverntory')
