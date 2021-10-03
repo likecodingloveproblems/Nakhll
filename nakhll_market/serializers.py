@@ -513,7 +513,7 @@ class NewProfileSerializer(serializers.ModelSerializer):
     Image = Base64ImageField()
     class Meta:
         model = Profile
-        fields = ['id', 'NationalCode', 'MobileNumber', 'FK_User', 'BrithDay', 'Image', 'WalletManager']
+        fields = ['id', 'NationalCode', 'MobileNumber', 'FK_User', 'BrithDay', 'Image', 'WalletManager', 'State', 'BigCity', 'City', 'Sex']
         read_only_fields = ['MobileNumber']
         extra_kwargs = {
             'NationalCode': {'validators': []},
