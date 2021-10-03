@@ -508,12 +508,12 @@ class ShopProductSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'slug', 'image_thumbnail_url', 'price', 'old_price', 'discount',]
 
 class NewProfileSerializer(serializers.ModelSerializer):
-    WalletManager = serializers.ReadOnlyField(source='WalletManager.Inventory')
+    wallet = serializers.ReadOnlyField(source='FK_User.WalletManager.Inverntory')
     FK_User = UserSerializer(many=False, read_only=False)
     Image = Base64ImageField()
     class Meta:
         model = Profile
-        fields = ['id', 'NationalCode', 'MobileNumber', 'FK_User', 'BrithDay', 'Image', 'WalletManager', 'State', 'BigCity', 'City', 'Sex']
+        fields = ['id', 'NationalCode', 'MobileNumber', 'FK_User', 'BrithDay', 'Image', 'wallet', 'State', 'BigCity', 'City', 'Sex']
         read_only_fields = ['MobileNumber']
         extra_kwargs = {
             'NationalCode': {'validators': []},
