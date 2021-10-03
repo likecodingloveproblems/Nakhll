@@ -209,7 +209,7 @@ class ProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     ordering_fields = ('Title', 'Price', 'DiscountPrecentage', 'DateCreate', )
 
     def get_queryset(self):
-        query = self.request.GET.get('search')
+        query = self.request.GET.get('search', '')
         queryset = Product.objects.select_related('FK_SubMarket', 'FK_Shop')
         queryset = queryset.annotate(DiscountPrecentage=Case(
             When(OldPrice__gt=0, then=(
