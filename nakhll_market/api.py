@@ -645,10 +645,9 @@ class UserOrderHistory(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Re
     permission_classes = [permissions.IsAuthenticated, IsInvoiceOwner]
     queryset = Invoice.objects.all()
     serializer_class = UserOrderSerializer
+
     def get_queryset(self):
         return Invoice.objects.filter(cart__user=self.request.user)
-    def get_object(self):
-        return get_object_or_404(Invoice, cart__user=self.request.user)
 
 
 class LandingPageSchemaViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):

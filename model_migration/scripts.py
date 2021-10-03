@@ -217,6 +217,7 @@ class InvoiceMigrationScript(BaseMigrationScript):
         cart = Cart.objects.filter(old_id=data.ID).first()
         if not cart:
             raise SkipItemException()
+        final_coupon_price = self.__parse_coupon_price(data)
         address_json = self.__parse_address(data)
         return {
             'old_id': data.ID,
@@ -224,8 +225,23 @@ class InvoiceMigrationScript(BaseMigrationScript):
             'status': self.__parse_status(data.OrderStatus),
             'cart': cart,
             'address_json': address_json,
+            'final_logistic_price': data.PostPrice,
+            'final_invoice_price': data.TotalPrice,
             'extra_data': self.__parse_extra_data(data)
         }
+
+    def __parse_coupon_price(self, data):
+        coupon_price = 0
+        discount_rate = int(data.DiscountRate)
+        discount_type = data.DiscountType
+        logistic_price = data.PostPrice
+        if discount_type == '1': # Percentage
+            coupon_price = data.TotalPrice * discount_rate / 100
+        elif discount_type == '2': # amount
+            coupon_price = discount_rate
+        else:
+            coupon_price = logistic_price
+        return coupon_price
 
     def __parse_status(self, order_status):
         if order_status == '0':
@@ -266,12 +282,8 @@ class InvoiceMigrationScript(BaseMigrationScript):
             'FactorType': data.FactorType,
             'ShopInfo': data.ShopInfo,
             'UserInfo': data.UserInfo,
-            'DiscountRate': data.DiscountRate,
-            'DiscountType': data.DiscountType,
             'FK_Campaign': data.FK_Campaign.id if data.FK_Campaign else None,
             'CampaingType': data.CampaingType,
-            'PostPrice': data.PostPrice,
-            'TotalPrice': data.TotalPrice,
             'PaymentType': data.PaymentType,
             'DeleveryDate': delivery_date,
             'FK_Staff': data.FK_Staff.id if data.FK_Staff else None,
