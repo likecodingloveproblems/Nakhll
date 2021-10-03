@@ -11,8 +11,8 @@ class AddressSerializer(serializers.ModelSerializer):
     city = serializers.SlugRelatedField(slug_field='name', queryset=City.objects.all())
     class Meta:
         model = Address
-        fields = ('user', 'state', 'big_city', 'city', 'zip_code', 'address', 'phone_number', 'receiver_full_name', 'receiver_mobile_number',)
-        read_only_fields = ('user', )
+        fields = ('id', 'user', 'state', 'big_city', 'city', 'zip_code', 'address', 'phone_number', 'receiver_full_name', 'receiver_mobile_number',)
+        read_only_fields = ('id', 'user')
 
     def get_user(self, obj):
         return obj.user.first_name + ' ' + obj.user.last_name
