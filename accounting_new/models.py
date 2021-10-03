@@ -30,7 +30,7 @@ class Invoice(models.Model, AccountingInterface):
     source_module = models.CharField(_('مبدا'), max_length=50, null=True, blank=True,
             help_text=_('نام ماژولی که این فاکتور رو ایجاد کرده است. به عنوان مثال: cart'))
     old_id = models.UUIDField(null=True, blank=True)
-    FctorNumber = models.CharField(_('شماره فاکتور'), max_length=50, null=True, blank=True, unique=True)
+    FactorNumber = models.CharField(_('شماره فاکتور'), max_length=50, null=True, blank=True, unique=True)
     status = models.CharField(_('وضعیت فاکتور'), max_length=20, 
             default=Statuses.AWAIT_PAYING, choices=Statuses.choices)
     cart = models.OneToOneField(Cart, on_delete=models.PROTECT, related_name='invoice', 

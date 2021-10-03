@@ -1,3 +1,4 @@
+from accounting_new.models import Invoice
 from restapi.serializers import ProfileSerializer
 from django.contrib.auth.models import User
 from django.db.models.aggregates import Sum
@@ -18,7 +19,7 @@ from nakhll_market.serializers import (
     CategorySerializer, FullMarketSerializer, CreateShopSerializer, ProductInventoryWriteSerializer,
     ProductListSerializer, ProductWriteSerializer, ShopAllSettingsSerializer, ProductBannerSerializer,
     ShopBankAccountSettingsSerializer, SocialMediaAccountSettingsSerializer, ProductSubMarketSerializer, StateFullSeraializer, SubMarketProductSerializer, SubMarketSerializer,
-    LandingPageSchemaSerializer,
+    LandingPageSchemaSerializer, UserOrderSerializer,
     )
 from rest_framework import generics, routers, status, views, viewsets
 from rest_framework import permissions, filters, mixins
@@ -31,6 +32,7 @@ from django.utils.text import slugify
 from restapi.permissions import IsFactorOwner, IsProductOwner, IsShopOwner, IsProductBannerOwner
 from nakhll_market.paginators import StandardPagination
 from nakhll_market.filters import ProductFilter
+from nakhll_market.permissions import IsInvoiceOwner
 from django_filters import rest_framework as restframework_filters
 
 
@@ -618,7 +620,7 @@ class StateFullViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
 
 
 class UserProfileViewSet(viewsets.GenericViewSet):
-    '''Viewset for user profile api like settings, fav list, orders, etc '''
+    '''Viewset for user profile '''
     permission_classes = [permissions.IsAuthenticated, ]
     queryset = User.objects.all()
     serializer_class = ProfileSerializer
@@ -638,6 +640,13 @@ class UserProfileViewSet(viewsets.GenericViewSet):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UserOrderHistory(viewsets.GenericViewSet, mixins.ListModelMixin):
+    permission_classes = [permissions.IsAuthenticated, IsInvoiceOwner]
+    queryset = Invoice.objects.all()
+    serializer_class = UserOrderSerializer
+    def get_queryset(self):
+        return Invoice.objects.filter(cart__user=self.request.user)
 
 class LandingPageSchemaViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
     permission_classes = [permissions.AllowAny, ]

@@ -1,4 +1,6 @@
 from django.shortcuts import get_object_or_404
+from accounting_new.models import Invoice
+from logistic.serializers import AddressSerializer
 from nakhll_market.serializer_fields import Base64ImageField
 from restapi.serializers import BigCitySerializer, CitySerializer, ProfileImageSerializer, ProfileSerializer, ShopBannerSerializer, UserDetailSerializer
 from django.contrib.auth.models import User
@@ -536,3 +538,17 @@ class LandingPageSchemaSerializer(serializers.ModelSerializer):
         model = LandingPageSchema
         fields = ['id', 'component_type', 'data', 'title', 'subtitle', 'url', 'background_color',
                 'image', 'publish_status', 'order']
+
+class ProductThumbnailSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ['id', 'title', 'slug', 'image_thumbnail_url', 'price', 'old_price', 'discount',]
+
+class UserOrderSerializer(serializers.ModelSerializer):
+    products = ProductThumbnailSerializers(read_only=True, many=True)
+    receiver_name = serializers.ReadOnlyField(source='address.receiver_full_name')
+    receiver_mobile = serializers.ReadOnlyField(source='address.receiver_mobile_number')
+    address = AddressSerializer(read_only=True)
+    class Meta:
+        model = Invoice
+        fields = ('id', 'FactorNumber', 'products', 'address_json', 'address', 'created_datetime', 'total_price', 'status', 'receiver_name', 'receiver_mobile')

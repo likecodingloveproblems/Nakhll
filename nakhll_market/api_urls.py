@@ -3,7 +3,7 @@ from nakhll_market.api import (
     AddSubMarketToProduct, AllShopSettings, AmazingProductViewSet, CategoryViewSet, ImageShopSettings, LastCreatedDiscountedProductsViewSet,
     LastCreatedProductsViewSet, MostDiscountPrecentageProductsViewSet, ShopMultipleUpdateInventory, ShopMultipleUpdatePrice, SocialMediaShopSettings, StateFullViewSet,
     UserProductViewSet, ProductsInSameFactorViewSet, SliderViewSet, SubMarketList, UserProfileViewSet,
-    MostSoldShopsViewSet, RandomShopsViewSet, RandomProductsViewSet, ProductsViewSet, GetShop,
+    MostSoldShopsViewSet, RandomShopsViewSet, RandomProductsViewSet, ProductsViewSet, GetShop, UserOrderHistory,
     MarketList, CreateShop, GetShopWithSlug, CheckShopSlug, CheckProductSlug, ShopProductsViewSet,
     ProductBannerViewSet, AddImagesToProduct, ProductDetailsViewSet, BankAccountShopSettings, ProductCommentsViewSet, ProductRelatedItemsViewSet,
     LandingPageSchemaViewSet,
@@ -38,6 +38,7 @@ util_router.register(r'states', StateFullViewSet, basename="states")
 
 profile_router = routers.DefaultRouter()
 profile_router.register(r'', UserProfileViewSet, basename="profile")
+profile_router.register(r'orders', UserOrderHistory, basename="orders")
 
 urlpatterns = [
     path('landing/', include(landing_router.urls)),
