@@ -10,6 +10,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from accounting_new.models import Invoice, InvoiceItem
 from cart.managers import CartItemManager, CartManager
 from nakhll_market.models import Product
+from nakhll_market.serializers import ProductLastStateSerializer
 
 
 class Cart(models.Model):
@@ -148,6 +149,16 @@ class Cart(models.Model):
     def __clear_items(self):
         self.items.all().delete()
 
+    def add_product(self, product):
+        product_jsonify = ProductLastStateSerializer(product).data
+        cart_item = CartItem.objects.create(
+            cart=self,
+            product=product,
+            count=1,
+            added_datetime=timezone.now(),
+            product_last_state=product_jsonify
+        )
+        return cart_item
 
 class CartItem(models.Model):
     class Meta:

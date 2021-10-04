@@ -8,8 +8,9 @@ from django.utils.translation import ugettext as _
 from rest_framework import permissions, viewsets, mixins
 from nakhll.authentications import CsrfExemptSessionAuthentication
 from nakhll_market.models import ProductManager
+from nakhll_market.serializers import ProductLastStateSerializer
 from cart.models import Cart, CartItem
-from cart.serializers import CartSerializer, CartItemSerializer, ProductLastStateSerializer
+from cart.serializers import CartSerializer, CartItemSerializer
 from cart.utils import get_user_or_guest
 from cart.permissions import IsCartOwner, IsCartItemOwner
 

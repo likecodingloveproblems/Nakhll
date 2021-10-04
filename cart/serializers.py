@@ -47,8 +47,3 @@ class CartSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = CartTransmission
 #         fields = ('cart', )
-
-class ProductLastStateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Product
-        fields = ['Price', 'OldPrice', 'Status', 'PreparationDays', 'Publish', 'Title']

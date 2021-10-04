@@ -555,3 +555,8 @@ class UserOrderSerializer(serializers.ModelSerializer):
         fields = ('id', 'FactorNumber', 'products', 'address_json', 'address', 'created_datetime', 
                   'final_invoice_price', 'final_coupon_price', 'final_logistic_price', 'status',
                   'receiver_name', 'receiver_mobile')
+
+class ProductLastStateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ['Price', 'OldPrice', 'Status', 'PreparationDays', 'Publish', 'Title']

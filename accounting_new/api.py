@@ -1,5 +1,4 @@
 from rest_framework.exceptions import ValidationError
-from cart.serializers import ProductLastStateSerializer
 from datetime import datetime, timedelta
 from logistic.models import PostPriceSetting
 from django.contrib.auth.models import User
@@ -8,6 +7,7 @@ from rest_framework import status, mixins, permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from nakhll.authentications import CsrfExemptSessionAuthentication
+from nakhll_market.serializers import ProductLastStateSerializer
 from cart.managers import CartManager
 from logistic.interfaces import PostPriceSettingInterface
 from payoff.exceptions import NoAddressException, InvoiceExpiredException,\
@@ -166,6 +166,18 @@ class InvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
         except Exception as ex:
             return Response({'error': str(ex)}, status=status.HTTP_400_BAD_REQUEST)
         
+
+    @action(methods=['POST'], detail=True)
+    def to_cart(self, request, pk):
+        #TODO: Need clean up and also all adding products to cart should be done here, so 
+        #TODO: it can be validated just in one place
+        active_cart = CartManager.user_active_cart(request.user)
+        invoice = self.get_object()
+        for item in invoice.items.all():
+            active_cart.add_product(item.product)
+        return Response({'status': 'success'})
+
+
 
     # @action(methods=['GET'], detail=False)
     # def confirm_changes(self, request):
