@@ -1,12 +1,17 @@
 from uuid import uuid4
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.db import models
+from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
+from django.utils import timezone
 from django.core.serializers.json import DjangoJSONEncoder
+from django.contrib.auth.models import User
 from nakhll_market.interface import AlertInterface
+from nakhll_market.models import Product
 from payoff.models import Transaction
 from payoff.interfaces import PaymentInterface
-from cart.models import Cart
+from payoff.exceptions import NoAddressException, InvoiceExpiredException, \
+                InvalidInvoiceStatusException, OutOfPostRangeProductsException
 from accounting_new.interfaces import AccountingInterface
 from logistic.models import Address, PostPriceSetting
 from sms.services import Kavenegar
@@ -15,8 +20,7 @@ from sms.services import Kavenegar
 
 class Invoice(models.Model, AccountingInterface):
     class Statuses(models.TextChoices):
-        AWAIT_PAYING = 'awaiting_paying', _('در انتظار پرداخت')
-        PAYING = 'paying', _('در حال پرداخت')
+        AWAIT_PAYMENT = 'awaiting_paying', _('در انتظار پرداخت')
         AWAIT_SHOP_APPROVAL = 'wait_store_approv', _('در انتظار تأیید فروشگاه')
         PREPATING_PRODUCT = 'preparing_product', _('در حال آماده سازی')
         AWAIT_CUSTOMER_APPROVAL = 'wait_customer_approv', _('در انتظار تأیید مشتری')
@@ -27,54 +31,48 @@ class Invoice(models.Model, AccountingInterface):
         verbose_name = _('فاکتور')
         verbose_name_plural = _('فاکتورها')
 
-    source_module = models.CharField(_('مبدا'), max_length=50, null=True, blank=True,
-            help_text=_('نام ماژولی که این فاکتور رو ایجاد کرده است. به عنوان مثال: cart'))
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_('کاربر'))
     old_id = models.UUIDField(null=True, blank=True)
     FactorNumber = models.CharField(_('شماره فاکتور'), max_length=50, null=True, blank=True, unique=True)
     status = models.CharField(_('وضعیت فاکتور'), max_length=20, 
-            default=Statuses.AWAIT_PAYING, choices=Statuses.choices)
-    cart = models.OneToOneField(Cart, on_delete=models.PROTECT, related_name='invoice', 
-            verbose_name=_('سبد خرید'))
+            default=Statuses.AWAIT_PAYMENT, choices=Statuses.choices)
+    # cart = models.OneToOneField(Cart, on_delete=models.PROTECT, related_name='invoice', 
+            # verbose_name=_('سبد خرید'))
     address = models.ForeignKey(Address, on_delete=models.PROTECT, null=True,
             blank=True, related_name='invoices', verbose_name=_('آدرس'))
     address_json = models.JSONField(_('آدرس ثبت شده نهایی'), null=True, blank=True, encoder=DjangoJSONEncoder)
-    final_invoice_price = models.DecimalField(_('مبلغ نهایی فاکتور'), max_digits=12, decimal_places=0, default=0)
-    final_coupon_price = models.DecimalField(_('مبلغ نهایی کوپن'), max_digits=12, decimal_places=0, default=0)
-    final_logistic_price = models.DecimalField(_('مبلغ نهایی حمل و نقل'), max_digits=12, decimal_places=0, default=0)
+    invoice_price_with_discount = models.DecimalField(_('مبلغ فاکتور با تخفیف'), max_digits=12, decimal_places=0, default=0)
+    invoice_price_without_discount = models.DecimalField(_('مبلغ فاکتور بدون تخفیف'), max_digits=12, decimal_places=0, default=0)
+    logistic_price = models.DecimalField(_('هزینه حمل و نقل'), max_digits=12, decimal_places=0, default=0)
     created_datetime = models.DateTimeField(_('تاریخ ایجاد فاکتور'), auto_now_add=True)
-    last_payment_request = models.DateTimeField(_('آخرین درخواست پرداخت'), null=True, blank=True)
-    payment_unique_id = models.UUIDField(_('شماره درخواست پرداخت'), null=True, blank=True)
+    payment_request_datetime = models.DateTimeField(_('تاریخ درخواست پرداخت'), null=True, blank=True)
+    payment_datetime = models.DateTimeField(_('تاریخ پرداخت'), null=True, blank=True)
+    payment_unique_id = models.BigIntegerField(_('شماره درخواست پرداخت'), null=True, blank=True)
     extra_data = models.JSONField(null=True, blank=True, encoder=DjangoJSONEncoder)
-
-    @property
-    def user(self):
-        return self.cart.user
-
-    @property
-    def total_price(self):
-        return self.cart.total_price
-
-    @property
-    def products(self):
-        return self.cart.products
+    total_weight_gram = models.PositiveIntegerField(_('وزن نهایی (گرم)'), null=True, blank=True)
 
     @property
     def shops(self):
-        return self.cart.shops
-
-    @property
-    def shop_total_weight(self):
-        return self.cart.cart_weight
+        # TODO: Need improve
+        shops = set()
+        for item in self.items.all():
+            shops.add(item.product.FK_Shop)
+        return shops
 
     @property
     def logistic_price(self):
-        post_setting, is_created = PostPriceSetting.objects.get_or_create()
-        return post_setting.get_post_price(self)
+        try:
+            post_setting, is_created = PostPriceSetting.objects.get_or_create()
+            post_price = post_setting.get_post_price(self)
+            return post_price
+        except:
+            return 0
 
     @property
     def logistic_errors(self):
         post_setting, is_created = PostPriceSetting.objects.get_or_create()
-        return post_setting.get_out_of_range_products(self)
+        out_of_range = post_setting.get_out_of_range_products(self)
+        return out_of_range
 
     @property
     def coupons_total_price(self):
@@ -87,46 +85,69 @@ class Invoice(models.Model, AccountingInterface):
     @property
     def final_price(self):
         ''' Total amount of cart_price + logistic - coupon '''
-        cart_total_price = self.cart.total_price
+        total_price = self.invoice_price_with_discount
         logistic_price = self.logistic_price
-        coupon_price = self.coupon_details.get('result') or 0
-        return cart_total_price + logistic_price - coupon_price
+        coupon_price = self.coupons_total_price
+        return total_price + logistic_price - coupon_price
 
     def send_to_payment(self, bank_port=Transaction.IPGTypes.PEC):
-        self.status = self.Statuses.PAYING
+        self.__validate_address()
+        self.__validate_factor_status()
+        self.__validate_invoice_expiring_date()
         self.payment_unique_id = int(datetime.now().timestamp() * 1000000)
-        self.last_payment_request = datetime.now()
+        self.payment_request_datetime = timezone.now()
         self.save()
         PaymentInterface.from_invoice(self, bank_port)
 
+    def __validate_address(self):
+        if not self.address:
+            raise NoAddressException()
+        logistic_errors = self.logistic_errors
+        if logistic_errors:
+            raise OutOfPostRangeProductsException(logistic_errors)
+
+    def __validate_invoice_expiring_date(self):
+        expire_datetime = self.created_datetime + timedelta(hours=settings.INVOICE_EXPIRING_HOURS)
+        if expire_datetime < timezone.now():
+            raise InvoiceExpiredException()
+
+    def __validate_factor_status(self):
+        if self.status != self.Statuses.AWAIT_PAYMENT:
+            raise InvalidInvoiceStatusException()
+
     def complete_payment(self):
         ''' Payment is succeeded '''
-        self.cart.archive()
-        self.cart.reduce_inventory()
-        self.send_notifications()
-        self.save_address_as_json()
-        self.status = self.Statuses.AWAIT_STORE_APPROVAL
+        self.__reduce_inventory()
+        self.__send_notifications()
+        self.__save_address_as_json()
+        self.status = self.Statuses.AWAIT_SHOP_APPROVAL
+        self.payment_datetime = timezone.now()
         self.save()
 
-    def save_address_as_json(self):
+    def __reduce_inventory(self):
+        ''' Reduce bought items from shops stock '''
+        items = self.items.all()
+        for item in items:
+            item.product.reduce_stock(item.count)
+            
+    def __save_address_as_json(self):
         ''' Save invoice address as json to prevent address loss in case of editing'''
         address_json = self.address.to_json() 
         self.address_json = address_json
         self.save()
-
     
-    def send_notifications(self):
+    def __send_notifications(self):
         ''' Send SMS to user and shop_owner and create alert for staff'''
-        shops = self.cart.items.all().values_list('product__FK_Shop', flat=True).distinct()
-        for shop in shops:
-            Kavenegar.shop_new_order(shop.FK_ShopManager.UserProfile.phone_number, self.id)
+        shop_owner_mobiles = self.items.all().values_list(
+            'product__FK_Shop__FK_ShopManager__User_Profile__MobileNumber', flat=True).distinct()
+        for mobile_number in shop_owner_mobiles:
+            Kavenegar.shop_new_order(mobile_number, self.id)
         AlertInterface.new_order(self)
 
-    @staticmethod
     def revert_payment(self):
         ''' Payment is failed'''
         self.unset_coupons()
-        self.status = self.Statuses.COMPLETING
+        self.status = self.Statuses.AWAIT_PAYMENT
         self.save()
 
     def unset_coupons(self):
@@ -136,4 +157,48 @@ class Invoice(models.Model, AccountingInterface):
             coupon_usage.delete()
 
 
+class InvoiceItem(models.Model):
+    class ItemStatuses(models.TextChoices):
+        AWAIT_PAYMENT = 'awaiting_paying', _('در انتظار پرداخت')
+        AWAIT_SHOP_APPROVAL = 'wait_store_approv', _('در انتظار تأیید فروشگاه')
+        PREPATING_PRODUCT = 'preparing_product', _('در حال آماده سازی')
+        AWAIT_CUSTOMER_APPROVAL = 'wait_customer_approv', _('در انتظار تأیید مشتری')
+        AWAIT_SHOP_CHECKOUT = 'wait_store_checkout', _('در انتظار تسویه با فروشگاه') 
+        COMPLETED = 'completed', _('تکمیل شده')
+        CANCELED = 'canceled', _('لغو شده')
 
+    class UserConfirmStatuses(models.TextChoices):
+        AWAIT_CONFIRM = 'awaiting_confirm', _('در انتظار تایید')
+        CONFIRMED = 'confirmed', _('تایید شده')
+        REJECTED = 'rejected', _('رد شده')
+    
+    class PostType(models.TextChoices):
+        IRPOST = 'irpost', _('شرکت پست')
+        INCITY = 'incity', _('درون شهری')
+
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name='items',
+                        verbose_name=_('فاکتور'))
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, 
+                        related_name='invoice_items')
+    count = models.IntegerField(_('تعداد'), default=1)
+    status = models.CharField(_('وضعیت'), max_length=20, choices=ItemStatuses.choices,
+                        default=ItemStatuses.AWAIT_PAYMENT)
+    name = models.CharField(_('نام محصول'), max_length=500)
+    price_with_discount = models.DecimalField(_('قیمت با تخفیف'), max_digits=12, decimal_places=0)
+    price_without_discount = models.DecimalField(_('قیمت بدون تخفیف'), max_digits=12, decimal_places=0)
+    weight = models.DecimalField(_('وزن'), max_digits=10, decimal_places=0)
+    image = models.ImageField(_('تصویر'), upload_to='invoice_items', null=True, blank=True)
+    image_thumbnail = models.ImageField(_('تصویر کوچک'), upload_to='invoice_items',
+                        null=True, blank=True)
+    shop_name = models.CharField(_('نام فروشگاه'), max_length=500)
+    added_datetime = models.DateTimeField(_('تاریخ افزودن'), auto_now_add=True)
+    shop_confirmed_datetime = models.DateTimeField(_('تاریخ تایید فروشگاه'), null=True, blank=True)
+    post_type = models.CharField(_('نوع پست'), max_length=20, choices=PostType.choices,
+                        null=True, blank=True)
+    post_tracking_code = models.CharField(_('کد رهگیری پستی'), max_length=100, null=True, blank=True)
+    user_confirm_datetime = models.DateTimeField(_('تاریخ تایید کاربر'), null=True, blank=True)
+    user_confirm_status = models.CharField(_('وضعیت تایید کاربر'), max_length=20,
+                        choices=UserConfirmStatuses.choices, null=True, blank=True)
+    user_confirm_comment = models.TextField(_('توضیحات تایید کاربر'), null=True, blank=True)
+    
+       

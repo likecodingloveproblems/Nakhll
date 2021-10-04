@@ -16,8 +16,8 @@ class CouponValidation:
         if self._validators == self.ALL_VALIDATORS:
             self._validators = [
                 DateTimeValidator(),
-                # MaxUserCountValidator(self._user),
-                # MaxCountValidator(),
+                MaxUserCountValidator(self._user),
+                MaxCountValidator(),
                 PriceValidator(self._invoice),
                 ProductValidator(self._invoice),
                 AvailableValidator(),
@@ -30,7 +30,7 @@ class CouponValidation:
 
 
     def is_valid(self, invoice, validators=ALL_VALIDATORS, raise_exception=False):
-        self._user = invoice.cart.user
+        self._user = invoice.user
         self._invoice = invoice
         self._validators = validators
         # if hasattr(self, '_errors'):
@@ -47,6 +47,18 @@ class CouponValidation:
                 self._errors.append(e.message)
         return not self._errors
 
+
+    def apply(self, invoice):
+        self._final_price = self.get_final_price()
+        if self._final_price:
+           self.usages.create(
+               used_datetime=make_aware(datetime.now()),
+               price_applied=self._final_price,
+               invoice=invoice,
+           )
+
+
+
     def get_final_price(self):
         assert hasattr(self, '_errors'), 'You should call .is_valid() on coupon first'
         self._final_price = None
@@ -58,28 +70,14 @@ class CouponValidation:
         if self.amount:
             return self.amount
         if self.presentage:
-            amount = self.presentage * self._invoice.cart.total_price / 100
+            amount = self.presentage * self._invoice.invoice_price_with_discount / 100
             return min(amount, self.max_amount) or amount
         return 0
-
-    def apply(self, invoice):
-        self._final_price = self.get_final_price()
-        if self._final_price:
-           self.usages.create(
-               used_datetime=make_aware(datetime.now()),
-               price_applied=self._final_price,
-               invoice=invoice,
-           )
 
     @property
     def final_price(self):
         assert hasattr(self, '_final_price'), 'You should call .is_valid() on coupon first'
         return self._final_price or 0
-
-    @final_price.setter
-    def final_price(self, value):
-        assert hasattr(self, '_final_price'), 'You should call .is_valid() on coupon first'
-        self._final_price = value
 
     @property
     def errors(self):

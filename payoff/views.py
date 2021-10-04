@@ -1,8 +1,10 @@
 import json
 from datetime import datetime
+from re import I
+from django.conf import settings
 from django.http.response import HttpResponse
-from django.shortcuts import render
-from payoff.payment import Payment
+from django.shortcuts import redirect, render
+from payoff.payment import Payment, Pec
 from payoff.interfaces import PaymentInterface
 from payoff.models import Transaction
 from django.views.decorators.csrf import csrf_exempt
@@ -26,21 +28,27 @@ def test_pec(request):
 
 @csrf_exempt
 def test_pec_callback(request):
-    if not request.META['HTTP_ORIGIN'].startswith('https://pec.shaparak.ir')\
-        or not request.META['HTTP_REFERER'].startswith('https://pec.shaparak.ir'):
-        raise Exception('Invalid origin or referer')
+    # TODO: for test only
+    # if not request.META['HTTP_ORIGIN'].startswith('https://pec.shaparak.ir')\
+        # or not request.META['HTTP_REFERER'].startswith('https://pec.shaparak.ir'):
+        # raise Exception('Invalid origin or referer')
+
     sample_data = {
-        'Token': request.GET.get('token') or 12863129837,
-        'OrderId': request.GET.get('order') or 98712341264,
-        'TerminalNo':  request.GET.get('term') or 1321,
-        'RRN': request.GET.get('rrn') or 357823,
-        'Status': request.GET.get('status') or 0,
-        'HashCardNumber': request.GET.get('card') or '585983***9490',
-        'Amount': request.GET.get('amount') or '120000',
+        'OrderId': '1633340367339740',
+        'Token': 123131,
+        'Stauts': 0,
+        'RRN': 133,
+        'TerminalNo': 1345214,
+        'Amount': '2180000'
     }
+    
     # result = Payment.payment_callback(request.POST, ipg_type=Transaction.IPGTypes.PEC)
     result = Payment.payment_callback(sample_data, ipg_type=Transaction.IPGTypes.PEC)
-    result_dict = result.__dict__
-    result_dict['_state'] = None
-    result_dict['created_datetime'] = None
-    return HttpResponse(json.dumps(result_dict), content_type='application/json')
+    # result_dict = result.__dict__
+    # result_dict['_state'] = None
+    # result_dict['created_datetime'] = None
+    domain = settings.DOMAIN_NAME
+    code = result.get('code')
+    if result.get('status') == Pec.SUCCESS_STATUS:
+        return redirect(f'{domain}/payment/success/data?code={code}')
+    return redirect(f'{domain}/payment/failure/data?code={code}')
