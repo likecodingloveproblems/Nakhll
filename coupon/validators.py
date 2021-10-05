@@ -18,7 +18,7 @@ class MaxUserCountValidator:
         self.user = user
     def __call__(self, coupon):
         max_usage = coupon.constraint.max_usage_per_user 
-        user_usage = coupon.usages.filter(invoice__user=self.user).aggregate(Sum('count'))['count__sum']
+        user_usage = coupon.usages.filter(invoice__user=self.user).count()
         if user_usage >= max_usage:
             raise MaxUserCountException(coupon, _('شما بیشتر از این نمی‌توانید از این کوپن استفاده کنید'), self.user)
 
@@ -40,7 +40,7 @@ class DateTimeValidator:
 
 class PriceValidator:
     def __init__(self, invoice):
-        self.total_invoice_price = invoice.total_price
+        self.total_invoice_price = invoice.invoice_price_with_discount
     def __call__(self, coupon):
         if coupon.constraint.max_purchase_amount and self.total_invoice_price > coupon.constraint.max_purchase_amount\
             or coupon.constraint.min_purchase_amount and self.total_invoice_price < coupon.constraint.min_purchase_amount:
@@ -48,7 +48,7 @@ class PriceValidator:
 
 class CountValidator:
     def __init__(self, invoice):
-        self.total_invoice_count = invoice.total_product_count
+        self.total_invoice_count = invoice.items.count()
     def __call__(self, coupon):
         if coupon.constraint.max_purchase_count and self.total_invoice_count > coupon.constraint.max_purchase_count\
             or coupon.constraint.min_purchase_count and self.total_invoice_count < coupon.constraint.min_purchase_count:
@@ -70,9 +70,9 @@ class ShopValidator:
 
 class ProductValidator:
     def __init__(self, invoice):
-        self.products = invoice.products
+        self.products = invoice.items.all().values_list('product', flat=True)
     def __call__(self, coupon):
-        if coupon.constraint.products.all() and self.products not in coupon.constraint.products.all():
+        if coupon.constraint.products.all() and self.products not in coupon.constraint.products.all().values_list('ID', flat=True):
             raise ProductException(coupon, _('این کوپن برای استفاده روی این محصول تعریف نشده است'), self.products)
 
 class BudgetValidator:

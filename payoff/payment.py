@@ -28,6 +28,11 @@ class PaymentMethod(ABC):
 
 class Pec(PaymentMethod):
 
+    __SUCCESS_STATUS_CODE = 0
+    __SUCCESS_TOKEN_MIN_VALUE = 0
+    __SUCCESS_RRN_MIN_VALUE = 0
+    SUCCESS_STATUS = 'success'
+    FAILURE_STATUS = 'failure'
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
         # TODO: These errors should be handled better with better messages
@@ -113,10 +118,8 @@ class Pec(PaymentMethod):
 
     def is_token_object_valid(self, token_object):
         ''' Check if token is valid '''
-        SUCCESS_STATUS_NUMBER = 0
-        SUCCESS_TOKEN_MIN_VALUE = 0
-        return False if token_object.Status != SUCCESS_STATUS_NUMBER\
-            or token_object.Token <= SUCCESS_TOKEN_MIN_VALUE else True
+        return False if token_object.Status != self.__SUCCESS_STATUS_CODE\
+            or token_object.Token <= self.__SUCCESS_TOKEN_MIN_VALUE else True
 
     def _save_token_object(self, token_object):
         ''' Store result of token request from IPG to DB'''
@@ -137,10 +140,14 @@ class Pec(PaymentMethod):
         transaction_result = self._create_transaction_result(parsed_data)
         transaction_result = self._link_to_transaction(transaction_result)
         if self._is_tarnsaction_result_succeded(transaction_result)\
-            and self._validate_transaction_result(transaction_result):
-            return self._complete_payment(transaction_result)
-        return self._revert_transaction(transaction_result)
-
+                and self._validate_payment(transaction_result):
+            self._complete_payment(transaction_result)
+            result = {'status': self.SUCCESS_STATUS, 'code': transaction_result.order_id}
+        else:
+            self._revert_transaction(transaction_result)
+            result = {'status': self.FAILURE_STATUS, 'code': transaction_result.order_id}
+        return result
+    
     def _parse_callback_data(self, data):
         ''' Parse data from Pec gateway '''
         print(f'IN: payoff > payment.py > Pec class > _parse_callback_data')
@@ -151,7 +158,7 @@ class Pec(PaymentMethod):
             'order_id': data.get('OrderId', 0),
             'terminal_no': data.get('TerminalNo', 0),
             'rrn': data.get('RRN', 0),
-            'status': data.get('status', 200),
+            'status': data.get('Status', 0),
             'hash_card_number': data.get('HashCardNumber', ''),
             'amount': self._parse_amount(data.get('Amount', '0')),
             'discounted_amount': self._parse_amount(data.get('SwAmount', '0')),
@@ -184,22 +191,21 @@ class Pec(PaymentMethod):
 
     def _is_tarnsaction_result_succeded(self, transaction_result):
         ''' Send request to IGP validation url and validate transaction '''
-        SUCCESS_STATUS_CODE = 0
-        SUCCESS_RRN_MIN_VALUE = 0
-        if transaction_result.status== SUCCESS_STATUS_CODE\
-            and transaction_result.rrn > SUCCESS_RRN_MIN_VALUE:
+        if transaction_result.status== self.__SUCCESS_STATUS_CODE\
+            and transaction_result.rrn > self.__SUCCESS_RRN_MIN_VALUE:
             return True
         return False
 
     def _validate_payment(self, transaction_result):
-        #TODO: Need cleaning
+        #TODO: For testing only
         ''' Validate payment '''
+        return True
         token = transaction_result.transaction.token
         pec_pin = self.pec_pin
         request_data = self.confirm_service(Token=token, LoginAccount=pec_pin)
         result = self.confirm_service.service.ConfirmPaymentRequest(request_data)
-        token = result.get('Token', 0)
-        if token <= 0 or result.get('Status', 0) != 0:
+        token = result.Token
+        if token <= 0 or result.Status != 0:
             # TODO: create alert for support to handle this
             return False
         return True
@@ -208,40 +214,47 @@ class Pec(PaymentMethod):
 
     def _complete_payment(self, transaction_result):
         ''' Send transaction_result to referrer model to finish purchase process'''
-        app_label = transaction_result.transaction.referrer_app
-        model_name = transaction_result.transaction.referrer_model
-        referrer_model = apps.get_model(app_label, model_name) 
-        if not hasattr(referrer_model, 'complete_payment'):
-            raise NoCompletePaymentMethodException()
-        referrer_model.complete_payment(transaction_result.transaction)
+        referrer_object = self.__get_referrer_object(transaction_result)
+        referrer_object.complete_payment()
         return transaction_result
-        
+
+    
 
     def _revert_transaction(self, transaction_result):
         ''' Send transaction_result to referrer model to finish purchase process'''
-        self.__send_reverse_request(transaction_result)
         self.__reverse_referer_payment(transaction_result)
+        self.__send_reverse_request(transaction_result) 
         return transaction_result
 
     def __reverse_referer_payment(self, transaction_result):
         ''' Send transaction_result to referrer model to cancel purchase process'''
-        app_label = transaction_result.transaction.referrer_app
-        model_name = transaction_result.transaction.referrer_model
-        referrer_model = apps.get_model(app_label, model_name) 
-        referrer_model.revert_payment(transaction_result.transaction)
+        referrer_object = self.__get_referrer_object(transaction_result)
+        referrer_object.revert_payment()
 
     def __send_reverse_request(self, transaction_result):
         requestData = self.reverse_request_data(LoginAccount=self.pec_pin, Token=transaction_result.token)
         res = self.reverse_service.service.ReversalRequest(requestData)
         if res:
-            transaction_result.reverse_token = res.get('Token', 0)
-            transaction_result.reverse_status = res.get('Status', 0)
-            transaction_result.reverse_message = res.get('Message', '')
+            transaction_result.reverse_token = res.Token
+            transaction_result.reverse_status = res.Status
+            transaction_result.reverse_message = res.Message
             transaction_result.save()
         else:
             AlertInterface.no_reverse_request(transaction_result)
         return res
 
+    def __get_referrer_object(self, transaction_result):
+        ''' Get referrer object from transaction_result '''
+        order_number = transaction_result.transaction.order_number
+        if isinstance(order_number, str):
+            order_number = int(order_number)
+        app_label = transaction_result.transaction.referrer_app
+        model_name = transaction_result.transaction.referrer_model
+        referrer_model = apps.get_model(app_label, model_name) 
+        if not hasattr(referrer_model, 'complete_payment'):
+            raise NoCompletePaymentMethodException()
+        return referrer_model.objects.get(payment_unique_id=order_number)
+        
 
 
 
@@ -267,7 +280,7 @@ class Payment:
     def payment_callback(data, ipg_type):
         ipg_class = Payment._get_ipg_class(ipg_type)
         ipg = ipg_class()
-        return ipg.callback(data)
+        result = ipg.callback(data)
 
     @staticmethod
     def _get_ipg_class(ipg_type):

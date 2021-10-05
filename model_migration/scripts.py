@@ -251,13 +251,13 @@ class InvoiceMigrationScript(BaseMigrationScript):
         elif order_status == '2':
             return Invoice.Statuses.PREPATING_PRODUCT
         elif order_status == '3':
-            return Invoice.Statuses.AWAIT_PAYING
+            return Invoice.Statuses.AWAIT_PAYMENT
         elif order_status == '4':
             return Invoice.Statuses.CANCELED
         elif order_status == '5':
             return Invoice.Statuses.AWAIT_CUSTOMER_APPROVAL
         else:
-            return Invoice.Statuses.AWAIT_PAYING
+            return Invoice.Statuses.AWAIT_PAYMENT
 
     def __parse_address(self, data):
         address_data = {

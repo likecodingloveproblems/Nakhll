@@ -10,61 +10,61 @@ class PostPriceSettingInterface:
         which contains prices to calculate post_price.
     '''
 
-    def _is_vaild_product_post_range(self, product, user_address):
+    def _is_vaild_product_post_range(self, invoice_item, user_address):
         ''' Check if user_address is in range of shop post range '''
         dst_state = user_address.state
         dst_big_city = user_address.big_city
         dst_city = user_address.city
 
-        if product.PostRangeType == '1': # This is a post inside coutry and is true
+        if invoice_item.product.PostRangeType == '1': # This is a post inside coutry and is true
             return True
-        elif product.PostRangeType == '2': # This is a post in a state
-            if dst_state == product.FK_Shop.State:
+        elif invoice_item.product.PostRangeType == '2': # This is a post in a state
+            if dst_state == invoice_item.product.FK_Shop.State:
                 return True
             return False
-        elif product.PostRangeType == '3' or product.PostRangeType == '4': # This is a post in a big city or city
-            if product.FK_Shop.State == dst_state and product.FK_Shop.BigCity == dst_big_city and product.FK_Shop.City == dst_city:
+        elif invoice_item.product.PostRangeType == '3' or invoice_item.product.PostRangeType == '4': # This is a post in a big city or city
+            if invoice_item.product.FK_Shop.State == dst_state and invoice_item.product.FK_Shop.BigCity == dst_big_city and invoice_item.product.FK_Shop.City == dst_city:
                 return True
             else:
                 return False
 
-    def get_out_of_range_products(self, factor):
-        ''' Check if all products in factor can sent to user address'''
-        if not all([hasattr(factor, 'products') and hasattr(factor, 'address')]):
-            msg = 'factor should have attribute products and address'
+    def get_out_of_range_products(self, invoice):
+        ''' Check if all products in invoice can sent to user address'''
+        if not all([hasattr(invoice, 'items') and hasattr(invoice, 'address')]):
+            msg = 'factor should have attribute items and address'
             raise ValidationError(msg)
 
-        user_address = factor.address
+        user_address = invoice.address
         if not user_address:
             return []
         out_of_range_products = []
-        for product in factor.products:
-            if not self._is_vaild_product_post_range(product, user_address):
-                out_of_range_products.append(product) 
+        for invoice_item in invoice.items.all():
+            if not self._is_vaild_product_post_range(invoice_item, user_address):
+                out_of_range_products.append(invoice_item.product.title) 
         return out_of_range_products
 
         
 
-    def get_post_price(self, factor):
+    def get_post_price(self, invoice):
         ''' Calculate each shop post_price based on user address '''
-        if not all([hasattr(factor, 'products') and hasattr(factor, 'address')]):
-            msg = 'factor should have attribute products and address'
+        if not all([hasattr(invoice, 'items') and hasattr(invoice, 'address')]):
+            msg = 'factor should have attribute items and address'
             raise ValidationError(msg)
-        if self.get_out_of_range_products(factor):
+        if self.get_out_of_range_products(invoice):
             msg = 'There is errors in post_range. Run .out_of_range_products(invoice) to see them'
             raise ValidationError(msg)
-        post_range_price = self._get_factor_post_range_price(factor) or 0
-        post_wieght_price = self._get_factor_post_wieght_price(factor) or 0
+        post_range_price = self._get_factor_post_range_price(invoice) or 0
+        post_wieght_price = self._get_factor_post_wieght_price(invoice) or 0
         return post_range_price + post_wieght_price
 
         
-    def _get_factor_post_range_price(self, factor):
+    def _get_factor_post_range_price(self, invoice):
         ''' Get post range price from factor '''
-        user_address = factor.address
+        user_address = invoice.address
         if not user_address:
             return None
         total_post_price = 0
-        for shop in factor.shops:
+        for shop in invoice.shops:
             total_post_price += self._get_shop_post_price(shop, user_address)
         return total_post_price
 
@@ -75,11 +75,11 @@ class PostPriceSettingInterface:
         return self.inside_city_price if shop.BigCity == dst_big_city and shop.State == dst_state\
             else self.outside_city_price
 
-    def _get_factor_post_wieght_price(self, factor):
+    def _get_factor_post_wieght_price(self, invocie):
         ''' Get post wieght price from factor '''
         total_post_price = 0
         # TODO: This needs more check and is not completed yet
-        weight_gram = factor.shop_total_weight
+        weight_gram = invocie.total_weight_gram
         weight_kilogram = weight_gram / 1000
         if weight_kilogram > 1: # There is a fee for more than 1kg
             extra_weight = weight_kilogram - 1 # for example 2.5kg is 2.5kg - 1kg = 1.5kg

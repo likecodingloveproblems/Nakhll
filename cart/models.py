@@ -1,97 +1,34 @@
+import os
 from django.core import serializers
 from django.db import models
 from django.db.models.lookups import EndsWith
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
 from django.core.serializers.json import DjangoJSONEncoder
+from accounting_new.models import Invoice, InvoiceItem
 from cart.managers import CartItemManager, CartManager
 from nakhll_market.models import Product
-
-# Create your models here.
-
-# NOTE: These should be considered in design phase
-#   - This is a minimal solution for users to be able to buy products and
-#     many things can be added to it, so be prepared!
-#   - unregistered users should be able to add products to cart
-#   - After login, cart should be assigned to user
-#   - If not logged-in user, add products to cart and never came back,
-#     then the cart should be deleted after some time (like a week)
-#   - Changes sice user add produdct to cart, should be stored
-#   - Check if products is available or has enough inventory (when?)
-#   - Conserning about changes in product, there is some approachs
-#       -- Save last known details of product and notice user from changes
-#           --- Changes should save base on each field or jsonify whole
-#               product and compare it with prev json?
-#       -- Delete changed product and ask user to re-add it to cart
-#          (why? owner may change product to something completely different)
-#       -- Support stop owner from that kind of changes
-#       -- A combination of these approachs
-
-
-#       nextjs                     comm data                       django
-# ----------------------------------------------------------------------------
-#                       |                               |
-#                       |                               |
-#   non logged in user  |                               |
-#   send a product to   |                               | 
-#   store in cart       |           product_id=5        |
-#                       |  ---------------------------> | django check if guid is
-#                       |                               | available or not, if not,
-#                       |                               | create new cart with guid
-#                       |            guid=xyz           | and send it to nextjs
-#                       |  <--------------------------  | 
-#   save guid and send  |                               |
-#   it back to server   |                               |
-#   with next requests  |                               |
-#                       |    product_id=7, guid=xyz     |
-#                       |  ---------------------------> |
-#                       |                               | get guid, and save new 
-#                       |                               | products in related cart
-#                       |                               |
-#                       |                               |
-#  user logged in       |                               |
-#  send login data      |                               |
-#  with guid            |                               |
-#                       |     user, password, guid      |
-#                       |  -------------------------->  |
-#                       |                               | convert guid to user
-#                       |                               | 
-
-
-
-# NOTE: CART FUNCTIONS
-#   -Create Card
-#   --logged-in users
-#   --non logged-in users
-#   -convert cart
-#   -add to cart
-#   -delete from cart
-#   -check cart items
-#   -clear cart
-#   -send cart to accounting
-#   -change cart state
-#   -jsonify cart
 
 
 class Cart(models.Model):
     class Meta:
         verbose_name = _('سبد خرید')
         verbose_name_plural = _('سبدهای خرید')
-    class Statuses(models.TextChoices):
-        IN_PROGRESS = 'running', _('در حال اجرا')
-        ARCHIVED = 'archived', _('بایگانی شده')
+    # class Statuses(models.TextChoices):
+        # IN_PROGRESS = 'running', _('در حال اجرا')
+        # ARCHIVED = 'archived', _('بایگانی شده')
 
     old_id = models.UUIDField(null=True, blank=True)
-    user = models.ForeignKey(User, verbose_name=_(
-        'کاربر'), on_delete=models.CASCADE, related_name='cart', null=True)
+    user = models.OneToOneField(User, verbose_name=_('کاربر'), on_delete=models.CASCADE, related_name='cart', null=True)
     #// sessions will be deleted in django by clearsession command, so we assign 
     #// a cart for not-logged-in users by session
     #// session = models.ForeignKey(Session, verbose_name=_('Session کاربر'), on_delete=models.CASCADE, null=True)
     # In Token auth, no session used, so I should use a unique id instead of session
     guest_unique_id = models.CharField(_('شناسه کاربر مهمان'), max_length=100, null=True, blank=True)
-    status = models.CharField(max_length=10, verbose_name=_('وضعیت سبد خرید'), choices=Statuses.choices, default=Statuses.IN_PROGRESS)
-    created_datetime = models.DateTimeField(verbose_name=_('تاریخ ثبت سبد خرید'), auto_now_add=True)
+    # status = models.CharField(max_length=10, verbose_name=_('وضعیت سبد خرید'), choices=Statuses.choices, default=Statuses.IN_PROGRESS)
+    # created_datetime = models.DateTimeField(verbose_name=_('تاریخ ثبت سبد خرید'), auto_now_add=True)
     change_status_datetime = models.DateTimeField(verbose_name=_('تاریخ تغییر وضعیت سبد'), null=True)
     extra_data = models.JSONField(null=True, encoder=DjangoJSONEncoder)
     objects = CartManager()
@@ -118,19 +55,17 @@ class Cart(models.Model):
     @property
     def shops(self):
         # TODO: Needs improvement
-        shops = []
+        shops = set()
         for item in self.items.all():
-            shop = item.product.FK_Shop
-            if shop not in shops:
-                shops.append(shop)
+            shops.add(item.product.FK_Shop)
         return shops
 
     @property
     def products(self):
         # TODO: Needs improvement
-        products = []
+        products = set()
         for item in self.items.all():
-            products.append(item.product)
+            products.add(item.product)
         return products
 
     @property
@@ -147,7 +82,7 @@ class Cart(models.Model):
 
     @property
     def total_price(self):
-        prices= []
+        prices = []
         for item in self.items.all():
             price = item.product.Price 
             prices.append(price * item.count)
@@ -190,18 +125,28 @@ class Cart(models.Model):
         ''' Return all cart items in order by shop'''
         return self.items.order_by('-product__FK_Shop')
 
-    def archive(self):
-        ''' Archive this cart '''
-        self.status = self.Statuses.CLOSED
-        self.save()
+    # def archive(self):
+    #     ''' Archive this cart '''
+    #     self.status = self.Statuses.CLOSED
+    #     self.save()
 
-    def reduce_inventory(self):
-        ''' Reduce bought items from shops stock '''
+    def convert_to_invoice(self):
+        ''' Convert cart to invoice '''
+        invoice = Invoice.objects.create(
+            user=self.user,
+            created_datetime=timezone.now(),
+            invoice_price_with_discount=self.total_price,
+            invoice_price_without_discount=self.total_old_price or self.total_price,
+            total_weight_gram=self.cart_weight,
+        )
         cart_items = self.items.all()
         for item in cart_items:
-            item.product.reduce_stock(item.count)
-            
+            item.convert_to_invoice_item(invoice)
+        self.__clear_items()
+        return invoice
 
+    def __clear_items(self):
+        self.items.all().delete()
 
 
 class CartItem(models.Model):
@@ -230,5 +175,21 @@ class CartItem(models.Model):
     def get_cartitem_changes(self):
         ''' Check for any changes, show them to user and save new product state as last_known_state '''
 
-   
+    def convert_to_invoice_item(self, invoice):
+        ''' Convert cart item to invoice item '''
+        image = self.product.Imgae if os.path.exists(self.product.Image.path) else None
+        image_thumbnail = self.product.Image_thumbnail if os.path.exists(self.product.Image_thumbnail.path) else None
+        InvoiceItem.objects.create(
+            invoice=invoice,
+            product=self.product,
+            count=self.count,
+            name=self.product.Title,
+            price_with_discount=self.product.Price,
+            price_without_discount=self.product.OldPrice or self.product.Price,
+            weight=self.product.Weight_With_Packing,
+            image=image,
+            image_thumbnail=image_thumbnail,
+            shop_name=self.product.FK_Shop.Title,
+            added_datetime=timezone.now(),
+        )
 

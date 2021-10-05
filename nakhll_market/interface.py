@@ -5,7 +5,7 @@ class AlertInterface:
     def new_order(invoice):
         ''' Create new alert for invoice '''
         alert = Alert()
-        alert.FK_User = invoice.cart.user
+        alert.FK_User = invoice.user
         alert.Part = '12'
         alert.Slug = invoice.id
         alert.save()

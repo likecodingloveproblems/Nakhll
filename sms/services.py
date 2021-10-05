@@ -41,14 +41,14 @@ class Kavenegar:
             'token': title,
             'token2': description,
         }
-        KAVENEGAR_KEY._raw_send('nakhll-alert', receptor, tokens)
+        Kavenegar._raw_send('nakhll-alert', receptor, tokens)
 
     @staticmethod
     def shop_new_order(receptor, order_id):
         tokens = {
             'token': order_id,
         }
-        KAVENEGAR_KEY._raw_send('nakhll-order', receptor, tokens)
+        Kavenegar._raw_send('nakhll-order', receptor, tokens)
 
 
     

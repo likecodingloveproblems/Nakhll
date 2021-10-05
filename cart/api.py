@@ -43,29 +43,28 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
         return CartItem.objects.user_cartitems(user, guid)
 
     def destroy(self, request, *args, **kwargs):
-        self.__prevent_if_paying()
+        # self.__prevent_if_paying()
         instance = self.get_object()
         self.perform_destroy(instance)
         user, guid = get_user_or_guest(self.request)
         cart_serializer = CartSerializer(CartManager.user_active_cart(user, guid))
         headers = self.get_success_headers(cart_serializer.data)
-        self.__clear_invoice()
+        # self.__clear_invoice()
         return Response(cart_serializer.data, status=status.HTTP_200_OK, headers=headers)
 
     @action(detail=True, methods=['GET'], name='Delete whole cart item')
     def delete(self, request, pk):
-        self.__prevent_if_paying()
+        # self.__prevent_if_paying()
         instance = self.get_object()
         self.perform_destroy(instance)
         user, guid = get_user_or_guest(self.request)
         cart_serializer = CartSerializer(CartManager.user_active_cart(user, guid))
         headers = self.get_success_headers(cart_serializer.data)
-        self.__clear_invoice()
+        # self.__clear_invoice()
         return Response(cart_serializer.data, status=status.HTTP_200_OK, headers=headers)
 
     @action(detail=True, methods=['GET'], name='Add item to active cart')
     def add(self, request, pk):
-        self.__prevent_if_paying()
         # TODO: adding item that already in active cart should be validated with older count
         data = {
             'product': pk,
@@ -84,7 +83,7 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['GET'], name='Remove item from active cart')
     def remove(self, request, pk):
-        self.__prevent_if_paying()
+        # self.__prevent_if_paying()
         item = self.get_object()
 
         if item.count == 1:
@@ -97,7 +96,7 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
         user, guid = get_user_or_guest(self.request)
         cart_serializer = CartSerializer(CartManager.user_active_cart(user, guid))
         headers = self.get_success_headers(cart_serializer.data)
-        self.__clear_invoice()
+        # self.__clear_invoice()
         return Response(cart_serializer.data, status=status.HTTP_200_OK, headers=headers)
 
 
@@ -136,16 +135,15 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
             cart_item.save()
         else:
             serializer.save(cart=active_cart, product_last_state=product_jsonify.data)
-        self.__clear_invoice()
 
-    def __clear_invoice(self):
-        ''' Unset coupons and address related to this cart invoice '''
-        cart = self.get_active_cart()
-        invoice = cart.invoice
-        invoice.address = None
-        for usage in invoice.coupon_usages.all():
-            usage.delete()
-        invoice.save()
+    # def __clear_invoice(self):
+    #     ''' Unset coupons and address related to this cart invoice '''
+    #     cart = self.get_active_cart()
+    #     invoice = cart.invoice
+    #     invoice.address = None
+    #     for usage in invoice.coupon_usages.all():
+    #         usage.delete()
+    #     invoice.save()
 
     def get_active_cart(self):
         user, guid = get_user_or_guest(self.request)
@@ -153,7 +151,6 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
         return active_cart
 
     def perform_update(self, serializer):
-        self.__prevent_if_paying()
         # TODO: check if permissions are correct
         user, guid = get_user_or_guest(self.request)
         cart_item = self.get_object()
@@ -162,13 +159,12 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
             raise ValidationError(_('محصول در دسترس نیست و یا به تعداد کافی از این محصول در انبار وجود ندارد'))
         product_jsonify = ProductLastStateSerializer(cart_item.product)
         serializer.save(product_last_state=product_jsonify.data)
-        self.__clear_invoice()
 
-    def __prevent_if_paying(self):
-        ''' Prevent user from modifying cart when invoice is in payment gateway'''
-        cart = self.get_active_cart()
-        if hasattr(cart, 'invoice') and cart.invoice.status == Invoice.Statuses.PAYING:
-            raise ValidationError('شما در حال پرداخت فاکتور هستید و نمی‌توانید سبد خرید را تغییر دهید. در صورتی که تا دقایقی دیگر مشکل شما برطرف نشد با پشتیبانی تماس بگیرید')
+    # def __prevent_if_paying(self):
+    #     ''' Prevent user from modifying cart when invoice is in payment gateway'''
+    #     cart = self.get_active_cart()
+    #     if hasattr(cart, 'invoice') and cart.invoice.status == Invoice.Statuses.PAYING:
+    #         raise ValidationError('شما در حال پرداخت فاکتور هستید و نمی‌توانید سبد خرید را تغییر دهید. در صورتی که تا دقایقی دیگر مشکل شما برطرف نشد با پشتیبانی تماس بگیرید')
 
     serializer_class = CartItemSerializer
     authentication_classes = [CsrfExemptSessionAuthentication, ]

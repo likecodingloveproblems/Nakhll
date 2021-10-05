@@ -35,6 +35,12 @@ class Coupon(models.Model, CouponValidation):
     def __str__(self):
         return self.code
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if not hasattr(self, 'constraint'):
+            CouponConstraint.objects.create(coupon=self)
+
+
 class CouponConstraint(models.Model):
     class Meta:
         verbose_name = _('محدودیت تخفیف')

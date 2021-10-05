@@ -348,4 +348,6 @@ CORS_ALLOW_HEADERS = os.environ.get('CORS_ALLOW_HEADERS',
 CORS_ALLOW_METHODS = os.environ.get('CORS_ALLOW_METHODS',
                         'DELETE GET OPTIONS PATCH POST PUT').split(' ')
 
-DOMAIN_NAME = 'https://nakhll.com/'
+DOMAIN_NAME = os.environ.get('DOMAIN_NAME', 'https://nakhll.com')
+
+INVOICE_EXPIRING_HOURS = 4

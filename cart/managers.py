@@ -8,9 +8,8 @@ from rest_framework.generics import get_object_or_404
 class CartManager(models.Manager):
     def user_active_cart(user, guid=None):
         cart, created = \
-            cart_models.Cart.objects.get_or_create(user=user, status=cart_models.Cart.Statuses.IN_PROGRESS) \
-            if user else \
-            cart_models.Cart.objects.get_or_create(guest_unique_id=guid or uuid.uuid4(), status=cart_models.Cart.Statuses.IN_PROGRESS)
+            cart_models.Cart.objects.get_or_create(user=user) if user else \
+            cart_models.Cart.objects.get_or_create(guest_unique_id=guid or uuid.uuid4())
         return cart
 
     def user_carts(self, user, guid=None):

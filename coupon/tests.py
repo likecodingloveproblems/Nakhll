@@ -34,22 +34,21 @@ class CouponTest(TestCase):
         self.coupon = coupon
 
     def generate_coupon_constraints(self):
-        self.now = make_aware(datetime.now())
+        self.now = datetime.now().date()
         valid_from = self.now - timedelta(days=1)
         valid_to = self.now + timedelta(days=1)
-        constraint = CouponConstraint.objects.create(
-            coupon=self.coupon,
-            valid_from=valid_from,
-            valid_to=valid_to,
-            budget=2000000,
-            max_usage_per_user=2,
-            max_usage=3,
-            min_purchase_amount=100000,
-            min_purchase_count=None,
-            max_purchase_amount=None,
-            max_purchase_count=10,
-        )
+        constraint = self.coupon.constraint
+        constraint.valid_from=valid_from
+        constraint.valid_to=valid_to
+        constraint.budget=2000000
+        constraint.max_usage_per_user=2
+        constraint.max_usage=3
+        constraint.min_purchase_amount=100000
+        constraint.min_purchase_count=None
+        constraint.max_purchase_amount=None
+        constraint.max_purchase_count=10
         constraint.users.add(self.user1)
+        constraint.save()
         self.constraint = constraint
 
 
