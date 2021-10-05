@@ -6,7 +6,7 @@ from nakhll_market.api import (
     MostSoldShopsViewSet, RandomShopsViewSet, RandomProductsViewSet, ProductsViewSet, GetShop, UserOrderHistory,
     MarketList, CreateShop, GetShopWithSlug, CheckShopSlug, CheckProductSlug, ShopProductsViewSet,
     ProductBannerViewSet, AddImagesToProduct, ProductDetailsViewSet, BankAccountShopSettings, ProductCommentsViewSet, ProductRelatedItemsViewSet,
-    LandingPageSchemaViewSet,
+    LandingPageSchemaViewSet, ShopPageSchemaViewSet
     )
 from rest_framework import routers
 
@@ -60,6 +60,7 @@ urlpatterns = [
     path('shop/check/', CheckShopSlug.as_view()),
     path('shop/multiple-update/price/', ShopMultipleUpdatePrice.as_view()),
     path('shop/multiple-update/inventory/', ShopMultipleUpdateInventory.as_view()),
+    path('shop/schema/<shop_id>/', ShopPageSchemaViewSet.as_view()),
 
     path('product/check/', CheckProductSlug.as_view()),
     path('product/categories/', AddSubMarketToProduct.as_view()),
