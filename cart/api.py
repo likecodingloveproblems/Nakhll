@@ -18,7 +18,7 @@ from cart.permissions import IsCartOwner, IsCartItemOwner
 class UserCartViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
     serializer_class = CartSerializer
     authentication_classes = [CsrfExemptSessionAuthentication, ]
-    permission_classes = [IsCartOwner, ]
+    permission_classes = [IsCartOwner, permissions.IsAuthenticated ]
 
     def get_queryset(self):
         user, guid = get_user_or_guest(self.request)
@@ -39,6 +39,9 @@ class UserCartViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
 
 
 class UserCartItemViewSet(viewsets.ModelViewSet):
+    serializer_class = CartItemSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, ]
+    permission_classes = [IsCartItemOwner, permissions.IsAuthenticated ]
     def get_queryset(self):
         user, guid = get_user_or_guest(self.request)
         return CartItem.objects.user_cartitems(user, guid)
@@ -167,6 +170,3 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
     #     if hasattr(cart, 'invoice') and cart.invoice.status == Invoice.Statuses.PAYING:
     #         raise ValidationError('شما در حال پرداخت فاکتور هستید و نمی‌توانید سبد خرید را تغییر دهید. در صورتی که تا دقایقی دیگر مشکل شما برطرف نشد با پشتیبانی تماس بگیرید')
 
-    serializer_class = CartItemSerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, ]
-    permission_classes = [IsCartItemOwner, ]
