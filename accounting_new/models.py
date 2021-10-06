@@ -183,6 +183,8 @@ class InvoiceItem(models.Model):
     count = models.IntegerField(_('تعداد'), default=1)
     status = models.CharField(_('وضعیت'), max_length=20, choices=ItemStatuses.choices,
                         default=ItemStatuses.AWAIT_PAYMENT)
+
+    slug = models.CharField(max_length=500, null=True, blank=True)
     name = models.CharField(_('نام محصول'), max_length=500)
     price_with_discount = models.DecimalField(_('قیمت با تخفیف'), max_digits=12, decimal_places=0)
     price_without_discount = models.DecimalField(_('قیمت بدون تخفیف'), max_digits=12, decimal_places=0)

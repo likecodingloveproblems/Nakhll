@@ -30,7 +30,7 @@ class Cart(models.Model):
     guest_unique_id = models.CharField(_('شناسه کاربر مهمان'), max_length=100, null=True, blank=True)
     # status = models.CharField(max_length=10, verbose_name=_('وضعیت سبد خرید'), choices=Statuses.choices, default=Statuses.IN_PROGRESS)
     # created_datetime = models.DateTimeField(verbose_name=_('تاریخ ثبت سبد خرید'), auto_now_add=True)
-    change_status_datetime = models.DateTimeField(verbose_name=_('تاریخ تغییر وضعیت سبد'), null=True)
+    # change_status_datetime = models.DateTimeField(verbose_name=_('تاریخ تغییر وضعیت سبد'), null=True)
     extra_data = models.JSONField(null=True, encoder=DjangoJSONEncoder)
     objects = CartManager()
 
@@ -195,6 +195,7 @@ class CartItem(models.Model):
             product=self.product,
             count=self.count,
             name=self.product.Title,
+            slug=self.product.Slug,
             price_with_discount=self.product.Price,
             price_without_discount=self.product.OldPrice or self.product.Price,
             weight=self.product.Weight_With_Packing,
