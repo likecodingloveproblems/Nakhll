@@ -33,17 +33,17 @@ def test_pec_callback(request):
         # or not request.META['HTTP_REFERER'].startswith('https://pec.shaparak.ir'):
         # raise Exception('Invalid origin or referer')
 
-    sample_data = {
-        'OrderId': '1633340367339740',
-        'Token': 123131,
-        'Stauts': 0,
-        'RRN': 133,
-        'TerminalNo': 1345214,
-        'Amount': '2180000'
-    }
+    # sample_data = {
+    #     'OrderId': '1633353467624477',
+    #     'Token': 123131,
+    #     'Stauts': 0,
+    #     'RRN': 133,
+    #     'TerminalNo': 1345214,
+    #     'Amount': '2180000'
+    # }
     
-    # result = Payment.payment_callback(request.POST, ipg_type=Transaction.IPGTypes.PEC)
-    result = Payment.payment_callback(sample_data, ipg_type=Transaction.IPGTypes.PEC)
+    result = Payment.payment_callback(request.POST, ipg_type=Transaction.IPGTypes.PEC)
+    # result = Payment.payment_callback(sample_data, ipg_type=Transaction.IPGTypes.PEC)
     # result_dict = result.__dict__
     # result_dict['_state'] = None
     # result_dict['created_datetime'] = None
