@@ -1175,7 +1175,7 @@ class Product(models.Model):
     FK_Tag=models.ManyToManyField(Tag, verbose_name='تگ ها', related_name='Product_Tag', blank=True)
     PreparationDays = models.PositiveSmallIntegerField(verbose_name='زمان آماده‌سازی', null=True)
     post_range_cities = models.ManyToManyField('City', related_name='products', verbose_name=_('شهرهای قابل ارسال'))
-    is_advertisement = models.BooleanField(verbose_name=_('آگهی'), default=False)
+    is_advertisement = models.BooleanField(verbose_name=_('آگهی'), default=False, null=True)
 
     @property
     def id(self):
