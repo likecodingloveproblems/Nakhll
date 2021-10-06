@@ -4,6 +4,7 @@ from django.shortcuts import redirect
 from django.apps import apps
 from django.utils.translation import ugettext as _
 from rest_framework.validators import ValidationError
+from rest_framework.response import Response
 from nakhll_market.interface import AlertInterface
 from payoff.models import Transaction, TransactionResult
 from payoff.exceptions import NoCompletePaymentMethodException, NoTransactionException
@@ -80,8 +81,10 @@ class Pec(PaymentMethod):
             raise ValidationError(f'{token_object.Status} {token_object.Message}')
         print(f'\t token: {token_object.Token}')
         print('\n>>>>>>>>>>>>>>>>Redirecting<<<<<<<<<<<<<<<<<<<\n')
-        url = f'https://pec.shaparak.ir/NewIPG/?token={token_object.Token}'
-        return redirect(url)
+        return Response({'token': token_object.Token, 'ipg_port': Transaction.IPGTypes.PEC})
+        # return token_object.Token
+        # url = f'https://pec.shaparak.ir/NewIPG/?token={token_object.Token}'
+        # return redirect(url)
 
     def _get_token_object(self):
         ''' Get sale service and send invocie data to it, return token if 
