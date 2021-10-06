@@ -19,5 +19,4 @@ class PaymentInterface:
         }
 
         payment = Payment()
-        payment.initiate_payment(data)
-        return payment
+        return payment.initiate_payment(data)

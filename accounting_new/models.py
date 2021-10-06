@@ -97,7 +97,7 @@ class Invoice(models.Model, AccountingInterface):
         self.payment_unique_id = int(datetime.now().timestamp() * 1000000)
         self.payment_request_datetime = timezone.now()
         self.save()
-        PaymentInterface.from_invoice(self, bank_port)
+        return PaymentInterface.from_invoice(self, bank_port)
 
     def __validate_address(self):
         if not self.address:

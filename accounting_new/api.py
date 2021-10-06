@@ -154,7 +154,7 @@ class InvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
         # if is_differ:
             # return Response({'error': 'تغییراتی در سبد خرید شما به وجود آمده است. لطفا سبد خرید را بررسی کنید'}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            invoice.send_to_payment()
+            return invoice.send_to_payment()
         except NoAddressException:
             return Response({'error': 'آدرس خریدار را تکمیل کنید'}, status=status.HTTP_400_BAD_REQUEST)
         except InvoiceExpiredException:
