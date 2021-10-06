@@ -13,7 +13,7 @@ class InvoiceItemSerializer(serializers.ModelSerializer):
     product = serializers.PrimaryKeyRelatedField(read_only=True)
     class Meta:
         model = InvoiceItem
-        fields = ['id', 'product', 'name', 'count', 'price_with_discount', 'price_without_discount', 'weight', 
+        fields = ['id', 'product', 'slug', 'name', 'count', 'price_with_discount', 'price_without_discount', 'weight', 
                     'image', 'image_thumbnail', 'shop_name', 'added_datetime']
 
 class InvoiceWriteSerializer(serializers.ModelSerializer):
