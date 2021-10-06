@@ -11,7 +11,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.exceptions import ValidationError, PermissionDenied, AuthenticationFailed
 from nakhll_market.models import (
     Alert, AmazingProduct, Comment, Product, ProductBanner, Shop, Slider, Category, Market, State, BigCity, City, SubMarket,
-    LandingPageSchema,
+    LandingPageSchema, ShopPageSchema,
     )
 from nakhll_market.serializers import (
     AmazingProductSerializer, Base64ImageSerializer, NewProfileSerializer, ProductCommentSerializer, ProductDetailSerializer, ProductImagesSerializer,
@@ -19,7 +19,7 @@ from nakhll_market.serializers import (
     CategorySerializer, FullMarketSerializer, CreateShopSerializer, ProductInventoryWriteSerializer,
     ProductListSerializer, ProductWriteSerializer, ShopAllSettingsSerializer, ProductBannerSerializer,
     ShopBankAccountSettingsSerializer, SocialMediaAccountSettingsSerializer, ProductSubMarketSerializer, StateFullSeraializer, SubMarketProductSerializer, SubMarketSerializer,
-    LandingPageSchemaSerializer, UserOrderSerializer,
+    LandingPageSchemaSerializer, ShopPageSchemaSerializer, UserOrderSerializer,
     )
 from rest_framework import generics, routers, status, views, viewsets
 from rest_framework import permissions, filters, mixins
@@ -652,5 +652,19 @@ class UserOrderHistory(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Re
 
 class LandingPageSchemaViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
     permission_classes = [permissions.AllowAny, ]
-    queryset = LandingPageSchema.objects.get_published_schema()
     serializer_class = LandingPageSchemaSerializer
+
+    def get_queryset(self):
+        return LandingPageSchema.objects.get_published_schema(self.request)
+
+class ShopPageSchemaViewSet(views.APIView):
+    permission_classes = [permissions.AllowAny, ]
+    serializer_class = ShopPageSchemaSerializer
+
+    def get_object(self, shop_id):
+        return get_object_or_404(Shop, Slug=shop_id)
+
+    def get(self, request, shop_id, format=None):
+        shops = ShopPageSchema.objects.get_published_schema(self.request, shop_id)
+        serializer = ShopPageSchemaSerializer(shops, many=True)
+        return Response(serializer.data)
