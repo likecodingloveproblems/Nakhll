@@ -119,7 +119,7 @@ class UserProductViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mix
 
     def perform_create(self, serializer):
         data = serializer.validated_data
-        post_range = data.pop('post_range_cities')
+        # post_range = data.pop('post_range_cities')
         shop = data.get('FK_Shop')
         title = data.get('Title')
 
@@ -140,14 +140,14 @@ class UserProductViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mix
             product = serializer.save(OldPrice=price, Price=old_price, **product_extra_fileds)
         else:
             product = serializer.save(OldPrice=old_price, Price=price, **product_extra_fileds)
-        product.post_range_cities.add(*post_range) 
+        # product.post_range_cities.add(*post_range) 
         
         # TODO: Check if product created successfully and published and alerts created as well
         Alert.objects.create(Part='6', FK_User=self.request.user, Slug=product.ID)
 
     def perform_update(self, serializer):
         data = serializer.validated_data
-        post_range = data.pop('post_range_cities')
+        # post_range = data.pop('post_range_cities')
         ID = self.kwargs.get('ID')
 
         # TODO: This behavior should be inhanced later
@@ -161,7 +161,7 @@ class UserProductViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mix
             product = serializer.save(OldPrice=price, Price=old_price)
         else:
             product = serializer.save(OldPrice=old_price, Price=price)
-        product.post_range_cities.add(*post_range) 
+        # product.post_range_cities.add(*post_range) 
 
         # TODO: Check if product created successfully and published and alerts created as well
         Alert.objects.create(Part='7', FK_User=self.request.user, Slug=ID)

@@ -175,7 +175,7 @@ class ProductListSerializer(serializers.ModelSerializer):
     sub_market = SubMarketSerializer(read_only=True)
     shop = serializers.SlugRelatedField(slug_field='Slug', read_only=True)
     banners = ProductBannerSerializer(read_only=True, many=True)
-    post_range_cities = BigCitySerializer(many=True, read_only=True)
+    # post_range_cities = BigCitySerializer(many=True, read_only=True)
     class Meta:
         model = Product
         fields = [
@@ -202,7 +202,7 @@ class ProductListSerializer(serializers.ModelSerializer):
             'total_sell',
             'publish',
             'available',
-            'post_range_cities'
+            # 'post_range_cities'
         ]
     # Image = serializers.SerializerMethodField(method_name='get_absolute_image_url')
     # def get_absolute_image_url(self, product):
@@ -240,7 +240,7 @@ class ProductUpdateSerializer(serializers.ModelSerializer):
     # FK_Shop = serializers.SlugRelatedField(slug_field='Slug', many=False, read_only=True)
     FK_SubMarket = serializers.PrimaryKeyRelatedField(read_only=False, many=False, queryset=SubMarket.objects.all())
     Product_Banner = serializers.PrimaryKeyRelatedField(queryset=ProductBanner.objects.all(), many=True, read_only=False)
-    post_range = serializers.PrimaryKeyRelatedField(source='post_range_cities', read_only=False, many=True, queryset=BigCity.objects.all())
+    # post_range = serializers.PrimaryKeyRelatedField(source='post_range_cities', read_only=False, many=True, queryset=BigCity.objects.all())
     class Meta:
         model = Product
         fields = [
@@ -257,7 +257,7 @@ class ProductUpdateSerializer(serializers.ModelSerializer):
             'PreparationDays',
             'FK_SubMarket',
             'Product_Banner',
-            'post_range'
+            # 'post_range'
         ]
     def update(self, instance, validated_data):
         # Direct assignment to the reverse side of a related set is prohibited, 
@@ -276,7 +276,7 @@ class ProductUpdateSerializer(serializers.ModelSerializer):
 
 class ProductWriteSerializer(serializers.ModelSerializer):
     FK_Shop = serializers.SlugRelatedField(slug_field='Slug', many=False, read_only=False, queryset=Shop.objects.all())
-    post_range = serializers.PrimaryKeyRelatedField(source='post_range_cities', read_only=False, many=True, queryset=BigCity.objects.all())
+    # post_range = serializers.PrimaryKeyRelatedField(source='post_range_cities', read_only=False, many=True, queryset=BigCity.objects.all())
     class Meta:
         model = Product
         fields = [
@@ -292,7 +292,7 @@ class ProductWriteSerializer(serializers.ModelSerializer):
             'PostRangeType',
             'PreparationDays',
             'FK_Shop',
-            'post_range'
+            # 'post_range'
         ]
 
 class FullMarketSerializer(serializers.ModelSerializer):
