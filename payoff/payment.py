@@ -73,13 +73,11 @@ class Pec(PaymentMethod):
 
     def initiate_payment(self, data):
         ''' Get invoice, exchange with token and redirect user to payment page '''
-        print(f'IN: payoff > payment.py > Pec class > _initate_payment')
         self.transaction = self._create_transaction(data)
         token_object = self._get_token_object()
         self._save_token_object(token_object)
         if not self.is_token_object_valid(token_object):
             raise ValidationError(f'{token_object.Status} {token_object.Message}')
-        print(f'\t token: {token_object.Token}')
         print('\n>>>>>>>>>>>>>>>>Redirecting<<<<<<<<<<<<<<<<<<<\n')
         url = f'https://pec.shaparak.ir/NewIPG/?token={token_object.Token}'
         return Response({'url': url})
@@ -89,17 +87,14 @@ class Pec(PaymentMethod):
             invoice data is valid 
         '''
         print(f'IN: payoff > payment.py > Pec class > _get_token')
-        print(f'\t transaction: {self.transaction}')
         print(f'\t transaction: {self.transaction.__dict__}')
 
         token_request_object = self._generate_token_request_object()
         print(f'\t token_request_object: {token_request_object}')
-        print(f'\t token request object type: {type(token_request_object)}')
 
         token_response_object = self._get_token_response_object(
             token_request_object)
         print(f'\t token_response_object: {token_response_object}')
-        print(f'\t token response object type: {type(token_response_object)}')
         
         return token_response_object
 
@@ -124,10 +119,7 @@ class Pec(PaymentMethod):
 
     def _save_token_object(self, token_object):
         ''' Store result of token request from IPG to DB'''
-        print(f'\t _save_sale_payment_result:')
         print(f'\t token object is: {token_object}')
-        print(f'\t token object type is: {type(token_object)}')
-        print(f'\t token object attributes are: {dir(token_object)}')
         self.transaction.token_request_status =token_object.Status
         self.transaction.token_request_message = token_object.Message
         self.transaction.token = token_object.Token
@@ -139,6 +131,7 @@ class Pec(PaymentMethod):
         parsed_data = self._parse_callback_data(data)
         print(f'Parsed data:\t {parsed_data}')
         transaction_result = self._create_transaction_result(parsed_data)
+        print('linking transaction result...')
         transaction_result = self._link_to_transaction(transaction_result)
         print('Linked successfully')
         if self._is_tarnsaction_result_succeded(transaction_result)\
@@ -289,6 +282,7 @@ class Payment:
         ipg_class = Payment._get_ipg_class(ipg_type)
         ipg = ipg_class()
         result = ipg.callback(data)
+        return result
 
     @staticmethod
     def _get_ipg_class(ipg_type):
