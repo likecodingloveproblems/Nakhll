@@ -188,8 +188,8 @@ class CartItem(models.Model):
 
     def convert_to_invoice_item(self, invoice):
         ''' Convert cart item to invoice item '''
-        image = self.product.Image if os.path.exists(self.product.Image.path) else None
-        image_thumbnail = self.product.Image_thumbnail if os.path.exists(self.product.Image_thumbnail.path) else None
+        # image = self.product.Image if os.path.exists(self.product.Image.path) else None
+        # image_thumbnail = self.product.Image_thumbnail if os.path.exists(self.product.Image_thumbnail.path) else None
         InvoiceItem.objects.create(
             invoice=invoice,
             product=self.product,
@@ -199,8 +199,8 @@ class CartItem(models.Model):
             price_with_discount=self.product.Price,
             price_without_discount=self.product.OldPrice or self.product.Price,
             weight=self.product.Weight_With_Packing,
-            image=image,
-            image_thumbnail=image_thumbnail,
+            # image=image,
+            # image_thumbnail=image_thumbnail,
             shop_name=self.product.FK_Shop.Title,
             added_datetime=timezone.now(),
         )
