@@ -192,8 +192,9 @@ class Pec(PaymentMethod):
     def _is_tarnsaction_result_succeded(self, transaction_result):
         ''' Send request to IGP validation url and validate transaction '''
         print(f'check for success transaction: {transaction_result.status} -- {transaction_result.rrn}')
-        if transaction_result.status== self.__SUCCESS_STATUS_CODE\
-            and transaction_result.rrn > self.__SUCCESS_RRN_MIN_VALUE:
+        status = int(transaction_result.status)
+        rrn = int(transaction_result.rrn)
+        if status== self.__SUCCESS_STATUS_CODE and rrn > self.__SUCCESS_RRN_MIN_VALUE:
             return True
         return False
 
