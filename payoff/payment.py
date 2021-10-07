@@ -140,13 +140,17 @@ class Pec(PaymentMethod):
         print(f'Parsed data:\t {parsed_data}')
         transaction_result = self._create_transaction_result(parsed_data)
         transaction_result = self._link_to_transaction(transaction_result)
+        print('Linked successfully')
         if self._is_tarnsaction_result_succeded(transaction_result)\
                 and self._validate_payment(transaction_result):
+            print('completing...')
             self._complete_payment(transaction_result)
             result = {'status': self.SUCCESS_STATUS, 'code': transaction_result.order_id}
         else:
+            print('reverting...')
             self._revert_transaction(transaction_result)
             result = {'status': self.FAILURE_STATUS, 'code': transaction_result.order_id}
+        print(f'result is {result}')
         return result
     
     def _parse_callback_data(self, data):
@@ -186,12 +190,15 @@ class Pec(PaymentMethod):
         except:
             raise NoTransactionException(f'No transaction found for order_id:\
                 {transaction_result.order_id}')
+        print(f'transaction result linked')
         transaction_result.transaction = transaction
         transaction_result.save()
+        print(f'transaction result saved')
         return transaction_result
 
     def _is_tarnsaction_result_succeded(self, transaction_result):
         ''' Send request to IGP validation url and validate transaction '''
+        print(f'check for success transaction: {transaction_result.status} -- {transaction_result.rrn}')
         if transaction_result.status== self.__SUCCESS_STATUS_CODE\
             and transaction_result.rrn > self.__SUCCESS_RRN_MIN_VALUE:
             return True
