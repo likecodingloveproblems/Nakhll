@@ -33,6 +33,11 @@ class InvoiceRetrieveSerializer(serializers.ModelSerializer):
     coupon_usages = CouponUsageSerializer(read_only=True, many=True)
     user = UserSerializer(many=False, read_only=True)
     items = InvoiceItemSerializer(many=True, read_only=True)
+    receiver_mobile_number = serializers.SerializerMethodField()
+    def get_receiver_mobile_number(self, obj):
+        if obj.address:
+            return obj.address.receiver_mobile_number
+        return None
     class Meta:
         model = Invoice
         fields = (
@@ -51,5 +56,6 @@ class InvoiceRetrieveSerializer(serializers.ModelSerializer):
             'created_datetime',
             'coupons_total_price',
             'payment_request_datetime',
+            'receiver_mobile_number',
         )
 

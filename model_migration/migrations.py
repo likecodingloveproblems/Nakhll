@@ -1,4 +1,7 @@
-from model_migration.scripts import CartItemMigrationScript, CartMigrationScript, CouponConstraintMigrationScript, CouponMigrationScript, CouponUsageMigrationScript, InvoiceMigrationScript
+from model_migration.scripts import (CartItemMigrationScript, CartMigrationScript,
+                    CouponConstraintMigrationScript, CouponMigrationScript,
+                    CouponUsageMigrationScript, InvoiceMigrationScript,
+                    TransactionMigrationScript, TransactionResultMigrationScript)
 
 
 class Migration:
@@ -21,6 +24,7 @@ class Migration:
                 CartItemMigrationScript,
                 InvoiceMigrationScript,
                 CouponUsageMigrationScript,
-                
+                TransactionMigrationScript,
+                TransactionResultMigrationScript
             ]
         return self._scripts

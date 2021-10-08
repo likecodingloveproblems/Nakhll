@@ -75,7 +75,7 @@ class CouponUsage(models.Model):
     price_applied = models.IntegerField(_('تخفیف اعمال شده'), default=0)
     objects = CouponUsageManager
     def __str__(self):
-        return f'{self.coupon} - {self.amount} - {self.used_datetime}'
+        return f'{self.coupon} - {self.price_applied} - {self.used_datetime}'
 
 
 

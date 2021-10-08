@@ -1,95 +1,15 @@
-import random, json, datetime, jdatetime
-from Payment.models import Factor, FactorPost, FactorPost, Coupon as OldCoupon
+import random, json
+from re import I
+from django.utils import timezone
+from Payment.models import (Factor, FactorPost, FactorPost,
+                            PecOrder, PecTransaction, Coupon as OldCoupon)
 from coupon.models import Coupon as NewCoupon, CouponConstraint, CouponUsage
 from cart.models import Cart, CartItem
 from logistic.models import Address
 from accounting_new.models import Invoice
 from payoff.models import Transaction, TransactionResult
-
-class SkipItemException(Exception):
-    pass
-
-class BaseMigrationScript:
-    old_model = None
-    new_model = None
-    many2many_relation_fields = []
-    _datetime_str_format = '%Y-%m-%d %H:%M:%S'
-    _date_str_format = '%Y-%m-%d'
-
-    def __init__(self):
-        self._all_parsed_data = []
-
-    def migrate(self):
-        ''' Get all data from old model, parse them and create new model'''
-        old_data = self.get_old_model_data()
-        for data in old_data:
-            try:
-                parsed_data = self.parse_data(data)
-                self._all_parsed_data.append(parsed_data)
-            except SkipItemException:
-                print('Cannot parse, Skiping item: {}'.format(data))
-        self.create_new_model()
-
-    def __jsonify(self, data):
-        ''' Convert data to json '''
-        data = data.__dict__
-        del data['_state']
-        for item in data:
-            if isinstance(data[item], datetime.datetime) or isinstance(data[item], jdatetime.datetime):
-                data[item] = data[item].strftime(self._datetime_str_format)
-            elif isinstance(data[item], datetime.date) or isinstance(data[item], jdatetime.date):
-                data[item] = data[item].strftime(self._date_str_format)
-        return data
-
-    def get_old_model_data(self):
-        ''' Get all data from old model '''
-        assert self.old_model is not None, 'old_model is not defined. You should define old_model attribute or override .get_old_model_data()'
-        return self.old_model.objects.all()
-
-
-    def parse_data(self, data):
-        ''' Parse old data to new model fields'''
-        raise NotImplementedError('`parse_data()` must be implemented.')
-
-    def create_new_model(self):
-        ''' Create new model '''
-        assert self.new_model is not None, 'new_model is not defined. You should define new_model attribute or override .create_new_model()'
-        assert self._all_parsed_data is not [], 'Parsed data is empty. You should parse data before creating new model'
-        if self.many2many_relation_fields:
-            self.__onebyone_create_method()
-        else:
-            self.__bulk_create_method()
-
-
-    def __bulk_create_method(self):
-        bulk_list = []
-        for data in self._all_parsed_data:
-            bulk_list.append(self.new_model(**data))
-        self.new_model.objects.bulk_create(bulk_list)
-
-    def __onebyone_create_method(self):
-        for data in self._all_parsed_data:
-            many2many_fields = dict()
-            for item in self.many2many_relation_fields:
-                many2many_fields[item] = data.pop(item)
-            instance = self.new_model.objects.create(**data)
-            for key, value in many2many_fields.items():
-                instance_field = getattr(instance, key)
-                instance_field.set(value)
-            instance.save()
-
-
-
-
-
-
-
-
-
-
-
-
-
+from model_migration.exceptions import SkipItemException
+from model_migration.base import BaseMigrationScript
 
 
 
@@ -165,24 +85,23 @@ class CouponConstraintMigrationScript(BaseMigrationScript):
 class CartMigrationScript(BaseMigrationScript):
     old_model = Factor
     new_model = Cart
+    cart_users = set()
     def parse_data(self, data):
-        status = self.__parse_status(data.PaymentStatus)
+        self.__parse_status(data.PaymentStatus)
+        user = self.__parse_user(data.FK_User)
         return {
             'old_id': data.ID,
-            'user': data.FK_User,
+            'user': user,
             'guest_unique_id': None,
-            'status': status,
-            'created_datetime': data.OrderDate,
-            'extra_data': self.__parse_extra_data(data)
         }
+    def __parse_user(self, user):
+        if user in self.cart_users:
+            raise SkipItemException('User ${user} already has a cart')
+        self.cart_users.add(user)
+
     def __parse_status(self, is_paid):
         if is_paid:
-            return Cart.Statuses.ARCHIVED
-        return Cart.Statuses.IN_PROGRESS
-    def __parse_extra_data(self, data):
-        return {
-            'Description': data.Description,
-        }
+            raise SkipItemException('This factor is paid, not creating cart form it')
 
 class CartItemMigrationScript(BaseMigrationScript):
     old_model = FactorPost
@@ -190,10 +109,12 @@ class CartItemMigrationScript(BaseMigrationScript):
     def parse_data(self, data):
         factor = data.Factor_Products.first()
         if not factor:
-            raise SkipItemException()
+            raise SkipItemException('This FactorPost has no factor assigned to')
         if not data.FK_Product:
-            raise SkipItemException()
-        cart = Cart.objects.get(old_id=factor.ID)
+            raise SkipItemException('This FactorPost has no product')
+        cart = Cart.objects.filter(old_id=factor.ID).first()
+        if not cart:
+            raise SkipItemException(f'No cart created base on FactorPost with id ${factor.ID}')
         return {
             'cart': cart,
             'product': data.FK_Product,
@@ -214,19 +135,14 @@ class InvoiceMigrationScript(BaseMigrationScript):
     old_model = Factor
     new_model = Invoice
     def parse_data(self, data):
-        cart = Cart.objects.filter(old_id=data.ID).first()
-        if not cart:
-            raise SkipItemException()
         final_coupon_price = self.__parse_coupon_price(data)
         address_json = self.__parse_address(data)
         return {
             'old_id': data.ID,
             'FctorNumber': data.FactorNumber,
             'status': self.__parse_status(data.OrderStatus),
-            'cart': cart,
             'address_json': address_json,
-            'final_logistic_price': data.PostPrice,
-            'final_invoice_price': data.TotalPrice,
+            'logistic_price': data.PostPrice,
             'extra_data': self.__parse_extra_data(data)
         }
 
@@ -287,6 +203,7 @@ class InvoiceMigrationScript(BaseMigrationScript):
             'PaymentType': data.PaymentType,
             'DeleveryDate': delivery_date,
             'FK_Staff': data.FK_Staff.id if data.FK_Staff else None,
+            'TotalPrice': data.TotalPrice,
             'FK_Staff_Checkout': data.FK_Staff_Checkout.id if data.FK_Staff_Checkout else None,
         }
 
@@ -297,7 +214,9 @@ class CouponUsageMigrationScript(BaseMigrationScript):
         invoice = Invoice.objects.filter(old_id=data.ID).first()
         coupon_id = data.FK_Coupon.id if data.FK_Coupon else None
         if not invoice or not coupon_id:
-            raise SkipItemException()
+            raise SkipItemException('Invoice with id: ${data.ID} does not exists!')
+        if not coupon_id:
+            raise SkipItemException(f'Factor has no coupon assigned to')
         return {
             'invoice': invoice,
             'coupon_id': coupon_id,
@@ -305,13 +224,40 @@ class CouponUsageMigrationScript(BaseMigrationScript):
         }
 
 class TransactionMigrationScript(BaseMigrationScript):
-    old_model = ''
+    old_model = PecOrder
     new_model = Transaction
     def parse_data(self, data):
-        pass
+        return {
+            'referrer_model': 'Invoice',
+            'referrer_app': 'accounting_new',
+            'amount': data.Amount,
+            'order_number': data.FactorNumber,
+            'created_datetime': timezone.now(),
+            'payoff_datetime': timezone.now(),
+            'description': data.AdditionalData,
+            'ipg': Transaction.IPGTypes.PEC,
+            'token_request_status': str(data.Stauts or 200),
+            'token': int(data.Token or 0),
+            'token_request_message': data.Message,
+            'mobile': data.Orginator,
+        }
+
 
 class TransactionResultMigrationScript(BaseMigrationScript):
-    old_model = ''
+    old_model = PecTransaction
     new_model = TransactionResult
     def parse_data(self, data):
-        pass
+        order_id = data.OrderId
+        transaction = Transaction.objects.filter(order_number=order_id).first()
+        return {
+            'transaction': transaction,
+            'token': data.Token,
+            'order_id': order_id,
+            'terminal_no': data.TerminalNo,
+            'rrn': data.RRN,
+            'status': data.status,
+            'hash_card_number': data.HashCartNumber,
+            'amount': data.Amount,
+            'discounted_amount': data.DiscountedAmount,
+            'created_datetime': timezone.now(),
+        }

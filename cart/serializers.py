@@ -38,9 +38,13 @@ class CartItemReadSerializer(serializers.ModelSerializer):
 
 class CartSerializer(serializers.ModelSerializer):
     ordered_items = CartItemReadSerializer(many=True, read_only=True)
+    count = serializers.SerializerMethodField()
     class Meta:
         model = Cart
-        fields = ('user', 'guest_unique_id', 'total_price', 'total_old_price', 'ordered_items', 'get_diffrences')
+        fields = ('user', 'guest_unique_id', 'total_price', 'total_old_price', 'ordered_items', 'get_diffrences', 'count')
+    
+    def get_count(self, object):
+        return object.items.count()
 
 # class CartTransmissionSerializer(serializers.ModelSerializer):
 #     cart = serializers.PrimaryKeyRelatedField(queryset=CartTransmission.objects.all(), read_only=False, many=False)
