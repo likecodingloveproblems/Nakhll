@@ -46,6 +46,7 @@ class InvoiceRetrieveSerializer(serializers.ModelSerializer):
             'address',
             'address_json',
             'user',
+            'payment_unique_id',
             'status',
             'invoice_price_with_discount',
             'invoice_price_without_discount',
