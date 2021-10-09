@@ -93,6 +93,7 @@ class BankAccountSerializer(ModelSerializer):
 class ProfileSerializer(ModelSerializer):
     user = UserDetailSerializer(read_only = True)
     shops = ShopListHomeSerializer(many=True)
+    cart_items_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Profile 
@@ -122,7 +123,15 @@ class ProfileSerializer(ModelSerializer):
             'reference_code',
             'ip_address',
             'shops',
+            'cart_items_count'
         ]
+
+    def get_cart_items_count(self, obj):
+        try:
+            return obj.user.cart.items.count()
+        except:
+            return 0
+
 
 
 class SimpleProfileSerializer(ModelSerializer):
