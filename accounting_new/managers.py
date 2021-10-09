@@ -30,7 +30,7 @@ class AccountingManager(models.Manager):
 
 class InvoiceItemManager(models.Manager):
     def uncompleted_user_shop_factors(self, user, shop_slug):
-        statuses = models.InvoiceItem.Statuses
+        statuses = models.InvoiceItem.ItemStatuses
         return self.filter(product__FK_Shop__FK_ShopManager=user,
             product__FK_Shop__Slug=shop_slug, status__in=[
             statuses.AWAIT_CUSTOMER_APPROVAL, statuses.AWAIT_SHOP_CHECKOUT,
