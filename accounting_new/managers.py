@@ -35,6 +35,6 @@ class InvoiceItemManager(models.Manager):
             product__FK_Shop__Slug=shop_slug, status__in=[
             statuses.AWAIT_CUSTOMER_APPROVAL, statuses.AWAIT_SHOP_CHECKOUT,
             statuses.AWAIT_SHOP_APPROVAL,statuses.PREPATING_PRODUCT
-            ]).order_by('-created_datetime')
+            ]).order_by('-added_datetime')
 
 import accounting_new.models as models
