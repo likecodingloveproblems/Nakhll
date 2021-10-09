@@ -208,14 +208,18 @@ class Pec(PaymentMethod):
 
     def __send_confirmation_request(self, transaction_result):
         ''' Validate payment '''
-        token = transaction_result.transaction.token
-        pec_pin = self.pec_pin
-        request_data = self.confirm_service(Token=token, LoginAccount=pec_pin)
-        response = self.confirm_service.service.ConfirmPaymentRequest(request_data)
-        if response.Token > self.__SUCCESS_TOKEN_MIN_VALUE and response.Status == self.__SUCCESS_STATUS_CODE:
-            self.__create_transaction_confirmation(self, response)
-        else:
-            AlertInterface.payment_not_confirmed(transaction_result)
+        try:
+            # TODO: this is not working, need to fix it
+            token = transaction_result.transaction.token
+            pec_pin = self.pec_pin
+            request_data = self.confirm_service(Token=token, LoginAccount=pec_pin)
+            response = self.confirm_service.service.ConfirmPaymentRequest(request_data)
+            if response.Token > self.__SUCCESS_TOKEN_MIN_VALUE and response.Status == self.__SUCCESS_STATUS_CODE:
+                self.__create_transaction_confirmation(self, response)
+            else:
+                AlertInterface.payment_not_confirmed(transaction_result)
+        except:
+            pass
 
     def _revert_transaction(self, transaction_result):
         ''' Send transaction_result to referrer model to finish purchase process'''
