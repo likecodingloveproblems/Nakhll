@@ -313,8 +313,9 @@ class SubMarketList(generics.ListAPIView):
     def get_queryset(self):
         query = self.request.GET.get('q')
         queryset = SubMarket.objects.filter(Available=True, Publish=True)
-        if query:
-            queryset = queryset.filter(Product_SubMarket__Title__contains=query)
+        if not query:
+            return queryset.none()
+        queryset = queryset.filter(Product_SubMarket__Title__contains=query)
         queryset = queryset.annotate(product_count=Count('Product_SubMarket'))
         return queryset.order_by('-product_count')
 
