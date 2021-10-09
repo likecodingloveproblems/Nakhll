@@ -204,6 +204,7 @@ class InvoiceItem(models.Model):
     user_confirm_status = models.CharField(_('وضعیت تایید کاربر'), max_length=20,
                         choices=UserConfirmStatuses.choices, null=True, blank=True)
     user_confirm_comment = models.TextField(_('توضیحات تایید کاربر'), null=True, blank=True)
+    barcode = models.CharField(_('کد بارکد'), max_length=100, null=True, blank=True)
     
     objects = InvoiceItemManager()
        

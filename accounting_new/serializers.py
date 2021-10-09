@@ -87,5 +87,6 @@ class InvoiceRetrieveSerializer(serializers.ModelSerializer):
             'coupons_total_price',
             'payment_request_datetime',
             'receiver_mobile_number',
+            'barcode'
         )
 
