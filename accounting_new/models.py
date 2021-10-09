@@ -13,6 +13,7 @@ from payoff.interfaces import PaymentInterface
 from payoff.exceptions import NoAddressException, InvoiceExpiredException, \
                 InvalidInvoiceStatusException, OutOfPostRangeProductsException
 from accounting_new.interfaces import AccountingInterface
+from accounting_new.managers import AccountingManager
 from logistic.models import Address, PostPriceSetting
 from sms.services import Kavenegar
 
@@ -50,6 +51,7 @@ class Invoice(models.Model, AccountingInterface):
     payment_unique_id = models.BigIntegerField(_('شماره درخواست پرداخت'), null=True, blank=True)
     extra_data = models.JSONField(null=True, blank=True, encoder=DjangoJSONEncoder)
     total_weight_gram = models.PositiveIntegerField(_('وزن نهایی (گرم)'), null=True, blank=True)
+    objects = AccountingManager()
 
     @property
     def shops(self):
