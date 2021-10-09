@@ -6,7 +6,7 @@ from my_auth.models import ProfileManager
 from django.db import models
 from django.db.models import F, Q, Count
 from django.db.models.functions import Cast
-from django.db.models.fields import CharField, FloatField
+from django.db.models.fields import BooleanField, CharField, FloatField
 from tinymce.models import HTMLField
 from django.contrib.auth.models import User,Group 
 from django.contrib.auth.models import (AbstractUser)
@@ -621,7 +621,9 @@ class Shop(models.Model):
         blank=True,
         )
     show_contact_info = models.BooleanField('نمایش اطلاعات تماس حجره', default=False)
-
+    is_landing = BooleanField(verbose_name='صفحه حجره لندیگ است؟', default=False)
+    has_product_group_import_permission = BooleanField(
+        verbose_name='حجره دسترسی ایجاد و ویرایش محصول به صورت گروهی با استفاده از اکسل دارد؟', default=False)
     
     @property
     def id(self):
@@ -1176,6 +1178,7 @@ class Product(models.Model):
     PreparationDays = models.PositiveSmallIntegerField(verbose_name='زمان آماده‌سازی', null=True)
     post_range_cities = models.ManyToManyField('City', related_name='products', verbose_name=_('شهرهای قابل ارسال'))
     is_advertisement = models.BooleanField(verbose_name=_('آگهی'), default=False)
+    barcode = models.CharField(verbose_name=_('بارکد'), max_length=13, blank=True, null=True)
 
     @property
     def id(self):
@@ -2739,14 +2742,19 @@ class DashboardBanner(models.Model):
     objects = DashboardBannerManager()
 
 class LandingPageSchemaManager(models.Manager):
-    def is_mobile(self, request):
-        return 'Mobile' in request.META['HTTP_USER_AGENT']
-        
-    def get_for_device(self, request):
-        return self.filter(is_mobile=self.is_mobile(request))
+    def get_device(self, request):
+        if request.user_agent.is_mobile:
+            return 'mob'
+        elif request.user_agent.is_pc:
+            return 'des'
+        elif request.user_agent.is_tablet:
+            return 'tab'
+        else:
+            return 'others'
 
     def get_published_schema(self, request):
-        return self.get_for_device(request).filter(publish_status=LandingPageSchema.PublishStatuses.PUBLISH).order_by('order')
+        return self.get_queryset()\
+            .filter(publish_status=LandingPageSchema.PublishStatuses.PUBLISH).order_by('order')
 class LandingPageSchema(models.Model):
     class Meta:
         verbose_name = 'برنامه بندی صفحه اول'
@@ -2762,6 +2770,11 @@ class LandingPageSchema(models.Model):
         FOUR_BANNER = 5, '4 بنر'
         PRODUCT_ROW = 6, 'ردیف محصول'
         PRODUCT_ROW_AMAZING = 7, 'ردیف محصول شگفت انگیز'
+    class DeviceSpecifics(models.TextChoices):
+        MOBILE = 'mob', 'موبایل'
+        DESKTOP = 'des', 'دسکتاپ'
+        TABLET = 'tab', 'تبلت'
+        ALL = 'all', 'همه'
     def __str__(self):
         return 'type:{}, order:{}, data:{}'.format(self.get_component_type_display(), self.order, self.data)
     
@@ -2776,15 +2789,17 @@ class LandingPageSchema(models.Model):
     staff_user = models.ForeignKey(User, verbose_name='کارشناس', on_delete=models.SET_NULL, null=True, blank=True, related_name='landing_page_schemas')
     created_datetime = models.DateTimeField(verbose_name='تاریخ ثبت', auto_now=False, auto_now_add=True)
     publish_status = models.CharField(max_length=3, choices=PublishStatuses.choices, default=PublishStatuses.PUBLISH)
-    is_mobile = models.BooleanField(verbose_name='دستگاه موبایل است؟', default=True)
+    device = models.CharField(max_length=3, verbose_name='مخصوص چه دستگاهی است؟', choices=DeviceSpecifics.choices, default=DeviceSpecifics.ALL)
     objects = LandingPageSchemaManager()
 
 class ShopPageSchemaManager(LandingPageSchemaManager):
     def get_published_schema(self, request, shop_id):
-        return self.get_for_device(request).filter(shop=shop_id, publish_status=ShopPageSchema.PublishStatuses.PUBLISH).order_by('order')
+        return self.get_queryset()\
+            .filter(shop=shop_id, publish_status=ShopPageSchema.PublishStatuses.PUBLISH).order_by('order')
 
     def get_unpublished_schema(self, request, shop_id):
-        return self.get_for_device(request).filter(shop=shop_id, publish_status=ShopPageSchema.PublishStatuses.PREVIEW).order_by('order')
+        return self.get_queryset()\
+            .filter(shop=shop_id, publish_status=ShopPageSchema.PublishStatuses.PREVIEW).order_by('order')
 class ShopPageSchema(LandingPageSchema):
     shop = models.ForeignKey(Shop, verbose_name='فروشگاه', on_delete=models.CASCADE, related_name='shop_page_schemas')
     objects = ShopPageSchemaManager()
