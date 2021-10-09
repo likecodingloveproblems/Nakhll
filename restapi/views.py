@@ -24,7 +24,7 @@ from nakhll_market.models import (Comment, Profile, Product, Shop, SubMarket, Ca
                                 Alert, Field, Message, State, DashboardBanner)
 from Payment.models import Factor, Wallet, FactorPost, Transaction, PostBarCode, Coupon, PostTrackingCode
 from accounting_new.models import Invoice, InvoiceItem
-from accounting_new.serializers import InvoiceRetrieveSerializer
+from accounting_new.serializers import InvoiceRetrieveSerializer, InvoiceItemSerializer
 
 
 from django.views.decorators.csrf import csrf_exempt
@@ -2376,14 +2376,14 @@ class ShopCompeletedFactors(ListAPIView):
 class ShopUncompeletedFactors(ListAPIView):
     permission_classes = [IsAuthenticated, IsShopOwner]
     # serializer_class = FactorListSerializer
-    serializer_class = InvoiceRetrieveSerializer
+    serializer_class = InvoiceItemSerializer
 
     def get_queryset(self):
         user = self.request.user
         shop_slug = self.kwargs.get('shop_slug')
         shop = get_object_or_404(Shop, Slug=shop_slug)
         self.check_object_permissions(self.request, shop)
-        return Invoice.objects.uncompleted_user_shop_factors(user, shop_slug).distinct()
+        return InvoiceItem.objects.uncompleted_user_shop_factors(user, shop_slug).distinct()
         # return Factor.objects.uncompleted_user_shop_factors(user, shop_slug).distinct()
 
 class ShopProductList(ListAPIView):

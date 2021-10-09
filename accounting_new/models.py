@@ -13,7 +13,7 @@ from payoff.interfaces import PaymentInterface
 from payoff.exceptions import NoAddressException, InvoiceExpiredException, \
                 InvalidInvoiceStatusException, OutOfPostRangeProductsException
 from accounting_new.interfaces import AccountingInterface
-from accounting_new.managers import AccountingManager
+from accounting_new.managers import AccountingManager, InvoiceItemManager
 from logistic.models import Address, PostPriceSetting
 from sms.services import Kavenegar
 
@@ -205,4 +205,5 @@ class InvoiceItem(models.Model):
                         choices=UserConfirmStatuses.choices, null=True, blank=True)
     user_confirm_comment = models.TextField(_('توضیحات تایید کاربر'), null=True, blank=True)
     
+    objects = InvoiceItemManager()
        
