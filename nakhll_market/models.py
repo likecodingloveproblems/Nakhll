@@ -2743,7 +2743,7 @@ class LandingPageSchemaManager(models.Manager):
         return 'Mobile' in request.META['HTTP_USER_AGENT']
         
     def get_for_device(self, request):
-        return self.filter(is_mobile=self.is_mobile(request))
+        return self.get_queryset()
 
     def get_published_schema(self, request):
         return self.get_for_device(request).filter(publish_status=LandingPageSchema.PublishStatuses.PUBLISH).order_by('order')
