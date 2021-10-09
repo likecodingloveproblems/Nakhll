@@ -25,7 +25,9 @@ class InvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
     queryset = Invoice.objects.all()
 
     def get_queryset(self):
-        return super().get_queryset().filter(user=self.request.user)
+        queryset = super().get_queryset()
+        queryset = queryset.filter(user=self.request.user).order_by('product__FK_Shop')
+        return queryset
 
     def get_serializer_class(self):
         if self.action == 'list':
