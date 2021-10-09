@@ -48,9 +48,6 @@ class TransactionResult(models.Model):
     amount = models.CharField(_('مبلغ (ریال)'), max_length=200, null=True)
     discounted_amount = models.CharField(_('میزان تخفیف'), max_length=200, null=True)
     created_datetime = models.DateTimeField(_('تاریخ ایجاد تراکنش'), auto_now_add=True)
-    reversed_status = models.CharField(_('وضعیت درخواست بازگشت وجه'), max_length=100, null=True, blank=True)
-    reversed_message = models.CharField(_('نتیجه درخواست بازگشت وجه'), max_length=200, null=True, blank=True)
-    reversed_token = models.CharField(_('توکن درخواست بازگشت وجه'), max_length=20, null=True, blank=True)
 
 
 

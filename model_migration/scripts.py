@@ -95,7 +95,7 @@ class CartMigrationScript(BaseMigrationScript):
         }
     def __parse_user(self, user):
         if user in self.cart_users:
-            raise SkipItemException('User ${user} already has a cart')
+            raise SkipItemException(f'User {user} already has a cart')
         self.cart_users.add(user)
 
     def __parse_status(self, is_paid):
@@ -113,7 +113,7 @@ class CartItemMigrationScript(BaseMigrationScript):
             raise SkipItemException('This FactorPost has no product')
         cart = Cart.objects.filter(old_id=factor.ID).first()
         if not cart:
-            raise SkipItemException(f'No cart created base on FactorPost with id ${factor.ID}')
+            raise SkipItemException(f'No cart created base on FactorPost with id {factor.ID}')
         return {
             'cart': cart,
             'product': data.FK_Product,
@@ -339,18 +339,43 @@ class TransactionMigrationScript(BaseMigrationScript):
         }
 
 
+class TransactionResultMigraitionScript(BaseMigrationScript):
+    old_model = PecTransaction
+    new_model = TransactionResult
+    def parse_data(self, data):
+        transaction = self.__parse_transaction(data)
+        return {
+            'transaction': transaction,
+            'token': str(data.Token),
+            'order_id': str(data.OrderId),
+            'terminal_no': str(data.TerminalNo),
+            'rrn': str(data.RRN),
+            'status': data.status,
+            'hash_card_number': data.HashCardNumber,
+            'amount': str(data.Amount),
+            'discounted_amount': str(data.DiscountedAmount),
+        }
+
+    def __parse_transaction(self, data):
+        order_id = data.OrderId
+        transaction = Transaction.objects.filter(order_number=order_id).first()
+        if not transaction:
+            raise SkipItemException(f'Transaction with order_id: {order_id} does not exists!')
+        return transaction
+
+
 class TransactionConfirmationMigrationScript(BaseMigrationScript):
     old_model = PecConfirmation
     new_model = TransactionConfirmation
     def parse_data(self, data):
         order_id = data.OrderId
-        transaction = Transaction.objects.filter(order_id=order_id).first()
+        transaction_result = TransactionResult.objects.filter(order_id=order_id).first()
         return {
             'status': data.Status,
             'card_number_masked': data.CardNumberMasked,
             'token': data.Token,
             'rrn': data.RRN,
-            'transaction_result': transaction,
+            'transaction_result': transaction_result,
             'extra_data': self.__parse_extra_data(data)
         }
     def __parse_extra_data(self, data):
@@ -360,17 +385,17 @@ class TransactionConfirmationMigrationScript(BaseMigrationScript):
         return json.dumps(data)
 
 
-class TransactionConfirmationMigrationScript(BaseMigrationScript):
+class TransactionReverseMigrationScript(BaseMigrationScript):
     old_model = PecReverse
-    new_model = TransactionConfirmation
+    new_model = TransactionReverse
     def parse_data(self, data):
         order_id = data.OrderId
-        transaction = Transaction.objects.filter(order_id=order_id).first()
+        transaction_result = TransactionResult.objects.filter(order_id=order_id).first()
         return {
             'status': data.Status,
             'token': data.Token,
             'message': data.Message,
-            'transaction_result': transaction,
+            'transaction_result': transaction_result,
             'extra_data': self.__parse_extra_data(data)
         }
     def __parse_extra_data(self, data):
