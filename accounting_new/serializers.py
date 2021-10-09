@@ -44,22 +44,24 @@ class InvoiceRetrieveSerializer(serializers.ModelSerializer):
     address = AddressSerializer(many=False, read_only=True)
     coupon_usages = CouponUsageSerializer(read_only=True, many=True)
     user = UserSerializer(many=False, read_only=True)
-    items = InvoiceItemSerializer(many=True, read_only=True)
+    items = serializers.SerializerMethodField(method_name='get_invoie_items')
     receiver_mobile_number = serializers.SerializerMethodField()
     created_time_jalali = serializers.SerializerMethodField()
     created_date_jalali = serializers.SerializerMethodField()
+
     def get_receiver_mobile_number(self, obj):
         if obj.address:
             return obj.address.receiver_mobile_number
         return None
-
     def get_created_date_jalali(self, obj):
         jalali_datetime = jdatetime.datetime.fromgregorian(datetime=obj.created_datetime, locale='fa_IR')
         return jalali_datetime.strftime('%Y/%m/%d')
-
     def get_created_time_jalali(self, obj):
         jalali_datetime = jdatetime.datetime.fromgregorian(datetime=obj.created_datetime, locale='fa_IR')
         return jalali_datetime.strftime('%H:%M')
+    def get_invoie_items(self, obj):
+        items = obj.items.order_by('product__FK_Shop')
+        return InvoiceItemSerializer(items, many=True, read_only=True).data
     class Meta:
         model = Invoice
         fields = (

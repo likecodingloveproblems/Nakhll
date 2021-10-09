@@ -26,7 +26,7 @@ class InvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.filter(user=self.request.user).order_by('product__FK_Shop')
+        queryset = queryset.filter(user=self.request.user)
         return queryset
 
     def get_serializer_class(self):
