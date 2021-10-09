@@ -14,10 +14,11 @@ class InvoiceItemSerializer(serializers.ModelSerializer):
     product = serializers.PrimaryKeyRelatedField(read_only=True)
     added_date_jalali = serializers.SerializerMethodField()
     added_time_jalali = serializers.SerializerMethodField()
+    buyer = serializers.SerializerMethodField()
     class Meta:
         model = InvoiceItem
         fields = ['id', 'product', 'slug', 'name', 'count', 'price_with_discount', 'price_without_discount', 'weight', 
-                    'image', 'image_thumbnail', 'shop_name', 'added_date_jalali', 'added_time_jalali']
+                    'image', 'image_thumbnail', 'shop_name', 'added_date_jalali', 'added_time_jalali', 'buyer']
 
     def get_added_date_jalali(self, obj):
         jalali_datetime = jdatetime.datetime.fromgregorian(datetime=obj.added_datetime, locale='fa_IR')
@@ -26,6 +27,9 @@ class InvoiceItemSerializer(serializers.ModelSerializer):
     def get_added_time_jalali(self, obj):
         jalali_datetime = jdatetime.datetime.fromgregorian(datetime=obj.added_datetime, locale='fa_IR')
         return jalali_datetime.strftime('%H:%M')
+
+    def get_buyer(self, obj):
+        return obj.invoice.user.get_full_name()
         
 
 class InvoiceWriteSerializer(serializers.ModelSerializer):
