@@ -1,6 +1,7 @@
 from typing import List, Tuple
 from django.db import models
 from rest_framework import status
+from nakhll_market.permissions import IsInvoiceOwner, IsInvoiceProvider
 from nakhll_market.serializers import ProductListSerializer
 from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
@@ -2529,42 +2530,41 @@ class ChangeFactorToConfirmed(APIView):
         if all factorposts are confirmed, factor state should be changed to confirmed
         and also an alert should be generated for staff to notified about factor comfirmation
     '''
-    permission_classes = [IsAuthenticated, IsFactorOwner]
+    permission_classes = [IsAuthenticated, IsInvoiceProvider]
     authentication_classes = [CsrfExemptSessionAuthentication, ]
     def get_object(self, factor_id):
-        return get_object_or_404(Factor,ID=factor_id) 
+        return get_object_or_404(Invoice, id=factor_id) 
 
     def put(self, request, factor_id):
-        factor = self.get_object(factor_id)
-        self.check_object_permissions(request, factor)
-        factor_posts = factor.FK_FactorPost.filter(FK_Product__FK_Shop__FK_ShopManager=request.user)
-        factor_post_list = []
-        for factor_post in factor_posts:
-            # Cofirm every factorpost by changing product status to 2
-            factor_post.ProductStatus = '2'
-            factor_post_list.append(factor_post)
-        FactorPost.objects.bulk_update(factor_post_list, ['ProductStatus'])
+        invoice = self.get_object(factor_id)
+        self.check_object_permissions(request, invoice)
+        # factor_posts = factor.FK_FactorPost.filter(FK_Product__FK_Shop__FK_ShopManager=request.user)
+        invoice_items = invoice.items.filter(product__FK_Shop__FK_ShopManager=request.user)
+        invoice_item_bulk = []
+        for item in invoice_items:
+            item.status = InvoiceItem.ItemStatuses.PREPATING_PRODUCT
+            invoice_item_bulk.append(item)
+        InvoiceItem.objects.bulk_update(invoice_item_bulk, ['status'])
 
-        # Check for any factor post that not confirmed yet
-        if not factor.FK_FactorPost.filter(~Q(ProductStatus='0') & ~Q(ProductStatus='2')).exists():
-            # There is no factorpost with ProductStatus other than 2 and 0
-            factor.OrderStatus='2'
-            factor.save()
+        # Check for any invoice_item that not confirmed yet
+        if all(item.status == InvoiceItem.ItemStatuses.PREPATING_PRODUCT for item in invoice_items):
+            invoice.status = Invoice.InvoiceStatuses.PREPATING_PRODUCT
+            invoice.save()
             response_msg = 'Done'
         else:
             response_msg = 'Wait for other shops to confirm'
 
         # Set Alert 
-        Alert.objects.get_or_create(Part = '20', FK_User=request.user, Slug=factor.ID)
+        Alert.objects.get_or_create(Part = '20', FK_User=request.user, Slug=invoice.id)
         return Response({'details': response_msg}, status=status.HTTP_200_OK)
 
 class ChangeFactorToSent(APIView):
-    permission_classes = [IsAuthenticated, IsFactorOwner]
+    permission_classes = [IsAuthenticated, IsInvoiceProvider]
     authentication_classes = [CsrfExemptSessionAuthentication, ]
     def get_object(self, factor_id):
-        factor = get_object_or_404(Factor,ID=factor_id) 
-        self.check_object_permissions(self.request, factor)
-        return factor
+        invoice = get_object_or_404(Invoice, id=factor_id) 
+        self.check_object_permissions(self.request, invoice)
+        return invoice
 
     def post(self, request, factor_id):
         serializer = PostTrackingCodeWriteSerializer(data=request.data)
