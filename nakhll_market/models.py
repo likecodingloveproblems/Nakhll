@@ -621,7 +621,8 @@ class Shop(models.Model):
         blank=True,
         )
     show_contact_info = models.BooleanField('نمایش اطلاعات تماس حجره', default=False)
-
+    is_landing = models.BooleanField(verbose_name='صفحه حجره لندینگ است؟', default=False)
+    has_product_group_add_edit_permission = models.BooleanField(verbose_name='حجره دسترسی ایجاد و ویرایش محصول به صورت گروهی با استفاده از اکسل دارد؟', default=False)
     
     @property
     def id(self):
@@ -1176,7 +1177,7 @@ class Product(models.Model):
     PreparationDays = models.PositiveSmallIntegerField(verbose_name='زمان آماده‌سازی', null=True)
     post_range_cities = models.ManyToManyField('City', related_name='products', verbose_name=_('شهرهای قابل ارسال'))
     is_advertisement = models.BooleanField(verbose_name=_('آگهی'), default=False, null=True)
-
+    barcode = models.CharField(verbose_name='بارکد', max_length=13, null=True, blank=True)
     @property
     def id(self):
         return self.ID

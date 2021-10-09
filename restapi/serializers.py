@@ -27,6 +27,8 @@ class ShopListHomeSerializer(ModelSerializer):
             'point',
             'available',
             'publish',
+            'is_landing',
+            'has_product_group_add_edit_permission',
         ]
 
 
