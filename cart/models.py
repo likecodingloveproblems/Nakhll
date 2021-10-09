@@ -139,6 +139,7 @@ class Cart(models.Model):
             invoice_price_with_discount=self.total_price,
             invoice_price_without_discount=self.total_old_price or self.total_price,
             total_weight_gram=self.cart_weight,
+            logistic_price=0,
         )
         cart_items = self.items.all()
         for item in cart_items:
