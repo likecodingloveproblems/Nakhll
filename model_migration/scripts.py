@@ -144,7 +144,6 @@ class InvoiceMigrationScript(BaseMigrationScript):
             'old_id': data.ID,
             'FactorNumber': data.FactorNumber,
             'status': self.__parse_status(data.OrderStatus),
-            'cart': cart,
             'address_json': address_json,
             'invoice_price_with_discount': total_price,
             'invoice_price_without_discount': total_old_price,
