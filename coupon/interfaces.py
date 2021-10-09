@@ -50,6 +50,8 @@ class CouponValidation:
 
     def apply(self, invoice):
         self._final_price = self.get_final_price()
+        if self._final_price > invoice.invoice_price_with_discount:
+            raise CouponException('Coupon price is higher than invoice price')
         if self._final_price:
            self.usages.create(
                used_datetime=make_aware(datetime.now()),
