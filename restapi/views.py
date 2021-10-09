@@ -2339,7 +2339,8 @@ class ShopFactorList(ListAPIView):
 
 class UncompeletedFactors(ListAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = FactorListSerializer
+    # serializer_class = FactorListSerializer
+    serializer_class = InvoiceRetrieveSerializer
 
     def get_queryset(self):
         user = self.request.user
@@ -2360,26 +2361,30 @@ class CompeletedFactors(ListAPIView):
 
 class ShopCompeletedFactors(ListAPIView):
     permission_classes = [IsAuthenticated, IsShopOwner]
-    serializer_class = FactorListSerializer
+    # serializer_class = FactorListSerializer
+    serializer_class = InvoiceRetrieveSerializer
 
     def get_queryset(self):
         user = self.request.user
         shop_slug = self.kwargs.get('shop_slug')
         shop = get_object_or_404(Shop, Slug=shop_slug)
         self.check_object_permissions(self.request, shop)
-        return Factor.objects.completed_user_shop_factors(user, shop_slug)
+        return Invoice.objects.completed_user_shop_factors(user, shop_slug)
+        # return Factor.objects.completed_user_shop_factors(user, shop_slug)
 
 
 class ShopUncompeletedFactors(ListAPIView):
     permission_classes = [IsAuthenticated, IsShopOwner]
-    serializer_class = FactorListSerializer
+    # serializer_class = FactorListSerializer
+    serializer_class = InvoiceRetrieveSerializer
 
     def get_queryset(self):
         user = self.request.user
         shop_slug = self.kwargs.get('shop_slug')
         shop = get_object_or_404(Shop, Slug=shop_slug)
         self.check_object_permissions(self.request, shop)
-        return Factor.objects.uncompleted_user_shop_factors(user, shop_slug).distinct()
+        return Invoice.objects.uncompleted_user_shop_factors(user, shop_slug).distinct()
+        # return Factor.objects.uncompleted_user_shop_factors(user, shop_slug).distinct()
 
 class ShopProductList(ListAPIView):
     serializer_class = ProductListSerializer
