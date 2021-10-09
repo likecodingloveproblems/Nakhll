@@ -59,14 +59,14 @@ class Invoice(models.Model, AccountingInterface):
             shops.add(item.product.FK_Shop)
         return shops
 
-    @property
-    def logistic_price(self):
-        try:
-            post_setting, is_created = PostPriceSetting.objects.get_or_create()
-            post_price = post_setting.get_post_price(self)
-            return post_price
-        except:
-            return 0
+    # @property
+    # def logistic_price(self):
+    #     try:
+    #         post_setting, is_created = PostPriceSetting.objects.get_or_create()
+    #         post_price = post_setting.get_post_price(self)
+    #         return post_price
+    #     except:
+    #         return 0
 
     @property
     def logistic_errors(self):
@@ -189,9 +189,9 @@ class InvoiceItem(models.Model):
     price_with_discount = models.DecimalField(_('قیمت با تخفیف'), max_digits=12, decimal_places=0)
     price_without_discount = models.DecimalField(_('قیمت بدون تخفیف'), max_digits=12, decimal_places=0)
     weight = models.DecimalField(_('وزن'), max_digits=10, decimal_places=0)
-    image = models.ImageField(_('تصویر'), upload_to='invoice_items', null=True, blank=True)
+    image = models.ImageField(_('تصویر'), upload_to='invoice_items', null=True, blank=True, max_length=500)
     image_thumbnail = models.ImageField(_('تصویر کوچک'), upload_to='invoice_items',
-                        null=True, blank=True)
+                        null=True, blank=True, max_length=500)
     shop_name = models.CharField(_('نام فروشگاه'), max_length=500)
     added_datetime = models.DateTimeField(_('تاریخ افزودن'), auto_now_add=True)
     shop_confirmed_datetime = models.DateTimeField(_('تاریخ تایید فروشگاه'), null=True, blank=True)
