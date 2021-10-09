@@ -58,3 +58,9 @@ urllib3==1.25.11
 XlsxWriter==1.3.7
 zeep==3.4.0
 django-colorfield==0.4.3
+# django-user-agents
+pyyaml==5.4.1
+ua-parser==0.10.0
+user-agents==2.2.0
+django-user-agents==0.4.0
+# end django-user-agents

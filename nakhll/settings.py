@@ -84,6 +84,7 @@ INSTALLED_APPS = [
     'url_redirector',
     'custom_list',
     'colorfield',
+    'django_user_agents',
 ]
 
 MIDDLEWARE = [
@@ -97,6 +98,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'admin_reorder.middleware.ModelAdminReorder',
+    'django_user_agents.middleware.UserAgentMiddleware',
     'django_prometheus.middleware.PrometheusAfterMiddleware',
 ]
 
