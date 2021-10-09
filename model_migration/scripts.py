@@ -1,95 +1,14 @@
-import random, json, datetime, jdatetime
-from Payment.models import Factor, FactorPost, FactorPost, Coupon as OldCoupon
+import os, random, json
+from django.utils import timezone
+from Payment.models import (Factor, FactorPost, FactorPost, PecConfirmation,
+                            PecOrder, PecReverse, PecTransaction, Coupon as OldCoupon)
 from coupon.models import Coupon as NewCoupon, CouponConstraint, CouponUsage
 from cart.models import Cart, CartItem
 from logistic.models import Address
-from accounting_new.models import Invoice
-from payoff.models import Transaction, TransactionResult
-
-class SkipItemException(Exception):
-    pass
-
-class BaseMigrationScript:
-    old_model = None
-    new_model = None
-    many2many_relation_fields = []
-    _datetime_str_format = '%Y-%m-%d %H:%M:%S'
-    _date_str_format = '%Y-%m-%d'
-
-    def __init__(self):
-        self._all_parsed_data = []
-
-    def migrate(self):
-        ''' Get all data from old model, parse them and create new model'''
-        old_data = self.get_old_model_data()
-        for data in old_data:
-            try:
-                parsed_data = self.parse_data(data)
-                self._all_parsed_data.append(parsed_data)
-            except SkipItemException:
-                print('Cannot parse, Skiping item: {}'.format(data))
-        self.create_new_model()
-
-    def __jsonify(self, data):
-        ''' Convert data to json '''
-        data = data.__dict__
-        del data['_state']
-        for item in data:
-            if isinstance(data[item], datetime.datetime) or isinstance(data[item], jdatetime.datetime):
-                data[item] = data[item].strftime(self._datetime_str_format)
-            elif isinstance(data[item], datetime.date) or isinstance(data[item], jdatetime.date):
-                data[item] = data[item].strftime(self._date_str_format)
-        return data
-
-    def get_old_model_data(self):
-        ''' Get all data from old model '''
-        assert self.old_model is not None, 'old_model is not defined. You should define old_model attribute or override .get_old_model_data()'
-        return self.old_model.objects.all()
-
-
-    def parse_data(self, data):
-        ''' Parse old data to new model fields'''
-        raise NotImplementedError('`parse_data()` must be implemented.')
-
-    def create_new_model(self):
-        ''' Create new model '''
-        assert self.new_model is not None, 'new_model is not defined. You should define new_model attribute or override .create_new_model()'
-        assert self._all_parsed_data is not [], 'Parsed data is empty. You should parse data before creating new model'
-        if self.many2many_relation_fields:
-            self.__onebyone_create_method()
-        else:
-            self.__bulk_create_method()
-
-
-    def __bulk_create_method(self):
-        bulk_list = []
-        for data in self._all_parsed_data:
-            bulk_list.append(self.new_model(**data))
-        self.new_model.objects.bulk_create(bulk_list)
-
-    def __onebyone_create_method(self):
-        for data in self._all_parsed_data:
-            many2many_fields = dict()
-            for item in self.many2many_relation_fields:
-                many2many_fields[item] = data.pop(item)
-            instance = self.new_model.objects.create(**data)
-            for key, value in many2many_fields.items():
-                instance_field = getattr(instance, key)
-                instance_field.set(value)
-            instance.save()
-
-
-
-
-
-
-
-
-
-
-
-
-
+from accounting_new.models import Invoice, InvoiceItem
+from payoff.models import Transaction, TransactionResult, TransactionConfirmation, TransactionReverse
+from model_migration.exceptions import SkipItemException
+from model_migration.base import BaseMigrationScript
 
 
 
@@ -214,29 +133,61 @@ class InvoiceMigrationScript(BaseMigrationScript):
     old_model = Factor
     new_model = Invoice
     def parse_data(self, data):
-        cart = Cart.objects.filter(old_id=data.ID).first()
-        if not cart:
-            raise SkipItemException()
-        final_coupon_price = self.__parse_coupon_price(data)
+        # final_coupon_price = self.__parse_coupon_price(data)
         address_json = self.__parse_address(data)
+        user = self.__parse_user(data)
+        logistic_price = self.__parse_logistic_price(data)
+        total_price = self.__parse_total_price(data)
+        total_old_price = self.__parse_total_old_price(data)
         return {
+            'user': user, 
             'old_id': data.ID,
-            'FctorNumber': data.FactorNumber,
+            'FactorNumber': data.FactorNumber,
             'status': self.__parse_status(data.OrderStatus),
             'cart': cart,
             'address_json': address_json,
-            'final_logistic_price': data.PostPrice,
-            'final_invoice_price': data.TotalPrice,
+            'invoice_price_with_discount': total_price,
+            'invoice_price_without_discount': total_old_price,
+            'logistic_price': logistic_price,
             'extra_data': self.__parse_extra_data(data)
         }
+
+    def __parse_total_price(self, data):
+        total = 0
+        for item in data.FK_FactorPost.all():
+            price = item.FK_Product.Price if item.FK_Product else 0
+            count = item.ProductCount or 0
+            total += price * count
+        return total
+
+    def __parse_total_old_price(self, data):
+        total = 0
+        for item in data.FK_FactorPost.all():
+            price = item.FK_Product.OldPrice if item.FK_Product else 0
+            count = item.ProductCount or 0
+            total += price * count
+        return total
+
+    def __parse_logistic_price(self, data):
+        try:
+            return float(data.PostPrice or 0)
+        except:
+            raise SkipItemException(
+                f'Cannot convert PostPrice to decimal: ${data.PostPrice}')
+
+    def __parse_user(self, data):
+        if not data.FK_User:
+            raise SkipItemException(f'No user assigned to factor: {data.ID}')
+        return data.FK_User
 
     def __parse_coupon_price(self, data):
         coupon_price = 0
         discount_rate = int(data.DiscountRate)
         discount_type = data.DiscountType
+        total_price = int(data.TotalPrice or 0)
         logistic_price = data.PostPrice
         if discount_type == '1': # Percentage
-            coupon_price = data.TotalPrice * discount_rate / 100
+            coupon_price = total_price * discount_rate / 100
         elif discount_type == '2': # amount
             coupon_price = discount_rate
         else:
@@ -290,28 +241,141 @@ class InvoiceMigrationScript(BaseMigrationScript):
             'FK_Staff_Checkout': data.FK_Staff_Checkout.id if data.FK_Staff_Checkout else None,
         }
 
+
+class InvoiceItemMigrationScript(BaseMigrationScript):
+    old_model = FactorPost
+    new_model = InvoiceItem
+    def parse_data(self, data):
+        product = self.__parse_product(data)
+        return {
+            'invoice': self.__parse_invoice(data),
+            'product': product,
+            'count': data.ProductCount,
+            'status': self.__parse_status(data),
+            'slug': product.Slug,
+            'name': product.Title,
+            'price_with_discount': product.Price,
+            'price_without_discount': product.OldPrice,
+            'weight': product.Net_Weight,
+            'image': self.__parse_image(product.Image),
+            'image_thumbnail': self.__parse_image(product.Image_thumbnail),
+            'shop_name': product.Title,
+            'added_datetime': timezone.now(),
+            # 'post_tracking_code': data, TODO: Calc this
+        }
+    
+    def __parse_invoice(self, data):
+        factor = data.Factor_Products.all().first()
+        if not factor:
+            raise SkipItemException(f'No Factor found for FactorPost: {data.ID}')
+        invoice = Invoice.objects.filter(old_id=factor.ID).first()
+        if not invoice:
+            raise SkipItemException(f'No invoice found for Factor: {factor.ID}')
+        return invoice
+
+    def __parse_product(self, data):
+        if not data.FK_Product:
+            raise SkipItemException(f'No product assiged to FactorPost: {data.ID}')
+        return data.FK_Product
+
+    def __parse_status(self, data):
+        status = data.ProductStatus
+        if status == '0':
+            return InvoiceItem.ItemStatuses.CANCELED
+        if status == '1':
+            return InvoiceItem.ItemStatuses.AWAIT_SHOP_APPROVAL
+        if status == '2':
+            return InvoiceItem.ItemStatuses.PREPATING_PRODUCT
+        if status == '3':
+            return InvoiceItem.ItemStatuses.AWAIT_CUSTOMER_APPROVAL
+        return InvoiceItem.ItemStatuses.AWAIT_PAYMENT
+
+    def __parse_image(self, image):
+        try:
+            if not image or not hasattr(image, 'path'):
+                return None
+            if not os.path.exists(image.path):
+                return None
+            return image
+        except:
+            return None
+
 class CouponUsageMigrationScript(BaseMigrationScript):
     old_model = Factor
     new_model = CouponUsage
     def parse_data(self, data):
         invoice = Invoice.objects.filter(old_id=data.ID).first()
         coupon_id = data.FK_Coupon.id if data.FK_Coupon else None
-        if not invoice or not coupon_id:
-            raise SkipItemException()
+        if not invoice:
+            raise SkipItemException(f'Invoice with id: {data.ID} does not exists!')
+        if not coupon_id:
+            raise SkipItemException('Factor has no coupon assigned to')
+        coupon_price = data.DiscountRate
         return {
             'invoice': invoice,
             'coupon_id': coupon_id,
-            'price_applied': data.DiscountRate,
+            'price_applied': coupon_price,
         }
+
 
 class TransactionMigrationScript(BaseMigrationScript):
     old_model = ''
     new_model = Transaction
     def parse_data(self, data):
-        pass
+        return {
+            'referrer_model': 'Invoice',
+            'referrer_app': 'accounting_new',
+            'amount': data.Amount,
+            'order_number': data.FactorNumber,
+            'created_datetime': timezone.now(),
+            'payoff_datetime': timezone.now(),
+            'description': data.AdditionalData,
+            'ipg': Transaction.IPGTypes.PEC,
+            'token_request_status': str(data.Status or 200),
+            'token': int(data.Token or 0),
+            'token_request_message': data.Message,
+            'mobile': data.Originator,
+        }
 
-class TransactionResultMigrationScript(BaseMigrationScript):
-    old_model = ''
-    new_model = TransactionResult
+
+class TransactionConfirmationMigrationScript(BaseMigrationScript):
+    old_model = PecConfirmation
+    new_model = TransactionConfirmation
     def parse_data(self, data):
-        pass
+        order_id = data.OrderId
+        transaction = Transaction.objects.filter(order_id=order_id).first()
+        return {
+            'status': data.Status,
+            'card_number_masked': data.CardNumberMasked,
+            'token': data.Token,
+            'rrn': data.RRN,
+            'transaction_result': transaction,
+            'extra_data': self.__parse_extra_data(data)
+        }
+    def __parse_extra_data(self, data):
+        data = {
+            'order_id': data.OrderId,
+        }
+        return json.dumps(data)
+
+
+class TransactionConfirmationMigrationScript(BaseMigrationScript):
+    old_model = PecReverse
+    new_model = TransactionConfirmation
+    def parse_data(self, data):
+        order_id = data.OrderId
+        transaction = Transaction.objects.filter(order_id=order_id).first()
+        return {
+            'status': data.Status,
+            'token': data.Token,
+            'message': data.Message,
+            'transaction_result': transaction,
+            'extra_data': self.__parse_extra_data(data)
+        }
+    def __parse_extra_data(self, data):
+        data = {
+            'order_id': data.OrderId,
+        }
+        return json.dumps(data)
+
+

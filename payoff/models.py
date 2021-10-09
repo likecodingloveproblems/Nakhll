@@ -1,5 +1,7 @@
 from django.db import models
+from django.db.models.deletion import SET_NULL
 from django.utils.translation import ugettext as _
+from django.core.serializers.json import DjangoJSONEncoder
 
 # Create your models here.
 
@@ -50,3 +52,31 @@ class TransactionResult(models.Model):
     reversed_message = models.CharField(_('نتیجه درخواست بازگشت وجه'), max_length=200, null=True, blank=True)
     reversed_token = models.CharField(_('توکن درخواست بازگشت وجه'), max_length=20, null=True, blank=True)
 
+
+
+class TransactionConfirmation(models.Model):
+    status = models.IntegerField(verbose_name='کد وضعیت')
+    card_number_masked = models.CharField(verbose_name='شماره کارت خریدار', max_length=127)
+    token = models.BigIntegerField(verbose_name='توکن')
+    rrn = models.BigIntegerField(verbose_name='شماره یکتایی')
+    transaction_result = models.ForeignKey(TransactionResult, verbose_name=_('نتیجه تراکنش'),
+                                            null=True, blank=True, on_delete=models.SET_NULL)
+    created_datetime = models.DateTimeField(_('تاریخ ایجاد'), auto_now_add=True)
+    extra_data = models.JSONField(null=True, blank=True, encoder=DjangoJSONEncoder)
+
+    class Meta:
+        verbose_name = "تراکنش تایید شده پارسیان"
+        verbose_name_plural = "تراکنش های تایید شده پارسیان"
+
+class TransactionReverse(models.Model):
+    status = models.IntegerField(verbose_name='کد وضعیت')
+    token = models.BigIntegerField(verbose_name='توکن')
+    message = models.CharField(verbose_name='پیام پارسیان', max_length=127, null=True, blank=True)
+    transaction_result = models.ForeignKey(TransactionResult, verbose_name=_('نتیجه تراکنش'),
+                                            null=True, blank=True, on_delete=models.SET_NULL)
+    created_datetime = models.DateTimeField(_('تاریخ ایجاد'), auto_now_add=True)
+    extra_data = models.JSONField(null=True, blank=True, encoder=DjangoJSONEncoder)
+
+    class Meta:
+        verbose_name = "تراکنش برگشتی پارسیان"
+        verbose_name_plural = "تراکنش های برگشتی پارسیان"

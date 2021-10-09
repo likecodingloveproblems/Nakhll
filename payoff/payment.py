@@ -5,7 +5,7 @@ from django.apps import apps
 from django.utils.translation import ugettext as _
 from rest_framework.validators import ValidationError
 from nakhll_market.interface import AlertInterface
-from payoff.models import Transaction, TransactionResult
+from payoff.models import Transaction, TransactionResult, TransactionConfirmation, TransactionReverse
 from payoff.exceptions import NoCompletePaymentMethodException, NoTransactionException
 from zeep import Client
 
@@ -139,8 +139,8 @@ class Pec(PaymentMethod):
         print(f'Parsed data:\t {parsed_data}')
         transaction_result = self._create_transaction_result(parsed_data)
         transaction_result = self._link_to_transaction(transaction_result)
-        if self._is_tarnsaction_result_succeded(transaction_result)\
-                and self._validate_payment(transaction_result):
+        print('Linked successfully')
+        if self._is_tarnsaction_result_succeded(transaction_result):
             self._complete_payment(transaction_result)
             result = {'status': self.SUCCESS_STATUS, 'code': transaction_result.order_id}
         else:
@@ -196,52 +196,71 @@ class Pec(PaymentMethod):
             return True
         return False
 
-    def _validate_payment(self, transaction_result):
-        #TODO: For testing only
+    def _complete_payment(self, transaction_result):
+        ''' Send transaction_result to referrer model to finish purchase process'''
+        self.__complete_referrer_model(transaction_result)
+        self.__send_confirmation_request(transaction_result) 
+        return transaction_result
+
+    def __complete_referrer_model(self, transaction_result):
+        referrer_object = self.__get_referrer_object(transaction_result)
+        referrer_object.complete_payment()
+
+    def __send_confirmation_request(self, transaction_result):
         ''' Validate payment '''
-        return True
         token = transaction_result.transaction.token
         pec_pin = self.pec_pin
         request_data = self.confirm_service(Token=token, LoginAccount=pec_pin)
-        result = self.confirm_service.service.ConfirmPaymentRequest(request_data)
-        token = result.Token
-        if token <= 0 or result.Status != 0:
-            # TODO: create alert for support to handle this
-            return False
-        return True
-
-
-
-    def _complete_payment(self, transaction_result):
-        ''' Send transaction_result to referrer model to finish purchase process'''
-        referrer_object = self.__get_referrer_object(transaction_result)
-        referrer_object.complete_payment()
-        return transaction_result
-
-    
+        response = self.confirm_service.service.ConfirmPaymentRequest(request_data)
+        if response.Token > self.__SUCCESS_TOKEN_MIN_VALUE and response.Status == self.__SUCCESS_STATUS_CODE:
+            self.__create_transaction_confirmation(self, response)
+        else:
+            AlertInterface.payment_not_confirmed(transaction_result)
 
     def _revert_transaction(self, transaction_result):
         ''' Send transaction_result to referrer model to finish purchase process'''
-        self.__reverse_referer_payment(transaction_result)
+        self.__reverse_referrer_model(transaction_result)
         self.__send_reverse_request(transaction_result) 
         return transaction_result
 
-    def __reverse_referer_payment(self, transaction_result):
+    def __reverse_referrer_model(self, transaction_result):
         ''' Send transaction_result to referrer model to cancel purchase process'''
         referrer_object = self.__get_referrer_object(transaction_result)
         referrer_object.revert_payment()
 
     def __send_reverse_request(self, transaction_result):
         requestData = self.reverse_request_data(LoginAccount=self.pec_pin, Token=transaction_result.token)
-        res = self.reverse_service.service.ReversalRequest(requestData)
-        if res:
-            transaction_result.reverse_token = res.Token
-            transaction_result.reverse_status = res.Status
-            transaction_result.reverse_message = res.Message
-            transaction_result.save()
+        response = self.reverse_service.service.ReversalRequest(requestData)
+        if response:
+            self.__create_transaction_reverse(response, transaction_result)
         else:
             AlertInterface.no_reverse_request(transaction_result)
-        return res
+        return response
+
+    def __create_transaction_confirmation(self, response, transaction_result):
+        try:
+            TransactionConfirmation.objects.create({
+                'status': response.Status,
+                'card_number_masked': response.CartNumberMasked,
+                'token': response.Token,
+                'rrn': response.RRN,
+                'transaction_result': transaction_result,
+            })
+        except:
+            pass
+
+    def __create_transaction_reverse(self, response, transaction_result):
+        try:
+            TransactionReverse.objects.create({
+                'status': response.Status,
+                'messsage': response.Message,
+                'token': response.Token,
+                'transaction_result': transaction_result,
+            })
+        except:
+            pass
+
+
 
     def __get_referrer_object(self, transaction_result):
         ''' Get referrer object from transaction_result '''
