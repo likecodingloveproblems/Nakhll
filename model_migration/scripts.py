@@ -140,6 +140,7 @@ class InvoiceMigrationScript(BaseMigrationScript):
         logistic_price = self.__parse_logistic_price(data)
         total_price = self.__parse_total_price(data)
         total_old_price = self.__parse_total_old_price(data)
+        
         return {
             'user': user, 
             'old_id': data.ID,
@@ -149,7 +150,8 @@ class InvoiceMigrationScript(BaseMigrationScript):
             'invoice_price_with_discount': total_price,
             'invoice_price_without_discount': total_old_price,
             'logistic_price': logistic_price,
-            'extra_data': self.__parse_extra_data(data)
+            'extra_data': self.__parse_extra_data(data),
+            'created_datetime': data.OrderDate
         }
 
     def __parse_total_price(self, data):
