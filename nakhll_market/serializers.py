@@ -45,7 +45,7 @@ class ShopSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shop
         fields = [
-            'slug', 'title', 'url', 'image_thumbnail_url', 'total_products', 'profile',
+            'ID', 'slug', 'title', 'url', 'image_thumbnail_url', 'total_products', 'profile',
             'state', 'big_city', 'city', 'registered_months', 'FK_ShopManager', 'banners',
             'is_landing', 'has_product_group_add_edit_permission',
         ]
