@@ -212,15 +212,19 @@ class Pec(PaymentMethod):
     def __send_confirmation_request(self, transaction_result):
         ''' Validate payment '''
         try:
+            print('sending confirm request ...')
             pec_pin = self.pec_pin
             token = transaction_result.transaction.token
             request_data =self.confirm_request_data(LoginAccount=pec_pin, Token=token)
             response = self.confirm_service.service.ConfirmPayment(request_data)
+            print('validatoin confirm request result:', response.Token, response.Status)
             if response.Token > self.__SUCCESS_TOKEN_MIN_VALUE and response.Status == self.__SUCCESS_STATUS_CODE:
                 self.__create_transaction_confirmation(self, response)
             else:
+                print('error validatoin confirm request result')
                 AlertInterface.payment_not_confirmed(transaction_result)
         except:
+            print('error sending confirm request')
             AlertInterface.payment_not_confirmed(transaction_result)
 
     def _revert_transaction(self, transaction_result):
@@ -245,6 +249,7 @@ class Pec(PaymentMethod):
 
     def __create_transaction_confirmation(self, response, transaction_result):
         try:
+            print('creating  TransactionConfirmation record in db...')
             TransactionConfirmation.objects.create({
                 'status': response.Status,
                 'card_number_masked': response.CartNumberMasked,
@@ -252,8 +257,9 @@ class Pec(PaymentMethod):
                 'rrn': response.RRN,
                 'transaction_result': transaction_result,
             })
-        except:
-            pass
+            print('created')
+        except Exception as e:
+            print('Error in creating TransactionConfirmation: ', e)
 
     def __create_transaction_reverse(self, response, transaction_result):
         try:
