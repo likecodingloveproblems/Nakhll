@@ -91,3 +91,85 @@ class InvoiceRetrieveSerializer(serializers.ModelSerializer):
             'receiver_mobile_number',
         )
 
+
+
+
+class InvoiceProviderRetrieveSerializer(serializers.ModelSerializer):
+    address = AddressSerializer(many=False, read_only=True)
+    coupon_usages = CouponUsageSerializer(read_only=True, many=True)
+    user = UserSerializer(many=False, read_only=True)
+    items = serializers.SerializerMethodField(method_name='get_invoie_items')
+    receiver_mobile_number = serializers.SerializerMethodField()
+    created_time_jalali = serializers.SerializerMethodField()
+    created_date_jalali = serializers.SerializerMethodField()
+    final_price = serializers.SerializerMethodField()
+    invoice_price_with_discount = serializers.SerializerMethodField()
+    inovice_price_without_discount = serializers.SerializerMethodField()
+
+    def get_final_price(self, obj):
+        user = self.context.get('request').user
+        total = 0
+        for item in obj.items.filter(product__FK_Shop__FK_ShopManager=user):
+            price = item.product.Price
+            total += price
+        return total
+
+
+    def get_receiver_mobile_number(self, obj):
+        if obj.address:
+            return obj.address.receiver_mobile_number
+        return None
+
+    def get_created_date_jalali(self, obj):
+        jalali_datetime = jdatetime.datetime.fromgregorian(datetime=obj.created_datetime, locale='fa_IR')
+        return jalali_datetime.strftime('%Y/%m/%d')
+
+    def get_created_time_jalali(self, obj):
+        jalali_datetime = jdatetime.datetime.fromgregorian(datetime=obj.created_datetime, locale='fa_IR')
+        return jalali_datetime.strftime('%H:%M')
+
+    def get_invoie_items(self, obj):
+        user = self.context.get('request').user
+        items = obj.items.filter(product__FK_Shop__FK_ShopManager=user).order_by('product__FK_Shop')
+        return InvoiceItemSerializer(items, many=True, read_only=True).data
+
+    def get_invoice_price_with_discount(self, obj):
+        user = self.context.get('request').user
+        total = 0
+        for item in obj.items.filter(product__FK_Shop__FK_ShopManager=user):
+            price = item.product.Price
+            total += price
+        return total
+
+    def get_invoice_price_without_discount(self, obj):
+        user = self.context.get('request').user
+        total = 0
+        for item in obj.items.filter(product__FK_Shop__FK_ShopManager=user):
+            oldprice = item.product.OldPrice
+            price = item.product.Price
+            total += oldprice or price
+        return total
+
+    class Meta:
+        model = Invoice
+        fields = (
+            'id',
+            'items',
+            'address',
+            'address_json',
+            'user',
+            'payment_unique_id',
+            'status',
+            'invoice_price_with_discount',
+            'invoice_price_without_discount',
+            'coupon_usages',
+            'logistic_price',
+            'logistic_errors',
+            'final_price',
+            'created_date_jalali',
+            'created_time_jalali',
+            'coupons_total_price',
+            'payment_request_datetime',
+            'receiver_mobile_number',
+        )
+
