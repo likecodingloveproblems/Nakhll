@@ -34,7 +34,7 @@ from nakhll_market.paginators import StandardPagination
 from nakhll_market.filters import ProductFilter
 from nakhll_market.permissions import IsInvoiceOwner
 from django_filters import rest_framework as restframework_filters
-
+import pandas as pd
 
 class SliderViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = SliderSerializer
@@ -669,3 +669,42 @@ class ShopPageSchemaViewSet(views.APIView):
         shops = ShopPageSchema.objects.get_published_schema(self.request, shop_id)
         serializer = ShopPageSchemaSerializer(shops, many=True)
         return Response(serializer.data)
+
+class GroupProductCreateUpdateExcel(views.APIView):
+    permission_classes = [permissions.IsAuthenticated, IsShopOwner]
+    authentication_classes = [CsrfExemptSessionAuthentication, ]
+
+    def get_object(self, shop_slug):
+        return get_object_or_404(Shop, Slug=shop_slug)
+
+    def post(self, request, shop_slug, format=None):
+        shop = self.get_object(shop_slug)
+        self.check_object_permissions(request, shop)
+        csv_file = request.FILES['product-excel-upload']
+        df = pd.read_csv(csv_file,
+            dtype={'barcode':str,'Price':'Int64', 'OldPrice':'Int64','Inventory':'Int64'})
+        total_rows = df.shape[0]
+        df.dropna(inplace=True)
+        na_rows = total_rows - df.shape[0]
+        df['Slug'] = list(map(lambda title: shop.Slug+'-'+slugify(title, allow_unicode=True), df['Title']))
+        df.drop_duplicates(subset='Slug', keep='first', inplace=True)
+        slug_duplicate_rows = na_rows - df.shape[0]
+        barcodes = df['barcode'].to_list()
+        available_barcodes = Product.objects.filter(FK_Shop=shop, barcode__in=barcodes)\
+            .values_list('barcode', flat=True)
+        unavailable_barcodes = list(filter(lambda barcode: barcode not in available_barcodes, barcodes ))
+        available_df = df.query('barcode in @available_barcodes')
+        unavailable_df = df.query('barcode in @unavailable_barcodes')
+        available_products = list(map(lambda row: Product(FK_Shop=shop, **row), available_df.T.to_dict().values()))
+        unavailable_products = list(map(lambda row: Product(FK_Shop=shop, **row), unavailable_df.T.to_dict().values()))
+        Product.objects.bulk_update(available_products, ['Price','OldPrice','Inventory'])
+        Product.objects.bulk_create(unavailable_products)
+        available_rows = len(available_barcodes)
+        unavailable_rows = len(unavailable_barcodes)
+        return Response(status=status.HTTP_200_OK, data={
+            'available_rows': available_rows,
+            'unavailable_rows': unavailable_rows,
+            'total_rows': total_rows,
+            'na_rows': na_rows,
+            'slug_duplicate_rows': slug_duplicate_rows
+        })
