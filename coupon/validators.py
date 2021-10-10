@@ -45,6 +45,8 @@ class PriceValidator:
         if coupon.constraint.max_purchase_amount and self.total_invoice_price > coupon.constraint.max_purchase_amount\
             or coupon.constraint.min_purchase_amount and self.total_invoice_price < coupon.constraint.min_purchase_amount:
             raise PriceException(coupon, _('مبلغ فاکتور برای استفاده از این کوپن تخفیف مناسب نیست'), self.total_invoice_price)
+        if coupon.amount > self.total_invoice_price:
+            raise PriceException(coupon, _('مبلغ کوپن بیشتر از مبلغ فاکتور است'), self.total_invoice_price)
 
 class CountValidator:
     def __init__(self, invoice):

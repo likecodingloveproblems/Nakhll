@@ -49,6 +49,7 @@ class Pec(PaymentMethod):
         self.confirm_service = self.__get_confirm_service()
         self.reverse_service = self.__get_reverse_service()
         self.sale_request_data = self.__get_client_sale_request_data()
+        self.confirm_request_data = self.__get_client_confirm_request_data()
         self.reverse_request_data = self.__get_client_reversal_request_data()
 
     def __get_sale_serivce(self):
@@ -68,7 +69,9 @@ class Pec(PaymentMethod):
         
     def __get_client_reversal_request_data(self):
         return self.reverse_service.get_type('ns0:ClientReversalRequestData')
-
+    
+    def __get_client_confirm_request_data(self):
+        return self.confirm_service.get_type('ns0:ClientConfirmRequestData')
 
 
     def initiate_payment(self, data):
@@ -209,17 +212,16 @@ class Pec(PaymentMethod):
     def __send_confirmation_request(self, transaction_result):
         ''' Validate payment '''
         try:
-            # TODO: this is not working, need to fix it
-            token = transaction_result.transaction.token
             pec_pin = self.pec_pin
-            request_data = self.confirm_service(Token=token, LoginAccount=pec_pin)
-            response = self.confirm_service.service.ConfirmPaymentRequest(request_data)
+            token = transaction_result.transaction.token
+            request_data =self.confirm_request_data(LoginAccount=pec_pin, Token=token)
+            response = self.confirm_service.service.ConfirmPayment(request_data)
             if response.Token > self.__SUCCESS_TOKEN_MIN_VALUE and response.Status == self.__SUCCESS_STATUS_CODE:
                 self.__create_transaction_confirmation(self, response)
             else:
                 AlertInterface.payment_not_confirmed(transaction_result)
         except:
-            pass
+            AlertInterface.payment_not_confirmed(transaction_result)
 
     def _revert_transaction(self, transaction_result):
         ''' Send transaction_result to referrer model to finish purchase process'''

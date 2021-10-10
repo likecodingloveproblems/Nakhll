@@ -73,5 +73,12 @@ class IsInvoiceOwner(BasePermission):
     def has_object_permission(self, request, view, obj):
         prev_result = super().has_object_permission(request, view, obj)
         user = request.user 
-        return prev_result and obj.cart.user == user
+        return prev_result and obj.user == user
+
+
+class IsInvoiceProvider(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        prev_result = super().has_object_permission(request, view, obj)
+        user = request.user 
+        return prev_result and user.id in obj.items.all().values_list('product__FK_Shop__FK_ShopManager__id', flat=True)
 
