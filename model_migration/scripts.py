@@ -202,7 +202,7 @@ class InvoiceMigrationScript(BaseMigrationScript):
         elif order_status == '2':
             return Invoice.Statuses.PREPATING_PRODUCT
         elif order_status == '3':
-            return Invoice.Statuses.AWAIT_PAYMENT
+            return Invoice.Statuses.AWAIT_SHOP_APPROVAL
         elif order_status == '4':
             return Invoice.Statuses.CANCELED
         elif order_status == '5':
