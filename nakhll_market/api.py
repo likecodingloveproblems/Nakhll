@@ -708,3 +708,15 @@ class GroupProductCreateUpdateExcel(views.APIView):
             'na_rows': na_rows,
             'slug_duplicate_rows': slug_duplicate_rows
         })
+
+class MostSoldProduct(views.APIView):
+    permission_classes = [permissions.AllowAny, ]
+    serializer_class = ProductSerializer
+
+    def get_object(self):
+        return Product.objects.get_most_sold_product()
+
+    def get(self, request, format=None):
+        product = self.get_object()
+        serializer = ProductSerializer(product, many=True)
+        return Response(serializer.data)

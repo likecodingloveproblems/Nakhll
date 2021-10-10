@@ -1097,6 +1097,11 @@ class ProductManager(models.Manager):
     def all_public_products(self):
         return self.filter(Publish=True, Available=True).order_by('-DateUpdate')
 
+    def get_most_sold_product(self):
+        return self.get_queryset()\
+            .annotate(num_sell=Count('invoice_items__invoice'))\
+                .order_by('-num_sell')[:20]
+
 
 
         
