@@ -2763,6 +2763,7 @@ class LandingPageSchema(models.Model):
         FOUR_BANNER = 5, '4 بنر'
         PRODUCT_ROW = 6, 'ردیف محصول'
         PRODUCT_ROW_AMAZING = 7, 'ردیف محصول شگفت انگیز'
+        ICON = 8, 'آیکن'
     def __str__(self):
         return 'type:{}, order:{}, data:{}'.format(self.get_component_type_display(), self.order, self.data)
     
