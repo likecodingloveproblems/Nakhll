@@ -25,7 +25,7 @@ class BaseMigrationScript:
             except SkipItemException as ex:
                 print('Skiping item: {}\t {}'.format(data, ex))
                 if self.output_file:
-                    self.writelines('Skiping item: {}\t {}'.format(data, ex))
+                    self.writelines('Skiping item: {}\t {}\n'.format(data, ex))
 
         self.create_new_model()
 
