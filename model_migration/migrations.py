@@ -7,14 +7,15 @@ from model_migration.scripts import (CartItemMigrationScript, CartMigrationScrip
 
 
 class Migration:
-    def __init__(self, *, scripts='__all__'):
+    def __init__(self, *, scripts='__all__', output_file=None):
         self._scripts = scripts
+        self.output_file = output_file
 
     def run(self):
         ''' Get all scripts from .get_migration_scripts() and run them'''
         for script in self.get_migration_script():
             print(f'Migrating {script.__name__} ...')
-            script().migrate()
+            script().migrate(self.output_file)
         print('\n  Migration finished successfully')
 
     def get_migration_script(self):
