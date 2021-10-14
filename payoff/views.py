@@ -28,11 +28,12 @@ def test_pec(request):
 
 @csrf_exempt
 def test_pec_callback(request):
-    # TODO: for test only
-    # if not request.META['HTTP_ORIGIN'].startswith('https://pec.shaparak.ir')\
-        # or not request.META['HTTP_REFERER'].startswith('https://pec.shaparak.ir'):
-        # raise Exception('Invalid origin or referer')
+    if not request.META['HTTP_ORIGIN'].startswith('https://pec.shaparak.ir')\
+        or not request.META['HTTP_REFERER'].startswith('https://pec.shaparak.ir'):
+        raise Exception('Invalid origin or referer')
+    domain = settings.DOMAIN_NAME
 
+    # FAKE DATA FOR TESTING
     # sample_data = {
     #     'OrderId': '1633353467624477',
     #     'Token': 123131,
@@ -41,13 +42,13 @@ def test_pec_callback(request):
     #     'TerminalNo': 1345214,
     #     'Amount': '2180000'
     # }
-    
-    result = Payment.payment_callback(request.POST, ipg_type=Transaction.IPGTypes.PEC)
     # result = Payment.payment_callback(sample_data, ipg_type=Transaction.IPGTypes.PEC)
     # result_dict = result.__dict__
     # result_dict['_state'] = None
     # result_dict['created_datetime'] = None
-    domain = settings.DOMAIN_NAME
+
+    result = Payment.payment_callback(request.POST, ipg_type=Transaction.IPGTypes.PEC)
+
     code = result.get('code')
     if result.get('status') == Pec.SUCCESS_STATUS:
         return redirect(f'{domain}/payment/success/data?code={code}')
