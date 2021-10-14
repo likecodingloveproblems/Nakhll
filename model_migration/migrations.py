@@ -15,7 +15,7 @@ class Migration:
         ''' Get all scripts from .get_migration_scripts() and run them'''
         for script in self.get_migration_script():
             print(f'Migrating {script.__name__} ...')
-            script().migrate(self.output_file)
+            script().migrate(output_file=self.output_file)
         print('\n  Migration finished successfully')
 
     def get_migration_script(self):
