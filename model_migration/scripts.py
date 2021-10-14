@@ -108,9 +108,9 @@ class CartItemMigrationScript(BaseMigrationScript):
     def parse_data(self, data):
         factor = data.Factor_Products.first()
         if not factor:
-            raise SkipItemException('This FactorPost has no factor assigned to')
+            raise SkipItemException(f'FactorPost {data.ID} has no factor assigned to')
         if not data.FK_Product:
-            raise SkipItemException('This FactorPost has no product')
+            raise SkipItemException(f'FactorPost {data.ID} has no product')
         cart = Cart.objects.filter(old_id=factor.ID).first()
         if not cart:
             raise SkipItemException(f'No cart created base on FactorPost with id {factor.ID}')
@@ -175,7 +175,7 @@ class InvoiceMigrationScript(BaseMigrationScript):
             return float(data.PostPrice or 0)
         except:
             raise SkipItemException(
-                f'Cannot convert PostPrice to decimal: ${data.PostPrice}')
+                f'Cannot convert PostPrice to decimal: {data.PostPrice} if factor: {data.ID}')
 
     def __parse_user(self, data):
         if not data.FK_User:
