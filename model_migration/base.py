@@ -10,12 +10,11 @@ class BaseMigrationScript:
     _datetime_str_format = '%Y-%m-%d %H:%M:%S'
     _date_str_format = '%Y-%m-%d'
 
-    def __init__(self, *, output_file=None):
+    def __init__(self):
         self._all_parsed_data = []
-        self.output_file = output_file
         
 
-    def migrate(self):
+    def migrate(self, *, output_file=None):
         ''' Get all data from old model, parse them and create new model'''
         old_data = self.get_old_model_data()
         for data in old_data:
@@ -24,8 +23,8 @@ class BaseMigrationScript:
                 self._all_parsed_data.append(parsed_data)
             except SkipItemException as ex:
                 print('Skiping item: {}\t {}'.format(data, ex))
-                if self.output_file:
-                    self.writelines('Skiping item: {}\t {}\n'.format(data, ex))
+                if output_file:
+                    output_file.writelines('Skiping item: {}\t {}\n'.format(data, ex))
 
         self.create_new_model()
 
