@@ -30,14 +30,19 @@ urlpatterns = [
     path('', include('nakhll_market.urls', namespace='nakhll_market')),
     url(r'^tinymce/', include('tinymce.urls')),
     url(r'^cart/', include('Payment.urls' , namespace='Payment')),
+    url(r'^cart2/', include('cart.urls' , namespace='cart_new')),
+    url(r'^logistic/', include('logistic.urls' , namespace='logistic')),
     url(r'^app/api/', include('restapi.urls' , namespace='restapi')),
     path('accounting/', include('accounting.urls', namespace='accounting')),
+    path('accounting_new/', include('accounting_new.urls', namespace='accounting_new')),
     path('torob/', include('torob_api.urls', namespace='torob')),
     path('goto/', include('url_redirector.urls', namespace='url_redirector')),
     # api version 1
     url(r'^api/v1/', include('nakhll_market.api_urls', namespace='nakhll_market_api')),
+    url(r'^api/v1/', include('custom_list.urls', namespace='custom_list')),
     # prometheus
     url('', include('django_prometheus.urls')),
+    path('payoff/', include('payoff.urls', namespace='payoff')),
 ]
 
 if settings.DEBUG:

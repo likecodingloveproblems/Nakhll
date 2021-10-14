@@ -75,12 +75,12 @@
                             </a>
                             <div class="dropdown-menu dropdown-primary sh-cart cls-cart">
                                 
-                                <span>تعداد کالا</span><span class="shopBagProductCount"></span><a href="{% url "Payment:cartdetail" %}" class="ainsh">مشاهده سبد&zwnj;خرید</a>
+                                <span>تعداد کالا</span><span class="shopBagProductCount"></span><a href="/cart/" class="ainsh">مشاهده سبد&zwnj;خرید</a>
                                 <br>
                                 
                                 <P>مبلغ : <span id="totalPrice" class="numbersprice"> 0 </span>ریال</P>
                                 <p>
-                                    <a href="{% url "Payment:cartdetail" %}" class="savecart"><i class="far fa-cart-plus"></i> ثبت سفارش </a>
+                                    <a href="/cart/" class="savecart"><i class="far fa-cart-plus"></i> ثبت سفارش </a>
                                 </p>
                                 <div class="hr-line-in-shop-bag">
 
@@ -97,7 +97,7 @@
                                 <div class="shop-bag-products">
                                 </div>
                                 <p class="shop-bag-more-products-p">
-                                    <a href="{% url "Payment:cartdetail" %}" class="shop-bag-more-products"> بیشتر... </a>
+                                    <a href="/cart/" Payment:cartdetail" %}" class="shop-bag-more-products"> بیشتر... </a>
                                 </p> 
                             </div>
                             <div class="shop-bag-count"></div>
@@ -260,10 +260,10 @@
                 $.ajax(
                     {
                         type: 'GET',
-                        url: '{% url "restapi:get_factor_products" %}',
+                        url: '{% url "cart_new:api_carts-my" %}',
 
                         success: function (json) {
-                            shopBagProductCount = json.FK_FactorPost.length;
+                            shopBagProductCount = json.ordered_items.length;
                             if(shopBagProductCount > 0)
                             {
                                 $(".shop-bag-products-empty").hide();
@@ -271,7 +271,7 @@
                                 $(".shop-bag-count").text(shopBagProductCount);
                                 var totalPrice = 0;
                                 for (var i=0; i < shopBagProductCount; i++){
-                                    totalPrice += json.FK_FactorPost[i].get_total_item_price;
+                                    totalPrice += json.ordered_items[i].total_price;
                                 }
                                 $("#totalPrice").text(totalPrice);
                                 $(".shopBagProductCount").text(shopBagProductCount);
@@ -280,17 +280,17 @@
                                 var i;
                                 for (i=0; i < shopBagProductCount ; i++) {
                                     txt1 += '<a href="/product/' +
-                                    json.FK_FactorPost[i].FK_Product.FK_Shop.Slug +
+                                    json.ordered_items[i].product.shop.slug +
                                     '/' + 
-                                    json.FK_FactorPost[i].FK_Product.Slug + 
+                                    json.ordered_items[i].product.slug + 
                                     '"> <div class="row shop-bag-product"> <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-12 shop-bag-product-1st-col"> <div class="cart-show"> <img src="' + 
-                                    json.FK_FactorPost[i].FK_Product.Image_thumbnail_url + 
+                                    json.ordered_items[i].product.image_thumbnail_url + 
                                     '" alt="عکس محصول"> </div> </div> <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-12 shop-bag-product-2nd-col"> <div class="shop-bag-product-content">' + 
-                                    json.FK_FactorPost[i].FK_Product.Title +
+                                    json.ordered_items[i].product.title +
                                     ' (تعداد : '+
-                                    json.FK_FactorPost[i].ProductCount +
+                                    json.ordered_items[i].count +
                                     ') <div class="shop-bag-product-price"> <span class="numbersprice">' +
-                                    json.FK_FactorPost[i].get_total_item_price + 
+                                    json.ordered_items[i].total_price + 
                                     '</span> ریال </div> </div> </div> </div> </a> <div class="hr-line-in-shop-bag"> </div>';
                                 }  
                                 $(".shop-bag-products").html(txt1);
@@ -299,17 +299,17 @@
                                     var i;
                                     for (i=0; i < 3 ; i++) {
                                         txt1 += '<a href="/product/' +
-                                    json.FK_FactorPost[i].FK_Product.FK_Shop.Slug +
+                                    json.ordered_items[i].product.shop.slug +
                                     '/' + 
-                                    json.FK_FactorPost[i].FK_Product.Slug + 
+                                    json.ordered_items[i].product.slug + 
                                     '"> <div class="row shop-bag-product"> <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-12 shop-bag-product-1st-col"> <div class="cart-show"> <img src="'+ 
-                                    json.FK_FactorPost[i].FK_Product.Image_thumbnail_url + 
+                                    json.ordered_items[i].product.image_thumbnail_url + 
                                     '" alt="عکس محصول"> </div> </div> <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-12 shop-bag-product-2nd-col"> <div class="shop-bag-product-content">' + 
-                                    json.FK_FactorPost[i].FK_Product.Title +
+                                    json.ordered_items[i].product.title +
                                     ' (تعداد : '+
-                                    json.FK_FactorPost[i].ProductCount +
+                                    json.ordered_items[i].count +
                                     ') <div class="shop-bag-product-price"> <span class="numbersprice">' +
-                                    json.FK_FactorPost[i].get_total_item_price + 
+                                    json.ordered_items[i].total_price + 
                                     '</span> ریال </div> </div> </div> </div> </a> <div class="hr-line-in-shop-bag"> </div>';
                                 }  
                                     $(".shop-bag-products").html(txt1);

@@ -14,6 +14,9 @@ import os
 from django.urls.base import reverse_lazy
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -65,14 +68,22 @@ INSTALLED_APPS = [
     'oauth2_provider',
     'rest_framework',
     'rest_framework.authtoken',
+    'django_filters',
     'imagekit',
     'compressor',
     'mathfilters',
     'captcha',
     'django_prometheus',
     'django_extensions',
+    'cart',
+    'coupon',
+    'logistic',
+    'accounting_new',
+    'payoff',
     'torob_api',
     'url_redirector',
+    'custom_list',
+    'colorfield',
 ]
 
 MIDDLEWARE = [
@@ -109,9 +120,16 @@ ADMIN_REORDER = (
         'nakhll_market.Slider',
         'nakhll_market.Option_Meta',
         'nakhll_market.Alert',
-        'nakhll_market.AmazingProduct'
+        'nakhll_market.AmazingProduct',
+        'nakhll_market.LandingPageSchema',
     )},
-
+    {
+        'app': 'logistic',
+        'models': (
+            'logistic.Address',
+            'logistic.PostPriceSetting',
+        )
+    },
     {'app': 'Payment', 'label': 'بخش مالی','models':(
         'Payment.Wallet',
         'Payment.Factor',
@@ -330,4 +348,6 @@ CORS_ALLOW_HEADERS = os.environ.get('CORS_ALLOW_HEADERS',
 CORS_ALLOW_METHODS = os.environ.get('CORS_ALLOW_METHODS',
                         'DELETE GET OPTIONS PATCH POST PUT').split(' ')
 
-DOMAIN_NAME = 'https://nakhll.com/'
+DOMAIN_NAME = os.environ.get('DOMAIN_NAME', 'https://nakhll.com')
+
+INVOICE_EXPIRING_HOURS = 4

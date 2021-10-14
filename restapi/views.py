@@ -1,6 +1,7 @@
 from typing import List, Tuple
 from django.db import models
 from rest_framework import status
+from nakhll_market.permissions import IsInvoiceOwner, IsInvoiceProvider
 from nakhll_market.serializers import ProductListSerializer
 from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
@@ -23,6 +24,8 @@ from nakhll_market.models import (Comment, Profile, Product, Shop, SubMarket, Ca
                                 ProductBanner, PostRange, Message, User_Message_Status,
                                 Alert, Field, Message, State, DashboardBanner)
 from Payment.models import Factor, Wallet, FactorPost, Transaction, PostBarCode, Coupon, PostTrackingCode
+from accounting_new.models import Invoice, InvoiceItem
+from accounting_new.serializers import InvoiceRetrieveSerializer, InvoiceItemSerializer, InvoiceProviderRetrieveSerializer
 
 
 from django.views.decorators.csrf import csrf_exempt
@@ -2337,44 +2340,44 @@ class ShopFactorList(ListAPIView):
 
 class UncompeletedFactors(ListAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = FactorListSerializer
+    serializer_class = InvoiceProviderRetrieveSerializer
 
     def get_queryset(self):
         user = self.request.user
-        return Factor.objects.uncompleted_user_factors(user)
+        return Invoice.objects.uncompleted_user_invoices(user)
 
 
 class CompeletedFactors(ListAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = FactorListSerializer
+    serializer_class = InvoiceProviderRetrieveSerializer
 
     def get_queryset(self):
         user = self.request.user
-        return Factor.objects.completed_user_factors(user)
+        return Invoice.objects.completed_user_invoices(user)
 
 
 class ShopCompeletedFactors(ListAPIView):
     permission_classes = [IsAuthenticated, IsShopOwner]
-    serializer_class = FactorListSerializer
+    serializer_class = InvoiceProviderRetrieveSerializer
 
     def get_queryset(self):
         user = self.request.user
         shop_slug = self.kwargs.get('shop_slug')
         shop = get_object_or_404(Shop, Slug=shop_slug)
         self.check_object_permissions(self.request, shop)
-        return Factor.objects.completed_user_shop_factors(user, shop_slug)
+        return Invoice.objects.completed_user_shop_factors(user, shop_slug)
 
 
 class ShopUncompeletedFactors(ListAPIView):
     permission_classes = [IsAuthenticated, IsShopOwner]
-    serializer_class = FactorListSerializer
+    serializer_class = InvoiceProviderRetrieveSerializer
 
     def get_queryset(self):
         user = self.request.user
         shop_slug = self.kwargs.get('shop_slug')
         shop = get_object_or_404(Shop, Slug=shop_slug)
         self.check_object_permissions(self.request, shop)
-        return Factor.objects.uncompleted_user_shop_factors(user, shop_slug).distinct()
+        return Invoice.objects.uncompleted_user_shop_factors(user, shop_slug).distinct()
 
 class ShopProductList(ListAPIView):
     serializer_class = ProductListSerializer
@@ -2512,12 +2515,12 @@ class CityList(ListAPIView):
 
 
 class FactorDetails(APIView):
-    permission_classes = [IsAuthenticated, IsFactorOwner]
+    permission_classes = [IsAuthenticated, IsInvoiceProvider]
     def get(self, request, format=None):
-        factor_id = request.GET.get('factor_id', 0)
-        factor = get_object_or_404(Factor,ID=factor_id) 
-        self.check_object_permissions(request, factor)
-        serializer = FactorAllDetailsSerializer(factor, context={'request': request})
+        invoice_id = request.GET.get('factor_id', 0)
+        invoice= get_object_or_404(Invoice , id=invoice_id) 
+        self.check_object_permissions(request, invoice)
+        serializer = InvoiceRetrieveSerializer(invoice, context={'request': request})
         return Response(serializer.data)
 
 
@@ -2527,66 +2530,66 @@ class ChangeFactorToConfirmed(APIView):
         if all factorposts are confirmed, factor state should be changed to confirmed
         and also an alert should be generated for staff to notified about factor comfirmation
     '''
-    permission_classes = [IsAuthenticated, IsFactorOwner]
+    permission_classes = [IsAuthenticated, IsInvoiceProvider]
     authentication_classes = [CsrfExemptSessionAuthentication, ]
     def get_object(self, factor_id):
-        return get_object_or_404(Factor,ID=factor_id) 
+        return get_object_or_404(Invoice, id=factor_id) 
 
     def put(self, request, factor_id):
-        factor = self.get_object(factor_id)
-        self.check_object_permissions(request, factor)
-        factor_posts = factor.FK_FactorPost.filter(FK_Product__FK_Shop__FK_ShopManager=request.user)
-        factor_post_list = []
-        for factor_post in factor_posts:
-            # Cofirm every factorpost by changing product status to 2
-            factor_post.ProductStatus = '2'
-            factor_post_list.append(factor_post)
-        FactorPost.objects.bulk_update(factor_post_list, ['ProductStatus'])
+        invoice = self.get_object(factor_id)
+        self.check_object_permissions(request, invoice)
+        # factor_posts = factor.FK_FactorPost.filter(FK_Product__FK_Shop__FK_ShopManager=request.user)
+        invoice_items = invoice.items.filter(product__FK_Shop__FK_ShopManager=request.user)
+        invoice_item_bulk = []
+        for item in invoice_items:
+            item.status = InvoiceItem.ItemStatuses.PREPATING_PRODUCT
+            invoice_item_bulk.append(item)
+        InvoiceItem.objects.bulk_update(invoice_item_bulk, ['status'])
 
-        # Check for any factor post that not confirmed yet
-        if not factor.FK_FactorPost.filter(~Q(ProductStatus='0') & ~Q(ProductStatus='2')).exists():
-            # There is no factorpost with ProductStatus other than 2 and 0
-            factor.OrderStatus='2'
-            factor.save()
+        # Check for any invoice_item that not confirmed yet
+        if all(item.status == InvoiceItem.ItemStatuses.PREPATING_PRODUCT for item in invoice_items):
+            invoice.status = Invoice.InvoiceStatuses.PREPATING_PRODUCT
+            invoice.save()
             response_msg = 'Done'
         else:
             response_msg = 'Wait for other shops to confirm'
 
         # Set Alert 
-        Alert.objects.get_or_create(Part = '20', FK_User=request.user, Slug=factor.ID)
+        Alert.objects.get_or_create(Part = '20', FK_User=request.user, Slug=invoice.id)
         return Response({'details': response_msg}, status=status.HTTP_200_OK)
 
 class ChangeFactorToSent(APIView):
-    permission_classes = [IsAuthenticated, IsFactorOwner]
+    permission_classes = [IsAuthenticated, IsInvoiceProvider]
     authentication_classes = [CsrfExemptSessionAuthentication, ]
     def get_object(self, factor_id):
-        factor = get_object_or_404(Factor,ID=factor_id) 
-        self.check_object_permissions(self.request, factor)
-        return factor
+        invoice = get_object_or_404(Invoice, id=factor_id) 
+        self.check_object_permissions(self.request, invoice)
+        return invoice
 
     def post(self, request, factor_id):
+        # TODO: to replace with new logistic module
         serializer = PostTrackingCodeWriteSerializer(data=request.data)
         if serializer.is_valid():
             barcode = serializer.validated_data.get('barcode')
             post_type = serializer.validated_data.get('post_type') or PostTrackingCode.PostTypes.IRPOST
-            factor = self.get_object(factor_id)
-            factor_posts = factor.FK_FactorPost.filter(FK_Product__FK_Shop__FK_ShopManager=request.user)
+            invoice = self.get_object(factor_id)
+            invoice_items = invoice.items.filter(product__FK_Shop__FK_ShopManager=request.user) 
 
             # Change factor_posts status and add post barcode to them
-            factor_post_list = []
-            for factor_post in factor_posts:
-                factor_post.ProductStatus = '3'
-                PostTrackingCode.objects.create(factor_post=factor_post, barcode=barcode, post_type=post_type)
-                factor_post_list.append(factor_post)
-            FactorPost.objects.bulk_update(factor_post_list, ['ProductStatus'])
+            invoice_item_list = []
+            for item in invoice_items:
+                item.status = InvoiceItem.ItemStatuses.AWAIT_CUSTOMER_APPROVAL
+                item.barcode = barcode
+                # PostTrackingCode.objects.create(factor_post=factor_post, barcode=barcode, post_type=post_type)
+                invoice_item_list.append(item)
+            InvoiceItem.objects.bulk_update(invoice_item_list, ['status', 'barcode'])
 
 
 
             # Check for any factor post that not sent yet
-            if not factor.FK_FactorPost.filter(~Q(ProductStatus='0') & ~Q(ProductStatus='3')).exists():
-                # There is no factorpost with ProductStatus other than 3 and 0
-                factor.OrderStatus='5' # OrderStatus=5 means factor has been sent
-                factor.save()
+            if all(item.status == InvoiceItem.ItemStatuses.AWAIT_CUSTOMER_APPROVAL for item in invoice_items):
+                invoice.status = Invoice.Statuses.AWAIT_CUSTOMER_APPROVAL
+                invoice.save()
                 response_msg = 'Done'
             else:
                 response_msg = 'Wait for other shops to send'

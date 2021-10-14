@@ -1,4 +1,7 @@
 import json
+from cart.models import Cart
+from rest_framework.permissions import BasePermission
+from cart.utils import get_user_or_guest
 
 def _get_privileges_by_key(permission_key):
     """ internal function to return user side bar items by permission key """
@@ -20,14 +23,14 @@ def _get_privileges_by_key(permission_key):
 
     # TODO: define access here
     privileges = [
-        {'permission_key': 'compress_team_privileges', 'privilege': [dashboard_dict, ]}
-        {'permission_key': 'seo_team_privileges', 'privilege': [dashboard_dict, ]}
-        {'permission_key': 'accounting_team_privileges', 'privilege': [dashboard_dict, ]}
-        {'permission_key': 'writer_team_privileges', 'privilege': [dashboard_dict, ]}
-        {'permission_key': 'content_team_privileges', 'privilege': [dashboard_dict, ]}
+        {'permission_key': 'compress_team_privileges', 'privilege': [dashboard_dict, ]},
+        {'permission_key': 'seo_team_privileges', 'privilege': [dashboard_dict, ]},
+        {'permission_key': 'accounting_team_privileges', 'privilege': [dashboard_dict, ]},
+        {'permission_key': 'writer_team_privileges', 'privilege': [dashboard_dict, ]},
+        {'permission_key': 'content_team_privileges', 'privilege': [dashboard_dict, ]},
     ]
     for privilege in privileges:
-        if permission_key == privilege['permission_key']
+        if permission_key == privilege['permission_key']:
             sidebar.append(privilege['privilege'])
     return sidebar
 
@@ -51,7 +54,7 @@ def groups_and_permission(group_name):
     ]
     
     for group_perm in groups_perms :
-        if group_perm['group_name'] == group_name
+        if group_perm['group_name'] == group_name:
             return group_perm['permission_key']
 
 
@@ -63,3 +66,19 @@ def get_group_privileges_sidebar(permission_keys):
 
     final_sidebar = _remove_duplicate_items(final_sidebar)
     return final_sidebar
+
+
+
+class IsInvoiceOwner(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        prev_result = super().has_object_permission(request, view, obj)
+        user = request.user 
+        return prev_result and obj.user == user
+
+
+class IsInvoiceProvider(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        prev_result = super().has_object_permission(request, view, obj)
+        user = request.user 
+        return prev_result and user.id in obj.items.all().values_list('product__FK_Shop__FK_ShopManager__id', flat=True)
+

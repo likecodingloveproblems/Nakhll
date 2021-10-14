@@ -27,6 +27,8 @@ class ShopListHomeSerializer(ModelSerializer):
             'point',
             'available',
             'publish',
+            'is_landing',
+            'has_product_group_add_edit_permission',
         ]
 
 
@@ -91,6 +93,7 @@ class BankAccountSerializer(ModelSerializer):
 class ProfileSerializer(ModelSerializer):
     user = UserDetailSerializer(read_only = True)
     shops = ShopListHomeSerializer(many=True)
+    cart_items_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Profile 
@@ -120,7 +123,15 @@ class ProfileSerializer(ModelSerializer):
             'reference_code',
             'ip_address',
             'shops',
+            'cart_items_count'
         ]
+
+    def get_cart_items_count(self, obj):
+        try:
+            return obj.user.cart.items.count()
+        except:
+            return 0
+
 
 
 class SimpleProfileSerializer(ModelSerializer):
@@ -746,7 +757,14 @@ class BigCitySerializer(ModelSerializer):
 class CitySerializer(ModelSerializer):
     class Meta:
         model = City
-        fields = ['id', 'name', ]
+        fields = ['id', 'name', 'value', 'label']
 
+
+class ProfileImageSerializer(ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = [
+            'Image_thumbnail_url',
+        ]
 
 

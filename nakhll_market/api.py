@@ -1,28 +1,40 @@
+from accounting_new.models import Invoice
+from restapi.serializers import ProfileSerializer
 from django.contrib.auth.models import User
+from django.db.models.aggregates import Sum
+from django.db.models.expressions import Case, When
+from django.db.models import Value, IntegerField
 from django.http import response
 from django.http.response import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.exceptions import ValidationError, PermissionDenied, AuthenticationFailed
 from nakhll_market.models import (
-    Alert, AmazingProduct, Product, ProductBanner, Shop, Slider, Category, Market, State, BigCity, City, SubMarket
+    Alert, AmazingProduct, Comment, Product, ProductBanner, Shop, Slider, Category, Market, State, BigCity, City, SubMarket,
+    LandingPageSchema, ShopPageSchema,
     )
 from nakhll_market.serializers import (
-    AmazingProductSerializer, Base64ImageSerializer, ProductDetailSerializer, ProductImagesSerializer,
-    ProductSerializer, ProductUpdateSerializer, ShopSerializer,SliderSerializer, ProductPriceWriteSerializer,
+    AmazingProductSerializer, Base64ImageSerializer, NewProfileSerializer, ProductCommentSerializer, ProductDetailSerializer, ProductImagesSerializer,
+    ProductSerializer, ProductUpdateSerializer, ShopProductSerializer, ShopSerializer,SliderSerializer, ProductPriceWriteSerializer,
     CategorySerializer, FullMarketSerializer, CreateShopSerializer, ProductInventoryWriteSerializer,
     ProductListSerializer, ProductWriteSerializer, ShopAllSettingsSerializer, ProductBannerSerializer,
-    ShopBankAccountSettingsSerializer, SocialMediaAccountSettingsSerializer, ProductSubMarketSerializer, SubMarketSerializer
+    ShopBankAccountSettingsSerializer, SocialMediaAccountSettingsSerializer, ProductSubMarketSerializer, StateFullSeraializer, SubMarketProductSerializer, SubMarketSerializer,
+    LandingPageSchemaSerializer, ShopPageSchemaSerializer, UserOrderSerializer,
     )
 from rest_framework import generics, routers, status, views, viewsets
 from rest_framework import permissions, filters, mixins
+from rest_framework.decorators import action
 from django.db.models import Q, F, Count
 import random
 from nakhll.authentications import CsrfExemptSessionAuthentication
 from rest_framework.response import Response
 from django.utils.text import slugify
 from restapi.permissions import IsFactorOwner, IsProductOwner, IsShopOwner, IsProductBannerOwner
-
+from nakhll_market.paginators import StandardPagination
+from nakhll_market.filters import ProductFilter
+from nakhll_market.permissions import IsInvoiceOwner
+from django_filters import rest_framework as restframework_filters
+import pandas as pd
 
 class SliderViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = SliderSerializer
@@ -87,6 +99,27 @@ class MostSoldShopsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def get_queryset(self):
         return Shop.objects.most_last_week_sale_shops()
+
+class ShopProductsViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.ListModelMixin):
+    serializer_class = ShopProductSerializer
+    permission_classes = [permissions.AllowAny, ]
+    product_slug = None
+    lookup_field = 'FK_Shop__Slug'
+
+    def get_queryset(self):
+        filter_query = {self.lookup_field: self.product_slug, 'Publish': True, 'Available': True}
+        return Product.objects.filter(**filter_query)
+
+    def retrieve(self, request, *args, **kwargs):
+        self.product_slug = self.kwargs.get(self.lookup_field)
+        return self.list(request, *args, **kwargs)
+
+    def list(self, request, *args, **kwargs):
+        if not self.product_slug:
+            raise Http404
+        return super().list(request, *args, **kwargs)
+     
+
 
 
 class UserProductViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.CreateModelMixin,
@@ -167,13 +200,80 @@ class UserProductViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mix
         Alert.objects.create(Part='7', FK_User=self.request.user, Slug=ID)
 
 
+class ProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    pagination_class = StandardPagination
+    filter_class = ProductFilter
+    filter_backends = (restframework_filters.DjangoFilterBackend, filters.OrderingFilter)
+    serializer_class = ProductListSerializer
+    permission_classes = [permissions.AllowAny, ]
+    ordering_fields = ('Title', 'Price', 'DiscountPrecentage', 'DateCreate', )
 
-class ProductFullDetailsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    def get_queryset(self):
+        query = self.request.GET.get('search', '')
+        queryset = Product.objects.select_related('FK_SubMarket', 'FK_Shop')
+        queryset = queryset.annotate(DiscountPrecentage=Case(
+            When(OldPrice__gt=0, then=(
+                (F('OldPrice') - F('Price')) * 100 / F('OldPrice'))
+            ), default=0))
+        queryset = queryset.annotate(submarket_products=Count('FK_SubMarket__Product_SubMarket', Q(FK_SubMarket__Product_SubMarket__Title__contains=query)))
+        queryset = queryset.order_by('-submarket_products')
+        return queryset
+
+
+    def get_most_product_submarkets(self, query):
+        queryset = SubMarket.objects.filter(Available=True, Publish=True)
+        queryset = queryset.filter(Product_SubMarket__Title__contains=query)
+        queryset = queryset.annotate(product_count=Count('Product_SubMarket'))
+        return queryset.order_by('-product_count').values_list('ID')
+
+
+
+
+class ProductDetailsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductDetailSerializer
     permission_classes = [permissions.AllowAny, ]
     lookup_field = 'Slug'
     queryset = Product.objects.select_related('FK_SubMarket', 'FK_Shop')
 
+class ProductCommentsViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    serializer_class = ProductCommentSerializer
+    permission_classes = [permissions.AllowAny, ]
+    lookup_field = 'FK_Product__Slug'
+    product_slug = None
+    def get_queryset(self):
+        filter_query = {self.lookup_field: self.product_slug, 'FK_Pater': None}
+        return Comment.objects.filter(**filter_query).select_related('FK_Product')
+
+    def retrieve(self, request, *args, **kwargs):
+        self.product_slug = self.kwargs.get(self.lookup_field)
+        return self.list(request, *args, **kwargs)
+
+    def list(self, request, *args, **kwargs):
+        if not self.product_slug:
+            raise Http404
+        return super().list(request, *args, **kwargs)
+        
+
+class ProductRelatedItemsViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    pagination_class = StandardPagination
+    serializer_class = ProductSerializer
+    permission_classes = [permissions.AllowAny, ]
+    lookup_field = 'Slug'
+    product = None
+
+    def get_queryset(self):
+        return Product.objects.filter(
+                    Available = True, Publish = True, Status__in = ['1', '2', '3'],
+                    FK_Category__in = self.product.FK_Category.all())
+
+    def retrieve(self, request, *args, **kwargs):
+        self.product = Product.objects.get(Slug=self.kwargs.get(self.lookup_field))
+        return self.list(request, *args, **kwargs)
+
+    def list(self, request, *args, **kwargs):
+        if not self.product:
+            raise Http404
+        return super().list(request, *args, **kwargs)
 
 
 class ProductsInSameFactorViewSet(generics.ListAPIView):
@@ -188,11 +288,42 @@ class ProductsInSameFactorViewSet(generics.ListAPIView):
 class MarketList(generics.ListAPIView):
     serializer_class = FullMarketSerializer
     permission_classes = [permissions.AllowAny, ]
-    queryset = Market.objects.filter(Available=True, Publish=True)
+    # queryset = Market.objects.filter(Available=True, Publish=True)
+        
+    def list(self, request, *args, **kwargs):
+        query = self.request.GET.get('query')
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        # serializer = self.get_serializer(queryset, many=True, context={'query': query})
+        return Response(serializer.data)
+
+    def get_queryset(self):
+        query = self.request.GET.get('query')
+        if query:
+            queryset = Market.objects.filter(FatherMarket__Product_SubMarket__Title__contains=query, Available=True, Publish=True)
+            # queryset = SubMarket.objects.filter(Product_SubMarket__Title__contains=query, Available=True, Publish=True)
+            queryset = queryset.annotate(product_count=Count('FatherMarket__Product_SubMarket'))
+            return queryset.order_by('product_count')
+        return Market.objects.filter(Available=True, Publish=True)
+
+class SubMarketList(generics.ListAPIView):
+    permission_classes = [permissions.AllowAny, ]
+    serializer_class = SubMarketProductSerializer
+
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        queryset = SubMarket.objects.filter(Available=True, Publish=True)
+        if not query:
+            return queryset.none()
+        queryset = queryset.filter(Product_SubMarket__Title__contains=query)
+        queryset = queryset.annotate(product_count=Count('Product_SubMarket'))
+        return queryset.order_by('-product_count')
+
+
 
 
 class GetShopWithSlug(views.APIView):
-    permission_classes = [permissions.IsAuthenticated, ]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, ]
     authentication_classes = [CsrfExemptSessionAuthentication, ]
 
     def get(self, request, format=None):
@@ -200,6 +331,15 @@ class GetShopWithSlug(views.APIView):
         shop = get_object_or_404(Shop, Slug=shop_slug)
         serializer = ShopSerializer(shop)
         return Response(serializer.data)
+
+class GetShop(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, ]
+    authentication_classes = [CsrfExemptSessionAuthentication, ]
+    serializer_class = ShopSerializer
+    queryset = Shop.objects.filter(Available=True, Publish=True)
+    lookup_field = 'Slug'
+
+
 
 
 
@@ -471,4 +611,112 @@ class ImageShopSettings(views.APIView):
             shop.save()
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data)
+
+
+class StateFullViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+    permission_classes = [permissions.AllowAny, ]
+    queryset = State.objects.all()
+    serializer_class = StateFullSeraializer
+
+
+class UserProfileViewSet(viewsets.GenericViewSet):
+    '''Viewset for user profile '''
+    permission_classes = [permissions.IsAuthenticated, ]
+    queryset = User.objects.all()
+    serializer_class = ProfileSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication]
+
+    @action(detail=False, methods=['get', 'patch'])
+    def me(self, request):
+        user = request.user
+        serializer = NewProfileSerializer(user.User_Profile)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['patch'])
+    def edit_me(self, request):
+        user = request.user
+        serializer = NewProfileSerializer(user.User_Profile, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UserOrderHistory(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
+    permission_classes = [permissions.IsAuthenticated, IsInvoiceOwner]
+    queryset = Invoice.objects.all()
+    serializer_class = UserOrderSerializer
+
+    def get_queryset(self):
+        return Invoice.objects.filter(cart__user=self.request.user)
+
+
+class LandingPageSchemaViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+    permission_classes = [permissions.AllowAny, ]
+    serializer_class = LandingPageSchemaSerializer
+
+    def get_queryset(self):
+        return LandingPageSchema.objects.get_published_schema(self.request)
+
+class ShopPageSchemaViewSet(views.APIView):
+    permission_classes = [permissions.AllowAny, ]
+    serializer_class = ShopPageSchemaSerializer
+
+    def get_object(self, shop_id):
+        return get_object_or_404(Shop, Slug=shop_id)
+
+    def get(self, request, shop_id, format=None):
+        shops = ShopPageSchema.objects.get_published_schema(self.request, shop_id)
+        serializer = ShopPageSchemaSerializer(shops, many=True)
+        return Response(serializer.data)
+
+class GroupProductCreateUpdateExcel(views.APIView):
+    permission_classes = [permissions.IsAuthenticated, IsShopOwner]
+    authentication_classes = [CsrfExemptSessionAuthentication, ]
+
+    def get_object(self, shop_slug):
+        return get_object_or_404(Shop, Slug=shop_slug)
+
+    def post(self, request, shop_slug, format=None):
+        shop = self.get_object(shop_slug)
+        self.check_object_permissions(request, shop)
+        csv_file = request.FILES['product-excel-upload']
+        df = pd.read_csv(csv_file,
+            dtype={'barcode':str,'Price':'Int64', 'OldPrice':'Int64','Inventory':'Int64'})
+        total_rows = df.shape[0]
+        df.dropna(inplace=True)
+        na_rows = total_rows - df.shape[0]
+        df['Slug'] = list(map(lambda title: shop.Slug+'-'+slugify(title, allow_unicode=True), df['Title']))
+        df.drop_duplicates(subset='Slug', keep='first', inplace=True)
+        slug_duplicate_rows = na_rows - df.shape[0]
+        barcodes = df['barcode'].to_list()
+        available_barcodes = Product.objects.filter(FK_Shop=shop, barcode__in=barcodes)\
+            .values_list('barcode', flat=True)
+        unavailable_barcodes = list(filter(lambda barcode: barcode not in available_barcodes, barcodes ))
+        available_df = df.query('barcode in @available_barcodes')
+        unavailable_df = df.query('barcode in @unavailable_barcodes')
+        available_products = list(map(lambda row: Product(FK_Shop=shop, **row), available_df.T.to_dict().values()))
+        unavailable_products = list(map(lambda row: Product(FK_Shop=shop, **row), unavailable_df.T.to_dict().values()))
+        Product.objects.bulk_update(available_products, ['Price','OldPrice','Inventory'])
+        Product.objects.bulk_create(unavailable_products)
+        available_rows = len(available_barcodes)
+        unavailable_rows = len(unavailable_barcodes)
+        return Response(status=status.HTTP_200_OK, data={
+            'available_rows': available_rows,
+            'unavailable_rows': unavailable_rows,
+            'total_rows': total_rows,
+            'na_rows': na_rows,
+            'slug_duplicate_rows': slug_duplicate_rows
+        })
+
+class MostSoldProduct(views.APIView):
+    permission_classes = [permissions.AllowAny, ]
+    serializer_class = ProductSerializer
+
+    def get_object(self):
+        return Product.objects.get_most_sold_product()
+
+    def get(self, request, format=None):
+        product = self.get_object()
+        serializer = ProductSerializer(product, many=True)
         return Response(serializer.data)
