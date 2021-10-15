@@ -21,9 +21,9 @@ load_dotenv()
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-LOGIN = '/profile/dashboard/'
+LOGIN = '/profile/'
 LOGIN_URL = reverse_lazy('auth:get-phone')
-LOGIN_REDIRECT_URL = '/profile/dashboard/'
+LOGIN_REDIRECT_URL = '/profile/'
 LOGOUT_REDIRECT_URL = '/'
 REDIRECT_FIELD_NAME = 'next'
 
