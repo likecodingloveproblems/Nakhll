@@ -160,6 +160,9 @@ class Invoice(models.Model, AccountingInterface):
 
 
 class InvoiceItem(models.Model):
+    class Meta:
+        verbose_name = _('آیتم فاکتور')
+        verbose_name_plural = _('آیتم های فاکتور')
     class ItemStatuses(models.TextChoices):
         AWAIT_PAYMENT = 'awaiting_paying', _('در انتظار پرداخت')
         AWAIT_SHOP_APPROVAL = 'wait_store_approv', _('در انتظار تأیید فروشگاه')

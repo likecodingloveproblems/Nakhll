@@ -37,6 +37,9 @@ class Transaction(models.Model):
 
 
 class TransactionResult(models.Model):
+    class Meta:
+        verbose_name = _('نتیجه تراکنش')
+        verbose_name_plural = _('نتایج تراکنش')
     transaction = models.OneToOneField(Transaction, verbose_name=_('تراکنش'), on_delete=models.CASCADE,
                                         related_name='result', null=True, blank=True)
     token = models.CharField(_('توکن'), max_length=200, null=True)
