@@ -130,6 +130,16 @@ ADMIN_REORDER = (
             'logistic.PostPriceSetting',
         )
     },
+    {'app': 'payoff', 'label': 'بخش مالی جدید','models':(
+        'payoff.Transaction',
+        'payoff.TransactionResult',
+        'payoff.TransactionReverse',
+        'payoff.TransactionConfirmation',
+    )},
+    {'app': 'accounting_new', 'label': 'بخش حسابداری جدید','models':(
+        'accounting_new.Invoice',
+        'accounting_new.InvoiceItem',
+    )},
     {'app': 'Payment', 'label': 'بخش مالی','models':(
         'Payment.Wallet',
         'Payment.Factor',
