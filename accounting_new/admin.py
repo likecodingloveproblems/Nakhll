@@ -19,7 +19,7 @@ class InvoiceAdmin(admin.ModelAdmin):
         user_mobile_number = obj.user.User_Profile.MobileNumber
         if obj.address_json:
             address = json.loads(obj.address_json)
-            return obj.address.get('receiver_mobile_number', user_mobile_number)
+            return address.get('receiver_mobile_number', user_mobile_number)
         return user_mobile_number
     mobile_number.short_description = 'شماره همراه'
 
