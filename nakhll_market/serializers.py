@@ -284,7 +284,7 @@ class ProductUpdateSerializer(serializers.ModelSerializer):
             'PreparationDays',
             'FK_SubMarket',
             'Product_Banner',
-            # 'post_range'
+            'post_range'
         ]
     def update(self, instance, validated_data):
         # Direct assignment to the reverse side of a related set is prohibited, 
@@ -294,6 +294,10 @@ class ProductUpdateSerializer(serializers.ModelSerializer):
         deleted_banners = [banner.delete() 
                            for banner in instance.Product_Banner.all() 
                            if banner not in product_banners]
+
+        product_post_ranges = validated_data.pop('post_range_cities')
+        instance.post_range_cities.clear()
+        instance.post_range_cities.add(*product_post_ranges)
 
         for prop in validated_data:
             setattr(instance, prop, validated_data[prop])
@@ -319,7 +323,7 @@ class ProductWriteSerializer(serializers.ModelSerializer):
             'PostRangeType',
             'PreparationDays',
             'FK_Shop',
-            # 'post_range'
+            'post_range'
         ]
 
 class FullMarketSerializer(serializers.ModelSerializer):
