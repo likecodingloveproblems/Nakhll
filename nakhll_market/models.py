@@ -17,7 +17,7 @@ from django.conf import settings
 from django.utils.deconstruct import deconstructible
 from django.utils import timezone
 import uuid, random, string, os, time
-from django.shortcuts import reverse, get_object_or_404
+from django.shortcuts import redirect, reverse, get_object_or_404
 from django_jalali.db import models as jmodels
 from django.dispatch import receiver
 import json
@@ -1415,10 +1415,7 @@ class Product(models.Model):
         return SendType[self.PostRangeType]
 
     def get_absolute_url(self):
-        return reverse("nakhll_market:ProductsDetail", kwargs={
-            'shop_slug': self.FK_Shop.Slug,
-            'product_slug': self.Slug,
-        })
+        return attach_domain(f'/product/{self.Slug}')
 
     def get_add_to_cart_url(self):
         return reverse("Payment:add-to-cart", kwargs={
