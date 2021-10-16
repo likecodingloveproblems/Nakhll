@@ -9,25 +9,6 @@ class PostPriceSettingInterface:
         After inharitance, self variable reference to a setting object
         which contains prices to calculate post_price.
     '''
-
-    def _is_vaild_product_post_range(self, invoice_item, user_address):
-        ''' Check if user_address is in range of shop post range '''
-        dst_state = user_address.state
-        dst_big_city = user_address.big_city
-        dst_city = user_address.city
-
-        if invoice_item.product.PostRangeType == '1': # This is a post inside coutry and is true
-            return True
-        elif invoice_item.product.PostRangeType == '2': # This is a post in a state
-            if dst_state == invoice_item.product.FK_Shop.State:
-                return True
-            return False
-        elif invoice_item.product.PostRangeType == '3' or invoice_item.product.PostRangeType == '4': # This is a post in a big city or city
-            if invoice_item.product.FK_Shop.State == dst_state and invoice_item.product.FK_Shop.BigCity == dst_big_city and invoice_item.product.FK_Shop.City == dst_city:
-                return True
-            else:
-                return False
-
     def get_out_of_range_products(self, invoice):
         ''' Check if all products in invoice can sent to user address'''
         if not all([hasattr(invoice, 'items') and hasattr(invoice, 'address')]):
@@ -44,6 +25,30 @@ class PostPriceSettingInterface:
         return out_of_range_products
 
         
+    def _is_vaild_product_post_range(self, invoice_item, user_address):
+        ''' Check if user_address is in range of shop post range '''
+        # dst_state = user_address.state
+        # dst_big_city = user_address.big_city
+        dst_city = user_address.city
+
+        # if invoice_item.product.PostRangeType == '1': # This is a post inside coutry and is true
+        #     return True
+        # elif invoice_item.product.PostRangeType == '2': # This is a post in a state
+        #     if dst_state == invoice_item.product.FK_Shop.State:
+        #         return True
+        #     return False
+        # elif invoice_item.product.PostRangeType == '3' or invoice_item.product.PostRangeType == '4': # This is a post in a big city or city
+        #     if invoice_item.product.FK_Shop.State == dst_state and invoice_item.product.FK_Shop.BigCity == dst_big_city and invoice_item.product.FK_Shop.City == dst_city:
+        #         return True
+        #     else:
+        #         return False
+
+        if invoice_item.product.post_range_cities.all() and dst_city not in invoice_item.product.post_range_cities.all():
+            return False
+        return True
+
+
+
 
     def get_post_price(self, invoice):
         ''' Calculate each shop post_price based on user address '''
