@@ -2548,7 +2548,7 @@ class ChangeFactorToConfirmed(APIView):
 
         # Check for any invoice_item that not confirmed yet
         if all(item.status == InvoiceItem.ItemStatuses.PREPATING_PRODUCT for item in invoice_items):
-            invoice.status = Invoice.InvoiceStatuses.PREPATING_PRODUCT
+            invoice.status = Invoice.Statuses.PREPATING_PRODUCT
             invoice.save()
             response_msg = 'Done'
         else:

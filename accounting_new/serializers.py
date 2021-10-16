@@ -104,7 +104,7 @@ class InvoiceProviderRetrieveSerializer(serializers.ModelSerializer):
     created_date_jalali = serializers.SerializerMethodField()
     final_price = serializers.SerializerMethodField()
     invoice_price_with_discount = serializers.SerializerMethodField()
-    inovice_price_without_discount = serializers.SerializerMethodField()
+    invoice_price_without_discount = serializers.SerializerMethodField()
 
     def get_final_price(self, obj):
         user = self.context.get('request').user
