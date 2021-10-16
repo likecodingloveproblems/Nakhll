@@ -8,6 +8,7 @@ from logistic.serializers import AddressSerializer
 from coupon.models import Coupon
 from coupon.serializers import CouponUsageSerializer
 from nakhll_market.serializers import UserSerializer
+from nakhll_market.models import attach_domain
 
 
 class InvoiceItemSerializer(serializers.ModelSerializer):
@@ -15,6 +16,8 @@ class InvoiceItemSerializer(serializers.ModelSerializer):
     added_date_jalali = serializers.SerializerMethodField()
     added_time_jalali = serializers.SerializerMethodField()
     buyer = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
+    image_thumbnail = serializers.SerializerMethodField()
     class Meta:
         model = InvoiceItem
         fields = ['id', 'product', 'slug', 'name', 'count', 'price_with_discount', 'weight',
@@ -32,7 +35,16 @@ class InvoiceItemSerializer(serializers.ModelSerializer):
 
     def get_buyer(self, obj):
         return obj.invoice.user.get_full_name()
-        
+
+    def get_image(self, obj):
+        if obj.image:
+            return attach_domain(obj.image.url)
+        return 'https://nakhll.com/media/Pictures/default.jpg'
+
+    def get_image_thumbnail(self, obj):
+        if obj.image_thumbnail:
+            return attach_domain(obj.image_thumbnail.url)
+        return 'https://nakhll.com/media/Pictures/default.jpg'
 
 class InvoiceWriteSerializer(serializers.ModelSerializer):
     address = serializers.PrimaryKeyRelatedField(queryset=Address.objects.all(), required=False)
