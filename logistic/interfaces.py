@@ -79,7 +79,7 @@ class PostPriceSettingInterface:
         ''' Get post wieght price from factor '''
         total_post_price = 0
         # TODO: This needs more check and is not completed yet
-        weight_gram = invocie.total_weight_gram
+        weight_gram = invocie.total_weight_gram or 1
         weight_kilogram = weight_gram / 1000
         if weight_kilogram > 1: # There is a fee for more than 1kg
             extra_weight = weight_kilogram - 1 # for example 2.5kg is 2.5kg - 1kg = 1.5kg

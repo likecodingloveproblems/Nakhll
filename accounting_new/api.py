@@ -128,11 +128,11 @@ class InvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
         serializer = InvoiceWriteSerializer(instance=invoice, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        # logistic, is_created = PostPriceSetting.objects.get_or_create()
-        # out_of_range_shops = logistic.get_out_of_range_products(invoice)
-        # post_price = logistic.get_post_price(invoice)
-        post_price = invoice.logistic_price
-        out_of_range_products = invoice.logistic_errors
+        logistic, is_created = PostPriceSetting.objects.get_or_create()
+        out_of_range_products = logistic.get_out_of_range_products(invoice)
+        post_price = logistic.get_post_price(invoice)
+        invoice.logistic_price = post_price
+        invoice.save()
         return Response({'post_price': post_price, 'out_of_range': out_of_range_products}, status=status.HTTP_200_OK)
 
 
