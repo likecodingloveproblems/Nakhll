@@ -31,6 +31,7 @@ class Invoice(models.Model, AccountingInterface):
     class Meta:
         verbose_name = _('فاکتور')
         verbose_name_plural = _('فاکتورها')
+        ordering = ('-id',)
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_('کاربر'))
     old_id = models.UUIDField(null=True, blank=True)
@@ -52,6 +53,10 @@ class Invoice(models.Model, AccountingInterface):
     extra_data = models.JSONField(null=True, blank=True, encoder=DjangoJSONEncoder)
     total_weight_gram = models.PositiveIntegerField(_('وزن نهایی (گرم)'), null=True, blank=True)
     objects = AccountingManager()
+
+    def __str__(self):
+        return f'{self.id} ({self.FactorNumber})'
+
 
     @property
     def shops(self):
