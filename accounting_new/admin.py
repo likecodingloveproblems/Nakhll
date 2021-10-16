@@ -1,6 +1,6 @@
+import jdatetime, json
 from django.contrib import admin
 from accounting_new.models import Invoice, InvoiceItem
-import jdatetime
 
 # Register your models here.
 admin.site.register(InvoiceItem)
@@ -16,9 +16,11 @@ class InvoiceAdmin(admin.ModelAdmin):
     search_fields = ('id', 'FactorNumber')
 
     def mobile_number(self, obj):
+        user_mobile_number = obj.user.User_Profile.MobileNumber
         if obj.address_json:
-            return obj.address_json['receiver_mobile_number']
-        return obj.user.User_Profile.MobileNumber
+            address = json.loads(obj.address_json)
+            return obj.address.get('receiver_mobile_number', user_mobile_number)
+        return user_mobile_number
     mobile_number.short_description = 'شماره همراه'
 
     def created_datetime_jalali(self, obj):
