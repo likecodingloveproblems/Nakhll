@@ -6,7 +6,7 @@ from coupon.models import CouponUsage
 # Register your models here.
 class InvoiceItemInline(admin.TabularInline):
     model = InvoiceItem
-    fields = ('name', 'count', 'price_with_discount', 'price_without_discount', 'weight', 'shop_name', )
+    fields = ('name', 'count', 'price_with_discount', 'price_without_discount', 'weight', 'shop_name', 'barcode')
     extra = 0
     # readonly_fields = fields
 
@@ -19,7 +19,7 @@ class CouponUsageInline(admin.TabularInline):
 @admin.register(Invoice)
 class InvoiceAdmin(admin.ModelAdmin):
     list_display=('id', 'FactorNumber', 'user', 'status',  'final_price', 'post_price', 'coupons_total_price',
-                    'receiver_mobile_number', 'receiver_full_name', 'created_datetime_jalali',  )
+                    'receiver_mobile_number', 'receiver_full_name', 'created_datetime_jalali', 'post_tracking_code', )
     list_filter=('status','user',)
     readonly_fields = ('id',)
     ordering=['-created_datetime', ]
@@ -52,6 +52,14 @@ class InvoiceAdmin(admin.ModelAdmin):
     def post_price(self, obj):
         return f'{obj.logistic_price:,} ریال'
     post_price.short_description = 'هزینه ارسال'
+
+    def post_tracking_code(self, obj):
+        barcodes_set = set()
+        for item in obj.items.all():
+            if item.barcode:
+                barcodes_set.add(item.barcode)
+        return ','.join(barcodes_set)
+    post_tracking_code.short_description = 'کد پستی'
 
     def coupons_total_price(self, obj):
         return f'{obj.coupons_total_price:,} ریال'
