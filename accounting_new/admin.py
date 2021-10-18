@@ -21,9 +21,14 @@ class InvoiceAdmin(admin.ModelAdmin):
     list_display=('id', 'FactorNumber', 'user', 'status',  'final_price', 'post_price', 'coupons_total_price',
                     'receiver_mobile_number', 'receiver_full_name', 'created_datetime_jalali', 'post_tracking_code', )
     list_filter=('status','user',)
-    readonly_fields = ('id',)
+    readonly_fields = ('id','final_price', 'post_price', 'coupons_total_price', 'display_address',
+                'receiver_mobile_number', 'receiver_full_name', 'created_datetime_jalali', 'post_tracking_code',)
     ordering=['-created_datetime', ]
     search_fields = ('id', 'FactorNumber')
+    fields = ('id', 'user', 'old_id', 'FactorNumber', 'status', 'display_address', 'invoice_price_with_discount', 
+                'invoice_price_without_discount', 'logistic_price', 'payment_request_datetime', 'payment_datetime',
+                'payment_unique_id', 'total_weight_gram', 'final_price', 'created_datetime_jalali', 'coupons_total_price')
+        
     inlines = [InvoiceItemInline, CouponUsageInline]
 
     def receiver_mobile_number(self, obj):
@@ -59,8 +64,23 @@ class InvoiceAdmin(admin.ModelAdmin):
             if item.barcode:
                 barcodes_set.add(item.barcode)
         return ','.join(barcodes_set)
-    post_tracking_code.short_description = 'کد پستی'
+    post_tracking_code.short_description = 'بارکد رهگیری پستی'
 
     def coupons_total_price(self, obj):
         return f'{obj.coupons_total_price:,} ریال'
     coupons_total_price.short_description = 'هزینه کوپن'
+
+    def display_address(self, obj):
+        if obj.address_json:
+            address = json.loads(obj.address_json)
+            state = address.get('state', '')
+            big_city = address.get('big_city', '')
+            city = address.get('city', '')
+            address_text = address.get('address', '')
+            zip_code = address.get('zip_code', '')
+            reveiver_name = address.get('receiver_full_name', '')
+            reveiver_mobile_number = address.get('receiver_mobile_number', '')
+            return f'{state}, {big_city}, {city}, {address_text}\n\
+                    کد پستی: {zip_code} - گیرنده:{reveiver_name} - شماره تماس:{reveiver_mobile_number}'
+        return ''
+    display_address.short_description = 'آدرس'
