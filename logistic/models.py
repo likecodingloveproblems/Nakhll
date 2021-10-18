@@ -39,7 +39,7 @@ class Address(models.Model):
             'receiver_full_name': self.receiver_full_name,
             'receiver_mobile_number': self.receiver_mobile_number
         }
-        return json.dumps(address_data)
+        return json.dumps(address_data, ensure_ascii=False)
 
 
 class PostPriceSetting(models.Model, PostPriceSettingInterface):
