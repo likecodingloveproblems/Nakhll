@@ -148,7 +148,7 @@ ADMIN_REORDER = (
         'Payment.PostTrackingCode',
         'Payment.ManegerFactor',
         'Payment.Transaction',
-        'Payment.Coupon',
+        'coupon.Coupon',
         'Payment.Campaign',
         'Payment.Installment',
         'Payment.Invitation',
