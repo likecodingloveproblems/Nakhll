@@ -2794,5 +2794,8 @@ class ShopPageSchemaManager(LandingPageSchemaManager):
     def get_unpublished_schema(self, request, shop_id):
         return self.get_for_device(request).filter(shop=shop_id, publish_status=ShopPageSchema.PublishStatuses.PREVIEW).order_by('order')
 class ShopPageSchema(LandingPageSchema):
+    class Meta:
+        verbose_name = 'برنامه بندی صفحه حجره دار'
+        verbose_name_plural = 'برنامه بندی صفحه حجره دار'
     shop = models.ForeignKey(Shop, verbose_name='فروشگاه', on_delete=models.CASCADE, related_name='shop_page_schemas')
     objects = ShopPageSchemaManager()
