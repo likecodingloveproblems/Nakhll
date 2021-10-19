@@ -2753,7 +2753,9 @@ class LandingPageSchemaManager(models.Manager):
         return self.get_queryset()
 
     def get_published_schema(self, request):
-        return self.get_for_device(request).filter(publish_status=LandingPageSchema.PublishStatuses.PUBLISH).order_by('order')
+        return self.get_for_device(request).filter(
+            publish_status=LandingPageSchema.PublishStatuses.PUBLISH,
+            shoppageschema=None).order_by('order')
 class LandingPageSchema(models.Model):
     class Meta:
         verbose_name = 'برنامه بندی صفحه اول'
