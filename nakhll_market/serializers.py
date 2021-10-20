@@ -524,7 +524,7 @@ class ShopProductSerializer(serializers.ModelSerializer):
 class NewProfileSerializer(serializers.ModelSerializer):
     wallet = serializers.ReadOnlyField(source='FK_User.WalletManager.Inverntory')
     FK_User = UserSerializer(many=False, read_only=False)
-    Image = Base64ImageField()
+    Image = Base64ImageField(max_length=None, use_url=True, allow_empty_file=False, required=False)
     class Meta:
         model = Profile
         fields = ['id', 'NationalCode', 'MobileNumber', 'FK_User', 'BrithDay', 'Image', 'wallet', 'State', 'BigCity', 'City', 'Sex', 'Bio', 'image']
@@ -534,9 +534,9 @@ class NewProfileSerializer(serializers.ModelSerializer):
         }
         
     def update(self, instance, validated_data):
-        image = validated_data.pop('Image')
-        if image:
-            instance.Image = image
+        if 'Image' in validated_data:
+            instance.Image = validated_data.pop('Image')
+
         user = validated_data.pop('FK_User')
         instance.user.first_name = user.get('first_name')
         instance.user.last_name = user.get('last_name')
