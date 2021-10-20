@@ -67,8 +67,14 @@ class ShopValidator:
     def __init__(self, invoice):
         self.shops = invoice.shops
     def __call__(self, coupon):
-        if coupon.constraint.shops.all() and self.shops not in coupon.constraint.shops.all():
-            raise ShopException(coupon, _('این کوپن برای استفاده از این فروشگاه تعریف نشده است'), self.shops)
+        if coupon.constraint.shops.all():
+            flag = False
+            for shop in self.shops:
+                if shop in coupon.constraint.shops.all():
+                    flag = True
+                    break
+            if not flag:
+                raise ShopException(coupon, _('این کوپن برای استفاده از این فروشگاه تعریف نشده است'), self.shops)
 
 class ProductValidator:
     def __init__(self, invoice):
