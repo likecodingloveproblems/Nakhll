@@ -15,7 +15,7 @@ from nakhll_market.models import (
     )
 from nakhll_market.serializers import (
     AmazingProductSerializer, Base64ImageSerializer, NewProfileSerializer, ProductCommentSerializer, ProductDetailSerializer, ProductImagesSerializer,
-    ProductSerializer, ProductUpdateSerializer, ShopProductSerializer, ShopSerializer,SliderSerializer, ProductPriceWriteSerializer,
+    ProductSerializer, ProductUpdateSerializer, ShopProductSerializer, ShopSerializer, ShopSimpleSerializer,SliderSerializer, ProductPriceWriteSerializer,
     CategorySerializer, FullMarketSerializer, CreateShopSerializer, ProductInventoryWriteSerializer,
     ProductListSerializer, ProductWriteSerializer, ShopAllSettingsSerializer, ProductBannerSerializer,
     ShopBankAccountSettingsSerializer, SocialMediaAccountSettingsSerializer, ProductSubMarketSerializer, StateFullSeraializer, SubMarketProductSerializer, SubMarketSerializer,
@@ -339,7 +339,11 @@ class GetShop(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
     queryset = Shop.objects.filter(Available=True, Publish=True)
     lookup_field = 'Slug'
 
-
+class GetShopList(viewsets.GenericViewSet, mixins.ListModelMixin):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, ]
+    authentication_classes = [CsrfExemptSessionAuthentication, ]
+    serializer_class = ShopSimpleSerializer
+    queryset = Shop.objects.filter(Available=True, Publish=True).select_related('FK_ShopManager', 'FK_ShopManager__User_Profile', )
 
 
 

@@ -45,13 +45,19 @@ class ShopSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shop
         fields = [
-            'ID', 'slug', 'title', 'url', 'image_thumbnail_url', 'total_products', 'profile',
-            'state', 'big_city', 'city', 'registered_months', 'FK_ShopManager', 'banners',
+            'ID', 'slug', 'title', 'image_thumbnail_url', 'total_products',
+            'state', 'big_city', 'city', 'registered_months', 'FK_ShopManager',
             'is_landing', 'has_product_group_add_edit_permission',
+            'banners', 'profile',
         ]
     def get_registered_months(self, obj):
         ''' Calculate months from DateCreate till now '''
         return (timezone.now() - obj.DateCreate).days // 30
+
+class ShopSimpleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Shop
+        fields = ['ID', 'slug', 'title', ]
 
 class CreateShopSerializer(serializers.ModelSerializer):
     class Meta:
