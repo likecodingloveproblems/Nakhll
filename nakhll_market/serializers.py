@@ -542,6 +542,7 @@ class NewProfileSerializer(serializers.ModelSerializer):
         instance.user.last_name = user.get('last_name')
         for prop in validated_data:
             setattr(instance, prop, validated_data[prop])
+        instance.user.save()
         instance.save()
         return instance
 
