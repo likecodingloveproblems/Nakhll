@@ -1,14 +1,21 @@
-from accounting_new.models import Invoice
-from restapi.serializers import ProfileSerializer
-from django.contrib.auth.models import User
-from django.db.models.aggregates import Sum
-from django.db.models.expressions import Case, When
-from django.db.models import Value, IntegerField
+import random
+import pandas as pd
+from django.shortcuts import get_object_or_404
 from django.http import response
 from django.http.response import Http404
-from django.shortcuts import get_object_or_404
+from django.db.models import Q, F, Count
+from django.db.models.aggregates import Sum
+from django.db.models.expressions import Case, When
+from django.contrib.auth.models import User
+from django.utils.text import slugify
+from rest_framework import generics, routers, status, views, viewsets
+from rest_framework import permissions, filters, mixins
 from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError, PermissionDenied, AuthenticationFailed
+from rest_framework.decorators import action
+from django_filters import rest_framework as restframework_filters
+from nakhll.authentications import CsrfExemptSessionAuthentication
 from nakhll_market.models import (
     Alert, AmazingProduct, Comment, Product, ProductBanner, Shop, Slider, Category, Market, State, BigCity, City, SubMarket,
     LandingPageSchema, ShopPageSchema,
@@ -21,20 +28,13 @@ from nakhll_market.serializers import (
     ShopBankAccountSettingsSerializer, SocialMediaAccountSettingsSerializer, ProductSubMarketSerializer, StateFullSeraializer, SubMarketProductSerializer, SubMarketSerializer,
     LandingPageSchemaSerializer, ShopPageSchemaSerializer, UserOrderSerializer,
     )
-from rest_framework import generics, routers, status, views, viewsets
-from rest_framework import permissions, filters, mixins
-from rest_framework.decorators import action
-from django.db.models import Q, F, Count
-import random
-from nakhll.authentications import CsrfExemptSessionAuthentication
-from rest_framework.response import Response
-from django.utils.text import slugify
 from restapi.permissions import IsFactorOwner, IsProductOwner, IsShopOwner, IsProductBannerOwner
-from nakhll_market.paginators import StandardPagination
+from restapi.serializers import ProfileSerializer
+from accounting_new.models import Invoice
 from nakhll_market.filters import ProductFilter
 from nakhll_market.permissions import IsInvoiceOwner
-from django_filters import rest_framework as restframework_filters
-import pandas as pd
+from nakhll_market.paginators import StandardPagination
+from nakhll_market.product_bulk_operations import BulkProductHandler
 
 class SliderViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = SliderSerializer
@@ -679,39 +679,19 @@ class GroupProductCreateUpdateExcel(views.APIView):
     authentication_classes = [CsrfExemptSessionAuthentication, ]
 
     def get_object(self, shop_slug):
-        return get_object_or_404(Shop, Slug=shop_slug)
+        shop = get_object_or_404(Shop, Slug=shop_slug)
+        self.check_object_permissions(self.request, shop)
+        return shop
 
     def post(self, request, shop_slug, format=None):
         shop = self.get_object(shop_slug)
-        self.check_object_permissions(request, shop)
-        csv_file = request.FILES['product-excel-upload']
-        df = pd.read_csv(csv_file,
-            dtype={'barcode':str,'Price':'Int64', 'OldPrice':'Int64','Inventory':'Int64'})
-        total_rows = df.shape[0]
-        df.dropna(inplace=True)
-        na_rows = total_rows - df.shape[0]
-        df['Slug'] = list(map(lambda title: shop.Slug+'-'+slugify(title, allow_unicode=True), df['Title']))
-        df.drop_duplicates(subset='Slug', keep='first', inplace=True)
-        slug_duplicate_rows = na_rows - df.shape[0]
-        barcodes = df['barcode'].to_list()
-        available_barcodes = Product.objects.filter(FK_Shop=shop, barcode__in=barcodes)\
-            .values_list('barcode', flat=True)
-        unavailable_barcodes = list(filter(lambda barcode: barcode not in available_barcodes, barcodes ))
-        available_df = df.query('barcode in @available_barcodes')
-        unavailable_df = df.query('barcode in @unavailable_barcodes')
-        available_products = list(map(lambda row: Product(FK_Shop=shop, **row), available_df.T.to_dict().values()))
-        unavailable_products = list(map(lambda row: Product(FK_Shop=shop, **row), unavailable_df.T.to_dict().values()))
-        Product.objects.bulk_update(available_products, ['Price','OldPrice','Inventory'])
-        Product.objects.bulk_create(unavailable_products)
-        available_rows = len(available_barcodes)
-        unavailable_rows = len(unavailable_barcodes)
-        return Response(status=status.HTTP_200_OK, data={
-            'available_rows': available_rows,
-            'unavailable_rows': unavailable_rows,
-            'total_rows': total_rows,
-            'na_rows': na_rows,
-            'slug_duplicate_rows': slug_duplicate_rows
-        })
+        csv_file = request.FILES.get('product-excel-upload')
+        zip_file = request.FILES.get('product-zip-file')
+        bulk_product_handler = BulkProductHandler(shop=shop, images_zip_file=zip_file)
+        result = bulk_product_handler.parse_csv(csv_file)
+        return Response(result)
+
+
 
 class MostSoldProduct(views.APIView):
     permission_classes = [permissions.AllowAny, ]
