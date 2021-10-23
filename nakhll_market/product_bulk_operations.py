@@ -1,6 +1,7 @@
 import os
 import zipfile
 import random
+import shutil
 import pandas as pd
 from django.utils.text import slugify
 from django.conf import settings
@@ -37,6 +38,7 @@ class BulkProductHandler:
         df = self.__add_slug_to_df(df)
         df = self.__drop_duplicate_slugs(df)
         result = self.save_to_db(df)
+        self.__delete_image_files()
         return result
 
     def save_to_db(self, df):
@@ -160,3 +162,6 @@ class BulkProductHandler:
     def __drop_image_fields(self, df):
         for image_field in self.image_fields:
             df.drop(image_field, axis=1, inplace=True)
+
+    def __delete_image_files(self):
+        shutil.rmtree(self.images_path)
