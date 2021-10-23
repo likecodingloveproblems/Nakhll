@@ -2779,7 +2779,7 @@ class LandingPageSchema(models.Model):
     data = models.URLField(verbose_name='داده ها', max_length=255)
     title = models.CharField(verbose_name='عنوان', max_length=127, null=True, blank=True)
     subtitle = models.CharField(verbose_name='زیر عنوان', max_length=127, null=True, blank=True)
-    url = models.URLField(max_length=100, verbose_name='لینک', null=True, blank=True)
+    url = models.URLField(max_length=255, verbose_name='لینک', null=True, blank=True)
     background_color = ColorField(verbose_name='رنگ پس زمینه', null=True, blank=True)
     image = models.ImageField(verbose_name='عکس', upload_to=PathAndRename('media/Pictures/LandingPage/Schema/'), null=True, blank=True)
     order = models.IntegerField(verbose_name='ترتیب', default=0)
