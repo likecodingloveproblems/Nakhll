@@ -9,9 +9,9 @@ from nakhll_market.models import Product, ProductBanner
 
 
 class BulkProductHandler:
-    def __init__(self, *, shop, images_zip_file=None,
+    def __init__(self, *, shop, images_zip_file=None, barcode_field='barcode',
                  required_fields_with_types={'Title': object, 'barcode': object,
-                                             'Price': 'Int64', 'OldPrice': 'Int64', 'Inventory': 'Int64'},
+                                'Price': 'Int64', 'OldPrice': 'Int64', 'Inventory': 'Int64'},
                  optional_fields_with_types={
                      'Description': object, 'Image': object},
                  update_fields=['Price', 'OldPrice', 'Inventory'],
@@ -19,6 +19,7 @@ class BulkProductHandler:
         self.df = None
         self.shop = shop
         self.na_rows = None
+        self.barcode_field = barcode_field
         self.images_path = self.parse_images_zip(images_zip_file)
         self.slug_duplicate_rows = None
         self.required_fields_with_types = required_fields_with_types
@@ -42,8 +43,7 @@ class BulkProductHandler:
         return result
 
     def save_to_db(self, df):
-        new_products_df, old_products_df = self.__seperate_new_and_old_products(
-            df)
+        new_products_df, old_products_df = self.__seperate_new_old_products(df)
         old_products = self.__create_old_products_instance(old_products_df)
         new_products = self.__create_new_products_instance(new_products_df)
         return {
@@ -54,12 +54,32 @@ class BulkProductHandler:
             'slug_duplicate_rows': self.slug_duplicate_rows,
         }
 
+    def parse_images_zip(self, images_zip_file):
+        rand_num = random.randint(1, 100000)
+        path = f'/tmp/bulk_product_images/{rand_num}'
+        if images_zip_file:
+            with zipfile.ZipFile(images_zip_file, 'r') as zip_ref:
+                zip_ref.extractall(path)
+        return path
+
+    def validate_df(self, df):
+        self._validate_required_fields(df)
+        self._validate_optional_fields(df)
+        self.__drop_extra_fields(df)
+
     def __create_old_products_instance(self, df):
-        self.__drop_nonupdate_fields(df)
-        old_products = [Product(FK_Shop=self.shop, **row)
-                        for row in df.T.to_dict().values()]
-        Product.objects.bulk_update(old_products, self.update_fields)
-        return old_products
+        products = Product.objects.filter(
+            FK_Shop=self.shop, barcode__in=df[self.barcode_field].to_list())
+        update_list = []
+        for product in products:
+            for field in self.update_fields:
+                if field in df.columns:
+                    setattr(
+                        product, field, df[field][
+                                df[self.barcode_field] == product.barcode].values[0])
+            update_list.append(product)
+        Product.objects.bulk_update(update_list, self.update_fields)
+        return update_list
 
     def __create_new_products_instance(self, df):
         product_images_dictioanry = self.__pop_images_dictioanry(df)
@@ -72,8 +92,9 @@ class BulkProductHandler:
     def __append_images_to_products(self, new_products_df, product_images_dictioanry):
         bulk_product_list = []
         bulk_product_banner_list = []
-        new_products_sorted = Product.objects.filter(FK_Shop=self.shop,
-                                                     barcode__in=new_products_df['barcode'].to_list()).order_by('barcode')
+        new_products_sorted = Product.objects.filter(
+                            FK_Shop=self.shop, barcode__in=new_products_df[
+                            self.barcode_field].to_list()).order_by(self.barcode_field)
         for product, product_image_item in zip(new_products_sorted, product_images_dictioanry):
             images = product_image_item[1]
             if images:
@@ -85,21 +106,6 @@ class BulkProductHandler:
                     bulk_product_banner_list.append(product_banner)
         Product.objects.bulk_update(bulk_product_list, ['Image'])
         ProductBanner.objects.bulk_create(bulk_product_banner_list)
-
-    def validate_df(self, df):
-        self._validate_required_fields(df)
-        self._validate_optional_fields(df)
-        self.__drop_extra_fields(df)
-
-    def __drop_extra_fields(self, df):
-        extra_fields = list(set(df.columns) - set(self.required_fields_with_types.keys())
-                                            - set(self.optional_fields_with_types.keys())
-                                            - set(self.image_fields.keys()))
-        df.drop(extra_fields, axis=1, inplace=True)
-
-    def __drop_nonupdate_fields(self, df):
-        nonupdate_fields = list(set(df.columns) - set(self.update_fields))
-        df.drop(nonupdate_fields, axis=1, inplace=True)
 
     def _validate_required_fields(self, df):
         for field, field_type in self.required_fields_with_types.items():
@@ -114,6 +120,12 @@ class BulkProductHandler:
                 continue
             if df[field].dtype != field_type:
                 raise Exception(f'{field} must be {field_type}')
+
+    def __drop_extra_fields(self, df):
+        extra_fields = list(set(df.columns) - set(self.required_fields_with_types.keys())
+                                            - set(self.optional_fields_with_types.keys())
+                                            - set(self.image_fields.keys()))
+        df.drop(extra_fields, axis=1, inplace=True)
 
     def __add_slug_to_df(self, df):
         df['Slug'] = list(map(lambda title: self.shop.Slug +
@@ -130,25 +142,19 @@ class BulkProductHandler:
         self.slug_duplicate_rows = df[~df.index.isin(duplicate_free.index)]
         return duplicate_free
 
-    def __seperate_new_and_old_products(self, df):
+    def __seperate_new_old_products(self, df):
         new_products = df.query(
-            'barcode not in @Product.objects.filter(FK_Shop=@self.shop).values_list("barcode", flat=True)')
+            f'{self.barcode_field} not in @Product.objects.filter(FK_Shop=@self.shop)\
+                                    .values_list(@self.barcode_field, flat=True)')
         old_products = df.query(
-            'barcode in @Product.objects.filter(FK_Shop=@self.shop).values_list("barcode", flat=True)')
+            f'{self.barcode_field} in @Product.objects.filter(FK_Shop=@self.shop).\
+                                    values_list(@self.barcode_field, flat=True)')
         return new_products, old_products
-
-    def parse_images_zip(self, images_zip_file):
-        rand_num = random.randint(1, 100000)
-        path = f'/tmp/bulk_product_images/{rand_num}'
-        if images_zip_file:
-            with zipfile.ZipFile(images_zip_file, 'r') as zip_ref:
-                zip_ref.extractall(path)
-        return path
 
     def __pop_images_dictioanry(self, df):
         images_dictioanry = {}
         for index, row in df.iterrows():
-            barcode = row['barcode']
+            barcode = row[self.barcode_field]
             images = []
             for image_field in self.image_fields:
                 image_path = row.get(image_field)
