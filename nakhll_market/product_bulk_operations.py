@@ -96,7 +96,7 @@ class BulkProductHandler:
 
     def __create_new_products_instance(self, df):
         product_images_dictioanry = self.__pop_images_dictioanry(df)
-        new_products = [Product(FK_Shop=self.shop, **row)
+        new_products = [Product(FK_Shop=self.shop, Publish=True, **row)
                         for row in df.T.to_dict().values()]
         objs = bulk_create_with_history(new_products, Product, batch_size=500, 
                                         default_user=self.shop.FK_ShopManager,
