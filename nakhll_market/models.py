@@ -28,6 +28,7 @@ from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 import jdatetime
 from colorfield.fields import ColorField
+from simple_history.models import HistoricalRecords
 
 
 OUTOFSTOCK_LIMIT_NUM = 5
@@ -1187,6 +1188,8 @@ class Product(models.Model):
     post_range_cities = models.ManyToManyField('City', related_name='products', verbose_name=_('شهرهای قابل ارسال'), blank=True)
     is_advertisement = models.BooleanField(verbose_name=_('آگهی'), default=False, null=True)
     barcode = models.CharField(verbose_name='بارکد', max_length=13, null=True, blank=True)
+    history = HistoricalRecords()
+
     @property
     def id(self):
         return self.ID
