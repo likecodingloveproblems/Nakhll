@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'my_auth',
     'tinymce',
     'django_jalali',
+    'simple_history',
     'admin_reorder',
     'nakhll_market',
     'Payment',
