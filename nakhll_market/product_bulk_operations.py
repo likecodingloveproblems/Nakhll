@@ -67,7 +67,7 @@ class BulkProductHandler:
 
     def parse_images_zip(self, images_zip_file):
         rand_num = random.randint(1, 100000)
-        path = f'/tmp/bulk_product_images/{rand_num}'
+        path = f'/tmp/bulk_product_images/{rand_num}/'
         if images_zip_file:
             with zipfile.ZipFile(images_zip_file, 'r') as zip_ref:
                 zip_ref.extractall(path)
@@ -121,7 +121,7 @@ class BulkProductHandler:
                 for img in images:
                     image_file = File(open(img, 'rb'))
                     product_banner = ProductBanner(
-                        FK_Product=product, Image=img)
+                        FK_Product=product, Image=image_file, Publish=True)
                     bulk_product_banner_list.append(product_banner)
         Product.objects.bulk_update(bulk_product_list, ['Image'])
         ProductBanner.objects.bulk_create(bulk_product_banner_list)
@@ -147,8 +147,8 @@ class BulkProductHandler:
         df.drop(extra_fields, axis=1, inplace=True)
 
     def __add_slug_to_df(self, df):
-        df['Slug'] = list(map(lambda title: self.shop.Slug +
-                          '-' + slugify(title, allow_unicode=True), df['Title']))
+        df['Slug'] = list(map(lambda title: slugify(title, allow_unicode=True), df['Title']))
+        df['Slug'] = df['Slug'] + '-' + df['barcode']
         return df
 
     def __drop_na_rows(self, df):
@@ -188,11 +188,11 @@ class BulkProductHandler:
             barcode = row[self.product_barcode_field]
             images = []
             for image_field in self.image_fields:
-                image_path = row.get(image_field)
-                if image_path and type(image_path) == str:
+                image_name = row.get(image_field, '')
+                image_path = self.images_path + str(image_name)
+                if image_path and os.path.isfile(image_path):
                     images.append(image_path)
-            images_dictioanry[barcode] = [
-                image for image in images if os.path.isfile(f'{self.images_path}/{image}')]
+            images_dictioanry[barcode] = images
         self.__drop_image_fields(df)
         return sorted(images_dictioanry.items())
 
