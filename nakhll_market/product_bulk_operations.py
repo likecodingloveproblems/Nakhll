@@ -6,6 +6,7 @@ from django.db import models
 import pandas as pd
 from django.utils.text import slugify
 from django.conf import settings
+from django.core.files import File
 from simple_history.models import HistoricalRecords
 from simple_history.utils import bulk_update_with_history, bulk_create_with_history
 from nakhll_market.models import Product, ProductBanner, HistoricalProduct
@@ -96,7 +97,7 @@ class BulkProductHandler:
 
     def __create_new_products_instance(self, df):
         product_images_dictioanry = self.__pop_images_dictioanry(df)
-        new_products = [Product(FK_Shop=self.shop, Publish=True, **row)
+        new_products = [Product(FK_Shop=self.shop, Publish=True, Status='1', **row)
                         for row in df.T.to_dict().values()]
         objs = bulk_create_with_history(new_products, Product, batch_size=500, 
                                         default_user=self.shop.FK_ShopManager,
@@ -114,9 +115,11 @@ class BulkProductHandler:
         for product, product_image_item in zip(new_products_sorted, product_images_dictioanry):
             images = product_image_item[1]
             if images:
-                product.Image = images[0]
+                image_file = File(open(images[0], 'rb'))
+                product.Image.save(images[0], image_file)
                 bulk_product_list.append(product)
                 for img in images:
+                    image_file = File(open(img, 'rb'))
                     product_banner = ProductBanner(
                         FK_Product=product, Image=img)
                     bulk_product_banner_list.append(product_banner)
