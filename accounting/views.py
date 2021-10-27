@@ -1,15 +1,21 @@
 from io import BytesIO
-from django.db.models.expressions import Case, Value, When
+import json
+from django.db.models.expressions import F, Case, ExpressionWrapper, Value, When
 from django.contrib.postgres.aggregates.general import StringAgg
+from django.db.models.fields import CharField, FloatField, TextField
+from django.db.models.fields.json import KeyTextTransform
+from django.db.models.functions.comparison import Cast
 from django.http import HttpResponse
 from xlsxwriter.workbook import Workbook
 from django.views import View
 from braces.views import GroupRequiredMixin
 from excel_response import ExcelResponse
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, query, Q
+from django.db.models.functions import Coalesce
 
 from Payment.models import Factor
 from nakhll_market.models import Profile, Shop, Product
+from accounting_new.models import Invoice
 
 
 class ShopManagersInformation(GroupRequiredMixin, View):
@@ -236,3 +242,38 @@ class CustomerPurchaseReport(GroupRequiredMixin, View):
         return ExcelResponse(
             data=queryset
         )
+
+
+class InvoiceStats(GroupRequiredMixin, View):
+    group_required = u"factor-stats"
+
+    def get(self, request):
+        queryset = Invoice.objects.filter(FactorNumber=None).annotate(
+            products_list=StringAgg('items__product__Title', delimiter=', '),
+            coupons_list=StringAgg('coupon_usages__coupon__code', delimiter=', '),
+            coupons_total_price=Coalesce(Sum('coupon_usages__price_applied', output_field=FloatField()), 0),
+            total_price=ExpressionWrapper(F('invoice_price_with_discount') + F('logistic_price')
+                    - F('coupons_total_price'), output_field=FloatField())).order_by('-created_datetime')
+
+        queryset = queryset.values(
+            'id', 'user__username', 'user__User_Profile__MobileNumber',
+            'address_json', 'coupons_list', 'products_list', 'invoice_price_with_discount',
+            'invoice_price_without_discount', 'logistic_price', 'coupons_total_price',
+            'status', 'created_datetime', 'payment_datetime', 'total_weight_gram', 'total_price',
+        )
+
+
+        
+        for q in queryset:
+            address = json.loads(q['address_json']) if q['address_json'] else None
+            q['city'] = address['city'] if address else ''
+            q['big_city'] = address['big_city'] if address else ''
+            q['state'] = address['state'] if address else ''
+            q['address'] = address['address'] if address else ''
+            q['zip_code'] = address['zip_code'] if address else ''
+            q['phone_number'] = address['phone_number'] if address else ''
+            q['receiver_full_name'] = address['receiver_full_name'] if address else ''
+            q['receiver_mobile_number'] = address['receiver_mobile_number'] if address else ''
+            del q['address_json']
+        
+        return ExcelResponse(data=queryset)
