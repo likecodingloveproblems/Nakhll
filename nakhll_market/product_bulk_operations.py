@@ -16,6 +16,11 @@ HISTORY_TYPE_CREATE = '+'
 HISTORY_TYPE_UPDATE = '~'
 HISTORY_TYPE_DELETE = '-'
 
+
+class BulkException(Exception):
+    ''' Exception raised when general error related to bulk operation occured '''
+
+
 class BulkProductHandler:
     def __init__(self, *, shop, images_zip_file=None, product_barcode_field='barcode',
                  required_fields_with_types={'Title': object, 'barcode': object,
@@ -47,7 +52,8 @@ class BulkProductHandler:
         self.validate_df(df)
         df = self.__drop_na_rows(df)
         df = self.__add_slug_to_df(df)
-        df = self.__drop_duplicate_slugs(df)
+        df = self.__drop_df_duplicate_slugs(df)
+        self.__validate_slugs(df)
         result = self.save_to_db(df)
         self.__delete_image_files()
         return result
@@ -71,7 +77,8 @@ class BulkProductHandler:
         if images_zip_file:
             with zipfile.ZipFile(images_zip_file, 'r') as zip_ref:
                 zip_ref.extractall(path)
-        return path
+            return path
+        return None
 
     def validate_df(self, df):
         self._validate_required_fields(df)
@@ -102,11 +109,12 @@ class BulkProductHandler:
         objs = bulk_create_with_history(new_products, Product, batch_size=500, 
                                         default_user=self.shop.FK_ShopManager,
                                         default_change_reason=f'tag:{self.shop.ID}')
-        # Product.objects.bulk_create(new_products)
         self.__append_images_to_products(df, product_images_dictioanry)
         return new_products
 
     def __append_images_to_products(self, new_products_df, product_images_dictioanry):
+        if not product_images_dictioanry:
+            return
         bulk_product_list = []
         bulk_product_banner_list = []
         new_products_sorted = Product.objects.filter(
@@ -129,16 +137,16 @@ class BulkProductHandler:
     def _validate_required_fields(self, df):
         for field, field_type in self.required_fields_with_types.items():
             if field not in df.columns:
-                raise Exception(f'{field} is required field')
+                raise BulkException(f'{field} is required field')
             if df[field].dtype != field_type:
-                raise Exception(f'{field} must be {field_type}')
+                raise BulkException(f'{field} must be {field_type}')
 
     def _validate_optional_fields(self, df):
         for field, field_type in self.optional_fields_with_types.items():
             if field not in df.columns:
                 continue
             if df[field].dtype != field_type:
-                raise Exception(f'{field} must be {field_type}')
+                raise BulkException(f'{field} must be {field_type}')
 
     def __drop_extra_fields(self, df):
         extra_fields = list(set(df.columns) - set(self.required_fields_with_types.keys())
@@ -148,7 +156,7 @@ class BulkProductHandler:
 
     def __add_slug_to_df(self, df):
         df['Slug'] = list(map(lambda title: slugify(title, allow_unicode=True), df['Title']))
-        df['Slug'] = df['Slug'] + '-' + df['barcode']
+        df['Slug'] = self.shop.Slug + '-' + df['barcode'] + '-' + df['Slug'] 
         return df
 
     def __drop_na_rows(self, df):
@@ -156,7 +164,7 @@ class BulkProductHandler:
         self.na_rows = df[~df.index.isin(na_free.index)]
         return na_free
 
-    def __drop_duplicate_slugs(self, df):
+    def __drop_df_duplicate_slugs(self, df):
         duplicate_free = df.drop_duplicates(subset='Slug', keep='first')
         self.slug_duplicate_rows = df[~df.index.isin(duplicate_free.index)]
         return duplicate_free
@@ -171,6 +179,12 @@ class BulkProductHandler:
             bulk_update_list.append(product_history)
         HistoricalProduct.objects.bulk_update(bulk_update_list, ['history_change_reason'])
             
+    def __validate_slugs(self, df):
+        all_products_slug = set(Product.objects.all().values_list('Slug', flat=True))
+        df_slug = set(df['Slug'].to_list())
+        duplicated_slugs = all_products_slug.intersection(df_slug)
+        if duplicated_slugs:
+            raise BulkException(f'Duplicated slugs: {duplicated_slugs}')
 
 
     def __seperate_new_old_products(self, df):
@@ -183,6 +197,9 @@ class BulkProductHandler:
         return new_products, old_products
 
     def __pop_images_dictioanry(self, df):
+        if not self.images_path:
+            self.__drop_image_fields(df)
+            return None
         images_dictioanry = {}
         for index, row in df.iterrows():
             barcode = row[self.product_barcode_field]
@@ -201,7 +218,8 @@ class BulkProductHandler:
             df.drop(image_field, axis=1, inplace=True)
 
     def __delete_image_files(self):
-        shutil.rmtree(self.images_path)
+        if self.images_path:
+            shutil.rmtree(self.images_path)
 
 
     def undo_last_changes(self):

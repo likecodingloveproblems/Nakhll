@@ -34,7 +34,7 @@ from accounting_new.models import Invoice
 from nakhll_market.filters import ProductFilter
 from nakhll_market.permissions import IsInvoiceOwner
 from nakhll_market.paginators import StandardPagination
-from nakhll_market.product_bulk_operations import BulkProductHandler
+from nakhll_market.product_bulk_operations import BulkException, BulkProductHandler
 
 class SliderViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = SliderSerializer
@@ -688,7 +688,10 @@ class GroupProductCreateUpdateExcel(views.APIView):
         csv_file = request.FILES.get('product-excel-upload')
         zip_file = request.FILES.get('product-zip-file')
         bulk_product_handler = BulkProductHandler(shop=shop, images_zip_file=zip_file)
-        result = bulk_product_handler.parse_csv(csv_file)
+        try:
+            result = bulk_product_handler.parse_csv(csv_file)
+        except BulkException as ex:
+            return Response(str(ex), status=status.HTTP_400_BAD_REQUEST)
         return Response(result)
 
 
