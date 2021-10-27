@@ -27,8 +27,10 @@ class ProductFilter(filters.FilterSet):
         return queryset.filter(Title__icontains=value)
 
     def filter_available(self, queryset, name, value):
-        AVAILABLE_IDS = ['1', '2', '3', ]
-        return queryset.filter(Status__in=AVAILABLE_IDS, Inventory__gt=0)
+        if value:
+            AVAILABLE_IDS = ['1', '2', '3', ]
+            return queryset.filter(Status__in=AVAILABLE_IDS, Inventory__gt=0)
+        return queryset
 
     def filter_category(self, queryset, name, value):
         return queryset.filter(FK_SubMarket__in=value.split(',')) if value else queryset

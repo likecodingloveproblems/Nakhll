@@ -67,8 +67,8 @@ class BulkProductHandler:
             'old_products': len(old_products),
             'new': len(new_products),
             'total_rows': df.shape[0],
-            'na_rows': self.na_rows,
-            'slug_duplicate_rows': self.slug_duplicate_rows,
+            'na_rows': len(self.na_rows),
+            'slug_duplicate_rows': len(self.slug_duplicate_rows),
         }
 
     def parse_images_zip(self, images_zip_file):
