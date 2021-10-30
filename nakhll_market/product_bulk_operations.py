@@ -2,8 +2,9 @@ import os
 import zipfile
 import random
 import shutil
-from django.db import models
 import pandas as pd
+from django.db import models
+from django.db.models import Q
 from django.utils.text import slugify
 from django.conf import settings
 from django.core.files import File
@@ -180,7 +181,7 @@ class BulkProductHandler:
         HistoricalProduct.objects.bulk_update(bulk_update_list, ['history_change_reason'])
             
     def __validate_slugs(self, df):
-        all_products_slug = set(Product.objects.all().values_list('Slug', flat=True))
+        all_products_slug = set(Product.objects.filter(~Q(FK_Shop=self.shop)).values_list('Slug', flat=True))
         df_slug = set(df['Slug'].to_list())
         duplicated_slugs = all_products_slug.intersection(df_slug)
         if duplicated_slugs:
@@ -214,8 +215,8 @@ class BulkProductHandler:
         return sorted(images_dictioanry.items())
 
     def __drop_image_fields(self, df):
-        for image_field in self.image_fields:
-            df.drop(image_field, axis=1, inplace=True)
+        image_fields = [image_field for image_field in self.image_fields if image_field in df.columns]
+        df.drop(image_fields, axis=1, inplace=True)
 
     def __delete_image_files(self):
         if self.images_path:
