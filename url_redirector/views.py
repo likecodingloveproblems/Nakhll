@@ -9,5 +9,7 @@ class Redirector(RedirectView):
         url_code = kwargs.get('url_code')
         url_object = get_object_or_404(Url, url_code=url_code)
         if url_object.destination_url:
+            if not url_object.destination_url.endswith('/'):
+                url_object.destination_url += '/'
             return url_object.destination_url
         return 'https://nakhll.com/'
