@@ -27,8 +27,8 @@ class BulkProductHandler:
                  required_fields_with_types={'Title': object, 'barcode': object,
                                 'Price': 'Int64', 'OldPrice': 'Int64', 'Inventory': 'Int64'},
                  optional_fields_with_types={
-                     'Description': object, 'Image': object},
-                 update_fields=['Price', 'OldPrice', 'Inventory'],
+                     'Net_Weight': object, 'Weight_With_Packing': object},
+                 update_fields=['Price', 'OldPrice', 'Inventory', 'Net_Weight', 'Weight_With_Packing'],
                  image_fields={'image_1': object, 'image_2': object, 'image_3': object}):
         self.df = None
         self.shop = shop
