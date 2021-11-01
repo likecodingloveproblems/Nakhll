@@ -17,16 +17,17 @@ from rest_framework.decorators import action
 from django_filters import rest_framework as restframework_filters
 from nakhll.authentications import CsrfExemptSessionAuthentication
 from nakhll_market.models import (
-    Alert, AmazingProduct, Comment, Product, ProductBanner, Shop, Slider, Category, Market, State, BigCity, City, SubMarket,
+    Alert, AmazingProduct, Comment, NewCategory, Product, ProductBanner, Shop, Slider, Category, Market, State, BigCity, City, SubMarket,
     LandingPageSchema, ShopPageSchema,
     )
 from nakhll_market.serializers import (
-    AmazingProductSerializer, Base64ImageSerializer, NewProfileSerializer, ProductCommentSerializer, ProductDetailSerializer, ProductImagesSerializer,
+    AmazingProductSerializer, Base64ImageSerializer, NewCategoryProductCountSerializer, NewProfileSerializer, ProductCommentSerializer, ProductDetailSerializer, ProductImagesSerializer,
     ProductSerializer, ProductUpdateSerializer, ShopProductSerializer, ShopSerializer, ShopSimpleSerializer,SliderSerializer, ProductPriceWriteSerializer,
     CategorySerializer, FullMarketSerializer, CreateShopSerializer, ProductInventoryWriteSerializer,
     ProductListSerializer, ProductWriteSerializer, ShopAllSettingsSerializer, ProductBannerSerializer,
     ShopBankAccountSettingsSerializer, SocialMediaAccountSettingsSerializer, ProductSubMarketSerializer, StateFullSeraializer, SubMarketProductSerializer, SubMarketSerializer,
     LandingPageSchemaSerializer, ShopPageSchemaSerializer, UserOrderSerializer,
+    NewCategorySerializer, NewCategoryChildSerializer, NewCategoryParentChildSerializer, NewCategoryParentSerializer
     )
 from restapi.permissions import IsFactorOwner, IsProductOwner, IsShopOwner, IsProductBannerOwner
 from restapi.serializers import ProfileSerializer
@@ -707,3 +708,32 @@ class MostSoldProduct(views.APIView):
         product = self.get_object()
         serializer = ProductSerializer(product, many=True)
         return Response(serializer.data)
+
+
+class CategoryViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
+    permission_classes = [permissions.AllowAny, ]
+    queryset = NewCategory.objects.all()
+    serializer_class = NewCategoryParentSerializer
+    lookup_field = 'slug'
+
+    def get_queryset(self):
+        if self.action == 'list':
+            self.serializer_class = NewCategoryChildSerializer
+            return NewCategory.objects.get_root_categories()
+        return NewCategory.objects.all()
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        try:
+            max_depth = int(self.request.query_params.get('max_depth', -1))
+        except ValueError:
+            max_depth = -1
+        context['max_depth'] = max_depth
+        return context
+    
+
+    @action(methods=['GET'], detail=False)
+    def category_product_count(self, request):
+        query = request.GET.get('q', None)
+        queryset = NewCategory.objects.categories_with_product_count(query)
+        return Response(NewCategoryProductCountSerializer(queryset, many=True).data)

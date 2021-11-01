@@ -40,6 +40,9 @@ profile_router = routers.DefaultRouter()
 profile_router.register(r'', UserProfileViewSet, basename="profile")
 profile_router.register(r'orders', UserOrderHistory, basename="orders")
 
+categories_router = routers.DefaultRouter()
+categories_router.register(r'', CategoryViewSet, basename="categories")
+
 urlpatterns = [
     path('landing/', include(landing_router.urls)),
     path('products/', include(product_page_router.urls)),
@@ -70,6 +73,8 @@ urlpatterns = [
     path('product/most-sold/', MostSoldProduct.as_view()),
     
     path('profile/', include(profile_router.urls)),
+
+    path('categories/', include(categories_router.urls)),
 
     # path('torob/products/', TorobAllProducts.as_view()),
 ]

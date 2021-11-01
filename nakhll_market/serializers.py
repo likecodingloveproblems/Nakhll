@@ -10,7 +10,7 @@ from rest_framework import serializers
 from rest_framework.relations import HyperlinkedIdentityField, HyperlinkedRelatedField
 from rest_framework.utils import field_mapping
 from nakhll_market.models import (
-    Alert, AmazingProduct, AttrPrice, AttrProduct, Attribute, BankAccount, BigCity, City, ShopBankAccount, ShopSocialMedia,
+    Alert, AmazingProduct, AttrPrice, AttrProduct, Attribute, BankAccount, BigCity, City, NewCategory, ShopBankAccount, ShopSocialMedia,
     Category, Market, PostRange, Product, ProductBanner, Profile, Shop, ShopBankAccount, Slider, Comment, State,
     SubMarket, LandingPageSchema, ShopPageSchema,
     )
@@ -36,6 +36,66 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = [
             'id', 'Slug', 'title', 'url', 'image_thumbnail',
         ]
+
+
+class NewCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NewCategory
+        fields = ['id', 'name', 'slug']
+
+class NewCategoryProductCountSerializer(serializers.ModelSerializer):
+    product_count = serializers.SerializerMethodField()
+    class Meta:
+        model = NewCategory
+        fields = ['id', 'name', 'slug', 'product_count']
+
+    def get_product_count(self, obj):
+        return obj.product_count
+
+class NewCategoryChildSerializer(serializers.ModelSerializer):
+    childrens = serializers.SerializerMethodField(read_only=True)
+    class Meta:
+        model = NewCategory
+        fields = ['id', 'name', 'slug', 'childrens']
+
+    def get_childrens(self, obj):
+        max_depth = self.context.get('max_depth', -1) - 1
+        if max_depth == 0:
+            return []
+        context = {'max_depth': max_depth}
+        return NewCategoryChildSerializer(obj.childrens, many=True, context=context).data
+
+class NewCategoryParentSerializer(serializers.ModelSerializer):
+    parents = serializers.SerializerMethodField(read_only=True, method_name='parents_to_root')
+    class Meta:
+        model = NewCategory
+        fields = ['id', 'name', 'slug', 'parents']
+
+    def parents_to_root(self, obj):
+        parents = []
+        parent = obj.parent
+        while parent:
+            parents.append(parent)
+            parent = parent.parent
+        return NewCategorySerializer(parents, many=True).data
+
+class NewCategoryParentChildSerializer(serializers.ModelSerializer):
+    parents = serializers.SerializerMethodField(read_only=True, method_name='parents_to_root')
+    childrens = serializers.SerializerMethodField(read_only=True)
+    class Meta:
+        model = NewCategory
+        fields = ['id', 'name', 'slug', 'parents', 'childrens']
+
+    def parents_to_root(self, obj):
+        return NewCategoryParentSerializer(NewCategory.objects.parents_to_root(obj), many=True).data    
+
+    def get_childrens(self, obj):
+        max_depth = self.context.get('max_depth', -1) - 1
+        context = {'max_depth': max_depth}
+        return NewCategoryChildSerializer(obj.childrens, many=True, context=context).data
+
+   
+
 
 class ShopSerializer(serializers.ModelSerializer):
     registered_months = serializers.SerializerMethodField()
@@ -271,7 +331,8 @@ class Base64ImageSerializer(serializers.Serializer):
 
 class ProductUpdateSerializer(serializers.ModelSerializer):
     # FK_Shop = serializers.SlugRelatedField(slug_field='Slug', many=False, read_only=True)
-    FK_SubMarket = serializers.PrimaryKeyRelatedField(read_only=False, many=False, queryset=SubMarket.objects.all())
+    # FK_SubMarket = serializers.PrimaryKeyRelatedField(read_only=False, many=False, queryset=SubMarket.objects.all())
+    new_category = serializers.PrimaryKeyRelatedField(read_only=False, many=False, queryset=NewCategory.objects.all())
     Product_Banner = serializers.PrimaryKeyRelatedField(queryset=ProductBanner.objects.all(), many=True, read_only=False)
     post_range = serializers.PrimaryKeyRelatedField(source='post_range_cities', read_only=False, many=True, queryset=City.objects.all())
     class Meta:
@@ -288,7 +349,8 @@ class ProductUpdateSerializer(serializers.ModelSerializer):
             'Status',
             'PostRangeType',
             'PreparationDays',
-            'FK_SubMarket',
+            # 'FK_SubMarket',
+            'new_category',
             'Product_Banner',
             'post_range'
         ]
@@ -313,6 +375,7 @@ class ProductUpdateSerializer(serializers.ModelSerializer):
 
 class ProductWriteSerializer(serializers.ModelSerializer):
     FK_Shop = serializers.SlugRelatedField(slug_field='Slug', many=False, read_only=False, queryset=Shop.objects.all())
+    new_category = serializers.PrimaryKeyRelatedField(read_only=False, many=False, queryset=NewCategory.objects.all())
     post_range = serializers.PrimaryKeyRelatedField(source='post_range_cities', read_only=False, many=True, queryset=City.objects.all())
     class Meta:
         model = Product
@@ -329,6 +392,7 @@ class ProductWriteSerializer(serializers.ModelSerializer):
             'PostRangeType',
             'PreparationDays',
             'FK_Shop',
+            'new_category',
             'post_range'
         ]
 

@@ -1,7 +1,7 @@
 from typing import Dict, Optional
 from django.contrib import admin
 from django.http import HttpRequest, HttpResponse
-from .models import (AmazingProduct, LandingPageSchema, ShopPageSchema, Tag, Market, MarketBanner, SubMarket, 
+from .models import (AmazingProduct, LandingPageSchema, NewCategory, ShopPageSchema, Tag, Market, MarketBanner, SubMarket, 
                      SubMarketBanner,BankAccount, Category ,PostRange, Shop, 
                      ShopBanner, ShopMovie, Attribute, AttrPrice, AttrProduct, 
                      Product, ProductBanner, ProductMovie, Comment, Profile, 
@@ -147,6 +147,15 @@ class CategoryAdmin(admin.ModelAdmin):
     list_filter=('Available','Publish','DateCreate','DateUpdate')
     search_fields=('Title','Slug','Description')
     ordering=['DateCreate','id','Available','Publish']
+
+
+@admin.register(NewCategory)
+class NewCategoryAdmin(admin.ModelAdmin):
+    list_display=('id', 'name', 'slug', 'description', 'parent', 'available', )
+    list_filter=('parent','available')
+    ordering=('-parent', 'id', )
+
+
 #-------------------------------------------------
 # Message admin panel
 @admin.register(Message)

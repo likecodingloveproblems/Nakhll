@@ -110,7 +110,7 @@ ADMIN_REORDER = (
         'nakhll_market.Shop',
         'nakhll_market.Product',
         'nakhll_market.ProductBanner',
-        'nakhll_market.Category',
+        'nakhll_market.NewCategory',
         'nakhll_market.Tag',
         'nakhll_market.Attribute',
         'nakhll_market.AttrPrice',

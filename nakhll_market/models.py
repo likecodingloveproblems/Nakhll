@@ -401,6 +401,61 @@ class Category(models.Model):
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
+class NewCategoryManager(models.Manager):
+    def all_childs(self, category):
+        childs = []
+        for child in category.get_sub_category():
+            childs.append(child)
+            childs.extend(self.all_childs(child))
+        return childs
+
+    def parents_to_root(self, category):
+        if category.parent == None:
+            return [category]
+        else:
+            return self.parents_to_root(category.parent) + [category]
+
+    def get_root_categories(self):
+        return self.filter(parent=None)
+
+    def categories_with_product_count(self, query=None):
+        queryset = self.all()
+        if query:
+            queryset = queryset.filter(products__Title__contains=query)
+        queryset = queryset.annotate(product_count=Count('products'))
+        return queryset.order_by('-product_count')
+
+    def all_subcategories(self, categories):
+        subcategories = []
+        for category in categories:
+            subcategories.append(category)
+            subcategories.extend(self.all_subcategories(category.get_sub_category()))
+        return subcategories
+
+
+class NewCategory(models.Model):
+    class Meta:
+        verbose_name = "دسته بندی"
+        verbose_name_plural = "دسته بندی ها"
+    name = models.CharField(verbose_name='عنوان دسته بندی', max_length=150)
+    slug = models.SlugField(verbose_name='شناسه دسته بندی', unique=True, db_index=True)
+    description = models.TextField(verbose_name='درباره دسته بندی', blank=True)
+    image = models.ImageField(verbose_name='عکس دسته بندی', upload_to=PathAndRename('media/Pictures/Categories/'), help_text='عکس دسته بندی را اینجا وارد کنید', blank=True, null=True)
+    image_thumbnail = ImageSpecField(source='image',
+                                    processors=[ResizeToFill(175, 175)],
+                                    format='JPEG',
+                                    options={'quality': 60} )
+    parent = models.ForeignKey('self', on_delete=models.SET_NULL, verbose_name='پدر', blank=True, null=True, related_name='childrens')
+    available = models.BooleanField(verbose_name='فعال', default=True)
+    created_at = models.DateTimeField(verbose_name='تاریخ ایجاد', auto_now_add=True)
+    updated_at = models.DateTimeField(verbose_name='تاریخ بروزرسانی', auto_now=True)
+    objects = NewCategoryManager()
+
+    def __str__(self):
+        return "{}".format(self.name)
+
+
+
 # PostRange (ناحیه ارسال) Model
 class PostRange (models.Model):
     State=models.CharField(verbose_name='استان', max_length=50)
@@ -1157,6 +1212,7 @@ class Product(models.Model):
     Catalog=models.FileField(verbose_name='کاتالوگ محصول', upload_to=PathAndRename('media/Catalogs/Markets/SubMarkets/Shops/Products/'), help_text='کاتالوگ محصول خود را اینجا وارد کنید', null=True, blank=True)
     FK_Shop=models.ForeignKey(Shop, null=True, on_delete=models.SET_NULL, verbose_name='حجره',related_name='ShopProduct')
     FK_Category=models.ManyToManyField(Category, verbose_name='دسته بندی های محصول', related_name='ProductCategory', blank=True)
+    new_category=models.ForeignKey(NewCategory, verbose_name='دسته بندی جدید', related_name='products', null=True, on_delete=models.PROTECT)
     Price=models.BigIntegerField(verbose_name='قیمت محصول')
     OldPrice=models.BigIntegerField(verbose_name='قیمت حذف محصول', default=0)
     # Product Weight Info
