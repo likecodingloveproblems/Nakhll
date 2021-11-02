@@ -247,6 +247,7 @@ class ProductDetailSerializer(serializers.HyperlinkedModelSerializer):
     shop = ShopSerializer(many=False, read_only=False)
     post_range = PostRangeSerializer(many=True, read_only=True)
     exception_post_range = PostRangeSerializer(many=True, read_only=True)
+    new_category = NewCategoryParentSerializer(many=True, read_only=True)
     class Meta:
         model = Product
         fields = [
@@ -255,7 +256,7 @@ class ProductDetailSerializer(serializers.HyperlinkedModelSerializer):
             'attributes', 'attributes_price', 'banners', 'reviews', 'inventory',
             'net_weight', 'weight_with_packing',  'length_with_packing',
             'height_with_packaging', 'story', 'width_with_packing', 'PreparationDays',
-            'status', 'exception_post_range', 'post_range', 'sub_market',
+            'status', 'exception_post_range', 'post_range', 'sub_market', 'new_category'
         ]
 
 
@@ -267,6 +268,7 @@ class ProductListSerializer(serializers.ModelSerializer):
     shop = ShopSerializer(read_only=True)
     banners = ProductBannerSerializer(read_only=True, many=True)
     post_range_cities = CitySerializer(many=True, read_only=True)
+    new_category = NewCategorySerializer(many=False, read_only=True)
     class Meta:
         model = Product
         fields = [
@@ -275,6 +277,7 @@ class ProductListSerializer(serializers.ModelSerializer):
             'slug',
             'inventory',
             'category',
+            'new_category',
             'sub_market',
             'banners',
             'image_thumbnail_url',

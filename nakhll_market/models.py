@@ -429,7 +429,7 @@ class NewCategoryManager(models.Manager):
         subcategories = []
         for category in categories:
             subcategories.append(category)
-            subcategories.extend(self.all_subcategories(category.get_sub_category()))
+            subcategories.extend(self.all_subcategories(category.childrens.all()))
         return subcategories
 
 

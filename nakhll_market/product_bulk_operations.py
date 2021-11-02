@@ -27,8 +27,9 @@ class BulkProductHandler:
                  required_fields_with_types={'Title': object, 'barcode': object,
                                 'Price': 'Int64', 'OldPrice': 'Int64', 'Inventory': 'Int64'},
                  optional_fields_with_types={
-                     'Net_Weight': object, 'Weight_With_Packing': object},
-                 update_fields=['Price', 'OldPrice', 'Inventory', 'Net_Weight', 'Weight_With_Packing'],
+                     'Net_Weight': object, 'Weight_With_Packing': object, 'new_category_id': 'Int64'},
+                 update_fields=['Price', 'OldPrice', 'Inventory', 'Net_Weight', 'Weight_With_Packing',
+                                'new_category_id'],
                  image_fields={'image_1': object, 'image_2': object, 'image_3': object}):
         self.df = None
         self.shop = shop
@@ -93,15 +94,16 @@ class BulkProductHandler:
         for product in products:
             for field in self.update_fields:
                 if field in df.columns:
-                    setattr(
-                        product, field, df[field][
-                                df[self.product_barcode_field] == product.barcode].values[0])
+                    self.__set_product_attribute(product, field, df)
             update_list.append(product)
         bulk_update_with_history(update_list, Product, self.update_fields, batch_size=500,
                                     default_user=self.shop.FK_ShopManager,
                                     default_change_reason=f'tag:{self.shop.ID}')
         # Product.objects.bulk_update(update_list, self.update_fields)
         return update_list
+
+    def __set_product_attribute(self, product, field, df):
+        setattr(product, field, df[field][df[self.product_barcode_field] == product.barcode].values[0])
 
     def __create_new_products_instance(self, df):
         product_images_dictioanry = self.__pop_images_dictioanry(df)
