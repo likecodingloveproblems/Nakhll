@@ -449,6 +449,8 @@ class NewCategory(models.Model):
     available = models.BooleanField(verbose_name='فعال', default=True)
     created_at = models.DateTimeField(verbose_name='تاریخ ایجاد', auto_now_add=True)
     updated_at = models.DateTimeField(verbose_name='تاریخ بروزرسانی', auto_now=True)
+    market_uuid = models.UUIDField(verbose_name='شناسه بازار', null=True, editable=False)
+    submarket_uuid = models.UUIDField(verbose_name='شناسه بازارچه', null=True, editable=False)
     objects = NewCategoryManager()
 
     def __str__(self):
