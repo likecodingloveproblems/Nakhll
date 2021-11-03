@@ -675,9 +675,10 @@ class ShopPageSchemaViewSet(views.APIView):
         serializer = ShopPageSchemaSerializer(shops, many=True)
         return Response(serializer.data)
 
-class GroupProductCreateUpdateExcel(views.APIView):
+class GroupProductCreateExcel(views.APIView):
     permission_classes = [permissions.IsAuthenticated, IsShopOwner]
     authentication_classes = [CsrfExemptSessionAuthentication, ]
+    bulk_type = BulkProductHandler.BULK_TYPE_CREATE
 
     def get_object(self, shop_slug):
         shop = get_object_or_404(Shop, Slug=shop_slug)
@@ -688,12 +689,17 @@ class GroupProductCreateUpdateExcel(views.APIView):
         shop = self.get_object(shop_slug)
         csv_file = request.FILES.get('product-excel-upload')
         zip_file = request.FILES.get('product-zip-file')
-        bulk_product_handler = BulkProductHandler(shop=shop, images_zip_file=zip_file)
+        bulk_product_handler = BulkProductHandler(shop=shop, images_zip_file=zip_file, bulk_type=self.bulk_type)
         try:
             result = bulk_product_handler.parse_csv(csv_file)
         except BulkException as ex:
             return Response(str(ex), status=status.HTTP_400_BAD_REQUEST)
         return Response(result)
+
+class GroupProductUpdateExcel(GroupProductCreateExcel ,views.APIView):
+    permission_classes = [permissions.IsAuthenticated, IsShopOwner]
+    authentication_classes = [CsrfExemptSessionAuthentication, ]
+    bulk_type = BulkProductHandler.BULK_TYPE_UPDATE
 
 
 

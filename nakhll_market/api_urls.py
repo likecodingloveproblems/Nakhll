@@ -1,6 +1,6 @@
 from django.urls import re_path, include, path
 from nakhll_market.api import (
-    AddSubMarketToProduct, AllShopSettings, AmazingProductViewSet, CategoryViewSet, GroupProductCreateUpdateExcel, ImageShopSettings, LastCreatedDiscountedProductsViewSet,
+    AddSubMarketToProduct, AllShopSettings, AmazingProductViewSet, CategoryViewSet, GroupProductCreateExcel, GroupProductUpdateExcel, ImageShopSettings, LastCreatedDiscountedProductsViewSet,
     LastCreatedProductsViewSet, MostDiscountPrecentageProductsViewSet, MostSoldProduct, ShopMultipleUpdateInventory, ShopMultipleUpdatePrice, SocialMediaShopSettings, StateFullViewSet,
     UserProductViewSet, ProductsInSameFactorViewSet, SliderViewSet, SubMarketList, UserProfileViewSet,
     MostSoldShopsViewSet, RandomShopsViewSet, RandomProductsViewSet, ProductsViewSet, GetShop, UserOrderHistory,
@@ -69,7 +69,8 @@ urlpatterns = [
     path('product/check/', CheckProductSlug.as_view()),
     path('product/categories/', AddSubMarketToProduct.as_view()),
     path('product/images/', AddImagesToProduct.as_view()),
-    path('product/group-create-edit/<shop_slug>/', GroupProductCreateUpdateExcel.as_view()),
+    path('product/group-create/<shop_slug>/', GroupProductCreateExcel.as_view()),
+    path('product/group-update/<shop_slug>/', GroupProductUpdateExcel.as_view()),
     path('product/most-sold/', MostSoldProduct.as_view()),
     
     path('profile/', include(profile_router.urls)),

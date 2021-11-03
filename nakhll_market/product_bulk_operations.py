@@ -3,6 +3,7 @@ import zipfile
 import random
 import shutil
 import pandas as pd
+from itertools import chain
 from django.db import models
 from django.db.models import Q
 from django.utils.text import slugify
@@ -23,26 +24,35 @@ class BulkException(Exception):
 
 
 class BulkProductHandler:
+    ''' Class for handling bulk operations on products '''
+    BULK_TYPE_CREATE = 'create'
+    BULK_TYPE_UPDATE = 'update'
     def __init__(self, *, shop, images_zip_file=None, product_barcode_field='barcode',
                  required_fields_with_types={'Title': object, 'barcode': object,
                                 'Price': 'Int64', 'OldPrice': 'Int64', 'Inventory': 'Int64'},
                  optional_fields_with_types={
-                     'Net_Weight': object, 'Weight_With_Packing': object, 'new_category_id': 'Int64'},
-                 update_fields=['Price', 'OldPrice', 'Inventory', 'Net_Weight', 'Weight_With_Packing',
-                                'new_category_id'],
-                 image_fields={'image_1': object, 'image_2': object, 'image_3': object}):
+                                'Net_Weight': 'Int64', 'Weight_With_Packing': 'Int64',
+                                'new_category_id': 'int64'},
+                 update_fields=['Price', 'OldPrice', 'Inventory', 'Net_Weight',
+                                'Weight_With_Packing', 'new_category_id'],
+                 image_fields={'image_1': object, 'image_2': object, 'image_3': object},
+                 bulk_type=None):
         self.df = None
         self.shop = shop
         self.shop_key = f'tag:{shop.ID}'
         self.old_shop_key = f'old_tag:{shop.ID}'
-        self.na_rows = None
+        self.na_rows = []
         self.product_barcode_field = product_barcode_field
         self.images_path = self.parse_images_zip(images_zip_file)
-        self.slug_duplicate_rows = None
+        self.slug_duplicate_rows = []
         self.required_fields_with_types = required_fields_with_types
         self.optional_fields_with_types = optional_fields_with_types
         self.update_fields = update_fields
         self.image_fields = image_fields
+        if bulk_type in [self.BULK_TYPE_CREATE, self.BULK_TYPE_UPDATE]:
+            self.bulk_type = bulk_type
+        else:
+            raise BulkException('Bulk type must be create or update')
 
     def parse_csv(self, csv_file):
         df = pd.read_csv(csv_file, dtype=self.required_fields_with_types)
@@ -52,10 +62,11 @@ class BulkProductHandler:
     def dataframe_parser(self):
         df = self.df
         self.validate_df(df)
-        df = self.__drop_na_rows(df)
-        df = self.__add_slug_to_df(df)
-        df = self.__drop_df_duplicate_slugs(df)
-        self.__validate_slugs(df)
+        if self.bulk_type == self.BULK_TYPE_CREATE:
+            df = self.__drop_na_rows(df)
+            df = self.__add_slug_to_df(df)
+            df = self.__drop_df_duplicate_slugs(df)
+            self.__validate_slugs(df)
         result = self.save_to_db(df)
         self.__delete_image_files()
         return result
@@ -63,8 +74,12 @@ class BulkProductHandler:
     def save_to_db(self, df):
         self.__delete_previous_product_history()
         new_products_df, old_products_df = self.__seperate_new_old_products(df)
-        old_products = self.__create_old_products_instance(old_products_df)
-        new_products = self.__create_new_products_instance(new_products_df)
+        new_products, old_products = [], []
+        if self.bulk_type == self.BULK_TYPE_UPDATE:
+            old_products = self.__create_old_products_instance(old_products_df)
+        elif self.bulk_type == self.BULK_TYPE_CREATE:
+            new_products = self.__create_new_products_instance(new_products_df)
+
         return {
             'old_products': len(old_products),
             'new': len(new_products),
@@ -138,14 +153,17 @@ class BulkProductHandler:
         ProductBanner.objects.bulk_create(bulk_product_banner_list)
 
     def _validate_required_fields(self, df):
-        for field, field_type in self.required_fields_with_types.items():
-            if field not in df.columns:
-                raise BulkException(f'{field} is required field')
-            if df[field].dtype != field_type:
-                raise BulkException(f'{field} must be {field_type}')
+        if self.product_barcode_field not in df.columns:
+            raise BulkException(f'{self.product_barcode_field} is required field')
+        if self.bulk_type == self.BULK_TYPE_CREATE:
+            for field in self.required_fields_with_types:
+                if field not in df.columns:
+                    raise BulkException(f'{field} is required field')
 
     def _validate_optional_fields(self, df):
-        for field, field_type in self.optional_fields_with_types.items():
+        fields_with_types = chain(self.required_fields_with_types.items(),
+                                  self.optional_fields_with_types.items())
+        for field, field_type in fields_with_types:
             if field not in df.columns:
                 continue
             if df[field].dtype != field_type:
