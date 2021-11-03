@@ -247,7 +247,7 @@ class ProductDetailSerializer(serializers.HyperlinkedModelSerializer):
     shop = ShopSerializer(many=False, read_only=False)
     post_range = PostRangeSerializer(many=True, read_only=True)
     exception_post_range = PostRangeSerializer(many=True, read_only=True)
-    new_category = NewCategoryParentSerializer(many=True, read_only=True)
+    new_category = NewCategoryParentSerializer(many=False, read_only=True)
     class Meta:
         model = Product
         fields = [
