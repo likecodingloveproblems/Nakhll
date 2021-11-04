@@ -4,12 +4,9 @@ import random
 import shutil
 import pandas as pd
 from itertools import chain
-from django.db import models
 from django.db.models import Q
 from django.utils.text import slugify
-from django.conf import settings
 from django.core.files import File
-from simple_history.models import HistoricalRecords
 from simple_history.utils import bulk_update_with_history, bulk_create_with_history
 from nakhll_market.models import Product, ProductBanner, HistoricalProduct
 
@@ -29,18 +26,18 @@ class BulkProductHandler:
     BULK_TYPE_UPDATE = 'update'
     def __init__(self, *, shop, images_zip_file=None, product_barcode_field='barcode',
                  required_fields_with_types={
-                    'Title': [object],
-                    'barcode': [object],
-                    'Price': ['Int64'],
-                    'OldPrice': ['Int64'],
-                    'Inventory': ['Int64']
+                    'Title': object,
+                    'barcode': object,
+                    'Price': 'Int64',
+                    'OldPrice': 'Int64',
+                    'Inventory': 'Int64'
                 },
                  optional_fields_with_types={
-                    'Net_Weight': ['int64', 'float64'],
-                    'Weight_With_Packing': ['int64', 'float64'],
-                    'new_category_id': ['int64'],
+                    'Net_Weight': 'Int64',
+                    'Weight_With_Packing': 'Int64',
+                    'new_category_id': 'Int64',
                 },
-                 update_fields=['Price', 'OldPrice', 'Inventory', 'Net_Weight',
+                 update_fields=['Title', 'Price', 'OldPrice', 'Inventory', 'Net_Weight',
                                 'Weight_With_Packing', 'new_category_id'],
                  image_fields={'image_1': object, 'image_2': object, 'image_3': object},
                  bulk_type=None):
@@ -62,8 +59,9 @@ class BulkProductHandler:
             raise BulkException('Bulk type must be create or update')
 
     def parse_csv(self, csv_file):
-        # df = pd.read_csv(csv_file, dtype=self.required_fields_with_types)
-        df = pd.read_csv(csv_file)
+        dtypes = {**self.required_fields_with_types, **self.optional_fields_with_types}
+        df = pd.read_csv(csv_file, dtype=dtypes)
+        # df = pd.read_csv(csv_file)
         self.df = df
         return self.dataframe_parser()
 
@@ -180,7 +178,7 @@ class BulkProductHandler:
         for field, field_type in fields_with_types:
             if field not in df.columns:
                 continue
-            if df[field].dtype not in field_type:
+            if df[field].dtype != field_type:
                 raise BulkException(f'{field} must be {field_type}')
 
     def __drop_extra_fields(self, df):
