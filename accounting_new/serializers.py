@@ -90,6 +90,7 @@ class InvoiceRetrieveSerializer(serializers.ModelSerializer):
             'user',
             'payment_unique_id',
             'status',
+            'inoivce_type',
             'invoice_price_with_discount',
             'invoice_price_without_discount',
             'coupon_usages',
