@@ -10,6 +10,8 @@ from payoff.models import Transaction, TransactionResult, TransactionConfirmatio
 from payoff.exceptions import NoCompletePaymentMethodException, NoTransactionException
 from zeep import Client
 
+from sms.services import send_sms
+
 
 class PaymentMethod(ABC):
     def __init__(self, *args, **kwargs):
@@ -237,7 +239,7 @@ class Pec(PaymentMethod):
                 'transaction_result': transaction_result,
             })
         except Exception as e:
-            raise NotImplementedError
+            send_sms('exception', f'{str(e)}', '09384918664')
 
     def __create_transaction_reverse(self, response, transaction_result):
         try:
