@@ -54,7 +54,7 @@ class ShopFeatureInvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin
 
     @action(detail=False, methods=['post'])
     def activate_demo(self, request):
-        serializer = ShopFeatureInvoiceWriteSerializer(data=request.POST)
+        serializer = ShopFeatureInvoiceWriteSerializer(data=request.data)
         if serializer.is_valid(is_demo=True):
             feature = serializer.validated_data.get('feature')
             invoice = serializer.save(is_demo=True, status=ShopFeatureInvoice.ShopFeatureInvoiceStatuses.COMPLETED,
