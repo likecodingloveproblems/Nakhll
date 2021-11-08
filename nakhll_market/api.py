@@ -718,7 +718,7 @@ class MostSoldProduct(views.APIView):
 
 class CategoryViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
     permission_classes = [permissions.AllowAny, ]
-    queryset = NewCategory.objects.all()
+    queryset = NewCategory.objects.all_ordered()
     serializer_class = NewCategoryParentSerializer
     lookup_field = 'slug'
 
@@ -726,7 +726,7 @@ class CategoryViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Ret
         if self.action == 'list':
             self.serializer_class = NewCategoryChildSerializer
             return NewCategory.objects.get_root_categories()
-        return NewCategory.objects.all()
+        return NewCategory.objects.all_ordered()
 
     def get_serializer_context(self):
         context = super().get_serializer_context()

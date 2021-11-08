@@ -416,7 +416,7 @@ class NewCategoryManager(models.Manager):
             return self.parents_to_root(category.parent) + [category]
 
     def get_root_categories(self):
-        return self.filter(parent=None)
+        return self.filter(parent=None).order_by('order')
 
     def categories_with_product_count(self, query=None):
         queryset = self.all()
@@ -431,6 +431,9 @@ class NewCategoryManager(models.Manager):
             subcategories.append(category)
             subcategories.extend(self.all_subcategories(category.childrens.all()))
         return subcategories
+
+    def all_ordered(self):
+        return self.all().order_by('order')
 
 
 class NewCategory(models.Model):
@@ -451,6 +454,7 @@ class NewCategory(models.Model):
     updated_at = models.DateTimeField(verbose_name='تاریخ بروزرسانی', auto_now=True)
     market_uuid = models.UUIDField(verbose_name='شناسه بازار', null=True, editable=False)
     submarket_uuid = models.UUIDField(verbose_name='شناسه بازارچه', null=True, editable=False)
+    order = models.PositiveIntegerField(verbose_name='ترتیب', default=99999)
     objects = NewCategoryManager()
 
     def __str__(self):

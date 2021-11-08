@@ -151,7 +151,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(NewCategory)
 class NewCategoryAdmin(admin.ModelAdmin):
-    list_display=('id', 'name', 'slug', 'description', 'parent', 'available', )
+    list_display=('id', 'name', 'order', 'slug', 'description', 'parent', 'available')
     list_filter=('parent','available')
     ordering=('-parent', 'id', )
 

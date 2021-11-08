@@ -41,13 +41,13 @@ class CategorySerializer(serializers.ModelSerializer):
 class NewCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = NewCategory
-        fields = ['id', 'name', 'slug']
+        fields = ['id', 'name', 'order', 'slug']
 
 class NewCategoryProductCountSerializer(serializers.ModelSerializer):
     product_count = serializers.SerializerMethodField()
     class Meta:
         model = NewCategory
-        fields = ['id', 'name', 'slug', 'product_count']
+        fields = ['id', 'name', 'order', 'slug', 'product_count']
 
     def get_product_count(self, obj):
         return obj.product_count
@@ -56,7 +56,7 @@ class NewCategoryChildSerializer(serializers.ModelSerializer):
     childrens = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = NewCategory
-        fields = ['id', 'name', 'slug', 'childrens']
+        fields = ['id', 'name', 'order', 'slug', 'childrens']
 
     def get_childrens(self, obj):
         max_depth = self.context.get('max_depth', -1) - 1
@@ -69,7 +69,7 @@ class NewCategoryParentSerializer(serializers.ModelSerializer):
     parents = serializers.SerializerMethodField(read_only=True, method_name='parents_to_root')
     class Meta:
         model = NewCategory
-        fields = ['id', 'name', 'slug', 'parents']
+        fields = ['id', 'name', 'order', 'slug', 'parents']
 
     def parents_to_root(self, obj):
         parents = []
@@ -84,7 +84,7 @@ class NewCategoryParentChildSerializer(serializers.ModelSerializer):
     childrens = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = NewCategory
-        fields = ['id', 'name', 'slug', 'parents', 'childrens']
+        fields = ['id', 'name', 'order', 'slug', 'parents', 'childrens']
 
     def parents_to_root(self, obj):
         return NewCategoryParentSerializer(NewCategory.objects.parents_to_root(obj), many=True).data    
