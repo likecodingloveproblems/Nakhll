@@ -40,11 +40,12 @@ urlpatterns = [
     # api version 1
     url(r'^api/v1/', include('nakhll_market.api_urls', namespace='nakhll_market_api')),
     url(r'^api/v1/', include('custom_list.urls', namespace='custom_list')),
+    url(r'^api/v1/', include('shop.urls', namespace='shop')),
     # prometheus
     url('', include('django_prometheus.urls')),
     path('payoff/', include('payoff.urls', namespace='payoff')),
 ]
 
-if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)\
-    + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# if settings.DEBUG:
+    # urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)\
+    # + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

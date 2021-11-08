@@ -85,6 +85,7 @@ INSTALLED_APPS = [
     'url_redirector',
     'custom_list',
     'colorfield',
+    'shop',
 ]
 
 MIDDLEWARE = [
@@ -124,6 +125,7 @@ ADMIN_REORDER = (
         'nakhll_market.AmazingProduct',
         'nakhll_market.LandingPageSchema',
         'nakhll_market.ShopPageSchema',
+        'shop.ShopFeature',
     )},
     {
         'app': 'logistic',
