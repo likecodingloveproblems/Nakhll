@@ -239,7 +239,7 @@ class Pec(PaymentMethod):
                 'transaction_result': transaction_result,
             })
         except Exception as e:
-            send_sms('exception', f'{str(e)}', '09384918664')
+            send_sms('exception', f'{str(e)}_{transaction_result.id}', '09384918664')
 
     def __create_transaction_reverse(self, response, transaction_result):
         try:
