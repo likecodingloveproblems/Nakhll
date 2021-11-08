@@ -43,8 +43,11 @@ class ShopFeatureInvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin
 
     @action(detail=False, methods=['get'], url_path='(?P<shop_slug>[^/.]+)/history')
     def shop_feature_invoices_history(self, request, shop_slug):
+        feature_id = request.query_params.get('feature')
         shop = self.get_shop(shop_slug)
         invoices = ShopFeatureInvoice.objects.filter(shop=shop)
+        if feature_id:
+            invoices = invoices.filter(feature__id=feature_id)
         serializer = ShopFeatureInvoiceSerializer(invoices, many=True)
         return Response(serializer.data)
 
