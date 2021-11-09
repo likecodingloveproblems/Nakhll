@@ -168,12 +168,15 @@ class Pec(PaymentMethod):
         try:
             transaction = Transaction.objects.get(
                 order_number=transaction_result.order_id)
-        except:
-            AlertInterface.developer_alert(where='link_to_trans', trans_res_id=transaction_result.id)
+        except Exception as e:
+            AlertInterface.developer_alert(where='link_to_trans', trans_res_id=transaction_result.id, error=str(e))
             raise NoTransactionException(f'No transaction found for order_id:\
                 {transaction_result.order_id}')
         transaction_result.transaction = transaction
-        transaction_result.save()
+        try:
+            transaction_result.save()
+        except Exception as e:
+            AlertInterface.developer_alert(where='link_to_trans', trans_res_id=transaction_result.id, error=str(e))
         return transaction_result
 
     def _is_tarnsaction_result_succeded(self, transaction_result):
