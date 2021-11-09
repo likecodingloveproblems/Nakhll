@@ -10,8 +10,6 @@ from payoff.models import Transaction, TransactionResult, TransactionConfirmatio
 from payoff.exceptions import NoCompletePaymentMethodException, NoTransactionException
 from zeep import Client
 
-from sms.services import send_sms
-
 
 class PaymentMethod(ABC):
     def __init__(self, *args, **kwargs):
@@ -129,10 +127,14 @@ class Pec(PaymentMethod):
         transaction_result = self._link_to_transaction(transaction_result)
         if self._is_tarnsaction_result_succeded(transaction_result):
             response = self.__send_confirmation_request(transaction_result)
+            self.__create_transaction_confirmation(self, response)
             if response and self.__confirmation_response_is_valid(response):
                 self._complete_payment(transaction_result)
                 return {'status': self.SUCCESS_STATUS, 'code': transaction_result.order_id}
             else:
+                AlertInterface.developer_alert(where='confirm_trans',
+                                                trans_id=transaction_result.transaction.id,
+                                                trans_res_id=transaction_result.id)
                 AlertInterface.payment_not_confirmed(transaction_result)
         self._revert_transaction(transaction_result)
         return {'status': self.FAILURE_STATUS, 'code': transaction_result.order_id}
@@ -167,6 +169,7 @@ class Pec(PaymentMethod):
             transaction = Transaction.objects.get(
                 order_number=transaction_result.order_id)
         except:
+            AlertInterface.developer_alert(where='link_to_trans', trans_res_id=transaction_result.id)
             raise NoTransactionException(f'No transaction found for order_id:\
                 {transaction_result.order_id}')
         transaction_result.transaction = transaction
@@ -180,8 +183,6 @@ class Pec(PaymentMethod):
         if status== self.__SUCCESS_STATUS_CODE and rrn > self.__SUCCESS_RRN_MIN_VALUE:
             return True
         return False
-
-        self.__send_confirmation_request(transaction_result) 
 
     def _complete_payment(self, transaction_result):
         ''' Send transaction_result to referrer model to finish purchase process'''
@@ -205,7 +206,6 @@ class Pec(PaymentMethod):
 
     def __confirmation_response_is_valid(self, response):
         if response.Token > self.__SUCCESS_TOKEN_MIN_VALUE and response.Status == self.__SUCCESS_STATUS_CODE:
-            self.__create_transaction_confirmation(self, response)
             return True
         return False
 
@@ -239,7 +239,9 @@ class Pec(PaymentMethod):
                 'transaction_result': transaction_result,
             })
         except Exception as e:
-            send_sms('exception', f'{str(e)}_{transaction_result.id}', '09384918664')
+            AlertInterface.developer_alert(where='create_trans_confirm', 
+                                            trans_res=transaction_result.id, 
+                                            error=e, response=response)
 
     def __create_transaction_reverse(self, response, transaction_result):
         try:

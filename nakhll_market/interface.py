@@ -21,5 +21,10 @@ class AlertInterface:
     def payment_not_confirmed(transaction_result):
         ''' Create alert when transaction_result is valid, but ipg doesn't confirm payment'''
         # TODO: no part is available for this type of alert
-        # DEBUG:
-        send_sms('unconfirmed_transaction', f'transaction_result_id:{transaction_result.id}', '09384918664')
+
+    
+    @staticmethod
+    def developer_alert(**kwargs):
+        ''' send sms to developer '''
+        kwargs_string = '__'.join(f'{key}:{value}' for key, value in kwargs.items())
+        send_sms('developer_alert', kwargs_string, '09384918664')
