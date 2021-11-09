@@ -15,6 +15,7 @@ from .models import ShopFeature, ShopFeatureInvoice, ShopLanding, PinnedURL
 from .serializers import (ShopFeatureDetailSerializer, ShopFeatureInvoice, ShopFeatureInvoiceSerializer,
                          ShopFeatureInvoiceWriteSerializer, ShopFeatureSerializer, ShopLandingDetailsSerializer, ShopLandingSerializer, UserPinnedURLSerializer, )
 from .permissions import IsShopOwner, IsPinnedURLOwner
+from .mixins import MultipleFieldLookupMixin
 
 
 class ShopFeatureViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.ListModelMixin):
@@ -96,12 +97,13 @@ class ShopFeatureInvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin
             raise Http404
             
 
-class ShopLandingViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin,
+class ShopLandingViewSet(MultipleFieldLookupMixin, mixins.RetrieveModelMixin,
                             mixins.ListModelMixin, mixins.CreateModelMixin,
-                            mixins.DestroyModelMixin, mixins.UpdateModelMixin):
+                            mixins.DestroyModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     queryset = ShopLanding.objects.all()
     permission_classes = [permissions.IsAuthenticated, IsShopOwner]
     authentication_classes = [CsrfExemptSessionAuthentication, ]
+    lookup_fields = ['shop__Slug', 'id']
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -110,22 +112,7 @@ class ShopLandingViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin,
             return ShopLandingDetailsSerializer
 
     def get_queryset(self):
-        return super().get_queryset().filter(shop__FK_ShopManager=self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
-
-    def destroy(self, request, *args, **kwargs):
-        return super().destroy(request, *args, **kwargs)
-    
-    def update(self, request, *args, **kwargs):
-        return super().update(request, *args, **kwargs)
-
-    def retrieve(self, request, *args, **kwargs):
-        return super().retrieve(request, *args, **kwargs)
-
-    def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
+        return super().get_queryset().filter(shop__FK_ShopManager=self.request.user, **self.kwargs)
 
     @action(detail=True, methods=['get'])
     def activate_landing(self, request, pk=None):
