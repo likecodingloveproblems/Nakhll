@@ -127,7 +127,7 @@ class Pec(PaymentMethod):
         transaction_result = self._link_to_transaction(transaction_result)
         if self._is_tarnsaction_result_succeded(transaction_result):
             response = self.__send_confirmation_request(transaction_result)
-            self.__create_transaction_confirmation(self, response)
+            self.__create_transaction_confirmation(response, transaction_result)
             if response and self.__confirmation_response_is_valid(response):
                 self._complete_payment(transaction_result)
                 return {'status': self.SUCCESS_STATUS, 'code': transaction_result.order_id}
