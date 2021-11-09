@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext as _
 from rest_framework import serializers, status, mixins, permissions, viewsets
 from rest_framework.decorators import action, authentication_classes, permission_classes
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from nakhll.authentications import CsrfExemptSessionAuthentication
 from nakhll_market.models import Shop
@@ -103,13 +104,17 @@ class ShopLandingViewSet(MultipleFieldLookupMixin, mixins.RetrieveModelMixin,
     queryset = ShopLanding.objects.all()
     permission_classes = [permissions.IsAuthenticated, IsShopOwner]
     authentication_classes = [CsrfExemptSessionAuthentication, ]
-    lookup_fields = ['shop__Slug', 'id']
+    lookup_fields = ['shop__Slug', 'pk']
 
     def get_serializer_class(self):
         if self.action == 'list':
             return ShopLandingSerializer
         else:
             return ShopLandingDetailsSerializer
+
+    def get_shop(self):
+        shop_slug = self.kwargs.get('shop__Slug')
+        return get_object_or_404(Shop, Slug=shop_slug, FK_ShopManager=self.request.user)
 
     def get_queryset(self):
         return super().get_queryset().filter(shop__FK_ShopManager=self.request.user, **self.kwargs)
@@ -121,6 +126,14 @@ class ShopLandingViewSet(MultipleFieldLookupMixin, mixins.RetrieveModelMixin,
         shop_landing.status = ShopLanding.Statuses.ACTIVE
         shop_landing.save()
         return Response(status=status.HTTP_200_OK)
+
+    def perform_create(self, serializer):
+        shop = self.get_shop()
+        serializer.save(shop=shop)
+
+    def perform_update(self, serializer):
+        shop = self.get_shop()
+        serializer.save(shop=shop)
 
 
 class PinnedURLViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin,

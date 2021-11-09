@@ -54,7 +54,7 @@ class ShopLandingSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'created_at', 'updated_at', 'status' )
 
 class ShopLandingDetailsSerializer(serializers.ModelSerializer):
-    shop = serializers.SlugRelatedField(slug_field='Slug', queryset=Shop.objects.all())
+    shop = serializers.SlugRelatedField(slug_field='Slug', queryset=Shop.objects.all(), required=False)
     class Meta:
         model = ShopLanding
         fields = ('id', 'name', 'shop', 'page_data')
