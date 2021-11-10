@@ -31,14 +31,20 @@ class ShopFeatureInvoiceSerializer(serializers.ModelSerializer):
                     'bought_unit', 'unit_count', 'start_datetime',
                     'expire_datetime', 'payment_datetime', 'is_demo')
     def get_start_datetime(self, obj):
+        if not obj.start_datetime:
+            return None
         return jdatetime.datetime.fromgregorian(datetime=obj.start_datetime,
                                                 locale='fa_IR').strftime('%Y/%m/%d')
 
     def get_expire_datetime(self, obj):
+        if not obj.expire_datetime:
+            return None
         return jdatetime.datetime.fromgregorian(datetime=obj.expire_datetime,
                                                 locale='fa_IR').strftime('%Y/%m/%d')
 
     def get_payment_datetime(self, obj):
+        if not obj.payment_datetime:
+            return None
         return jdatetime.datetime.fromgregorian(datetime=obj.payment_datetime,
                                                 locale='fa_IR').strftime('%Y/%m/%d')
 
@@ -70,9 +76,13 @@ class ShopLandingSerializer(serializers.ModelSerializer):
         model = ShopLanding
         fields = ('id', 'name', 'created_at', 'updated_at', 'status' )
     def get_created_at(self, obj):
+        if not obj.created_at:
+            return None
         return jdatetime.datetime.fromgregorian(datetime=obj.created_at,
                                                 locale='fa_IR').strftime('%Y/%m/%d')
     def get_updated_at(self, obj):
+        if not obj.updated_at:
+            return None
         return jdatetime.datetime.fromgregorian(datetime=obj.updated_at,
                                                 locale='fa_IR').strftime('%Y/%m/%d')
 
