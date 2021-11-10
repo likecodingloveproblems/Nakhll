@@ -1,3 +1,4 @@
+from django.db.models.manager import BaseManager
 from rest_framework.permissions import BasePermission
 
 from nakhll_market.models import Shop
@@ -19,3 +20,10 @@ class IsPinnedURLOwner(BasePermission):
         user = request.user 
         return prev_result and obj.user == user
 
+
+
+class ShopLandingPermission(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        prev_result = super().has_object_permission(request, view, obj)
+        shop = obj if isinstance(obj, Shop) else obj.shop
+        return prev_result and ShopFeature.has_shop_landing_access(shop)

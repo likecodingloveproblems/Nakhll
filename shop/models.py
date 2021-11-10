@@ -50,6 +50,19 @@ class ShopFeature(models.Model):
         prev_demo = self.shop_feature_invoices.filter(
             is_demo=True, shop=shop).first()
         return bool(prev_demo)
+    
+    @staticmethod
+    def has_shop_landing_access(shop):
+        permission = ShopFeature.PermissionCodeNames.LANDING
+        now = timezone.now()
+        return bool(shop.invoice_shop_feature_items.filter(
+            feature__feature_permission_code_name=permission,
+            start_datetime__lte=now,
+            expire_datetime__gte=now,
+            status=ShopFeatureInvoice.ShopFeatureInvoiceStatuses.COMPLETED
+        ).first())
+        
+        
 
 
 class ShopFeatureInvoice(models.Model):
@@ -92,11 +105,29 @@ class ShopFeatureInvoice(models.Model):
         ''' Payment is succeeded '''
         self.status = self.ShopFeatureInvoiceStatuses.COMPLETED
         self.payment_datetime = timezone.now()
+        self.save_start_datetime()
+        self.save_expire_datetime()
         self.save()
 
     def revert_payment(self):
         ''' Payment is failed'''
         pass
+
+    def save_start_datetime(self):
+        ''' Get last active feature invoice, set new invoice start_datetime right after
+            previous expire_datetime
+        '''
+        start_datetime = None
+        last_invoice = ShopFeatureInvoice.objects.filter(
+            shop=self.shop,
+            feature=self.feature,
+            status=self.ShopFeatureInvoiceStatuses.COMPLETED
+        ).order_by('-expire_datetime').first()
+        if last_invoice:
+            start_datetime = last_invoice.expire_datetime
+        else:
+            start_datetime = timezone.now()
+        self.start_datetime = start_datetime
 
     def save_expire_datetime(self):
         start_datetime = self.start_datetime

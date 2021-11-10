@@ -15,7 +15,7 @@ from payoff.exceptions import NoAddressException, InvoiceExpiredException,\
 from .models import ShopFeature, ShopFeatureInvoice, ShopLanding, PinnedURL
 from .serializers import (ShopFeatureDetailSerializer, ShopFeatureInvoice, ShopFeatureInvoiceSerializer,
                          ShopFeatureInvoiceWriteSerializer, ShopFeatureSerializer, ShopLandingDetailsSerializer, ShopLandingSerializer, UserPinnedURLSerializer, )
-from .permissions import IsShopOwner, IsPinnedURLOwner
+from .permissions import IsShopOwner, IsPinnedURLOwner, ShopLandingPermission
 from .mixins import MultipleFieldLookupMixin
 
 
@@ -66,9 +66,6 @@ class ShopFeatureInvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-    def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
-
 
     def perform_create(self, serializer):
         feature = serializer.validated_data.get('feature')
@@ -102,7 +99,7 @@ class ShopLandingViewSet(MultipleFieldLookupMixin, mixins.RetrieveModelMixin,
                             mixins.ListModelMixin, mixins.CreateModelMixin,
                             mixins.DestroyModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     queryset = ShopLanding.objects.all()
-    permission_classes = [permissions.IsAuthenticated, IsShopOwner]
+    permission_classes = [permissions.IsAuthenticated, IsShopOwner, ShopLandingPermission]
     authentication_classes = [CsrfExemptSessionAuthentication, ]
     lookup_fields = ['shop__Slug', 'pk']
 
