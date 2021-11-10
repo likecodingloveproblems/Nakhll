@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth.models import User
 from nakhll_market.interface import AlertInterface
-from nakhll_market.models import Product
+from nakhll_market.models import Product, Shop
 from payoff.models import Transaction
 from payoff.interfaces import PaymentInterface
 from payoff.exceptions import NoAddressException, InvoiceExpiredException, \
@@ -16,6 +16,7 @@ from accounting_new.interfaces import AccountingInterface
 from accounting_new.managers import AccountingManager, InvoiceItemManager
 from logistic.models import Address, PostPriceSetting
 from sms.services import Kavenegar
+from shop.models import ShopFeature
 
 # Create your models here.
 
@@ -28,6 +29,11 @@ class Invoice(models.Model, AccountingInterface):
         AWAIT_SHOP_CHECKOUT = 'wait_store_checkout', _('در انتظار تسویه با فروشگاه') 
         COMPLETED = 'completed', _('تکمیل شده')
         CANCELED = 'canceled', _('لغو شده')
+
+    # class InvoiceTypes(models.TextChoices):
+    #     HOJREH = 'hojreh', _('حجره')
+    #     NAKHLL_FEATURE = 'nakhll_feature', _('قابلیت نخل')
+        
     class Meta:
         verbose_name = _('فاکتور')
         verbose_name_plural = _('فاکتورها')
@@ -38,6 +44,8 @@ class Invoice(models.Model, AccountingInterface):
     FactorNumber = models.CharField(_('شماره فاکتور'), max_length=50, null=True, blank=True, unique=True)
     status = models.CharField(_('وضعیت فاکتور'), max_length=20, 
             default=Statuses.AWAIT_PAYMENT, choices=Statuses.choices)
+    # invoice_type = models.CharField(_('نوع فاکتور'), max_length=20, 
+            # default=InvoiceTypes.HOJREH, choices=InvoiceTypes.choices)
     # cart = models.OneToOneField(Cart, on_delete=models.PROTECT, related_name='invoice', 
             # verbose_name=_('سبد خرید'))
     address = models.ForeignKey(Address, on_delete=models.PROTECT, null=True,

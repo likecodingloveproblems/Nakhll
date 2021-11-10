@@ -82,7 +82,7 @@ class BulkProductHandler:
         new_products_df, old_products_df = self.__seperate_new_old_products(df)
         new_products, old_products = [], []
         if self.bulk_type == self.BULK_TYPE_UPDATE:
-            old_products = self.__create_old_products_instance(old_products_df)
+            old_products = self.__update_old_products_instance(old_products_df)
         elif self.bulk_type == self.BULK_TYPE_CREATE:
             new_products = self.__create_new_products_instance(new_products_df)
 
@@ -110,7 +110,7 @@ class BulkProductHandler:
         self.__drop_extra_fields(df)
         return df
 
-    def __create_old_products_instance(self, df):
+    def __update_old_products_instance(self, df):
         products = Product.objects.filter(
             FK_Shop=self.shop, barcode__in=df[self.product_barcode_field].to_list())
         update_list = []
@@ -122,7 +122,6 @@ class BulkProductHandler:
         bulk_update_with_history(update_list, Product, self.update_fields, batch_size=500,
                                     default_user=self.shop.FK_ShopManager,
                                     default_change_reason=f'tag:{self.shop.ID}')
-        # Product.objects.bulk_update(update_list, self.update_fields)
         return update_list
 
     def __set_product_attribute(self, product, field, df):
