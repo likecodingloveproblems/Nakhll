@@ -22,23 +22,23 @@ class ShopFeatureDetailSerializer(serializers.ModelSerializer):
 class ShopFeatureInvoiceSerializer(serializers.ModelSerializer):
     shop = serializers.SlugRelatedField(slug_field='Slug', read_only=True)
     feature = ShopFeatureSerializer(many=False)
-    start_datetime_jalali = serializers.SerializerMethodField()
-    expire_datetime_jalali = serializers.SerializerMethodField()
-    payment_datetime_jalali = serializers.SerializerMethodField()
+    start_datetime = serializers.SerializerMethodField()
+    expire_datetime = serializers.SerializerMethodField()
+    payment_datetime = serializers.SerializerMethodField()
     class Meta:
         model = ShopFeatureInvoice
         fields = ('id', 'shop', 'feature', 'status', 'bought_price_per_unit',
-                    'bought_unit', 'unit_count', 'start_datetime_jalali',
-                    'expire_datetime_jalali', 'payment_datetime_jalali', 'is_demo')
+                    'bought_unit', 'unit_count', 'start_datetime',
+                    'expire_datetime', 'payment_datetime', 'is_demo')
     def get_start_datetime(self, obj):
         return jdatetime.datetime.fromgregorian(datetime=obj.start_datetime,
                                                 locale='fa_IR').strftime('%Y/%m/%d')
 
-    def get_expire_datetime_jalali(self, obj):
+    def get_expire_datetime(self, obj):
         return jdatetime.datetime.fromgregorian(datetime=obj.expire_datetime,
                                                 locale='fa_IR').strftime('%Y/%m/%d')
 
-    def get_payment_datetime_jalali(self, obj):
+    def get_payment_datetime(self, obj):
         return jdatetime.datetime.fromgregorian(datetime=obj.payment_datetime,
                                                 locale='fa_IR').strftime('%Y/%m/%d')
 
