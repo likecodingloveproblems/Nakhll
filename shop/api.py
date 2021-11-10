@@ -119,8 +119,8 @@ class ShopLandingViewSet(MultipleFieldLookupMixin, mixins.RetrieveModelMixin,
     def get_queryset(self):
         return super().get_queryset().filter(shop__FK_ShopManager=self.request.user, **self.kwargs)
 
-    @action(detail=True, methods=['get'])
-    def activate_landing(self, request, pk=None):
+    @action(detail=True, methods=['get'], )
+    def activate_landing(self, request, shop__Slug, pk=None):
         shop_landing = self.get_object()
         ShopLanding.objects.deactivate_all_landing_for_shop(shop_landing.shop)
         shop_landing.status = ShopLanding.Statuses.ACTIVE
