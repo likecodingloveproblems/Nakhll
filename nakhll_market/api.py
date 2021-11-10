@@ -702,6 +702,24 @@ class GroupProductUpdateExcel(GroupProductCreateExcel ,views.APIView):
     bulk_type = BulkProductHandler.BULK_TYPE_UPDATE
 
 
+class GroupProductUndo(views.APIView):
+    permission_classes = [permissions.IsAuthenticated, IsShopOwner]
+    authentication_classes = [CsrfExemptSessionAuthentication, ]
+
+    def get_object(self, shop_slug):
+        shop = get_object_or_404(Shop, Slug=shop_slug)
+        self.check_object_permissions(self.request, shop)
+        return shop
+
+    def get(self, request, shop_slug, format=None):
+        shop = self.get_object(shop_slug)
+        bulk_product_handler = BulkProductHandler(shop=shop)
+        try:
+            bulk_product_handler.undo_last_changes()
+        except BulkException as ex:
+            return Response(str(ex), status=status.HTTP_400_BAD_REQUEST)
+        return Response({'message': 'Undo sent'})
+
 
 class MostSoldProduct(views.APIView):
     permission_classes = [permissions.AllowAny, ]

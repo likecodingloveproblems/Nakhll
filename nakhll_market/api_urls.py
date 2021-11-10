@@ -6,7 +6,7 @@ from nakhll_market.api import (
     MostSoldShopsViewSet, RandomShopsViewSet, RandomProductsViewSet, ProductsViewSet, GetShop, UserOrderHistory,
     MarketList, CreateShop, GetShopWithSlug, CheckShopSlug, CheckProductSlug, ShopProductsViewSet, GetShopList,
     ProductBannerViewSet, AddImagesToProduct, ProductDetailsViewSet, BankAccountShopSettings, ProductCommentsViewSet, ProductRelatedItemsViewSet,
-    LandingPageSchemaViewSet, ShopPageSchemaViewSet
+    LandingPageSchemaViewSet, ShopPageSchemaViewSet, GroupProductUndo
     )
 from rest_framework import routers
 
@@ -71,6 +71,7 @@ urlpatterns = [
     path('product/images/', AddImagesToProduct.as_view()),
     path('product/group-create/<shop_slug>/', GroupProductCreateExcel.as_view()),
     path('product/group-update/<shop_slug>/', GroupProductUpdateExcel.as_view()),
+    path('product/group-undo/<shop_slug>/', GroupProductUndo.as_view()),
     path('product/most-sold/', MostSoldProduct.as_view()),
     
     path('profile/', include(profile_router.urls)),
