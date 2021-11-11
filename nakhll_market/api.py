@@ -730,7 +730,7 @@ class GroupProductUndo(views.APIView):
 
     def get(self, request, shop_slug, format=None):
         shop = self.get_object(shop_slug)
-        bulk_product_handler = BulkProductHandler(shop=shop)
+        bulk_product_handler = BulkProductHandler(shop=shop, is_undo_operation=True)
         try:
             result = bulk_product_handler.undo_last_changes()
         except BulkException as ex:
