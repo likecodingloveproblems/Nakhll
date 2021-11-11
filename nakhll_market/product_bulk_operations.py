@@ -40,7 +40,7 @@ class BulkProductHandler:
                  update_fields=['Title', 'Price', 'OldPrice', 'Inventory', 'Net_Weight',
                                 'Weight_With_Packing', 'new_category_id'],
                  image_fields={'image_1': object, 'image_2': object, 'image_3': object},
-                 bulk_type=None):
+                 bulk_type=None, is_undo_operation=False):
         self.df = None
         self.shop = shop
         self.shop_key = f'tag:{shop.ID}'
@@ -53,10 +53,9 @@ class BulkProductHandler:
         self.optional_fields_with_types = optional_fields_with_types
         self.update_fields = update_fields
         self.image_fields = image_fields
-        if bulk_type in [self.BULK_TYPE_CREATE, self.BULK_TYPE_UPDATE]:
-            self.bulk_type = bulk_type
-        else:
-            raise BulkException('Bulk type must be create or update')
+        if not is_undo_operation and bulk_type not in [self.BULK_TYPE_CREATE, self.BULK_TYPE_UPDATE]:
+            raise BulkException('Bulk type must be either create or update')
+        self.bulk_type = bulk_type
 
     def parse_csv(self, csv_file):
         dtypes = {**self.required_fields_with_types, **self.optional_fields_with_types}
@@ -255,9 +254,10 @@ class BulkProductHandler:
 
 
     def undo_last_changes(self):
-        self.__delete_newly_created_products()
-        self.__revert_updated_products()
+        deleted_products = self.__delete_newly_created_products()
+        reverted_products = self.__revert_updated_products()
         self.__revert_undo_shop_tag()
+        return {'deleted_products': deleted_products, 'reverted_products': reverted_products}
 
     def __delete_newly_created_products(self):
         newly_added_historical = Product.history.filter(
@@ -265,8 +265,10 @@ class BulkProductHandler:
                                     history_type=HISTORY_TYPE_CREATE)
         newly_added_historical_ids = newly_added_historical.values_list('ID', flat=True)
         newly_added_products = Product.objects.filter(ID__in=newly_added_historical_ids)
-        newly_added_products.delete()
+        deleted_products, _ = newly_added_products.delete()
         newly_added_historical.delete()
+        return deleted_products
+
 
     def __revert_updated_products(self):
         updated_historical_products = Product.history.filter(history_change_reason=self.shop_key, history_type=HISTORY_TYPE_UPDATE)
@@ -278,6 +280,7 @@ class BulkProductHandler:
                     setattr(product, field, getattr(hist.prev_record.instance, field))
                 bulk_update_list.append(product)
         Product.objects.bulk_update(bulk_update_list, self.update_fields)
+        return len(bulk_update_list)
 
     def __revert_undo_shop_tag(self):
         old_product_histories = Product.history.filter(history_change_reason=self.old_shop_key)

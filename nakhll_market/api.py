@@ -732,10 +732,10 @@ class GroupProductUndo(views.APIView):
         shop = self.get_object(shop_slug)
         bulk_product_handler = BulkProductHandler(shop=shop)
         try:
-            bulk_product_handler.undo_last_changes()
+            result = bulk_product_handler.undo_last_changes()
         except BulkException as ex:
             return Response(str(ex), status=status.HTTP_400_BAD_REQUEST)
-        return Response({'message': 'Undo sent'})
+        return Response(result)
 
 
 class MostSoldProduct(views.APIView):
