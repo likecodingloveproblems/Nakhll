@@ -60,7 +60,8 @@ class ShopFeatureInvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin
         if serializer.is_valid(is_demo=True):
             feature = serializer.validated_data.get('feature')
             invoice = serializer.save(is_demo=True, status=ShopFeatureInvoice.ShopFeatureInvoiceStatuses.COMPLETED,
-                                        bought_price_per_unit=0, bought_unit=feature.unit, unit_count=1, 
+                                        bought_price_per_unit=feature.price_per_unit_with_discount,
+                                        bought_unit=feature.unit, unit_count=1, 
                                         start_datetime=timezone.now())
             invoice.save_expire_datetime()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -70,7 +71,8 @@ class ShopFeatureInvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin
     def perform_create(self, serializer):
         feature = serializer.validated_data.get('feature')
         serializer.save(is_demo=False, status=ShopFeatureInvoice.ShopFeatureInvoiceStatuses.AWAIT_PAYMENT,
-                            bought_price_per_unit=0, bought_unit=feature.unit, unit_count=1) 
+                            bought_price_per_unit=feature.price_per_unit_with_discount,
+                            bought_unit=feature.unit, unit_count=1) 
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
