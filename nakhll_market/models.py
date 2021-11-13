@@ -789,6 +789,10 @@ class Shop(models.Model):
     @property
     def total_products(self):
         return self.get_products().count()
+    
+    @property
+    def is_available(self):
+        return self.Available and self.Publish
 
     def __str__(self):
         return "{}".format(self.Title)
@@ -1126,10 +1130,8 @@ class ProductManager(models.Manager):
     @staticmethod
     def has_enough_items_in_stock(product, count):
         ''' Check if product have enough items in stock '''
-        return \
-            product.Available and \
-            product.Publish and \
-            product.Inventory >= count
+        return (product.Status == '1' and product.inventory >= count)\
+                or (product.Status in ['2', '3'])
 
 
     def is_product_list_valid(self, product_list):
@@ -1142,7 +1144,10 @@ class ProductManager(models.Manager):
             and product count one by one. I don't know...
         '''
         product_ids = [x.get('product').id for x in product_list]
-        if self.filter(Available=False, Publish=False, ID__in=product_ids).exist():
+        if self.filter(
+                Q(ID__in=product_ids) and (
+                Q(Available=False) or Q(Publish=False)
+            )).exists():
             return False
         for item in product_list:
             product = item.get('product').get_from_db()
@@ -1412,6 +1417,14 @@ class Product(models.Model):
     def post_range_type(self):
         return self.PostRangeType
 
+    def is_available(self):
+        return self.Available and self.Publish and self.FK_Shop.is_available()
+
+    def has_enough_items_in_stock(self, count):
+        ''' Check if product have enough items in stock '''
+        return (self.Status == '1' and self.inventory >= count)\
+                or (self.Status in ['2', '3'])
+
 
     ## These properties are created for Torob API
     @property
@@ -1434,6 +1447,7 @@ class Product(models.Model):
     @property
     def availability(self):
         return 'instock' if self.Available and self.Publish and\
+                            self.FK_Shop.is_available() and\
                             (self.Status == '1' and self.inventory) or\
                             (self.Status in ['2', '3']) else ''
 

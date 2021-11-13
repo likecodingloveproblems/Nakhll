@@ -124,7 +124,7 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
         if cart_item:
             count = count + cart_item.count
 
-        if not ProductManager.is_product_available(product, count):
+        if not product.is_available(count):
             raise ValidationError(_('محصول در دسترس نیست'))
 
         if not ProductManager.has_enough_items_in_stock(product, count):
@@ -158,10 +158,13 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
         # TODO: check if permissions are correct
         user, guid = get_user_or_guest(self.request)
         cart_item = self.get_object()
+        product = cart_item.product
         count = serializer.validated_data.get('count')
-        if not ProductManager.is_product_available(cart_item.product, count):
-            raise ValidationError(_('محصول در دسترس نیست و یا به تعداد کافی از این محصول در انبار وجود ندارد'))
-        product_jsonify = ProductLastStateSerializer(cart_item.product)
+        if not product.is_available(count):
+            raise ValidationError(_('محصول در دسترس نیست'))
+        if not product.has_enough_items_in_stock(count):
+            raise ValidationError(_('فروشنده قادر به تامین کالا به میزان درخواستی شما نمی‌باشد'))
+        product_jsonify = ProductLastStateSerializer(product)
         serializer.save(product_last_state=product_jsonify.data)
 
     # def __prevent_if_paying(self):
