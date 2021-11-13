@@ -790,7 +790,6 @@ class Shop(models.Model):
     def total_products(self):
         return self.get_products().count()
     
-    @property
     def is_available(self):
         return self.Available and self.Publish
 
