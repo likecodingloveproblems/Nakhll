@@ -124,7 +124,7 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
         if cart_item:
             count = count + cart_item.count
 
-        if not product.is_available(count):
+        if not product.is_available():
             raise ValidationError(_('محصول در دسترس نیست'))
 
         if not ProductManager.has_enough_items_in_stock(product, count):
@@ -160,7 +160,7 @@ class UserCartItemViewSet(viewsets.ModelViewSet):
         cart_item = self.get_object()
         product = cart_item.product
         count = serializer.validated_data.get('count')
-        if not product.is_available(count):
+        if not product.is_available():
             raise ValidationError(_('محصول در دسترس نیست'))
         if not product.has_enough_items_in_stock(count):
             raise ValidationError(_('فروشنده قادر به تامین کالا به میزان درخواستی شما نمی‌باشد'))
