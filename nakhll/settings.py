@@ -143,6 +143,9 @@ ADMIN_REORDER = (
     {'app': 'accounting_new', 'label': 'بخش حسابداری جدید','models':(
         'accounting_new.Invoice',
         'accounting_new.InvoiceItem',
+        'shop.ShopFeature',
+        'shop.ShopFeatureInvoice',
+        'shop.ShopLanding',
     )},
     {'app': 'Payment', 'label': 'بخش مالی','models':(
         'Payment.Wallet',
