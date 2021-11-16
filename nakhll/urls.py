@@ -20,11 +20,17 @@ from django.urls.conf import re_path
 from nakhll import site_updating
 from nakhll import settings
 from django.conf.urls.static import static
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 
 
 urlpatterns = [
     # re_path(r'.*', site_updating.update, name='update'), # only for update conditions
     url(r'^oauth/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+    path('api/auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('logintowebsite/', admin.site.urls),
     path('accounts/', include('my_auth.urls', namespace='my_auth')),
     path('', include('nakhll_market.urls', namespace='nakhll_market')),
