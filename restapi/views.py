@@ -63,7 +63,6 @@ from rest_framework.status import (
     HTTP_500_INTERNAL_SERVER_ERROR,
 )
 from rest_framework.response import Response
-from nakhll.authentications import CsrfExemptSessionAuthentication
 
 # user login //req : request.user  // res:  OR err
 @csrf_exempt
@@ -2531,7 +2530,6 @@ class ChangeFactorToConfirmed(APIView):
         and also an alert should be generated for staff to notified about factor comfirmation
     '''
     permission_classes = [IsAuthenticated, IsInvoiceProvider]
-    authentication_classes = [CsrfExemptSessionAuthentication, ]
     def get_object(self, factor_id):
         return get_object_or_404(Invoice, id=factor_id) 
 
@@ -2560,7 +2558,6 @@ class ChangeFactorToConfirmed(APIView):
 
 class ChangeFactorToSent(APIView):
     permission_classes = [IsAuthenticated, IsInvoiceProvider]
-    authentication_classes = [CsrfExemptSessionAuthentication, ]
     def get_object(self, factor_id):
         invoice = get_object_or_404(Invoice, id=factor_id) 
         self.check_object_permissions(self.request, invoice)

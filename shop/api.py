@@ -8,7 +8,6 @@ from rest_framework import serializers, status, mixins, permissions, viewsets
 from rest_framework.decorators import action, authentication_classes, permission_classes
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
-from nakhll.authentications import CsrfExemptSessionAuthentication
 from nakhll_market.models import Shop
 from payoff.exceptions import NoAddressException, InvoiceExpiredException,\
             InvalidInvoiceStatusException, OutOfPostRangeProductsException
@@ -23,7 +22,6 @@ class ShopFeatureViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mix
     queryset = ShopFeature.objects.published()
     serializer_class = ShopFeatureSerializer
     permission_classes = [permissions.AllowAny, ]
-    authentication_classes = [CsrfExemptSessionAuthentication, ]
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -35,7 +33,6 @@ class ShopFeatureViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mix
 
 class ShopFeatureInvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.DestroyModelMixin):
     permission_classes = [permissions.IsAuthenticated, IsShopOwner]
-    authentication_classes = [CsrfExemptSessionAuthentication, ]
     queryset = ShopFeatureInvoice.objects.all()
     lookup_field = 'id'
     
@@ -102,7 +99,6 @@ class ShopLandingViewSet(MultipleFieldLookupMixin, mixins.RetrieveModelMixin,
                             mixins.DestroyModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     queryset = ShopLanding.objects.all()
     permission_classes = [permissions.IsAuthenticated, IsShopOwner, ShopLandingPermission]
-    authentication_classes = [CsrfExemptSessionAuthentication, ]
     lookup_fields = ['shop__Slug', 'pk']
 
     def get_serializer_class(self):
@@ -140,7 +136,6 @@ class PinnedURLViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin,
                             mixins.DestroyModelMixin):
     queryset = PinnedURL.objects.all()
     permission_classes = [permissions.IsAuthenticated, IsPinnedURLOwner]
-    authentication_classes = [CsrfExemptSessionAuthentication, ]
     serializer_class = UserPinnedURLSerializer
 
     def get_queryset(self):
