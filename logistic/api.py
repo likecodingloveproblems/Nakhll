@@ -4,14 +4,12 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from logistic.managers import AddressManager
 from django.utils.translation import ugettext as _
-from nakhll.authentications import CsrfExemptSessionAuthentication
 from logistic.models import Address
 from logistic.serializers import AddressSerializer
 from logistic.permissions import IsAddressOwner
 
 class AddressViewSet(viewsets.ModelViewSet):
     serializer_class = AddressSerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, ]
     permission_classes = [IsAddressOwner, permissions.IsAuthenticated ]
     lookup_field = 'id'
 

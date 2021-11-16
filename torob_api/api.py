@@ -4,7 +4,6 @@ from rest_framework import views, permissions, status
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import GenericAPIView, CreateAPIView
-from nakhll.authentications import CsrfExemptSessionAuthentication
 from nakhll_market.models import Product
 from torob_api.serializers import TorobProductListRequestSerializer, TorobProductListResponseSerializer
 
@@ -31,7 +30,6 @@ class TorobCustomPagination(PageNumberPagination):
 
 class TorobAllProducts(GenericAPIView):
     permission_classes = [permissions.AllowAny, ]
-    authentication_classes = [CsrfExemptSessionAuthentication, ]
     pagination_class = TorobCustomPagination
     serializer_class = TorobProductListRequestSerializer
     queryset = Product.objects.all_public_products()
