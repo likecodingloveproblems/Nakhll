@@ -10,11 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
-import os
-from django.urls.base import reverse_lazy
-import sentry_sdk
+import sentry_sdk, os
 from sentry_sdk.integrations.django import DjangoIntegration
+from datetime import timedelta
 from dotenv import load_dotenv
+from django.urls.base import reverse_lazy
 
 load_dotenv()
 
@@ -298,11 +298,15 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+}
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
 }
 
 SITE_ID = os.environ.get('SITE_ID',2)
