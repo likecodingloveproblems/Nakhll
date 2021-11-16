@@ -6,7 +6,6 @@ from rest_framework.response import Response
 from cart.managers import CartManager
 from django.utils.translation import ugettext as _
 from rest_framework import permissions, viewsets, mixins
-from nakhll.authentications import CsrfExemptSessionAuthentication
 from nakhll_market.models import ProductManager
 from nakhll_market.serializers import ProductLastStateSerializer
 from cart.models import Cart, CartItem
@@ -17,7 +16,6 @@ from cart.permissions import IsCartOwner, IsCartItemOwner
 
 class UserCartViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
     serializer_class = CartSerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, ]
     permission_classes = [IsCartOwner, permissions.IsAuthenticated ]
 
     def get_queryset(self):
@@ -40,7 +38,6 @@ class UserCartViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
 
 class UserCartItemViewSet(viewsets.ModelViewSet):
     serializer_class = CartItemSerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, ]
     permission_classes = [IsCartItemOwner, permissions.IsAuthenticated ]
     def get_queryset(self):
         user, guid = get_user_or_guest(self.request)

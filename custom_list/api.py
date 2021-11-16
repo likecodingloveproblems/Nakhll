@@ -4,7 +4,6 @@ from rest_framework import generics, viewsets, mixins, authentication, permissio
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
-from nakhll.authentications import CsrfExemptSessionAuthentication
 from nakhll_market.models import Product
 from custom_list.models import Favorite
 from custom_list.serializers import SimpleFavoriteSerializer, UserFavoriteProductSerializer
@@ -12,7 +11,6 @@ from custom_list.serializers import SimpleFavoriteSerializer, UserFavoriteProduc
 class UserFavoriteProductsViewset(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
     serializer_class = UserFavoriteProductSerializer
     permission_classes = [permissions.IsAuthenticated, ]
-    authentication_classes = [CsrfExemptSessionAuthentication, ]
     queryset = Product.objects.all()
 
     def list(self, request, *args, **kwargs):
