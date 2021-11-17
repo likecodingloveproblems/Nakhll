@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 from django.db.models.aggregates import Avg, Sum
 from django.db.models.deletion import SET_DEFAULT
+from django.http.response import Http404
 from my_auth.models import ProfileManager
 from django.db import models
 from django.db.models import F, Q, Count
@@ -1171,6 +1172,15 @@ class ProductManager(models.Manager):
         return self.get_available_products()\
             .annotate(num_sell=Count('invoice_items__invoice'))\
                 .order_by('-num_sell')[:20]
+            
+    @staticmethod
+    def get_product(id, raise_exception=True):
+        try:
+            return Product.objects.get(ID=id)
+        except:
+            if raise_exception:
+                raise Http404
+            return None
 
 
 

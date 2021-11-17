@@ -7,12 +7,10 @@ from nakhll_market.serializers import ProductSerializer
 
 class CartItemSerializer(serializers.ModelSerializer):
     cart = serializers.PrimaryKeyRelatedField(read_only=True)
-    # TODO: I should think a way of changing queryset=Product.objects.all() to a request that not hit product db directly
-    # product = serializers.SlugRelatedField(slug_field='Slug', many=False, read_only=False, queryset=Product.objects.all())
     product = serializers.PrimaryKeyRelatedField(many=False, read_only=False, queryset=Product.objects.all())
     class Meta:
         model = CartItem
-        fields = '__all__'
+        fields = ('cart', 'product', 'count', 'added_datetime', 'product_last_state', )
         read_only_fields = ('product_last_state', )
 
 
@@ -41,13 +39,7 @@ class CartSerializer(serializers.ModelSerializer):
     count = serializers.SerializerMethodField()
     class Meta:
         model = Cart
-        fields = ('user', 'guest_unique_id', 'total_price', 'total_old_price', 'ordered_items', 'get_diffrences', 'count')
+        fields = ('user', 'total_price', 'total_old_price', 'ordered_items', 'get_diffrences', 'count')
     
     def get_count(self, object):
         return object.items.count()
-
-# class CartTransmissionSerializer(serializers.ModelSerializer):
-#     cart = serializers.PrimaryKeyRelatedField(queryset=CartTransmission.objects.all(), read_only=False, many=False)
-#     class Meta:
-#         model = CartTransmission
-#         fields = ('cart', )
