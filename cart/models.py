@@ -7,9 +7,11 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
 from django.core.serializers.json import DjangoJSONEncoder
+from rest_framework.exceptions import ValidationError
 from accounting_new.models import Invoice, InvoiceItem
 from cart.managers import CartItemManager, CartManager
-from nakhll_market.models import Product
+from cart.utils import get_user_or_guest
+from nakhll_market.models import Product, ProductManager
 from nakhll_market.serializers import ProductLastStateSerializer
 
 
@@ -17,20 +19,10 @@ class Cart(models.Model):
     class Meta:
         verbose_name = _('سبد خرید')
         verbose_name_plural = _('سبدهای خرید')
-    # class Statuses(models.TextChoices):
-        # IN_PROGRESS = 'running', _('در حال اجرا')
-        # ARCHIVED = 'archived', _('بایگانی شده')
 
     old_id = models.UUIDField(null=True, blank=True)
     user = models.OneToOneField(User, verbose_name=_('کاربر'), on_delete=models.CASCADE, related_name='cart', null=True)
-    #// sessions will be deleted in django by clearsession command, so we assign 
-    #// a cart for not-logged-in users by session
-    #// session = models.ForeignKey(Session, verbose_name=_('Session کاربر'), on_delete=models.CASCADE, null=True)
-    # In Token auth, no session used, so I should use a unique id instead of session
     guest_unique_id = models.CharField(_('شناسه کاربر مهمان'), max_length=100, null=True, blank=True)
-    # status = models.CharField(max_length=10, verbose_name=_('وضعیت سبد خرید'), choices=Statuses.choices, default=Statuses.IN_PROGRESS)
-    # created_datetime = models.DateTimeField(verbose_name=_('تاریخ ثبت سبد خرید'), auto_now_add=True)
-    # change_status_datetime = models.DateTimeField(verbose_name=_('تاریخ تغییر وضعیت سبد'), null=True)
     extra_data = models.JSONField(null=True, encoder=DjangoJSONEncoder)
     objects = CartManager()
 
@@ -90,11 +82,6 @@ class Cart(models.Model):
         return sum(prices)
 
 
-    def check_cart_items(self):
-        ''' Check for changes and product statuses in every item in cart, show changes for now '''
-        # TODO
-        return None
-
     @property
     def get_diffrences(self):
         ''' Compare current and latest state of products in the cart and show diffrences 
@@ -126,10 +113,6 @@ class Cart(models.Model):
         ''' Return all cart items in order by shop'''
         return self.items.order_by('-product__FK_Shop')
 
-    # def archive(self):
-    #     ''' Archive this cart '''
-    #     self.status = self.Statuses.CLOSED
-    #     self.save()
 
     def convert_to_invoice(self):
         ''' Convert cart to invoice '''
@@ -151,15 +134,35 @@ class Cart(models.Model):
         self.items.all().delete()
 
     def add_product(self, product):
+        cart_item = CartItem.objects.filter(product=product, cart=self).first()
+        count = cart_item.count + 1 if cart_item else 1
+
+        if not product.is_available():
+            raise ValidationError(_('محصول در دسترس نیست'))
+
+        if not ProductManager.has_enough_items_in_stock(product, count):
+            raise ValidationError(_('فروشنده قادر به تامین کالا به میزان درخواستی شما نمی‌باشد'))
+
         product_jsonify = ProductLastStateSerializer(product).data
-        cart_item = CartItem.objects.create(
-            cart=self,
-            product=product,
-            count=1,
-            added_datetime=timezone.now(),
-            product_last_state=product_jsonify
-        )
+        if cart_item:
+            cart_item.count = count
+            cart_item.product_last_state = product_jsonify
+            cart_item.save()
+        else:
+            cart_item = CartItem.objects.create(
+                cart=self,
+                product=product,
+                count=count,
+                added_datetime=timezone.now(),
+                product_last_state=product_jsonify
+            )
         return cart_item
+
+    @staticmethod
+    def get_active_cart(request):
+        user, guid = get_user_or_guest(request)
+        active_cart = CartManager.user_active_cart(user, guid)
+        return active_cart
 
 class CartItem(models.Model):
     class Meta:
@@ -205,4 +208,11 @@ class CartItem(models.Model):
             shop_name=self.product.FK_Shop.Title,
             added_datetime=timezone.now(),
         )
+
+    def reduce_count(self):
+        if self.count == 1:
+            self.delete()
+        else:
+            self.count =self.count - 1
+            self.save()
 
