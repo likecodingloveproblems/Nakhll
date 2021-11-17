@@ -4,7 +4,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from cart.managers import CartManager
 from django.utils.translation import ugettext as _
-from rest_framework import permissions, viewsets, mixins
+from rest_framework import viewsets
 from nakhll_market.models import ProductManager
 from cart.models import Cart, CartItem
 from cart.serializers import CartSerializer, CartItemSerializer
