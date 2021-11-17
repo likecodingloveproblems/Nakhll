@@ -1175,6 +1175,15 @@ class ProductManager(models.Manager):
         return self.get_available_products()\
             .annotate(num_sell=Count('invoice_items__invoice'))\
                 .order_by('-num_sell')[:20]
+            
+    @staticmethod
+    def get_product(id, raise_exception=True):
+        try:
+            return Product.objects.get(ID=id)
+        except:
+            if raise_exception:
+                raise Http404
+            return None
 
 
 
