@@ -21,7 +21,7 @@ from nakhll_market.models import (
     )
 from nakhll_market.serializers import (
     AmazingProductSerializer, Base64ImageSerializer, NewCategoryProductCountSerializer, NewProfileSerializer, ProductCommentSerializer, ProductDetailSerializer, ProductImagesSerializer,
-    ProductSerializer, ProductUpdateSerializer, ShopProductSerializer, ShopSerializer, ShopSimpleSerializer,SliderSerializer, ProductPriceWriteSerializer,
+    ProductSerializer, ProductUpdateSerializer, ShopProductSerializer, ShopSerializer, ShopSimpleSerializer, ShopSlugSerializer,SliderSerializer, ProductPriceWriteSerializer,
     CategorySerializer, FullMarketSerializer, CreateShopSerializer, ProductInventoryWriteSerializer,
     ProductListSerializer, ProductWriteSerializer, ShopAllSettingsSerializer, ProductBannerSerializer,
     ProductSubMarketSerializer, StateFullSeraializer, SubMarketProductSerializer, SubMarketSerializer,
@@ -757,4 +757,16 @@ class CategoryViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Ret
     def category_product_count(self, request):
         query = request.GET.get('q', None)
         queryset = NewCategory.objects.categories_with_product_count(query)
-        return Response(NewCategoryProductCountSerializer(queryset, many=True).data)
+        return Response(NewCategoryProductCountSerializer(queryset, many=True).data)        
+    
+class PublicShopsViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+    permission_classes = [permissions.AllowAny, ]
+    serializer_class = ProductSerializer
+
+    def get_queryset(self):
+        return Shop.objects.public_shops()
+
+    def list(self, request, *args, **kwargs):
+        shops = self.get_queryset()
+        serializer = ShopSlugSerializer(shops, many=True)
+        return Response(serializer.data)

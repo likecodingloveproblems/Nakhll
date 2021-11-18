@@ -623,3 +623,13 @@ class ProductLastStateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ['Price', 'OldPrice', 'Status', 'PreparationDays', 'Publish', 'Title']
+
+
+class ShopSlugSerializer(serializers.ModelSerializer):
+    products = serializers.SerializerMethodField()
+    class Meta:
+        model = Shop
+        fields = ('Slug', 'products')
+    
+    def get_products(self, obj):
+        return obj.products

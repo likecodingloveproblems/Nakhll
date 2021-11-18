@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 from django.db.models.aggregates import Avg, Sum
 from django.db.models.deletion import SET_DEFAULT
+from django.contrib.postgres.aggregates import ArrayAgg
 from django.http.response import Http404
 from my_auth.models import ProfileManager
 from django.db import models
@@ -625,6 +626,8 @@ class ShopManager(models.Manager):
         shops = Shop.objects.filter(ID__in=random_id_list)
         return shops
 
+    def public_shops(self):
+        return self.filter(Publish=True, Available=True).annotate(products=ArrayAgg('ShopProduct__Slug'))
 
 
 # Shop (حجره) Model
