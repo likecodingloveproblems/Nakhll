@@ -24,7 +24,7 @@ from nakhll_market.serializers import (
     ProductSerializer, ProductUpdateSerializer, ShopProductSerializer, ShopSerializer, ShopSimpleSerializer,SliderSerializer, ProductPriceWriteSerializer,
     CategorySerializer, FullMarketSerializer, CreateShopSerializer, ProductInventoryWriteSerializer,
     ProductListSerializer, ProductWriteSerializer, ShopAllSettingsSerializer, ProductBannerSerializer,
-    ShopBankAccountSettingsSerializer, SocialMediaAccountSettingsSerializer, ProductSubMarketSerializer, StateFullSeraializer, SubMarketProductSerializer, SubMarketSerializer,
+    ProductSubMarketSerializer, StateFullSeraializer, SubMarketProductSerializer, SubMarketSerializer,
     LandingPageSchemaSerializer, ShopPageSchemaSerializer, UserOrderSerializer,
     NewCategorySerializer, NewCategoryChildSerializer, NewCategoryParentChildSerializer, NewCategoryParentSerializer
     )
@@ -543,7 +543,7 @@ class AllShopSettings(views.APIView):
         serializer = ShopAllSettingsSerializer(shop)
         return Response(serializer.data)
 
-    def put(self, request, shop_slug, format=None):
+    def patch(self, request, shop_slug, format=None):
         user = request.user
         shop = self.get_object(shop_slug, user)
         self.check_object_permissions(request, shop)
