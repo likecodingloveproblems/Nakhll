@@ -37,13 +37,13 @@ class InvoiceItemSerializer(serializers.ModelSerializer):
         return obj.invoice.user.get_full_name()
 
     def get_image(self, obj):
-        if obj.image:
-            return attach_domain(obj.image.url)
+        if obj.product.image:
+            return obj.product.image
         return 'https://nakhll.com/media/Pictures/default.jpg'
 
     def get_image_thumbnail(self, obj):
-        if obj.image_thumbnail:
-            return attach_domain(obj.image_thumbnail.url)
+        if obj.product.image_thumbnail_url:
+            return obj.product.image_thumbnail_url
         return 'https://nakhll.com/media/Pictures/default.jpg'
 
 class InvoiceWriteSerializer(serializers.ModelSerializer):
