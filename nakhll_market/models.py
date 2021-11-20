@@ -1584,7 +1584,7 @@ class Product(models.Model):
         try:
             return attach_domain(self.Image.url)
         except:
-            return self.defautl_image_url()
+            return self.default_image_url()
 
     def get_image_alt(self):
         return self.Title
