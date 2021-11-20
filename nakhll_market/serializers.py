@@ -252,7 +252,7 @@ class ProductDetailSerializer(serializers.HyperlinkedModelSerializer):
         model = Product
         fields = [
             'id', 'title', 'description', 'slug', 'price', 'old_price',
-            'available', 'publish', 'discount', 'shop', 'get_image',
+            'available', 'publish', 'discount', 'shop', 'image',
             'attributes', 'attributes_price', 'banners', 'reviews', 'inventory',
             'net_weight', 'weight_with_packing',  'length_with_packing',
             'height_with_packaging', 'story', 'width_with_packing', 'PreparationDays',
