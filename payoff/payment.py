@@ -236,7 +236,7 @@ class Pec(PaymentMethod):
         try:
             TransactionConfirmation.objects.create({
                 'status': response.Status,
-                'card_number_masked': response.CartNumberMasked,
+                'card_number_masked': response.CardNumberMasked,
                 'token': response.Token,
                 'rrn': response.RRN,
                 'transaction_result': transaction_result,
