@@ -1497,7 +1497,7 @@ class Product(models.Model):
         return SendType[self.PostRangeType]
 
     def get_absolute_url(self):
-        return attach_domain(f'/product/{self.Slug}')
+        return attach_domain(f'/shop/{self.FK_Shop.Slug}/product/{self.Slug}')
 
     def get_add_to_cart_url(self):
         return reverse("Payment:add-to-cart", kwargs={
