@@ -12,6 +12,15 @@ class AvailableValidator:
         if not coupon.available:
             raise AvailableException(coupon, _('کوپن مورد نظر شما فعال نیست'))
 
+class UserUsagePerInvoiceValidator:
+    def __init__(self, invoice):
+        self.invoice = invoice
+
+    def __call__(self, coupon):
+        invoice_usages = coupon.usages.filter(invoice=self.invoice).count()
+        if invoice_usages > 0:
+            raise UserException(coupon, _('کوپن تکراری است'), self.invoice.user)
+        
 
 class MaxUserCountValidator:
     def __init__(self, user):
@@ -19,14 +28,14 @@ class MaxUserCountValidator:
     def __call__(self, coupon):
         max_usage = coupon.constraint.max_usage_per_user 
         user_usage = coupon.usages.filter(invoice__user=self.user).count()
-        if user_usage >= max_usage:
+        if max_usage and user_usage >= max_usage:
             raise MaxUserCountException(coupon, _('شما بیشتر از این نمی‌توانید از این کوپن استفاده کنید'), self.user)
 
 class MaxCountValidator:
     def __call__(self, coupon):
         max_usage = coupon.constraint.max_usage
         usage = coupon.usages.count()
-        if usage >= max_usage:
+        if max_usage and usage >= max_usage:
             raise MaxCountException(coupon, _('شما بیش از این نمی‌توانید از این کوپن استفاده کنید'))
 
 

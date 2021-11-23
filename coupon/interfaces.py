@@ -3,7 +3,7 @@ from django.utils.timezone import make_aware
 from rest_framework.validators import ValidationError
 from coupon.validators import (BudgetValidator, DateTimeValidator, MaxCountValidator, MaxUserCountValidator, 
                                ProductValidator, AvailableValidator, UserValidator, PriceValidator,
-                               ShopValidator, )
+                               ShopValidator, UserUsagePerInvoiceValidator,)
 from coupon.exceptions import CouponException
 
 
@@ -15,6 +15,7 @@ class CouponValidation:
             
         if self._validators == self.ALL_VALIDATORS:
             self._validators = [
+                UserUsagePerInvoiceValidator(self._invoice),
                 DateTimeValidator(),
                 MaxUserCountValidator(self._user),
                 MaxCountValidator(),
