@@ -2769,6 +2769,9 @@ class State(models.Model):
     def get_bigcities_of_state_id_name(self):
         return self.get_bigcities_of_state().values('name', 'id')
 
+    def __str__(self):
+        return f'{self.name}'
+
 # ‌BigCity شهرستان
 class BigCity(models.Model):
     name = models.CharField(verbose_name='نام شهرستان', max_length=127)
@@ -2786,6 +2789,8 @@ class BigCity(models.Model):
     def get_cities_of_bigcities_id_name(self):
         return self.get_cities_of_bigcities().values('id', 'name')
 
+    def __str__(self):
+        return f'{self.state} - {self.name}'
         
 # ‌City شهر
 class City(models.Model):
@@ -2805,6 +2810,9 @@ class City(models.Model):
     @property
     def label(self):
         return self.name
+
+    def __str__(self):
+        return f'{self.name} ({self.big_city.state.name})'
 
 
 class DashboardBannerManager(models.Manager):

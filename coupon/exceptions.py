@@ -63,3 +63,9 @@ class BudgetException(CouponException):
     def __init__(self, coupon, message, budget):
         super().__init__(coupon, message)
         self.budget = budget
+
+class CityException(CouponException):
+    '''Error raised when coupon is not valid for this city '''
+    def __init__(self, coupon, message, cities):
+        super().__init__(coupon, message)
+        self.cities = cities

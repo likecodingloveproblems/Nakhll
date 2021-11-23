@@ -4,7 +4,7 @@ from django.utils.translation import ugettext as _
 from django.utils.timezone import make_aware
 from rest_framework.validators import ValidationError
 from coupon.exceptions import (AvailableException, BudgetException, CountException, UserException,
-                               ShopException, DateTimeException, MaxCountException,
+                               ShopException, DateTimeException, MaxCountException, CityException,
                                MaxUserCountException, PriceException, ProductException)
 
 class AvailableValidator:
@@ -98,3 +98,10 @@ class BudgetValidator:
         if coupon_total_usage and coupon.constraint.budget and self.budget < coupon_total_usage:
             raise BudgetException(coupon, _('بودجه این کوپن تمام شده است'), self.budget)
 
+
+class CityValidator:
+    def __init__(self, invoice):
+        self.city = invoice.address.city if invoice.address else None
+    def __call__(self, coupon):
+        if coupon.constraint.cities.all() and self.city not in coupon.constraint.cities.all():
+            raise CityException(coupon, _('این کوپن برای استفاده در این شهر تعریف نشده است'), self.city)

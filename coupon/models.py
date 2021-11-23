@@ -49,7 +49,7 @@ class CouponConstraint(models.Model):
     users = models.ManyToManyField(User, verbose_name=_('کاربران'), related_name='coupons', blank=True)
     shops = models.ManyToManyField(Shop, verbose_name=_('حجره'), related_name='coupons', blank=True)
     products = models.ManyToManyField(Product, verbose_name=_('محصول'), related_name='coupons', blank=True)
-    # categories = models.ManyToManyField(Category, verbose_name=_('دسته بندی'), related_name='coupons')
+    # categories = models.ManyToManyField(Category, verbose_name=_('دسته بندی'), related_name='coupons') TODO
     valid_from = models.DateField(_('تاریخ شروع'), default=now, null=True, blank=True)
     valid_to = models.DateField(_('تاریخ پایان'), null=True, blank=True)
     budget = models.IntegerField(_('بودجه کل کوپن'), default=0)
@@ -59,6 +59,7 @@ class CouponConstraint(models.Model):
     min_purchase_count = models.IntegerField(_('حداقل تعداد خرید'), null=True, blank=True)
     max_purchase_amount = models.BigIntegerField(_('حداکثر مقدار خرید'), null=True, blank=True)
     max_purchase_count = models.IntegerField(_('حداکثر تعداد خرید'), null=True, blank=True)
+    cities = models.ManyToManyField('nakhll_market.City', verbose_name=_('شهرها'), related_name='coupons', blank=True)
     
     extra_data = models.JSONField(_('اطلاعات اضافه'), null=True, blank=True, encoder=DjangoJSONEncoder)
 
