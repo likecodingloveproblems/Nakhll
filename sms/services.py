@@ -45,10 +45,12 @@ class Kavenegar:
 
     @staticmethod
     def shop_new_order(receptor, order_id):
-        tokens = {
-            'token': order_id,
-        }
+        tokens = { 'token': order_id }
         Kavenegar._raw_send('nakhll-order', receptor, tokens)
 
+    @staticmethod
+    def send_auth_code(mobile_number, code):
+        tokens = { 'token': code }
+        Kavenegar._raw_send('nakhl-register', mobile_number, tokens)
 
     
