@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'analytical',
     'sms',
     'my_auth',
+    'nakhll_auth',
     'tinymce',
     'django_jalali',
     'simple_history',
