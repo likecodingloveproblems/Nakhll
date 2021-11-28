@@ -128,13 +128,18 @@ class CreateShopSerializer(serializers.ModelSerializer):
         }
    
 
+class FilterPageShopSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Shop
+        fields = ['ID', 'slug', 'title', 'state']
+
 class ProductSerializer(serializers.ModelSerializer):
-    shop = ShopSerializer(many=False, read_only=True)
+    FK_Shop = FilterPageShopSerializer(many=False, read_only=True)
     class Meta:
         model = Product
         fields = [
-            'image_thumbnail_url', 'url', 'old_price', 'price', 'slug',
-            'title', 'status', 'discount', 'id', 'shop', 'discount', 'is_advertisement'
+            'Image_medium_url', 'OldPrice', 'Price', 'Slug',
+            'Title', 'discount', 'ID', 'FK_Shop', 'discount', 'is_advertisement'
         ]
 
 class AmazingProductSerializer(serializers.ModelSerializer):
@@ -258,11 +263,6 @@ class ProductDetailSerializer(serializers.HyperlinkedModelSerializer):
             'height_with_packaging', 'story', 'width_with_packing', 'PreparationDays',
             'status', 'exception_post_range', 'post_range', 'sub_market', 'new_category'
         ]
-
-class FilterPageShopSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Shop
-        fields = ['ID', 'slug', 'title', 'state']
 
 class ProductListSerializer(serializers.ModelSerializer):
     FK_Shop = FilterPageShopSerializer(read_only=True)
