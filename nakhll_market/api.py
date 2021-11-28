@@ -102,7 +102,7 @@ class MostSoldShopsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return Shop.objects.most_last_week_sale_shops()
 
 class ShopProductsViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.ListModelMixin):
-    serializer_class = ShopProductSerializer
+    serializer_class = ProductListSerializer
     permission_classes = [permissions.AllowAny, ]
     product_slug = None
     lookup_field = 'FK_Shop__Slug'
