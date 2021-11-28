@@ -262,7 +262,7 @@ class ProductDetailSerializer(serializers.HyperlinkedModelSerializer):
 class FilterPageShopSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shop
-        fields = ['ID', 'slug', 'title', 'city']
+        fields = ['ID', 'slug', 'title', 'state']
 
 class ProductListSerializer(serializers.ModelSerializer):
     FK_Shop = FilterPageShopSerializer(read_only=True)
