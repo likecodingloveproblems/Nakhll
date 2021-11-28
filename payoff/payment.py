@@ -234,7 +234,7 @@ class Pec(PaymentMethod):
 
     def __create_transaction_confirmation(self, response, transaction_result):
         try:
-            TransactionConfirmation.objects.create({
+            TransactionConfirmation.objects.create(**{
                 'status': response.Status,
                 'card_number_masked': response.CardNumberMasked,
                 'token': response.Token,
@@ -248,7 +248,7 @@ class Pec(PaymentMethod):
 
     def __create_transaction_reverse(self, response, transaction_result):
         try:
-            TransactionReverse.objects.create({
+            TransactionReverse.objects.create(**{
                 'status': response.Status,
                 'messsage': response.Message,
                 'token': response.Token,
