@@ -1601,7 +1601,6 @@ class Product(models.Model):
 
     def Image_medium_url(self):
         try:
-            i = self.Image_medium.url
             url = self.Image_medium.url
             return attach_domain(url)
         except:

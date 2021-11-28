@@ -210,15 +210,11 @@ class ProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     ordering_fields = ('Title', 'Price', 'DiscountPrecentage', 'DateCreate', )
 
     def get_queryset(self):
-        query = self.request.GET.get('search', '')
-        queryset = Product.objects.select_related('FK_SubMarket', 'FK_Shop').filter(Q(Publish=True), ~Q(FK_Shop=None))
-        queryset = queryset.annotate(DiscountPrecentage=Case(
+        return Product.objects.select_related('FK_Shop').filter(
+            Q(Publish=True), ~Q(FK_Shop=None)).annotate(DiscountPrecentage=Case(
             When(OldPrice__gt=0, then=(
                 (F('OldPrice') - F('Price')) * 100 / F('OldPrice'))
-            ), default=0))
-        queryset = queryset.annotate(submarket_products=Count('FK_SubMarket__Product_SubMarket', Q(FK_SubMarket__Product_SubMarket__Title__contains=query)))
-        queryset = queryset.order_by('-submarket_products')
-        return queryset
+            ), default=0)).order_by('-new_category_id')
 
 
     def get_most_product_submarkets(self, query):

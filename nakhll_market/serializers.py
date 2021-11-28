@@ -259,45 +259,25 @@ class ProductDetailSerializer(serializers.HyperlinkedModelSerializer):
             'status', 'exception_post_range', 'post_range', 'sub_market', 'new_category'
         ]
 
+class FilterPageShopSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Shop
+        fields = ['ID', 'slug', 'title', 'city']
 
 class ProductListSerializer(serializers.ModelSerializer):
-    # FK_User = serializers.SlugRelatedField(slug_field='username', queryset=User.objects.all())
-    category = CategorySerializer(many=True, read_only=True)
-    sub_market = SubMarketSerializer(read_only=True)
-    # shop = serializers.SlugRelatedField(slug_field='Slug', read_only=True)
-    shop = ShopSerializer(read_only=True)
-    banners = ProductBannerSerializer(read_only=True, many=True)
-    post_range_cities = CitySerializer(many=True, read_only=True)
-    new_category = NewCategorySerializer(many=False, read_only=True)
+    FK_Shop = FilterPageShopSerializer(read_only=True)
     class Meta:
         model = Product
         fields = [
-            'id',
-            'title',
-            'slug',
-            'inventory',
-            'category',
-            'new_category',
-            'sub_market',
-            'banners',
-            'image_thumbnail_url',
-            # 'Image',
-            'price',
-            'shop',
-            'old_price',
-            'net_weight',
-            'weight_with_packing',
-            'description',
-            'status',
-            'post_range_type',
-            'preparation_days',
-            'comments_count',
-            'average_user_point',
-            'total_sell',
-            'publish',
-            'available',
+            'ID',
+            'Title',
+            'Slug',
+            'Inventory',
+            'Image_medium_url',
+            'FK_Shop',
+            'Price',
+            'OldPrice',
             'discount',
-            'post_range_cities',
             'is_advertisement',
         ]
     # Image = serializers.SerializerMethodField(method_name='get_absolute_image_url')
