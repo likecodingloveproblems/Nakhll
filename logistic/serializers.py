@@ -18,3 +18,8 @@ class AddressSerializer(serializers.ModelSerializer):
         return obj.user.first_name + ' ' + obj.user.last_name
 
 
+class ShopOwnerAddressSerializer(AddressSerializer):
+    class Meta:
+        model = Address
+        fields = ('id', 'user', 'state', 'big_city', 'city', 'zip_code', 'address', 'receiver_full_name', 'receiver_mobile_number',)
+        read_only_fields = ('id', 'user')

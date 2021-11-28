@@ -4,7 +4,7 @@ from .models import Invoice, InvoiceItem
 from cart.models import Cart
 from cart.serializers import CartSerializer
 from logistic.models import Address
-from logistic.serializers import AddressSerializer
+from logistic.serializers import AddressSerializer, ShopOwnerAddressSerializer
 from coupon.models import Coupon
 from coupon.serializers import CouponUsageSerializer
 from nakhll_market.serializers import UserSerializer
@@ -18,10 +18,11 @@ class InvoiceItemSerializer(serializers.ModelSerializer):
     buyer = serializers.SerializerMethodField()
     image = serializers.SerializerMethodField()
     image_thumbnail = serializers.SerializerMethodField()
+    shop_slug = serializers.SerializerMethodField()
     class Meta:
         model = InvoiceItem
         fields = ['id', 'product', 'slug', 'name', 'count', 'price_with_discount', 'weight',
-                    'price_without_discount',  'barcode', 'image', 'image_thumbnail',
+                    'price_without_discount',  'barcode', 'image', 'image_thumbnail', 'shop_slug',
                     'shop_name', 'added_date_jalali', 'added_time_jalali', 'buyer', 'status']
 
             
@@ -46,6 +47,9 @@ class InvoiceItemSerializer(serializers.ModelSerializer):
             return obj.product.image_thumbnail_url
         return 'https://nakhll.com/media/Pictures/default.jpg'
 
+    def get_shop_slug(self, obj):
+        return obj.product.shop.slug
+
 class InvoiceWriteSerializer(serializers.ModelSerializer):
     address = serializers.PrimaryKeyRelatedField(queryset=Address.objects.all(), required=False)
     coupon = serializers.SlugRelatedField(slug_field='code', queryset=Coupon.objects.all(), required=False)
@@ -59,7 +63,7 @@ class InvoiceWriteSerializer(serializers.ModelSerializer):
 
 
 class InvoiceRetrieveSerializer(serializers.ModelSerializer):
-    address = AddressSerializer(many=False, read_only=True)
+    address = ShopOwnerAddressSerializer(many=False, read_only=True)
     coupon_usages = CouponUsageSerializer(read_only=True, many=True)
     user = UserSerializer(many=False, read_only=True)
     items = serializers.SerializerMethodField(method_name='get_invoie_items')
