@@ -211,7 +211,7 @@ class ProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def get_queryset(self):
         query = self.request.GET.get('search', '')
-        queryset = Product.objects.select_related('FK_SubMarket', 'FK_Shop').filter(Publish=True)
+        queryset = Product.objects.select_related('FK_SubMarket', 'FK_Shop').filter(Q(Publish=True), ~Q(FK_Shop=None))
         queryset = queryset.annotate(DiscountPrecentage=Case(
             When(OldPrice__gt=0, then=(
                 (F('OldPrice') - F('Price')) * 100 / F('OldPrice'))

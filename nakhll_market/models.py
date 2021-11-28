@@ -744,7 +744,9 @@ class Shop(models.Model):
 
     @property
     def profile(self):
-        return self.FK_ShopManager.User_Profile
+        if self.FK_ShopManager:
+            return self.FK_ShopManager.User_Profile
+        return None
     
     @property
     def banners(self):
