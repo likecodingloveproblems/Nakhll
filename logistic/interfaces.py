@@ -80,25 +80,23 @@ class PostPriceSettingInterface:
         return self.inside_city_price if shop.BigCity == dst_big_city and shop.State == dst_state\
             else self.outside_city_price
 
-    def _get_factor_post_wieght_price(self, invocie):
-        ''' Get post wieght price from factor '''
+    def _get_factor_post_wieght_price(self, invoice):
+        ''' Get post wieght price from factor
+            For each shop, weight of products multiply by its quantity should be checked
+        '''
         total_post_price = 0
-        # TODO: This needs more check and is not completed yet
-        weight_gram = invocie.total_weight_gram or 1
-        weight_kilogram = weight_gram / 1000
+        for shop in invoice.shops:
+            total_post_price += self.__get_shop_post_weight_price(invoice, shop)
+        return total_post_price
+        
+    def __get_shop_post_weight_price(self, invoice, shop):
+        extra_weight = 0
+        total_item_weights = 0
+        for item in invoice.items.filter(product__FK_Shop=shop):
+            total_item_weights += (item.product.net_weight or 0) * item.count
+        weight_kilogram = total_item_weights / 1000
         if weight_kilogram > 1: # There is a fee for more than 1kg
             extra_weight = weight_kilogram - 1 # for example 2.5kg is 2.5kg - 1kg = 1.5kg
             extra_weight = int(extra_weight) + 1 # 1.5kg is 1kg when converted to int, so add 1kg 
-            total_post_price += self.extra_weight_fee * extra_weight
-        return total_post_price
-
-        for weight_gram in factor.shop_total_weight:
-            weight_kilogram = weight_gram / 1000
-            if weight_kilogram > 1: # There is a fee for more than 1kg
-                extra_weight = weight_kilogram - 1 # for example 2.5kg is 2.5kg - 1kg = 1.5kg
-                extra_weight = int(extra_weight) + 1 # 1.5kg is 1kg when converted to int, so add 1kg 
-                total_post_price += self.extra_weight_fee * extra_weight
-        return total_post_price
-
-
-
+        return self.extra_weight_fee * extra_weight
+        
