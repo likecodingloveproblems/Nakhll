@@ -286,6 +286,31 @@ class ProductListSerializer(serializers.ModelSerializer):
         # photo_url = product.Image.url if product.Image else None
         # return request.build_absolute_uri(photo_url)
 
+class ProductOwnerListSerializer(serializers.ModelSerializer):
+    FK_Shop = FilterPageShopSerializer(read_only=True)
+    post_range_cities = serializers.SlugRelatedField(slug_field='name', read_only=True, many=True)
+    class Meta:
+        model = Product
+        fields = [
+            'ID',
+            'Title',
+            'Slug',
+            'Inventory',
+            'Image_medium_url',
+            'image_thumbnail_url',
+            'FK_Shop',
+            'Price',
+            'OldPrice',
+            'discount',
+            'is_advertisement',
+            'Status',
+            'PreparationDays',
+            'Available',
+            'Publish',
+            'new_category_id',
+            'post_range_cities'
+        ]
+
 class ProductSubMarketSerializer(serializers.Serializer):
     product = serializers.UUIDField()
     submarkets = serializers.ListField(

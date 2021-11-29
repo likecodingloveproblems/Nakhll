@@ -21,7 +21,7 @@ from nakhll_market.models import (
     LandingPageSchema, ShopPageSchema,
     )
 from nakhll_market.serializers import (
-    AmazingProductSerializer, Base64ImageSerializer, NewCategoryProductCountSerializer, NewProfileSerializer, ProductCommentSerializer, ProductDetailSerializer, ProductImagesSerializer,
+    AmazingProductSerializer, Base64ImageSerializer, NewCategoryProductCountSerializer, NewProfileSerializer, ProductCommentSerializer, ProductDetailSerializer, ProductImagesSerializer, ProductOwnerListSerializer,
     ProductSerializer, ProductUpdateSerializer, ShopProductSerializer, ShopSerializer, ShopSimpleSerializer, ShopSlugSerializer,SliderSerializer, ProductPriceWriteSerializer,
     CategorySerializer, FullMarketSerializer, CreateShopSerializer, ProductInventoryWriteSerializer,
     ProductListSerializer, ProductWriteSerializer, ShopAllSettingsSerializer, ProductBannerSerializer,
@@ -134,7 +134,7 @@ class UserProductViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mix
         if self.action in ['update', 'partial_update']:
             return ProductUpdateSerializer
         elif self.action in ['list', 'retrieve']:
-            return ProductListSerializer
+            return ProductOwnerListSerializer
         else:
             return ProductWriteSerializer
 
