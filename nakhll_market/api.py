@@ -127,6 +127,8 @@ class ShopOwnerProductViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin
                               mixins.CreateModelMixin, mixins.ListModelMixin, mixins.UpdateModelMixin):
     permission_classes = [permissions.IsAuthenticated, IsProductOwner]
     pagination_class = StandardPagination
+    filter_class = ProductFilter
+    filter_backends = (restframework_filters.DjangoFilterBackend, filters.OrderingFilter)
     lookup_field = 'ID'
 
     def get_serializer_class(self):
