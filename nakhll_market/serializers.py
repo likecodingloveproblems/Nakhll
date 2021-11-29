@@ -303,7 +303,7 @@ class ProductOwnerListSerializer(serializers.ModelSerializer):
             'OldPrice',
             'discount',
             'is_advertisement',
-            'Status',
+            'status',
             'PreparationDays',
             'Available',
             'Publish',

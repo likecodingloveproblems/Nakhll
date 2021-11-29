@@ -134,7 +134,7 @@ class UserProductViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mix
         if self.action in ['update', 'partial_update']:
             return ProductUpdateSerializer
         elif self.action in ['list', 'retrieve']:
-            return ProductOwnerListSerializer
+            return ProductListSerializer
         else:
             return ProductWriteSerializer
 

@@ -2,7 +2,7 @@ from typing import List, Tuple
 from django.db import models
 from rest_framework import status
 from nakhll_market.permissions import IsInvoiceOwner, IsInvoiceProvider
-from nakhll_market.serializers import ProductListSerializer
+from nakhll_market.serializers import ProductListSerializer, ProductOwnerListSerializer
 from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse, Http404
@@ -2380,7 +2380,7 @@ class ShopUncompeletedFactors(ListAPIView):
         return Invoice.objects.uncompleted_user_shop_factors(user, shop_slug).distinct()
 
 class ShopProductList(ListAPIView):
-    serializer_class = ProductListSerializer
+    serializer_class = ProductOwnerListSerializer
     permission_classes = [permissions.IsAuthenticated, IsShopOwner]
     lookup_field = 'shop_slug'
     # filter_backends = [OrderingFilter]
