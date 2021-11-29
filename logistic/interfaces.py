@@ -93,7 +93,7 @@ class PostPriceSettingInterface:
         extra_weight = 0
         total_item_weights = 0
         for item in invoice.items.filter(product__FK_Shop=shop):
-            total_item_weights += (item.product.net_weight or 0) * item.count
+            total_item_weights += int(item.product.net_weight or 0) * item.count
         weight_kilogram = total_item_weights / 1000
         if weight_kilogram > 1: # There is a fee for more than 1kg
             extra_weight = weight_kilogram - 1 # for example 2.5kg is 2.5kg - 1kg = 1.5kg
