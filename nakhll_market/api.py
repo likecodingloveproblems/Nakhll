@@ -9,7 +9,7 @@ from django.db.models.expressions import Case, When
 from django.contrib.auth.models import User
 from django.utils.text import slugify
 from rest_framework import generics, routers, status, views, viewsets
-from rest_framework import permissions, filters, mixins
+from rest_framework import permissions, filters, mixins, serializers
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError, PermissionDenied, AuthenticationFailed
@@ -20,7 +20,7 @@ from nakhll_market.models import (
     LandingPageSchema, ShopPageSchema,
     )
 from nakhll_market.serializers import (
-    AmazingProductSerializer, Base64ImageSerializer, NewCategoryProductCountSerializer, NewProfileSerializer, ProductCommentSerializer, ProductDetailSerializer, ProductImagesSerializer,
+    AmazingProductSerializer, Base64ImageSerializer, NewCategoryProductCountSerializer, NewProfileSerializer, ProductBannerWithProductSerializer, ProductCommentSerializer, ProductDetailSerializer, ProductImagesSerializer,
     ProductSerializer, ProductUpdateSerializer, ShopProductSerializer, ShopSerializer, ShopSimpleSerializer, ShopSlugSerializer,SliderSerializer, ProductPriceWriteSerializer,
     CategorySerializer, FullMarketSerializer, CreateShopSerializer, ProductInventoryWriteSerializer,
     ProductListSerializer, ProductWriteSerializer, ShopAllSettingsSerializer, ProductBannerSerializer,
@@ -137,17 +137,7 @@ class UserProductViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mix
             return ProductWriteSerializer
 
 
-    def generate_unique_slug(self, title):
-        ''' Generate new unique slug for Product Model 
-            NOTE: This fucntion should move to utils
-        '''
-        slug = slugify(title, allow_unicode=True)
-        counter = 1
-        new_slug = slug
-        while(Product.objects.filter(Slug=new_slug).exists()):
-            new_slug = f'{slug}_{counter}'
-            counter += 1
-        return new_slug
+
 
     def perform_create(self, serializer):
         data = serializer.validated_data
@@ -157,9 +147,12 @@ class UserProductViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mix
 
         # Check if target shop is owned by user or not
         if shop.FK_ShopManager != self.request.user:
-            raise ValidationError({'details': 'Shop is not own by user'})
+            raise serializers.ValidationError(
+                {'FK_Shop': f'شما به فروشگاه {shop.Title} دسترسی ندارید'},
+                code=status.HTTP_403_FORBIDDEN
+            )
 
-        slug = self.generate_unique_slug(title)
+        slug = self.__generate_unique_slug(title)
         product_extra_fileds = {'Publish': True, 'Slug': slug}
         # TODO: This behavior should be inhanced later
         #! Check if price have dicount or not
@@ -198,6 +191,18 @@ class UserProductViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mix
         # TODO: Check if product created successfully and published and alerts created as well
         Alert.objects.create(Part='7', FK_User=self.request.user, Slug=ID)
 
+    def __generate_unique_slug(self, title):
+        ''' Generate new unique slug for Product Model 
+            NOTE: This fucntion should move to utils
+            Also the performance here is not good, it should be improved
+        '''
+        slug = slugify(title, allow_unicode=True)
+        counter = 1
+        new_slug = slug
+        while(Product.objects.filter(Slug=new_slug).exists()):
+            new_slug = f'{slug}_{counter}'
+            counter += 1
+        return new_slug
 
 class ProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     pagination_class = StandardPagination
@@ -462,7 +467,7 @@ class ProductBannerViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
     permission_classes = [permissions.IsAuthenticated, IsProductBannerOwner]
     lookup_field = 'id'
     queryset = ProductBanner.objects.all()
-    serializer_class = ProductBannerSerializer
+    serializer_class = ProductBannerWithProductSerializer
 
     def perform_create(self, serializer):
         product_banner = serializer.save(Publish=True)

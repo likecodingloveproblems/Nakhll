@@ -298,7 +298,7 @@ class ProductImagesSerializer(serializers.Serializer):
         child=Base64ImageField(max_length=None, use_url=True)
     )
 
-class ProductBannerSerializer(serializers.ModelSerializer):
+class ProductBannerWithProductSerializer(serializers.ModelSerializer):
     FK_Product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all(), pk_field=serializers.UUIDField(format='hex'))
     Image = Base64ImageField(max_length=None, use_url=True)
     class Meta:
@@ -306,6 +306,13 @@ class ProductBannerSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'Image', 'FK_Product'
         ]
+
+        
+class ProductBannerWriteSerializer(serializers.ModelSerializer):
+    Image = Base64ImageField(max_length=None, use_url=True)
+    class Meta:
+        model = ProductBanner
+        fields = ['Image']
 
 
 
@@ -316,7 +323,9 @@ class ProductUpdateSerializer(serializers.ModelSerializer):
     # FK_Shop = serializers.SlugRelatedField(slug_field='Slug', many=False, read_only=True)
     # FK_SubMarket = serializers.PrimaryKeyRelatedField(read_only=False, many=False, queryset=SubMarket.objects.all())
     new_category = serializers.PrimaryKeyRelatedField(read_only=False, many=False, queryset=NewCategory.objects.all())
-    Product_Banner = serializers.PrimaryKeyRelatedField(queryset=ProductBanner.objects.all(), many=True, read_only=False)
+    # Product_Banner = serializers.PrimaryKeyRelatedField(queryset=ProductBanner.objects.all(), many=True, read_only=False)
+    Image = Base64ImageField(max_length=None, use_url=True)
+    Product_Banner = ProductBannerWriteSerializer(many=True, read_only=False)
     post_range = serializers.PrimaryKeyRelatedField(source='post_range_cities', read_only=False, many=True, queryset=City.objects.all())
     class Meta:
         model = Product
@@ -334,32 +343,32 @@ class ProductUpdateSerializer(serializers.ModelSerializer):
             'PreparationDays',
             # 'FK_SubMarket',
             'new_category',
+            'Image',
             'Product_Banner',
             'post_range'
         ]
+ 
     def update(self, instance, validated_data):
-        # Direct assignment to the reverse side of a related set is prohibited, 
-        # so I am deleteing related ProductBanner objects to clean database from
-        # ProductBanners that have no Product assigned to
-        product_banners = validated_data.pop('Product_Banner')
-        deleted_banners = [banner.delete() 
-                           for banner in instance.Product_Banner.all() 
-                           if banner not in product_banners]
-
-        product_post_ranges = validated_data.pop('post_range_cities')
+        instance.Product_Banner.clear()
         instance.post_range_cities.clear()
+        product_banners = [
+            ProductBanner.objects.create(FK_Product=instance, Image=banner['Image']) 
+            for banner in validated_data.pop('Product_Banner')
+        ]
+        product_post_ranges = validated_data.pop('post_range_cities')
+        instance.Product_Banner.add(*product_banners)
         instance.post_range_cities.add(*product_post_ranges)
-
-        for prop in validated_data:
-            setattr(instance, prop, validated_data[prop])
+        for prop, value in validated_data.items():
+            setattr(instance, prop, value)
         instance.save()
         return instance
-
 
 class ProductWriteSerializer(serializers.ModelSerializer):
     FK_Shop = serializers.SlugRelatedField(slug_field='Slug', many=False, read_only=False, queryset=Shop.objects.all())
     new_category = serializers.PrimaryKeyRelatedField(read_only=False, many=False, queryset=NewCategory.objects.all())
     post_range = serializers.PrimaryKeyRelatedField(source='post_range_cities', read_only=False, many=True, queryset=City.objects.all())
+    Image = Base64ImageField(max_length=None, use_url=True)
+    Product_Banner = ProductBannerWriteSerializer(many=True, read_only=False)
     class Meta:
         model = Product
         fields = [
@@ -372,12 +381,25 @@ class ProductWriteSerializer(serializers.ModelSerializer):
             'Weight_With_Packing',
             'Description',
             'Status',
+            'Image',
+            'Product_Banner',
             'PostRangeType',
             'PreparationDays',
             'FK_Shop',
             'new_category',
             'post_range'
         ]
+    
+    def create(self, validated_data):
+        banners = validated_data.pop('Product_Banner')
+        post_range_cities = validated_data.pop('post_range_cities')
+        instance = Product.objects.create(**validated_data)
+        instance.post_range_cities.add(*post_range_cities)
+        banners = [ProductBanner.objects.create(FK_Product=instance, Image=banner['Image']) for banner in banners]
+        instance.Product_Banner.add(*banners)
+        return instance
+        
+
 
 class FullMarketSerializer(serializers.ModelSerializer):
     submarkets = SubMarketSerializer(many=True, read_only=True)
