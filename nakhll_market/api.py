@@ -20,8 +20,8 @@ from nakhll_market.models import (
     LandingPageSchema, ShopPageSchema,
     )
 from nakhll_market.serializers import (
-    AmazingProductSerializer, Base64ImageSerializer, NewCategoryProductCountSerializer, NewProfileSerializer, ProductBannerWithProductSerializer, ProductCommentSerializer, ProductDetailSerializer, ProductImagesSerializer,
-    ProductSerializer, ProductUpdateSerializer, ShopProductSerializer, ShopSerializer, ShopSimpleSerializer, ShopSlugSerializer,SliderSerializer, ProductPriceWriteSerializer,
+    AmazingProductSerializer, Base64ImageSerializer, NewCategoryProductCountSerializer, NewProfileSerializer, ProductBannerWithProductSerializer, ProductCommentSerializer, ProductDetailSerializer, ProductImagesSerializer, ProductOwnerListSerializer,
+    ProductSerializer, ShopProductSerializer, ShopSerializer, ShopSimpleSerializer, ShopSlugSerializer,SliderSerializer, ProductPriceWriteSerializer,
     CategorySerializer, FullMarketSerializer, CreateShopSerializer, ProductInventoryWriteSerializer,
     ProductListSerializer, ProductWriteSerializer, ShopAllSettingsSerializer, ProductBannerSerializer,
     ProductSubMarketSerializer, StateFullSeraializer, SubMarketProductSerializer, SubMarketSerializer,
@@ -35,6 +35,7 @@ from nakhll_market.filters import ProductFilter
 from nakhll_market.permissions import IsInvoiceOwner
 from nakhll_market.paginators import StandardPagination
 from nakhll_market.product_bulk_operations import BulkException, BulkProductHandler
+from shop.mixins import MultipleFieldLookupMixin
 
 class SliderViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = SliderSerializer
@@ -122,38 +123,45 @@ class ShopProductsViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mi
 
 
 
-class UserProductViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.CreateModelMixin,
-                         mixins.ListModelMixin, mixins.UpdateModelMixin):
+class ShopOwnerProductViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin,
+                              mixins.CreateModelMixin, mixins.ListModelMixin, mixins.UpdateModelMixin):
     permission_classes = [permissions.IsAuthenticated, IsProductOwner]
-    queryset = Product.objects.all().order_by('-DateCreate')
+    pagination_class = StandardPagination
     lookup_field = 'ID'
 
     def get_serializer_class(self):
-        if self.action in ['update', 'partial_update']:
-            return ProductUpdateSerializer
-        elif self.action in ['list', 'retrieve']:
-            return ProductListSerializer
+        if self.action in ['list', 'retrieve']:
+            return ProductOwnerListSerializer
         else:
             return ProductWriteSerializer
 
+    def get_queryset(self):
+        shop = self.get_shop()
+        return Product.objects.filter(FK_Shop=shop).order_by('-DateCreate')
 
+    def get_shop(self):
+        shop = get_object_or_404(Shop, Slug=self.kwargs.get('shop_slug'))
+        self.__check_shop_owner(shop)
+        return shop
 
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+        filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
+        obj = get_object_or_404(queryset, **filter_kwargs)
+
+        self.check_object_permissions(self.request, obj)
+        return obj
 
     def perform_create(self, serializer):
+        shop = self.get_shop()
         data = serializer.validated_data
-        # post_range = data.pop('post_range_cities')
-        shop = data.get('FK_Shop')
         title = data.get('Title')
 
-        # Check if target shop is owned by user or not
-        if shop.FK_ShopManager != self.request.user:
-            raise serializers.ValidationError(
-                {'FK_Shop': f'شما به فروشگاه {shop.Title} دسترسی ندارید'},
-                code=status.HTTP_403_FORBIDDEN
-            )
 
         slug = self.__generate_unique_slug(title)
-        product_extra_fileds = {'Publish': True, 'Slug': slug}
+        product_extra_fileds = {'Publish': True, 'Slug': slug, 'FK_Shop': shop}
         # TODO: This behavior should be inhanced later
         #! Check if price have dicount or not
         #! Swap Price and OldPrice value if discount exists
@@ -171,6 +179,7 @@ class UserProductViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mix
         Alert.objects.create(Part='6', FK_User=self.request.user, Slug=product.ID)
 
     def perform_update(self, serializer):
+        shop = self.get_shop()
         data = serializer.validated_data
         # post_range = data.pop('post_range_cities')
         ID = self.kwargs.get('ID')
@@ -183,13 +192,21 @@ class UserProductViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mix
         old_price = data.get('OldPrice', 0) * 10
         price = data.get('Price', 0) * 10
         if old_price:
-            product = serializer.save(OldPrice=price, Price=old_price)
+            product = serializer.save(OldPrice=price, Price=old_price, FK_Shop=shop)
         else:
-            product = serializer.save(OldPrice=old_price, Price=price)
+            product = serializer.save(OldPrice=old_price, Price=price, FK_Shop=shop)
         # product.post_range_cities.add(*post_range) 
 
         # TODO: Check if product created successfully and published and alerts created as well
         Alert.objects.create(Part='7', FK_User=self.request.user, Slug=ID)
+
+    def __check_shop_owner(self, shop):
+        if shop.FK_ShopManager != self.request.user:
+            raise serializers.ValidationError(
+                {'FK_Shop': f'شما به فروشگاه {shop.Title} دسترسی ندارید'},
+                code=status.HTTP_403_FORBIDDEN
+            )
+        
 
     def __generate_unique_slug(self, title):
         ''' Generate new unique slug for Product Model 
