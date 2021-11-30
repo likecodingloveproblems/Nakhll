@@ -50,7 +50,7 @@ class NewCategoryProductCountSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'order', 'slug', 'product_count']
 
     def get_product_count(self, obj):
-        return obj.product_count
+        return obj.products_count
 
 class NewCategoryChildSerializer(serializers.ModelSerializer):
     childrens = serializers.SerializerMethodField(read_only=True)
@@ -257,7 +257,7 @@ class ProductDetailSerializer(serializers.HyperlinkedModelSerializer):
         model = Product
         fields = [
             'id', 'title', 'description', 'slug', 'price', 'old_price',
-            'available', 'publish', 'discount', 'shop', 'image',
+            'available', 'salable', 'discount', 'shop', 'image',
             'attributes', 'attributes_price', 'banners', 'inventory',
             'net_weight', 'weight_with_packing',  'length_with_packing',
             'height_with_packaging', 'story', 'width_with_packing', 'PreparationDays',

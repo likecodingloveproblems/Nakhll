@@ -230,7 +230,7 @@ class ProductDetailsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductDetailSerializer
     permission_classes = [permissions.AllowAny, ]
     lookup_field = 'Slug'
-    queryset = Product.objects.select_related('FK_SubMarket', 'FK_Shop')
+    queryset = Product.objects.select_related('FK_SubMarket', 'FK_Shop').filter(Publish=True)
 
 class ProductCommentsViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductCommentSerializer

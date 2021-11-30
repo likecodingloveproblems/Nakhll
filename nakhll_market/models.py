@@ -421,11 +421,14 @@ class NewCategoryManager(models.Manager):
         return self.filter(parent=None).order_by('order')
 
     def categories_with_product_count(self, query=None):
-        queryset = self.all()
         if query:
-            queryset = queryset.filter(products__Title__contains=query)
-        queryset = queryset.annotate(product_count=Count('products'))
-        return queryset.order_by('-product_count')
+            products = Product.objects.filter(Q(Publish=True), Q(Title__contains='مرغ'),
+                            ~Q(FK_Shop=None)).values_list('new_category', flat=True)
+            queryset = self.filter(id__in=products).annotate(products_count=Count(
+                'products', filter=Q(Q(products__Title__contains=query), Q(products__Publish=True))))
+        else:
+            queryset = self.annotate(products_count=Count('products'))
+        return queryset.order_by('-products_count')
 
     def all_subcategories(self, categories):
         subcategories = []
@@ -1424,6 +1427,10 @@ class Product(models.Model):
 
     def is_available(self):
         return self.Available and self.Publish and self.FK_Shop.is_available()
+
+    @property
+    def salable(self):
+        return self.is_available()
 
     def has_enough_items_in_stock(self, count):
         ''' Check if product have enough items in stock '''
