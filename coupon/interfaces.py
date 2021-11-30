@@ -3,7 +3,8 @@ from django.utils.timezone import make_aware
 from rest_framework.validators import ValidationError
 from coupon.validators import (BudgetValidator, DateTimeValidator, MaxCountValidator, MaxUserCountValidator, 
                                ProductValidator, AvailableValidator, UserValidator, PriceValidator,
-                               ShopValidator, UserUsagePerInvoiceValidator, CityValidator,)
+                               ShopValidator, UserUsagePerInvoiceValidator, CityValidator, MinPriceValidator,
+                               MaxPriceValidator, )
 from coupon.exceptions import CouponException
 
 
@@ -20,6 +21,8 @@ class CouponValidation:
                 MaxUserCountValidator(self._user),
                 MaxCountValidator(),
                 PriceValidator(self._invoice),
+                MinPriceValidator(self._invoice),
+                MaxPriceValidator(self._invoice),
                 ProductValidator(self._invoice),
                 AvailableValidator(),
                 UserValidator(self._user),
@@ -34,6 +37,7 @@ class CouponValidation:
     def is_valid(self, invoice, validators=ALL_VALIDATORS, raise_exception=False):
         self._user = invoice.user
         self._invoice = invoice
+        self._invoice._coupon_shops_total_price = self._get_total_invoice_price(invoice)
         self._validators = validators
         # if hasattr(self, '_errors'):
             # return True if len(self._errors) == 0 else False
@@ -77,6 +81,18 @@ class CouponValidation:
             amount = self.presentage * self._invoice.invoice_price_with_discount / 100
             return min(amount, self.max_amount) or amount
         return 0
+    
+    def _get_total_invoice_price(self, invoice):
+        if self.constraint.shops.all():
+            total_price = 0
+            shop_ids = self.constraint.shops.all().values_list('ID', flat=True)
+            items = invoice.items.filter(product__FK_Shop__ID__in=shop_ids)
+            for item in items:
+                total_price += item.product.price * item.count
+            return total_price + invoice.logistic_price
+        return invoice.invoice_price_with_discount + invoice.logistic_price
+
+
 
     @property
     def final_price(self):

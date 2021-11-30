@@ -49,14 +49,37 @@ class DateTimeValidator:
 
 class PriceValidator:
     def __init__(self, invoice):
-        self.total_invoice_price = invoice.invoice_price_with_discount
+        self.invoice = invoice
     def __call__(self, coupon):
-        if coupon.constraint.max_purchase_amount and self.total_invoice_price > coupon.constraint.max_purchase_amount\
-            or coupon.constraint.min_purchase_amount and self.total_invoice_price < coupon.constraint.min_purchase_amount:
-            raise PriceException(coupon, _('مبلغ فاکتور برای استفاده از این کوپن تخفیف مناسب نیست'), self.total_invoice_price)
-        if coupon.amount > self.total_invoice_price:
-            raise PriceException(coupon, _('مبلغ کوپن بیشتر از مبلغ فاکتور است'), self.total_invoice_price)
+        if coupon.amount > self.invoice._coupon_shops_total_price:
+            raise PriceException(coupon, _('مبلغ کوپن بیشتر از مبلغ فاکتور است'), self.invoice._coupon_shops_total_price)
 
+class MinPriceValidator:
+    def __init__(self, invoice):
+        self.invoice = invoice
+    def __call__(self, coupon):
+        total_price = self.invoice._coupon_shops_total_price
+        if coupon.constraint.min_purchase_amount and total_price < coupon.constraint.min_purchase_amount:
+            message = 'حداقل مبلغ فاکتور برای اعمال این کوپن '
+            message += 'از فروشگاه‌های {shops}'.format(
+                shops=' و '.join(coupon.constraint.shops.values_list('Title', flat=True))
+            ) if coupon.constraint.shops.count() else ''
+            message += f' باید بیشتر از {coupon.constraint.min_purchase_amount:,} ریال باشد'
+            raise PriceException(coupon, _(message), self.invoice._coupon_shops_total_price)
+
+class MaxPriceValidator:
+    def __init__(self, invoice):
+        self.invoice = invoice
+    def __call__(self, coupon):
+        total_price = self.invoice._coupon_shops_total_price
+        if coupon.constraint.max_purchase_amount and total_price > coupon.constraint.max_purchase_amount:
+            message = 'حداکثر مبلغ فاکتور برای اعمال این کوپن '
+            message += 'از فروشگاه‌های {shops}'.format(
+                shops=' و '.join(coupon.constraint.shops.values_list('Title', flat=True))
+            ) if coupon.constraint.shops.count() else ''
+            message += ' باید کمتر از {} ریال باشد'.format(coupon.constraint.min_purchase_amount)
+            raise PriceException(coupon, _(message), self.invoice._coupon_shops_total_price)
+        
 class CountValidator:
     def __init__(self, invoice):
         self.total_invoice_count = invoice.items.count()

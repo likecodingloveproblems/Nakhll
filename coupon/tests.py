@@ -101,7 +101,7 @@ class CouponTest(TestCase):
 
     def test_count_validation(self):
         coupon = self.coupon
-        coupon.constraint.max_usage = 0
+        coupon.constraint.max_usage = -1
         self.assertEqual(coupon.is_valid(self.invoice), False)
         coupon.constraint.max_usage = 1
     
