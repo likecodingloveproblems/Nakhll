@@ -49,7 +49,7 @@ class TorobAllProducts(GenericAPIView):
         elif page_unique:
             return Product.objects.filter(ID=page_unique)
         else:
-            return Product.objects.all_public_products()
+            return Product.objects.all().order_by('-DateUpdate')
 
     def post(self, request, format=None):
         req_serializer = TorobProductListRequestSerializer(data=request.data)
