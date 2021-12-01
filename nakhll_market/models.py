@@ -420,15 +420,17 @@ class NewCategoryManager(models.Manager):
     def get_root_categories(self):
         return self.filter(parent=None).order_by('order')
 
-    def categories_with_product_count(self, query=None):
+    def categories_with_product_count(self, query=None, shop=None):
+        filter_query = Q()
         if query:
-            products = Product.objects.filter(Q(Publish=True), Q(Title__contains='مرغ'),
-                            ~Q(FK_Shop=None)).values_list('new_category', flat=True)
-            queryset = self.filter(id__in=products).annotate(products_count=Count(
-                'products', filter=Q(Q(products__Title__contains=query), Q(products__Publish=True))))
-        else:
-            queryset = self.annotate(products_count=Count('products'))
-        return queryset.order_by('-products_count')
+            filter_query &= Q(products__Title__contains=query)
+            filter_query &= Q(products__Publish=True)
+            filter_query &= Q(products__FK_Shop__isnull=False)
+        if shop:
+            filter_query &= Q(products__FK_Shop__Slug=shop)
+            
+        queryset = self.annotate(products_count=Count('products', filter=filter_query))
+        return queryset.filter(products_count__gt=0).order_by('-products_count')
 
     def all_subcategories(self, categories):
         subcategories = []

@@ -772,7 +772,8 @@ class CategoryViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Ret
     @action(methods=['GET'], detail=False)
     def category_product_count(self, request):
         query = request.GET.get('q', None)
-        queryset = NewCategory.objects.categories_with_product_count(query)
+        shop = request.GET.get('shop', None)
+        queryset = NewCategory.objects.categories_with_product_count(query, shop)
         return Response(NewCategoryProductCountSerializer(queryset, many=True).data)        
     
 class PublicShopsViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
