@@ -18,7 +18,7 @@ from django_filters import rest_framework as restframework_filters
 from nakhll.authentications import CsrfExemptSessionAuthentication
 from nakhll_market.models import (
     Alert, AmazingProduct, Comment, NewCategory, Product, ProductBanner, Shop, Slider, Category, Market, State, BigCity, City, SubMarket,
-    LandingPageSchema, ShopPageSchema,
+    LandingPageSchema, ShopPageSchema, UserImage,
     )
 from nakhll_market.serializers import (
     AmazingProductSerializer, Base64ImageSerializer, NewCategoryProductCountSerializer, NewProfileSerializer, ProductCommentSerializer, ProductDetailSerializer, ProductImagesSerializer, ProductOwnerListSerializer,
@@ -26,7 +26,7 @@ from nakhll_market.serializers import (
     CategorySerializer, FullMarketSerializer, CreateShopSerializer, ProductInventoryWriteSerializer,
     ProductListSerializer, ProductWriteSerializer, ShopAllSettingsSerializer, ProductBannerSerializer,
     ShopBankAccountSettingsSerializer, SocialMediaAccountSettingsSerializer, ProductSubMarketSerializer, StateFullSeraializer, SubMarketProductSerializer, SubMarketSerializer,
-    LandingPageSchemaSerializer, ShopPageSchemaSerializer, UserOrderSerializer,
+    LandingPageSchemaSerializer, ShopPageSchemaSerializer, UserImageSerializer, UserOrderSerializer,
     NewCategorySerializer, NewCategoryChildSerializer, NewCategoryParentChildSerializer, NewCategoryParentSerializer
     )
 from restapi.permissions import IsFactorOwner, IsProductOwner, IsShopOwner, IsProductBannerOwner
@@ -650,6 +650,19 @@ class UserOrderHistory(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Re
 
     def get_queryset(self):
         return Invoice.objects.filter(cart__user=self.request.user)
+
+class UserImagesViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = UserImage.objects.all()
+    serializer_class = UserImageSerializer
+    
+    def get_queryset(self):
+        return super().get_queryset().filter(profile__FK_User=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(profile=self.request.user.User_Profile)
+
+    
 
 
 class LandingPageSchemaViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):

@@ -2901,3 +2901,20 @@ class ShopPageSchema(LandingPageSchema):
         verbose_name_plural = 'برنامه بندی صفحه حجره دار'
     shop = models.ForeignKey(Shop, verbose_name='فروشگاه', on_delete=models.CASCADE, related_name='shop_page_schemas')
     objects = ShopPageSchemaManager()
+
+class UserImage(models.Model):
+    class Meta:
+        verbose_name = 'تصویر بارگذاری شده کاربر'
+        verbose_name_plural = 'تصویر بارگذاری شده کاربر'
+    
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='uploaded_images', verbose_name='کاربر')
+    title = models.CharField(max_length=100, verbose_name='عنوان', blank=True)
+    description = models.TextField(verbose_name='توضیحات', blank=True)
+    image = models.ImageField(verbose_name='تصویر بارگذاری شده', upload_to=PathAndRename('media/Pictures/User/UploadedImages/'))
+    image_thumbnail = ImageSpecField(source='image', processors=[ResizeToFill(180, 180)], format='JPEG', options={'quality': 60})
+    publish = models.BooleanField(verbose_name='منتشر شده?', default=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='تاریخ ویرایش')
+
+    def __str__(self):
+        return f'{self.profile.MobileNumber}: {self.title} ({self.image})'

@@ -12,7 +12,7 @@ from rest_framework.utils import field_mapping
 from nakhll_market.models import (
     Alert, AmazingProduct, AttrPrice, AttrProduct, Attribute, BankAccount, BigCity, City, NewCategory, ShopBankAccount, ShopSocialMedia,
     Category, Market, PostRange, Product, ProductBanner, Profile, Shop, ShopBankAccount, Slider, Comment, State,
-    SubMarket, LandingPageSchema, ShopPageSchema,
+    SubMarket, LandingPageSchema, ShopPageSchema, UserImage,
     )
 
 # landing serializers
@@ -660,3 +660,9 @@ class ShopSlugSerializer(serializers.ModelSerializer):
     
     def get_products(self, obj):
         return obj.products
+
+
+class UserImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserImage
+        fields = ('id', 'image', 'title', 'description')

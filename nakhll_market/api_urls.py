@@ -1,7 +1,7 @@
 from django.urls import re_path, include, path
 from nakhll_market.api import (
     AddSubMarketToProduct, AllShopSettings, AmazingProductViewSet, CategoryViewSet, GroupProductCreateExcel, GroupProductUpdateExcel, ImageShopSettings, LastCreatedDiscountedProductsViewSet,
-    LastCreatedProductsViewSet, MostDiscountPrecentageProductsViewSet, MostSoldProduct, ShopMultipleUpdateInventory, ShopMultipleUpdatePrice, SocialMediaShopSettings, StateFullViewSet,
+    LastCreatedProductsViewSet, MostDiscountPrecentageProductsViewSet, MostSoldProduct, ShopMultipleUpdateInventory, ShopMultipleUpdatePrice, SocialMediaShopSettings, StateFullViewSet, UserImagesViewSet,
     UserProductViewSet, ProductsInSameFactorViewSet, SliderViewSet, SubMarketList, UserProfileViewSet,
     MostSoldShopsViewSet, RandomShopsViewSet, RandomProductsViewSet, ProductsViewSet, GetShop, UserOrderHistory,
     MarketList, CreateShop, GetShopWithSlug, CheckShopSlug, CheckProductSlug, ShopProductsViewSet, GetShopList,
@@ -40,6 +40,7 @@ util_router.register(r'shops', PublicShopsViewSet, basename="shops")
 profile_router = routers.DefaultRouter()
 profile_router.register(r'', UserProfileViewSet, basename="profile")
 profile_router.register(r'orders', UserOrderHistory, basename="orders")
+profile_router.register(r'images', UserImagesViewSet, basename="user_images")
 
 categories_router = routers.DefaultRouter()
 categories_router.register(r'', CategoryViewSet, basename="categories")
