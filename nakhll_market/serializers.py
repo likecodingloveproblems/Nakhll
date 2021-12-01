@@ -663,6 +663,7 @@ class ShopSlugSerializer(serializers.ModelSerializer):
 
 
 class UserImageSerializer(serializers.ModelSerializer):
+    image = Base64ImageField()
     class Meta:
         model = UserImage
         fields = ('id', 'image', 'title', 'description')

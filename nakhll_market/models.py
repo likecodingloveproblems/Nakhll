@@ -1,35 +1,27 @@
 from __future__ import unicode_literals
 
-from django.db.models.aggregates import Avg, Sum
-from django.db.models.deletion import SET_DEFAULT
+import datetime, jdatetime, math, uuid, random, string, os
 from django.contrib.postgres.aggregates import ArrayAgg
-from django.http.response import Http404
-from my_auth.models import ProfileManager
 from django.db import models
 from django.db.models import F, Q, Count
+from django.db.models.fields import FloatField
 from django.db.models.functions import Cast
-from django.db.models.fields import CharField, FloatField
-from tinymce.models import HTMLField
-from django.contrib.auth.models import User,Group 
-from django.contrib.auth.models import (AbstractUser)
+from django.db.models.aggregates import Avg, Sum
+from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
-from django.core.exceptions import ValidationError
 from django.core import serializers
+from django.core.exceptions import ValidationError
 from django.conf import settings
-from django.utils.deconstruct import deconstructible
 from django.utils import timezone
-import uuid, random, string, os, time
-from django.shortcuts import redirect, reverse, get_object_or_404
-from django_jalali.db import models as jmodels
-from django.dispatch import receiver
-import json
-import math
-import datetime
+from django.utils.deconstruct import deconstructible
 from django.utils.translation import ugettext_lazy as _
+from django.shortcuts import reverse, get_object_or_404
+from django_jalali.db import models as jmodels
+from colorfield.fields import ColorField
+from tinymce.models import HTMLField
+from my_auth.models import ProfileManager
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
-import jdatetime
-from colorfield.fields import ColorField
 from simple_history.models import HistoricalRecords
 
 
