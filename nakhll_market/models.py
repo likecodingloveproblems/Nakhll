@@ -2910,3 +2910,29 @@ class UserImage(models.Model):
 
     def __str__(self):
         return f'{self.profile.MobileNumber}: {self.title} ({self.image})'
+
+import os
+from django.db import models
+from django.dispatch import receiver
+from nakhll_market.models import UserImage
+
+
+        
+@receiver(models.signals.post_delete, sender=UserImage)
+def auto_delete_file_on_delete(sender, instance, **kwargs):
+    if instance.image:
+        if os.path.isfile(instance.image.path):
+            os.remove(instance.image.path)
+
+@receiver(models.signals.pre_save, sender=UserImage)
+def auto_delete_file_on_change(sender, instance, **kwargs):
+    if not instance.pk:
+        return False
+    try:
+        old_image = UserImage.objects.get(pk=instance.pk).image
+    except UserImage.DoesNotExist:
+        return False
+    new_image = instance.image
+    if not old_image == new_image:
+        if os.path.isfile(old_image.path):
+            os.remove(old_image.path)
