@@ -515,6 +515,12 @@ class Product_Total_Sell:
 
 # Get Products
 def ProductsDetail(request, shop_slug, product_slug, status = None, msg = None):
+    ###################################
+    ###### REDIRECT TO NEXT JS ########
+    return redirect('/shop/' + shop_slug + '/product/' + product_slug, permanent = True)
+    
+    
+    
     # Get User Info
     if request.user.is_authenticated:
         
