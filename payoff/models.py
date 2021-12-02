@@ -56,7 +56,7 @@ class TransactionResult(models.Model):
 
 class TransactionConfirmation(models.Model):
     status = models.IntegerField(verbose_name='کد وضعیت')
-    card_number_masked = models.CharField(verbose_name='شماره کارت خریدار', max_length=127)
+    card_number_masked = models.CharField(verbose_name='شماره کارت خریدار', max_length=127, blank=True)
     token = models.BigIntegerField(verbose_name='توکن')
     rrn = models.BigIntegerField(verbose_name='شماره یکتایی')
     transaction_result = models.ForeignKey(TransactionResult, verbose_name=_('نتیجه تراکنش'),
