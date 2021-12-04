@@ -543,4 +543,5 @@ urlpatterns = [
     # Product Path
     path('product/<shop_slug>/<product_slug>/', views.ProductsDetail, name='ProductsDetail'),
     path('product/<shop_slug>/<product_slug>/<str:status>/<str:msg>/', views.ProductsDetail, name='Re_ProductsDetail'),
+    path('product/<product_slug>/', views.ProductsDetailWithSlug, name='ProductsDetail'),
 ]
