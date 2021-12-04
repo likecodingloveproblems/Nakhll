@@ -2,6 +2,7 @@ import random, datetime
 from django.contrib.auth.models import User
 from django.http.response import Http404
 from rest_framework import serializers, viewsets, mixins, status, permissions
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenViewBase
 from rest_framework.decorators import action, permission_classes
 from rest_framework.response import Response
@@ -82,7 +83,11 @@ class ProfileViewSet(viewsets.GenericViewSet):
                                 request_type=AuthRequest.RequestTypes.FORGOT_PASSWORD)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(status=status.HTTP_200_OK)
+        refresh = RefreshToken.for_user(serializer.user)
+        data = dict()
+        data['refresh'] = str(refresh)
+        data['access'] = str(refresh.access_token)
+        return Response(data, status=status.HTTP_200_OK)
 
 class GetAccessTokenView(TokenViewBase):
     serializer_class = GetTokenSerializer
