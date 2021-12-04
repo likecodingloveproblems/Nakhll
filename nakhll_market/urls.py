@@ -541,6 +541,6 @@ urlpatterns = [
     # Add Coupon
     path('error-500/<str:error_text>/', profileviews.error_500, name='error_500'),
     # Product Path
-    path('<shop_slug>/<product_slug>/', views.ProductsDetail, name='ProductsDetail'),
+    path('product/<shop_slug>/<product_slug>/', views.ProductsDetail, name='ProductsDetail'),
     path('product/<shop_slug>/<product_slug>/<str:status>/<str:msg>/', views.ProductsDetail, name='Re_ProductsDetail'),
 ]
