@@ -109,7 +109,7 @@ class ShopProductsViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mi
 
     def get_queryset(self):
         filter_query = {self.lookup_field: self.product_slug, 'Publish': True, 'Available': True}
-        return Product.objects.filter(**filter_query)
+        return Product.objects.filter(**filter_query).order_by('?')[:20]
 
     def retrieve(self, request, *args, **kwargs):
         self.product_slug = self.kwargs.get(self.lookup_field)
@@ -261,7 +261,7 @@ class ProductRelatedItemsViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixi
     def get_queryset(self):
         return Product.objects.filter(
                     Available = True, Publish = True, Status__in = ['1', '2', '3'],
-                    FK_Category__in = self.product.FK_Category.all())
+                    new_category=self.product.new_category).order_by('?')
 
     def retrieve(self, request, *args, **kwargs):
         self.product = Product.objects.get(Slug=self.kwargs.get(self.lookup_field))
