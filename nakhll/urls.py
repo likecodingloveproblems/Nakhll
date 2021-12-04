@@ -26,24 +26,24 @@ urlpatterns = [
     # re_path(r'.*', site_updating.update, name='update'), # only for update conditions
     url(r'^oauth/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     path('logintowebsite/', admin.site.urls),
-    path('accounts/', include('my_auth.urls', namespace='my_auth')),
-    path('', include('nakhll_market.urls', namespace='nakhll_market')),
-    url(r'^tinymce/', include('tinymce.urls')),
-    url(r'^cart/', include('Payment.urls' , namespace='Payment')),
-    url(r'^cart2/', include('cart.urls' , namespace='cart_new')),
-    url(r'^logistic/', include('logistic.urls' , namespace='logistic')),
-    url(r'^app/api/', include('restapi.urls' , namespace='restapi')),
     path('accounting/', include('accounting.urls', namespace='accounting')),
-    path('accounting_new/', include('accounting_new.urls', namespace='accounting_new')),
-    path('torob/', include('torob_api.urls', namespace='torob')),
-    path('goto/', include('url_redirector.urls', namespace='url_redirector')),
-    # api version 1
+    path('accounts/', include('my_auth.urls', namespace='my_auth')),
     url(r'^api/v1/', include('nakhll_market.api_urls', namespace='nakhll_market_api')),
     url(r'^api/v1/', include('custom_list.urls', namespace='custom_list')),
     url(r'^api/v1/', include('shop.urls', namespace='shop')),
+    url(r'^app/api/', include('restapi.urls' , namespace='restapi')),
+    path('torob/', include('torob_api.urls', namespace='torob')),
+    path('goto/', include('url_redirector.urls', namespace='url_redirector')),
+    path('payoff/', include('payoff.urls', namespace='payoff')),
+    path('accounting_new/', include('accounting_new.urls', namespace='accounting_new')),
+    url(r'^cart2/', include('cart.urls' , namespace='cart_new')),
+    url(r'^logistic/', include('logistic.urls' , namespace='logistic')),
+    path('', include('nakhll_market.urls', namespace='nakhll_market')),
+    url(r'^tinymce/', include('tinymce.urls')),
+    url(r'^cart/', include('Payment.urls' , namespace='Payment')),
+    # api version 1
     # prometheus
     url('', include('django_prometheus.urls')),
-    path('payoff/', include('payoff.urls', namespace='payoff')),
 ]
 
 # if settings.DEBUG:

@@ -206,9 +206,6 @@ urlpatterns = [
     # Shop Detail
     path('<shop_slug>/', views.ShopsDetail, name='ShopsDetail'),
     path('<shop_slug>/redirect/<str:msg>/', views.ShopsDetail, name='Re_ShopsDetail'),
-    # Product Path
-    path('<shop_slug>/<product_slug>/', views.ProductsDetail, name='ProductsDetail'),
-    path('product/<shop_slug>/<product_slug>/<str:status>/<str:msg>/', views.ProductsDetail, name='Re_ProductsDetail'),
     # Product Comment Like
     path('product/like/<int:id>/<int:type>/', views.ContentLike, name='ProductLike'),
     # Shop Comment Like
@@ -543,4 +540,7 @@ urlpatterns = [
     #------------------------------------------------------------ Error Path -----------------------------------------------------------
     # Add Coupon
     path('error-500/<str:error_text>/', profileviews.error_500, name='error_500'),
+    # Product Path
+    path('<shop_slug>/<product_slug>/', views.ProductsDetail, name='ProductsDetail'),
+    path('product/<shop_slug>/<product_slug>/<str:status>/<str:msg>/', views.ProductsDetail, name='Re_ProductsDetail'),
 ]
