@@ -1,3 +1,4 @@
+from django.utils.timezone import localtime
 import jdatetime
 from rest_framework import serializers
 from .models import Invoice, InvoiceItem
@@ -79,7 +80,9 @@ class InvoiceRetrieveSerializer(serializers.ModelSerializer):
         jalali_datetime = jdatetime.datetime.fromgregorian(datetime=obj.created_datetime, locale='fa_IR')
         return jalali_datetime.strftime('%Y/%m/%d')
     def get_created_time_jalali(self, obj):
-        jalali_datetime = jdatetime.datetime.fromgregorian(datetime=obj.created_datetime, locale='fa_IR')
+        time = obj.created_datetime
+        time = localtime(obj.created_datetime)
+        jalali_datetime = jdatetime.datetime.fromgregorian(datetime=time, locale='fa_IR')
         return jalali_datetime.strftime('%H:%M')
     def get_invoie_items(self, obj):
         items = obj.items.order_by('product__FK_Shop')

@@ -1,6 +1,7 @@
 from typing import Dict, Optional
 from django.contrib import admin
 from django.http import HttpRequest, HttpResponse
+from django.utils.timezone import localtime
 from .models import (AmazingProduct, LandingPageSchema, NewCategory, ShopPageSchema, Tag, Market, MarketBanner, SubMarket, 
                      SubMarketBanner,BankAccount, Category ,PostRange, Shop, 
                      ShopBanner, ShopMovie, Attribute, AttrPrice, AttrProduct, 
@@ -48,6 +49,8 @@ class MarketAdmin(admin.ModelAdmin):
     ordering=['ID','DateCreate','DateUpdate']
     prepopulated_fields={'Slug':('Title',)}
     inlines=[MarketBannerInline]
+    def DateCreate(self,obj:Market):
+        return localtime(obj.DateCreate).strftime('%Y-%m-%d %H:%M:%S')
 #-------------------------------------------------
 #SubMarket admin panel
 class SubMarketBannerInline(admin.StackedInline):
@@ -62,6 +65,10 @@ class SubMarketAdmin(admin.ModelAdmin):
     ordering=['ID','DateCreate','DateUpdate']
     prepopulated_fields={'Slug':('Title',)}
     inlines=[SubMarketBannerInline]
+    def DateCreate(self,obj):
+        return localtime(obj.DateCreate).strftime('%Y-%m-%d %H:%M:%S')
+    def DateUpdate(self,obj):
+        return localtime(obj.DateUpdate).strftime('%Y-%m-%d %H:%M:%S')
 #-------------------------------------------------
 #Shop admin panel
 class ShopBannerInline(admin.StackedInline):
@@ -81,6 +88,10 @@ class ShopAdmin(admin.ModelAdmin):
     ordering=['ID','DateCreate','DateUpdate']
     inlines=[ShopBannerInline, ShopMovieInline,]
     raw_id_fields = ('FK_ShopManager', )
+    def DateCreate(self,obj):
+        return localtime(obj.DateCreate).strftime('%Y-%m-%d %H:%M:%S')
+    def DateUpdate(self,obj):
+        return localtime(obj.DateUpdate).strftime('%Y-%m-%d %H:%M:%S')
 #-------------------------------------------------
 #Attribute admin panel
 @admin.register(Attribute)
@@ -117,6 +128,10 @@ class ProductAdmin(admin.ModelAdmin):
     ordering=['ID','DateCreate','DateUpdate']
     inlines=[AttrProductInline, ProductBannerInline, ProductMovieInline]
 
+    def DateCreate(self,obj):
+        return localtime(obj.DateCreate).strftime('%Y-%m-%d %H:%M:%S')
+    def DateUpdate(self,obj):
+        return localtime(obj.DateUpdate).strftime('%Y-%m-%d %H:%M:%S')
     def change_view(self, request: HttpRequest, object_id: str, form_url: str='', extra_context: Optional[Dict[str, bool]]=None) -> HttpResponse:
         if request.user.groups.filter(name='Photo-compress').exists():
             self.fields = ('Image','NewImage')
@@ -131,6 +146,8 @@ class CommentAdmin(admin.ModelAdmin):
     list_filter=('Type','Available','DateCreate',)
     search_fields=('Type','Slug','Description')
     ordering=['DateCreate','id']
+    def DateCreate(self,obj):
+        return localtime(obj.DateCreate).strftime('%Y-%m-%d %H:%M:%S')
 #-------------------------------------------------
 #Review admin panel
 @admin.register(Review)
@@ -139,6 +156,8 @@ class ReviewAdmin(admin.ModelAdmin):
     list_filter=('Available','DateCreate')
     search_fields=('Title','Positive','Negative','Description')
     ordering=['DateCreate','id']
+    def DateCreate(self,obj):
+        return localtime(obj.DateCreate).strftime('%Y-%m-%d %H:%M:%S')
 #-------------------------------------------------
 #Category admin panel
 @admin.register(Category)
@@ -147,6 +166,10 @@ class CategoryAdmin(admin.ModelAdmin):
     list_filter=('Available','Publish','DateCreate','DateUpdate')
     search_fields=('Title','Slug','Description')
     ordering=['DateCreate','id','Available','Publish']
+    def DateCreate(self,obj):
+        return localtime(obj.DateCreate).strftime('%Y-%m-%d %H:%M:%S')
+    def DateUpdate(self,obj):
+        return localtime(obj.DateUpdate).strftime('%Y-%m-%d %H:%M:%S')
 
 
 @admin.register(NewCategory)
@@ -185,6 +208,10 @@ class SliderAdmin(admin.ModelAdmin):
     list_display=('Title','Description','Location','DateCreate','Publish')
     list_filter=('Location','DateCreate','DtatUpdate','Publish')
     ordering=['DateCreate','id','Publish','Title','Location']
+    def DateCreate(self,obj):
+        return localtime(obj.DateCreate).strftime('%Y-%m-%d %H:%M:%S')
+    def DtatUpdate(self,obj):
+        return localtime(obj.DtatUpdate).strftime('%Y-%m-%d %H:%M:%S')
 #----------------------------------------------------------------------------------------------------------------------------------
 #Option_Meta admin panel
 @admin.register(Option_Meta)
@@ -200,6 +227,10 @@ class PagesAdmin(admin.ModelAdmin):
     list_filter=('Publish','DateCreate','DtatUpdate',)
     search_fields=('Title','Slug','Content',)
     ordering=['id','DateCreate',]
+    def DateCreate(self,obj):
+        return localtime(obj.DateCreate).strftime('%Y-%m-%d %H:%M:%S')
+    def DateUpdate(self,obj):
+        return localtime(obj.DateUpdate).strftime('%Y-%m-%d %H:%M:%S')
 #-------------------------------------------------
 #Alert admin panel
 @admin.register(Alert)
@@ -208,6 +239,10 @@ class AlertAdmin(admin.ModelAdmin):
     list_filter=('Seen','Status','DateCreate','DateCreate','DateUpdate')
     search_fields=('FK_Field','Description','Content',)
     ordering=['id','DateCreate',]
+    def DateCreate(self,obj):
+        return localtime(obj.DateCreate).strftime('%Y-%m-%d %H:%M:%S')
+    def DateUpdate(self,obj):
+        return localtime(obj.DateUpdate).strftime('%Y-%m-%d %H:%M:%S')
 
 @admin.register(ProductBanner)
 class ProductBanner(admin.ModelAdmin):
@@ -215,18 +250,28 @@ class ProductBanner(admin.ModelAdmin):
     list_filter=('FK_Product','Title','DateCreate','DateUpdate')
     search_fields=('FK_Product__Title',)
     ordering=('DateCreate',)
+    def DateCreate(self,obj):
+        return localtime(obj.DateCreate).strftime('%Y-%m-%d %H:%M:%S')
+    def DateUpdate(self,obj):
+        return localtime(obj.DateUpdate).strftime('%Y-%m-%d %H:%M:%S')
 
 @admin.register(AmazingProduct)
 class AmazingProduct(admin.ModelAdmin):
     raw_id_fields = ("product",)
     list_display=('product', 'start_date', 'end_date')
     list_filter=('product', 'start_date', 'end_date')
+    def start_date(self,obj):
+        return localtime(obj.start_date).strftime('%Y-%m-%d %H:%M:%S')
+    def end_date(self,obj):
+        return localtime(obj.end_date).strftime('%Y-%m-%d %H:%M:%S')
 @admin.register(DashboardBanner)
 class DashboardBannerAdmin(admin.ModelAdmin):
     list_display=('image','url','staff_user','created_datetime','publish_status')
     list_filter=('staff_user','created_datetime','publish_status')
     search_fields=('url',)
     ordering=['id','created_datetime','publish_status']
+    def created_datetime(self,obj):
+        return localtime(obj.created_datetime).strftime('%Y-%m-%d %H:%M:%S')
     # inlines=[AttrProductInline, ProductBannerInline, ProductMovieInline]
 
 @admin.register(LandingPageSchema)
@@ -235,6 +280,8 @@ class LandingPageSchemaAdmin(admin.ModelAdmin):
     list_filter=('publish_status','created_datetime', 'order')
     search_fields=('title','component_type', 'subtitle', 'url', 'data')
     ordering=['publish_status', 'created_datetime']
+    def created_datetime(self,obj):
+        return localtime(obj.created_datetime).strftime('%Y-%m-%d %H:%M:%S')
 
 @admin.register(ShopPageSchema)
 class ShopPageSchemaAdmin(admin.ModelAdmin):
@@ -242,3 +289,5 @@ class ShopPageSchemaAdmin(admin.ModelAdmin):
     list_filter=('shop','publish_status','created_datetime', 'order')
     search_fields=('shop','title','component_type', 'subtitle', 'url', 'data')
     ordering=['publish_status', 'created_datetime']
+    def created_datetime(self,obj):
+        return localtime(obj.created_datetime).strftime('%Y-%m-%d %H:%M:%S')
