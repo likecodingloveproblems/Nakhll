@@ -69,7 +69,7 @@ class Invoice(models.Model, AccountingInterface):
     @property
     def shops(self):
         shop_ids = self.items.values_list('product__FK_Shop__ID', flat=True).distinct()
-        return Shop.objects.filter(id__in=shop_ids)
+        return Shop.objects.filter(ID__in=shop_ids)
 
     # @property
     # def logistic_price(self):

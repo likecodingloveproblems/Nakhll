@@ -58,12 +58,12 @@ class Cart(models.Model):
     @property
     def shops(self):
         shop_ids = self.items.values_list('product__FK_Shop__ID', flat=True).distinct()
-        return Shop.objects.filter(id__in=shop_ids)
+        return Shop.objects.filter(ID__in=shop_ids)
 
     @property
     def products(self):
         product_ids = self.items.values_list('product__ID', flat=True).distinct()
-        return Product.objects.filter(id__in=product_ids)
+        return Product.objects.filter(ID__in=product_ids)
 
     @property
     def cart_weight(self):
