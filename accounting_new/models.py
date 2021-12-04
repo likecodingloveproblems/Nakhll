@@ -68,11 +68,8 @@ class Invoice(models.Model, AccountingInterface):
 
     @property
     def shops(self):
-        # TODO: Need improve
-        shops = set()
-        for item in self.items.all():
-            shops.add(item.product.FK_Shop)
-        return shops
+        shop_ids = self.items.values_list('product__FK_Shop__ID', flat=True).distinct()
+        return Shop.objects.filter(id__in=shop_ids)
 
     # @property
     # def logistic_price(self):

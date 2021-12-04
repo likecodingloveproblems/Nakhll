@@ -97,7 +97,7 @@ class UserValidator:
 
 class ShopValidator:
     def __init__(self, invoice):
-        self.shops = invoice.shops
+        self.shops = invoice.shops.all()
     def __call__(self, coupon):
         if coupon.constraint.shops.all():
             flag = False

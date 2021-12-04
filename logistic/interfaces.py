@@ -69,7 +69,7 @@ class PostPriceSettingInterface:
         if not user_address:
             return None
         total_post_price = 0
-        for shop in invoice.shops:
+        for shop in invoice.shops.all():
             total_post_price += self._get_shop_post_price(shop, user_address)
         return total_post_price
 
@@ -85,7 +85,7 @@ class PostPriceSettingInterface:
             For each shop, weight of products multiply by its quantity should be checked
         '''
         total_post_price = 0
-        for shop in invoice.shops:
+        for shop in invoice.shops.all():
             total_post_price += self.__get_shop_post_weight_price(invoice, shop)
         return total_post_price
         

@@ -1,15 +1,17 @@
 import os
 from django.core import serializers
 from django.db import models
+from django.db.models.aggregates import Sum
 from django.db.models.lookups import EndsWith
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
+from django.db.models.functions import Cast
 from django.core.serializers.json import DjangoJSONEncoder
 from accounting_new.models import Invoice, InvoiceItem
 from cart.managers import CartItemManager, CartManager
-from nakhll_market.models import Product
+from nakhll_market.models import Product, Shop
 from nakhll_market.serializers import ProductLastStateSerializer
 
 
@@ -55,31 +57,27 @@ class Cart(models.Model):
 
     @property
     def shops(self):
-        # TODO: Needs improvement
-        shops = set()
-        for item in self.items.all():
-            shops.add(item.product.FK_Shop)
-        return shops
+        shop_ids = self.items.values_list('product__FK_Shop__ID', flat=True).distinct()
+        return Shop.objects.filter(id__in=shop_ids)
 
     @property
     def products(self):
-        # TODO: Needs improvement
-        products = set()
-        for item in self.items.all():
-            products.add(item.product)
-        return products
+        product_ids = self.items.values_list('product__ID', flat=True).distinct()
+        return Product.objects.filter(id__in=product_ids)
 
     @property
     def cart_weight(self):
-        # TODO: Needs improvement
-        total_weight = 0
-        for item in self.items.all():
-            try:
-                product_weight = int(item.product.Weight_With_Packing)
-            except:
-                product_weight = 0
-            total_weight += product_weight
-        return total_weight
+        return self.items.aggregate(tw=Sum(Cast(
+            'product__Weight_With_Packing', output_field=models.IntegerField()
+            )))['tw'] or 0
+        # total_weight = 0
+        # for item in self.items.all():
+        #     try:
+        #         product_weight = int(item.product.Weight_With_Packing)
+        #     except:
+        #         product_weight = 0
+        #     total_weight += product_weight
+        # return total_weight
 
     @property
     def total_price(self):
