@@ -2688,7 +2688,7 @@ class Alert(models.Model):
         (True,'ثبت تغییرات'),
         (False,'عدم ثبت تغییرات'),
     )
-    alert_description=models.TextField(verbose_name='توضیحات', blank=True, help_text='توضیحات در مورد هشدار')
+    alert_description=models.TextField(verbose_name='توضیحات', blank=True, null=True, help_text='توضیحات در مورد هشدار')
     Status=models.BooleanField(verbose_name='وضعیت تغییرات', choices=STATUS, null=True)
     DateCreate=models.DateTimeField(verbose_name='تاریخ ثبت هشدار', auto_now_add=True)
     DateUpdate=models.DateTimeField(verbose_name='تاریخ ثبت تغییرات', auto_now=True)
