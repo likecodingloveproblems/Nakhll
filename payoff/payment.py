@@ -229,7 +229,7 @@ class Pec(PaymentMethod):
         if response:
             self.__create_transaction_reverse(response, transaction_result)
         else:
-            AlertInterface.no_reverse_request(transaction_result)
+            AlertInterface.reverse_payment_error(transaction_result, desc='No response from Pec gateway', response=response)
         return response
 
     def __create_transaction_confirmation(self, response, transaction_result):

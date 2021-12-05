@@ -368,3 +368,8 @@ CORS_ALLOW_METHODS = os.environ.get('CORS_ALLOW_METHODS',
 DOMAIN_NAME = os.environ.get('DOMAIN_NAME', 'https://nakhll.com')
 
 INVOICE_EXPIRING_HOURS = 4
+
+DISCORD_WEBHOOKS = {
+    'ALERT': os.environ.get('DISCORD_ALERT_WEBHOOK'),
+    'PURCHASE': os.environ.get('DISCORD_PURCHASE_WEBHOOK'),
+}

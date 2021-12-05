@@ -24,6 +24,8 @@ from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 from simple_history.models import HistoricalRecords
 
+from nakhll_market.interface import AlertInterface
+
 
 OUTOFSTOCK_LIMIT_NUM = 5
 def attach_domain(url):
@@ -1692,8 +1694,8 @@ class Product(models.Model):
     def reduce_stock(self, count):
         ''' Reduce from inventory of this product '''
         if self.Inventory < count:
-            # TODO: Send alert to staff to handle situation
-            pass
+            AlertInterface.not_enogth_in_stock(self, count)
+            return
         self.Inventory -= count
         self.save()
 
@@ -2631,6 +2633,10 @@ class Field(models.Model):
 
 # Alert (هشدار ها) Model
 class Alert(models.Model):
+    class AlertParts:
+        ADD_PROFILE = '0'
+        EDIT_PROFILE = '1'
+        PAYMENT_ERROR = '35'    
     FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='ثبت کننده', related_name='User_Registrar_Alert', blank=True, null=True) 
     PART_TYPE =(
         ('0','ایجاد پروفایل'),
@@ -2668,6 +2674,7 @@ class Alert(models.Model):
         ('32', 'ثبت ویژگی انتخابی جدید'),
         ('33', 'حذف ویژگی انتخابی'),
         ('34', 'ارسال سفارش‌های جداگانه'),
+        ('35', 'خطای پرداخت'),
     )
     Part=models.CharField(verbose_name='بخش', choices=PART_TYPE, max_length=2, default='0')
     Slug=models.TextField(verbose_name='شناسه بخش', blank=True, null=True)
@@ -2681,6 +2688,7 @@ class Alert(models.Model):
         (True,'ثبت تغییرات'),
         (False,'عدم ثبت تغییرات'),
     )
+    alert_description=models.TextField(verbose_name='توضیحات', blank=True, help_text='توضیحات در مورد هشدار')
     Status=models.BooleanField(verbose_name='وضعیت تغییرات', choices=STATUS, null=True)
     DateCreate=models.DateTimeField(verbose_name='تاریخ ثبت هشدار', auto_now_add=True)
     DateUpdate=models.DateTimeField(verbose_name='تاریخ ثبت تغییرات', auto_now=True)

@@ -14,6 +14,7 @@ from django.db.models import Count, Sum, query, Q
 from django.db.models.functions import Coalesce
 
 from Payment.models import Factor
+from nakhll_market.interface import DiscordAlertInterface
 from nakhll_market.models import Profile, Shop, Product
 from accounting_new.models import Invoice
 
@@ -229,6 +230,7 @@ class CustomerPurchaseReport(GroupRequiredMixin, View):
     group_required = u"factor-stats"
 
     def get(self, request):
+        DiscordAlertInterface.send_alert('TEST IN CUSTOMERPURCHASEREPORT: Someone get Customer Purchase Report')
         queryset = Factor.objects.filter(PaymentStatus=True)
         queryset = queryset.annotate(products_list=StringAgg('FK_FactorPost__FK_Product__Title', delimiter=', '))
         queryset = queryset.annotate(shop_list=StringAgg('FK_FactorPost__FK_Product__FK_Shop__Title', delimiter=', '))
@@ -248,6 +250,7 @@ class InvoiceStats(GroupRequiredMixin, View):
     group_required = u"factor-stats"
 
     def get(self, request):
+        DiscordAlertInterface.send_alert('TEST IN INVOICE STATS: Someone get Invoice Stats')
         queryset = Invoice.objects.filter(FactorNumber=None).annotate(
             products_list=StringAgg('items__product__Title', delimiter=', '),
             coupons_list=StringAgg('coupon_usages__coupon__code', delimiter=', '),

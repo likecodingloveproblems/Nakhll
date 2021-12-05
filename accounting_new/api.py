@@ -55,7 +55,6 @@ class InvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
         ''' each user can have many invoices '''
         try:
             invoice = self.__create_invoice(request)
-            #TODO: Create alert
         except ValidationError as ex:
             return Response({'detail': f'خطا در ساخت فاکتور: {ex}'}, status=status.HTTP_400_BAD_REQUEST)
         serializer = InvoiceRetrieveSerializer(invoice)
