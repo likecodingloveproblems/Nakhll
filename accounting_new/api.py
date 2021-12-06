@@ -6,7 +6,6 @@ from django.utils.translation import ugettext as _
 from rest_framework import status, mixins, permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from nakhll.authentications import CsrfExemptSessionAuthentication
 from nakhll_market.serializers import ProductLastStateSerializer
 from cart.managers import CartManager
 from logistic.interfaces import PostPriceSettingInterface
@@ -21,7 +20,6 @@ class InvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
                     mixins.UpdateModelMixin, mixins.RetrieveModelMixin,
                     mixins.DestroyModelMixin, mixins.ListModelMixin):
     permission_classes = [IsInvoiceOwner, permissions.IsAuthenticated, ]
-    authentication_classes = [CsrfExemptSessionAuthentication, ]
     queryset = Invoice.objects.all()
 
     def get_queryset(self):

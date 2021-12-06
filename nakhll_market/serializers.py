@@ -280,11 +280,31 @@ class ProductListSerializer(serializers.ModelSerializer):
             'discount',
             'is_advertisement',
         ]
-    # Image = serializers.SerializerMethodField(method_name='get_absolute_image_url')
-    # def get_absolute_image_url(self, product):
-        # request = self.context.get('request')
-        # photo_url = product.Image.url if product.Image else None
-        # return request.build_absolute_uri(photo_url)
+class ProductOwnerListSerializer(serializers.ModelSerializer):
+    FK_Shop = FilterPageShopSerializer(read_only=True)
+    post_range_cities = serializers.SlugRelatedField(slug_field='name', read_only=True, many=True)
+    class Meta:
+        model = Product
+        fields = [
+            'ID',
+            'Title',
+            'Slug',
+            'Inventory',
+            'Image_medium_url',
+            'image_thumbnail_url',
+            'FK_Shop',
+            'Price',
+            'OldPrice',
+            'discount',
+            'is_advertisement',
+            'Status',
+            'PreparationDays',
+            'Available',
+            'Publish',
+            'new_category_id',
+            'post_range_cities'
+        ]
+
 
 class ProductOwnerListSerializer(serializers.ModelSerializer):
     FK_Shop = FilterPageShopSerializer(read_only=True)
@@ -323,7 +343,7 @@ class ProductImagesSerializer(serializers.Serializer):
         child=Base64ImageField(max_length=None, use_url=True)
     )
 
-class ProductBannerSerializer(serializers.ModelSerializer):
+class ProductBannerWithProductSerializer(serializers.ModelSerializer):
     FK_Product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all(), pk_field=serializers.UUIDField(format='hex'))
     Image = Base64ImageField(max_length=None, use_url=True)
     class Meta:
@@ -332,16 +352,22 @@ class ProductBannerSerializer(serializers.ModelSerializer):
             'id', 'Image', 'FK_Product'
         ]
 
+        
+class ProductBannerWriteSerializer(serializers.ModelSerializer):
+    Image = Base64ImageField(max_length=None, use_url=True)
+    class Meta:
+        model = ProductBanner
+        fields = ['Image']
+
 
 
 class Base64ImageSerializer(serializers.Serializer):
     image = Base64ImageField(max_length=None, use_url=True)
 
-class ProductUpdateSerializer(serializers.ModelSerializer):
-    # FK_Shop = serializers.SlugRelatedField(slug_field='Slug', many=False, read_only=True)
-    # FK_SubMarket = serializers.PrimaryKeyRelatedField(read_only=False, many=False, queryset=SubMarket.objects.all())
+class ProductOwnerWriteSerializer(serializers.ModelSerializer):
     new_category = serializers.PrimaryKeyRelatedField(read_only=False, many=False, queryset=NewCategory.objects.all())
-    Product_Banner = serializers.PrimaryKeyRelatedField(queryset=ProductBanner.objects.all(), many=True, read_only=False)
+    Image = Base64ImageField(max_length=None, use_url=True)
+    Product_Banner = ProductBannerWriteSerializer(many=True, read_only=False)
     post_range = serializers.PrimaryKeyRelatedField(source='post_range_cities', read_only=False, many=True, queryset=City.objects.all())
     class Meta:
         model = Product
@@ -355,36 +381,53 @@ class ProductUpdateSerializer(serializers.ModelSerializer):
             'Weight_With_Packing',
             'Description',
             'Status',
+            'Image',
+            'Product_Banner',
             'PostRangeType',
             'PreparationDays',
-            # 'FK_SubMarket',
             'new_category',
-            'Product_Banner',
             'post_range'
         ]
+    
+    def create(self, validated_data):
+        banners = validated_data.pop('Product_Banner')
+        post_range_cities = validated_data.pop('post_range_cities')
+        instance = Product.objects.create(**validated_data)
+        instance.post_range_cities.add(*post_range_cities)
+        banners = [ProductBanner.objects.create(FK_Product=instance, Image=banner['Image']) for banner in banners]
+        instance.Product_Banner.add(*banners)
+        return instance
+    
     def update(self, instance, validated_data):
-        # Direct assignment to the reverse side of a related set is prohibited, 
-        # so I am deleteing related ProductBanner objects to clean database from
-        # ProductBanners that have no Product assigned to
-        product_banners = validated_data.pop('Product_Banner')
-        deleted_banners = [banner.delete() 
-                           for banner in instance.Product_Banner.all() 
-                           if banner not in product_banners]
-
-        product_post_ranges = validated_data.pop('post_range_cities')
-        instance.post_range_cities.clear()
-        instance.post_range_cities.add(*product_post_ranges)
-
-        for prop in validated_data:
-            setattr(instance, prop, validated_data[prop])
+        self.__update_banners(instance, validated_data)
+        self.__update_post_range(instance, validated_data)
+        for prop, value in validated_data.items():
+            setattr(instance, prop, value)
         instance.save()
         return instance
 
+    def __update_banners(self, instance, validated_data):
+        if 'Product_Banner' not in validated_data:
+            return
+        instance.Product_Banner.clear()
+        product_banners = [
+            ProductBanner.objects.create(FK_Product=instance, Image=banner['Image']) 
+            for banner in validated_data.pop('Product_Banner')
+        ]
+        instance.Product_Banner.add(*product_banners)
 
-class ProductWriteSerializer(serializers.ModelSerializer):
-    FK_Shop = serializers.SlugRelatedField(slug_field='Slug', many=False, read_only=False, queryset=Shop.objects.all())
-    new_category = serializers.PrimaryKeyRelatedField(read_only=False, many=False, queryset=NewCategory.objects.all())
-    post_range = serializers.PrimaryKeyRelatedField(source='post_range_cities', read_only=False, many=True, queryset=City.objects.all())
+    def __update_post_range(self, instance, validated_data):
+        if 'post_range_cities' not in validated_data:
+            return
+        instance.post_range_cities.clear()
+        product_post_ranges = validated_data.pop('post_range_cities')
+        instance.post_range_cities.add(*product_post_ranges)
+        
+        
+class ProductOwnerReadSerializer(serializers.ModelSerializer):
+    new_category = NewCategoryChildSerializer(many=False, read_only=True)
+    Product_Banner = ProductBannerWriteSerializer(many=True, read_only=True)
+    post_range = serializers.PrimaryKeyRelatedField(source='post_range_cities', read_only=True, many=True)
     class Meta:
         model = Product
         fields = [
@@ -397,12 +440,16 @@ class ProductWriteSerializer(serializers.ModelSerializer):
             'Weight_With_Packing',
             'Description',
             'Status',
+            'Image',
+            'Product_Banner',
             'PostRangeType',
             'PreparationDays',
-            'FK_Shop',
             'new_category',
             'post_range'
         ]
+ 
+        
+
 
 class FullMarketSerializer(serializers.ModelSerializer):
     submarkets = SubMarketSerializer(many=True, read_only=True)
@@ -452,7 +499,7 @@ class ShopSocialMediaSerializer(serializers.ModelSerializer):
 class SettingsProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ['NationalCode', 'MobileNumber', 'PhoneNumber', 'State', 'BigCity', 'City', 'Address', 'ZipCode']
+        fields = ['NationalCode', 'PhoneNumber', 'State', 'BigCity', 'City', 'Address', 'ZipCode']
         extra_kwargs = {
             'NationalCode': {'validators': []},
             'MobileNumber': {'validators': []}
@@ -474,74 +521,52 @@ class ShopSettingsSerializer(serializers.ModelSerializer):
             'Slug': {'validators': []},
         }
 
+
 class ShopAllSettingsSerializer(serializers.ModelSerializer):
-    FK_ShopManager = UserProfileSerializer(read_only=False)
-    bank_account = ShopBankAccountSerializer(read_only=True)
-    social_media = ShopSocialMediaSerializer(read_only=True)
+    FK_ShopManager = UserProfileSerializer(many=False, read_only=False, required=False)
+    bank_account = ShopBankAccountSerializer(many=False, read_only=False, required=False)
+    social_media = ShopSocialMediaSerializer(many=False, read_only=False, required=False)
+    Image = Base64ImageField(max_length=None, use_url=True, allow_empty_file=False, required=False)
     class Meta:
         model = Shop
         fields = [
-            'Title', 'Slug', 'Description', 'FK_ShopManager', 'bank_account', 'social_media', 'image_thumbnail_url' 
+            'Title', 'Slug', 'Image', 'image_thumbnail_url',
+            'bank_account', 'social_media', 'Description', 'FK_ShopManager',
         ]
-        extra_kwargs = {
-            'Slug': {'validators': []},
-        }
+        read_only_fields = ['Title', 'Slug', 'image_thumbnail_url']
+
     def update(self, instance, validated_data):
-        user = validated_data.get('FK_ShopManager')
-        if not user:
-            return instance
-
-        profile_data = user.get('User_Profile')
-        if not profile_data:
-            return instance
-
-        instance.Title = validated_data.get('Title')
-        instance.Description = validated_data.get('Description')
-
         profile = instance.FK_ShopManager.User_Profile
-        profile.NationalCode = profile_data.get('NationalCode')
-        profile.MobileNumber = profile_data.get('MobileNumber')
-        profile.PhoneNumber = profile_data.get('PhoneNumber')
-        profile.State = profile_data.get('State')
-        profile.BigCity = profile_data.get('BigCity')
-        profile.City = profile_data.get('City')
-        profile.Address = profile_data.get('Address')
-        profile.ZipCode = profile_data.get('ZipCode')
+        user_data = validated_data.pop('FK_ShopManager') if 'FK_ShopManager' in validated_data else {}
+        profile_data = user_data.pop('User_Profile') if 'User_Profile' in user_data else {}
+        
+        bank_account = instance.bank_account if hasattr(instance, 'bank_account') else ShopBankAccount.objects.create(shop=instance)
+        bank_account_data = validated_data.pop('bank_account') if 'bank_account' in validated_data else {}
+        
+        social_media = instance.social_media if hasattr(instance, 'social_media') else ShopSocialMedia.objects.create(shop=instance)
+        social_media_data = validated_data.pop('social_media') if 'social_media' in validated_data else {}
 
-        profile.save()
+        image = validated_data.pop('Image') if 'Image' in validated_data else None
+
+        for prop in validated_data:
+            setattr(instance, prop, validated_data[prop])
+        if image:
+            instance.Image = image
         instance.save()
-        return instance
             
-class ShopBankAccountSettingsSerializer(serializers.ModelSerializer):
-    bank_account = ShopBankAccountSerializer(read_only=False)
-    class Meta:
-        model = Shop
-        fields = ['bank_account', ]
-    def update(self, instance, validated_data):
-        bank_account_data = validated_data.get('bank_account')
-        if not bank_account_data:
-            return instance
-        bank_account, created = ShopBankAccount.objects.get_or_create(shop=instance)
-        bank_account.iban = bank_account_data.get('iban')
-        bank_account.owner = bank_account_data.get('owner')
+        for prop in profile_data:
+            setattr(profile, prop, profile_data[prop])
+        profile.save()
+        
+        for prop in bank_account_data:
+            setattr(bank_account, prop, bank_account_data[prop])
         bank_account.save()
-        return instance
- 
-class SocialMediaAccountSettingsSerializer(serializers.ModelSerializer):
-    social_media = ShopSocialMediaSerializer(read_only=False)
-    class Meta:
-        model = Shop
-        fields = ['social_media', ]
-    def update(self, instance, validated_data):
-        social_media_data = validated_data.get('social_media')
-        if not social_media_data:
-            return instance
-        social_media, created = ShopSocialMedia.objects.get_or_create(shop=instance)
-        social_media.telegram = social_media_data.get('telegram')
-        social_media.instagram = social_media_data.get('instagram')
+        
+        for prop in social_media_data:
+            setattr(social_media, prop, social_media_data[prop])
         social_media.save()
+
         return instance
- 
 
 
  

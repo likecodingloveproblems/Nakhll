@@ -28,9 +28,6 @@ urlpatterns = [
     path('logintowebsite/', admin.site.urls),
     path('accounting/', include('accounting.urls', namespace='accounting')),
     path('accounts/', include('my_auth.urls', namespace='my_auth')),
-    url(r'^api/v1/', include('nakhll_market.api_urls', namespace='nakhll_market_api')),
-    url(r'^api/v1/', include('custom_list.urls', namespace='custom_list')),
-    url(r'^api/v1/', include('shop.urls', namespace='shop')),
     url(r'^app/api/', include('restapi.urls' , namespace='restapi')),
     path('torob/', include('torob_api.urls', namespace='torob')),
     path('goto/', include('url_redirector.urls', namespace='url_redirector')),
@@ -42,6 +39,10 @@ urlpatterns = [
     url(r'^tinymce/', include('tinymce.urls')),
     url(r'^cart/', include('Payment.urls' , namespace='Payment')),
     # api version 1
+    url(r'^api/v1/', include('nakhll_market.api_urls', namespace='nakhll_market_api')),
+    url(r'^api/v1/', include('custom_list.urls', namespace='custom_list')),
+    url(r'^api/v1/', include('shop.urls', namespace='shop')),
+    path('api/v1/', include('nakhll_auth.urls', namespace='auth_api')),
     # prometheus
     url('', include('django_prometheus.urls')),
 ]

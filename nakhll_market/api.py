@@ -9,25 +9,26 @@ from django.db.models.expressions import Case, When
 from django.contrib.auth.models import User
 from django.utils.text import slugify
 from rest_framework import generics, routers, status, views, viewsets
-from rest_framework import permissions, filters, mixins
+from rest_framework import permissions, filters, mixins, serializers
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError, PermissionDenied, AuthenticationFailed
 from rest_framework.decorators import action
 from django_filters import rest_framework as restframework_filters
-from nakhll.authentications import CsrfExemptSessionAuthentication
 from nakhll_market.models import (
     Alert, AmazingProduct, Comment, NewCategory, Product, ProductBanner, Shop, Slider, Category, Market, State, BigCity, City, SubMarket,
     LandingPageSchema, ShopPageSchema, UserImage,
     )
 from nakhll_market.serializers import (
-    AmazingProductSerializer, Base64ImageSerializer, NewCategoryProductCountSerializer, NewProfileSerializer, ProductCommentSerializer, ProductDetailSerializer, ProductImagesSerializer, ProductOwnerListSerializer,
-    ProductSerializer, ProductUpdateSerializer, ShopProductSerializer, ShopSerializer, ShopSimpleSerializer, ShopSlugSerializer,SliderSerializer, ProductPriceWriteSerializer,
+    AmazingProductSerializer, Base64ImageSerializer, NewCategoryProductCountSerializer,
+    NewProfileSerializer, ProductBannerWithProductSerializer, ProductCommentSerializer,
+    ProductDetailSerializer, ProductImagesSerializer, ProductOwnerListSerializer,
+    ProductOwnerReadSerializer, ProductOwnerWriteSerializer, ProductPriceWriteSerializer,
+    ProductSerializer, ShopSerializer, ShopSimpleSerializer, ShopSlugSerializer,SliderSerializer,
     CategorySerializer, FullMarketSerializer, CreateShopSerializer, ProductInventoryWriteSerializer,
-    ProductListSerializer, ProductWriteSerializer, ShopAllSettingsSerializer, ProductBannerSerializer,
-    ShopBankAccountSettingsSerializer, SocialMediaAccountSettingsSerializer, ProductSubMarketSerializer, StateFullSeraializer, SubMarketProductSerializer, SubMarketSerializer,
-    LandingPageSchemaSerializer, ShopPageSchemaSerializer, UserImageSerializer, UserOrderSerializer,
-    NewCategorySerializer, NewCategoryChildSerializer, NewCategoryParentChildSerializer, NewCategoryParentSerializer
+    ProductListSerializer, ShopAllSettingsSerializer, SubMarketProductSerializer, UserOrderSerializer,
+    ProductSubMarketSerializer, StateFullSeraializer, ShopPageSchemaSerializer, UserImageSerializer,
+    LandingPageSchemaSerializer, NewCategoryChildSerializer, NewCategoryParentSerializer
     )
 from restapi.permissions import IsFactorOwner, IsProductOwner, IsShopOwner, IsProductBannerOwner
 from restapi.serializers import ProfileSerializer
@@ -36,6 +37,7 @@ from nakhll_market.filters import ProductFilter
 from nakhll_market.permissions import IsInvoiceOwner
 from nakhll_market.paginators import StandardPagination
 from nakhll_market.product_bulk_operations import BulkException, BulkProductHandler
+from shop.mixins import MultipleFieldLookupMixin
 
 class SliderViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = SliderSerializer
@@ -123,46 +125,49 @@ class ShopProductsViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mi
 
 
 
-class UserProductViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.CreateModelMixin,
-                         mixins.ListModelMixin, mixins.UpdateModelMixin):
+class ShopOwnerProductViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin,
+                              mixins.CreateModelMixin, mixins.ListModelMixin, mixins.UpdateModelMixin):
     permission_classes = [permissions.IsAuthenticated, IsProductOwner]
-    authentication_classes = [CsrfExemptSessionAuthentication, ]
-    queryset = Product.objects.all().order_by('-DateCreate')
+    pagination_class = StandardPagination
+    filter_class = ProductFilter
+    filter_backends = (restframework_filters.DjangoFilterBackend, filters.OrderingFilter)
     lookup_field = 'ID'
 
     def get_serializer_class(self):
-        if self.action in ['update', 'partial_update']:
-            return ProductUpdateSerializer
-        elif self.action in ['list', 'retrieve']:
-            return ProductListSerializer
+        if self.action == 'list':
+            return ProductOwnerListSerializer
+        elif self.action == 'retrieve':
+            return ProductOwnerReadSerializer
         else:
-            return ProductWriteSerializer
+            return ProductOwnerWriteSerializer
 
+    def get_queryset(self):
+        shop = self.get_shop()
+        return Product.objects.filter(FK_Shop=shop).order_by('-DateCreate')
 
-    def generate_unique_slug(self, title):
-        ''' Generate new unique slug for Product Model 
-            NOTE: This fucntion should move to utils
-        '''
-        slug = slugify(title, allow_unicode=True)
-        counter = 1
-        new_slug = slug
-        while(Product.objects.filter(Slug=new_slug).exists()):
-            new_slug = f'{slug}_{counter}'
-            counter += 1
-        return new_slug
+    def get_shop(self):
+        shop = get_object_or_404(Shop, Slug=self.kwargs.get('shop_slug'))
+        self.__check_shop_owner(shop)
+        return shop
+
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+        filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
+        obj = get_object_or_404(queryset, **filter_kwargs)
+
+        self.check_object_permissions(self.request, obj)
+        return obj
 
     def perform_create(self, serializer):
+        shop = self.get_shop()
         data = serializer.validated_data
-        # post_range = data.pop('post_range_cities')
-        shop = data.get('FK_Shop')
         title = data.get('Title')
 
-        # Check if target shop is owned by user or not
-        if shop.FK_ShopManager != self.request.user:
-            raise ValidationError({'details': 'Shop is not own by user'})
 
-        slug = self.generate_unique_slug(title)
-        product_extra_fileds = {'Publish': True, 'Slug': slug}
+        slug = self.__generate_unique_slug(title)
+        product_extra_fileds = {'Publish': True, 'Slug': slug, 'FK_Shop': shop}
         # TODO: This behavior should be inhanced later
         #! Check if price have dicount or not
         #! Swap Price and OldPrice value if discount exists
@@ -180,6 +185,7 @@ class UserProductViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mix
         Alert.objects.create(Part='6', FK_User=self.request.user, Slug=product.ID)
 
     def perform_update(self, serializer):
+        shop = self.get_shop()
         data = serializer.validated_data
         # post_range = data.pop('post_range_cities')
         ID = self.kwargs.get('ID')
@@ -192,14 +198,34 @@ class UserProductViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mix
         old_price = data.get('OldPrice', 0) * 10
         price = data.get('Price', 0) * 10
         if old_price:
-            product = serializer.save(OldPrice=price, Price=old_price)
+            product = serializer.save(OldPrice=price, Price=old_price, FK_Shop=shop)
         else:
-            product = serializer.save(OldPrice=old_price, Price=price)
+            product = serializer.save(OldPrice=old_price, Price=price, FK_Shop=shop)
         # product.post_range_cities.add(*post_range) 
 
         # TODO: Check if product created successfully and published and alerts created as well
         Alert.objects.create(Part='7', FK_User=self.request.user, Slug=ID)
 
+    def __check_shop_owner(self, shop):
+        if shop.FK_ShopManager != self.request.user:
+            raise serializers.ValidationError(
+                {'FK_Shop': f'شما به فروشگاه {shop.Title} دسترسی ندارید'},
+                code=status.HTTP_403_FORBIDDEN
+            )
+        
+
+    def __generate_unique_slug(self, title):
+        ''' Generate new unique slug for Product Model 
+            NOTE: This fucntion should move to utils
+            Also the performance here is not good, it should be improved
+        '''
+        slug = slugify(title, allow_unicode=True)
+        counter = 1
+        new_slug = slug
+        while(Product.objects.filter(Slug=new_slug).exists()):
+            new_slug = f'{slug}_{counter}'
+            counter += 1
+        return new_slug
 
 class ProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     pagination_class = StandardPagination
@@ -321,7 +347,6 @@ class SubMarketList(generics.ListAPIView):
 
 class GetShopWithSlug(views.APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, ]
-    authentication_classes = [CsrfExemptSessionAuthentication, ]
 
     def get(self, request, format=None):
         shop_slug = request.GET.get('slug')
@@ -331,14 +356,12 @@ class GetShopWithSlug(views.APIView):
 
 class GetShop(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, ]
-    authentication_classes = [CsrfExemptSessionAuthentication, ]
     serializer_class = ShopSerializer
     queryset = Shop.objects.filter(Available=True, Publish=True)
     lookup_field = 'Slug'
 
 class GetShopList(viewsets.GenericViewSet, mixins.ListModelMixin):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, ]
-    authentication_classes = [CsrfExemptSessionAuthentication, ]
     serializer_class = ShopSimpleSerializer
     queryset = Shop.objects.filter(Available=True, Publish=True).select_related('FK_ShopManager', 'FK_ShopManager__User_Profile', )
 
@@ -348,7 +371,6 @@ class GetShopList(viewsets.GenericViewSet, mixins.ListModelMixin):
 class CreateShop(generics.CreateAPIView):
     serializer_class = CreateShopSerializer
     permission_classes = [permissions.IsAuthenticated, ]
-    authentication_classes = [CsrfExemptSessionAuthentication, ]
     def get_queryset(self):
         return Shop.objects.filter(FK_ShopManager=self.request.user)
 
@@ -412,7 +434,6 @@ class CheckProductSlug(views.APIView):
             return Response({'product_slug': None})
 class AddSubMarketToProduct(views.APIView):
     permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = [CsrfExemptSessionAuthentication, ]
     def post(self, request, format=None):
         try:
             serializer = ProductSubMarketSerializer(data=request.data)
@@ -437,7 +458,6 @@ class AddSubMarketToProduct(views.APIView):
 class AddImagesToProduct(views.APIView):
     # parser_classes = (MultiPartParser, FormParser)
     permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = [CsrfExemptSessionAuthentication, ]
     def post(self, request, format=None):
         try:
             serializer = ProductImagesSerializer(data=request.data)
@@ -468,10 +488,9 @@ class AddImagesToProduct(views.APIView):
 class ProductBannerViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, 
                         mixins.DestroyModelMixin):
     permission_classes = [permissions.IsAuthenticated, IsProductBannerOwner]
-    authentication_classes = [CsrfExemptSessionAuthentication, ]
     lookup_field = 'id'
     queryset = ProductBanner.objects.all()
-    serializer_class = ProductBannerSerializer
+    serializer_class = ProductBannerWithProductSerializer
 
     def perform_create(self, serializer):
         product_banner = serializer.save(Publish=True)
@@ -482,7 +501,6 @@ class ProductBannerViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
 class ShopMultipleUpdatePrice(views.APIView):
     #TODO: Swap OldPrice and Price
     permission_classes = [permissions.IsAuthenticated,]
-    authentication_classes = [CsrfExemptSessionAuthentication, ]
     def patch(self, request, format=None):
         serializer = ProductPriceWriteSerializer(data=request.data, many=True)
         user = request.user
@@ -516,7 +534,6 @@ class ShopMultipleUpdatePrice(views.APIView):
 
 class ShopMultipleUpdateInventory(views.APIView):
     permission_classes = [permissions.IsAuthenticated, ]
-    authentication_classes = [CsrfExemptSessionAuthentication, ]
     def patch(self, request, format=None):
         serializer = ProductInventoryWriteSerializer(data=request.data, many=True)
         user = request.user
@@ -541,7 +558,6 @@ class ShopMultipleUpdateInventory(views.APIView):
 class AllShopSettings(views.APIView):
     # TODO: Check this class entirely
     permission_classes = [permissions.IsAuthenticated, IsShopOwner]
-    authentication_classes = [CsrfExemptSessionAuthentication,]
     def get_object(self, shop_slug, user):
         return get_object_or_404(Shop, Slug=shop_slug)
     def get(self, request, shop_slug, format=None):
@@ -551,7 +567,7 @@ class AllShopSettings(views.APIView):
         serializer = ShopAllSettingsSerializer(shop)
         return Response(serializer.data)
 
-    def put(self, request, shop_slug, format=None):
+    def patch(self, request, shop_slug, format=None):
         user = request.user
         shop = self.get_object(shop_slug, user)
         self.check_object_permissions(request, shop)
@@ -565,7 +581,6 @@ class AllShopSettings(views.APIView):
 class BankAccountShopSettings(views.APIView):
     # TODO: Check this class entirely
     permission_classes = [permissions.IsAuthenticated, ]
-    authentication_classes = [CsrfExemptSessionAuthentication,]
     def get_object(self, shop_slug, user):
         return get_object_or_404(Shop, Slug=shop_slug)
     def put(self, request, shop_slug, format=None):
@@ -582,7 +597,6 @@ class BankAccountShopSettings(views.APIView):
 class SocialMediaShopSettings(views.APIView):
     # TODO: Check this class entirely
     permission_classes = [permissions.IsAuthenticated, ]
-    authentication_classes = [CsrfExemptSessionAuthentication,]
     def get_object(self, shop_slug, user):
         return get_object_or_404(Shop, Slug=shop_slug)
     def put(self, request, shop_slug, format=None):
@@ -599,7 +613,6 @@ class SocialMediaShopSettings(views.APIView):
 
 class ImageShopSettings(views.APIView):
     permission_classes = [permissions.IsAuthenticated, ]
-    authentication_classes = [CsrfExemptSessionAuthentication,]
     def get_object(self, shop_slug):
         return get_object_or_404(Shop, Slug=shop_slug)
     def put(self, request, shop_slug, format=None):
@@ -626,7 +639,6 @@ class UserProfileViewSet(viewsets.GenericViewSet):
     permission_classes = [permissions.IsAuthenticated, ]
     queryset = User.objects.all()
     serializer_class = ProfileSerializer
-    authentication_classes = [CsrfExemptSessionAuthentication]
 
     @action(detail=False, methods=['get', 'patch'])
     def me(self, request):
@@ -686,7 +698,6 @@ class ShopPageSchemaViewSet(views.APIView):
 
 class GroupProductCreateExcel(views.APIView):
     permission_classes = [permissions.IsAuthenticated, IsShopOwner]
-    authentication_classes = [CsrfExemptSessionAuthentication, ]
     bulk_type = BulkProductHandler.BULK_TYPE_CREATE
 
     def get_object(self, shop_slug):
@@ -707,12 +718,10 @@ class GroupProductCreateExcel(views.APIView):
 
 class GroupProductUpdateExcel(GroupProductCreateExcel ,views.APIView):
     permission_classes = [permissions.IsAuthenticated, IsShopOwner]
-    authentication_classes = [CsrfExemptSessionAuthentication, ]
     bulk_type = BulkProductHandler.BULK_TYPE_UPDATE
 
 class GroupProductUndo(views.APIView):
     permission_classes = [permissions.IsAuthenticated, IsShopOwner]
-    authentication_classes = [CsrfExemptSessionAuthentication, ]
 
     def get_object(self, shop_slug):
         shop = get_object_or_404(Shop, Slug=shop_slug)
@@ -730,7 +739,6 @@ class GroupProductUndo(views.APIView):
 
 class GroupProductUndo(views.APIView):
     permission_classes = [permissions.IsAuthenticated, IsShopOwner]
-    authentication_classes = [CsrfExemptSessionAuthentication, ]
 
     def get_object(self, shop_slug):
         shop = get_object_or_404(Shop, Slug=shop_slug)

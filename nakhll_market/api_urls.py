@@ -1,12 +1,17 @@
 from django.urls import re_path, include, path
 from nakhll_market.api import (
-    AddSubMarketToProduct, AllShopSettings, AmazingProductViewSet, CategoryViewSet, GroupProductCreateExcel, GroupProductUpdateExcel, ImageShopSettings, LastCreatedDiscountedProductsViewSet,
-    LastCreatedProductsViewSet, MostDiscountPrecentageProductsViewSet, MostSoldProduct, ShopMultipleUpdateInventory, ShopMultipleUpdatePrice, SocialMediaShopSettings, StateFullViewSet, UserImagesViewSet,
-    UserProductViewSet, ProductsInSameFactorViewSet, SliderViewSet, SubMarketList, UserProfileViewSet,
-    MostSoldShopsViewSet, RandomShopsViewSet, RandomProductsViewSet, ProductsViewSet, GetShop, UserOrderHistory,
-    MarketList, CreateShop, GetShopWithSlug, CheckShopSlug, CheckProductSlug, ShopProductsViewSet, GetShopList,
-    ProductBannerViewSet, AddImagesToProduct, ProductDetailsViewSet, BankAccountShopSettings, ProductCommentsViewSet, ProductRelatedItemsViewSet,
-    LandingPageSchemaViewSet, ShopPageSchemaViewSet, GroupProductUndo, PublicShopsViewSet,
+    AddSubMarketToProduct, AllShopSettings, AmazingProductViewSet, CategoryViewSet,
+    GroupProductCreateExcel, GroupProductUndo, PublicShopsViewSet, UserImagesViewSet,
+    GroupProductUpdateExcel, ImageShopSettings, LastCreatedDiscountedProductsViewSet,
+    LastCreatedProductsViewSet, MostDiscountPrecentageProductsViewSet, MostSoldProduct,
+    ShopMultipleUpdateInventory, ShopMultipleUpdatePrice, SocialMediaShopSettings,
+    StateFullViewSet, UserProfileViewSet, GetShop, UserOrderHistory, GetShopList,
+    ShopOwnerProductViewSet, ProductsInSameFactorViewSet, SliderViewSet, SubMarketList,
+    MostSoldShopsViewSet, RandomShopsViewSet, RandomProductsViewSet, ProductsViewSet,
+    MarketList, CreateShop, GetShopWithSlug, CheckShopSlug, CheckProductSlug,
+    ShopProductsViewSet, ProductCommentsViewSet, ProductRelatedItemsViewSet,
+    ProductBannerViewSet, AddImagesToProduct, ProductDetailsViewSet,
+    LandingPageSchemaViewSet, ShopPageSchemaViewSet, BankAccountShopSettings,
     )
 from rest_framework import routers
 
@@ -22,7 +27,6 @@ landing_router.register(r'most-discount-prec-products', MostDiscountPrecentagePr
 landing_router.register(r'most-sold-shops', MostSoldShopsViewSet, basename="most-sold-shops")
 landing_router.register(r'random-shops', RandomShopsViewSet, basename="random-shops")
 landing_router.register(r'random-products', RandomProductsViewSet, basename="random-products")
-landing_router.register(r'products', UserProductViewSet, basename="products")
 landing_router.register(r'shop_products', ShopProductsViewSet, basename="shop_products")
 landing_router.register(r'product_banner', ProductBannerViewSet, basename="product_banners")
 landing_router.register(r'schema', LandingPageSchemaViewSet, basename="landing_page_schema")
@@ -42,6 +46,10 @@ profile_router.register(r'', UserProfileViewSet, basename="profile")
 profile_router.register(r'orders', UserOrderHistory, basename="orders")
 profile_router.register(r'images', UserImagesViewSet, basename="user_images")
 
+
+shop_owner_router = routers.DefaultRouter()
+shop_owner_router.register(r'products', ShopOwnerProductViewSet, basename="products")
+
 categories_router = routers.DefaultRouter()
 categories_router.register(r'', CategoryViewSet, basename="categories")
 
@@ -50,6 +58,7 @@ urlpatterns = [
     path('products/', include(product_page_router.urls)),
     path('product-page/', include(product_page_router.urls)),
     path('product-page/same-factor/<uuid:ID>/', ProductsInSameFactorViewSet.as_view()),
+    path('shop/<shop_slug>/', include(shop_owner_router.urls)),
 
     path('markets/', MarketList.as_view()),
     path('sub_markets/', SubMarketList.as_view()),
