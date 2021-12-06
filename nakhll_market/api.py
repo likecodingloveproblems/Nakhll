@@ -20,13 +20,15 @@ from nakhll_market.models import (
     LandingPageSchema, ShopPageSchema,
     )
 from nakhll_market.serializers import (
-    AmazingProductSerializer, Base64ImageSerializer, NewCategoryProductCountSerializer, NewProfileSerializer, ProductBannerWithProductSerializer, ProductCommentSerializer, ProductDetailSerializer, ProductImagesSerializer, ProductOwnerListSerializer,
-    ProductSerializer, ShopProductSerializer, ShopSerializer, ShopSimpleSerializer, ShopSlugSerializer,SliderSerializer, ProductPriceWriteSerializer,
+    AmazingProductSerializer, Base64ImageSerializer, NewCategoryProductCountSerializer,
+    NewProfileSerializer, ProductBannerWithProductSerializer, ProductCommentSerializer,
+    ProductDetailSerializer, ProductImagesSerializer, ProductOwnerListSerializer,
+    ProductOwnerReadSerializer, ProductOwnerWriteSerializer, ProductPriceWriteSerializer,
+    ProductSerializer, ShopSerializer, ShopSimpleSerializer, ShopSlugSerializer,SliderSerializer,
     CategorySerializer, FullMarketSerializer, CreateShopSerializer, ProductInventoryWriteSerializer,
-    ProductListSerializer, ProductWriteSerializer, ShopAllSettingsSerializer, ProductBannerSerializer,
-    ProductSubMarketSerializer, StateFullSeraializer, SubMarketProductSerializer, SubMarketSerializer,
-    LandingPageSchemaSerializer, ShopPageSchemaSerializer, UserOrderSerializer,
-    NewCategorySerializer, NewCategoryChildSerializer, NewCategoryParentChildSerializer, NewCategoryParentSerializer
+    ProductListSerializer, ShopAllSettingsSerializer, SubMarketProductSerializer, UserOrderSerializer,
+    ProductSubMarketSerializer, StateFullSeraializer, ShopPageSchemaSerializer,
+    LandingPageSchemaSerializer, NewCategoryChildSerializer, NewCategoryParentSerializer
     )
 from restapi.permissions import IsFactorOwner, IsProductOwner, IsShopOwner, IsProductBannerOwner
 from restapi.serializers import ProfileSerializer
@@ -132,10 +134,12 @@ class ShopOwnerProductViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin
     lookup_field = 'ID'
 
     def get_serializer_class(self):
-        if self.action in ['list', 'retrieve']:
+        if self.action == 'list':
             return ProductOwnerListSerializer
+        elif self.action == 'retrieve':
+            return ProductOwnerReadSerializer
         else:
-            return ProductWriteSerializer
+            return ProductOwnerWriteSerializer
 
     def get_queryset(self):
         shop = self.get_shop()

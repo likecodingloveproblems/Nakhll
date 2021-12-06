@@ -339,7 +339,7 @@ class ProductBannerWriteSerializer(serializers.ModelSerializer):
 class Base64ImageSerializer(serializers.Serializer):
     image = Base64ImageField(max_length=None, use_url=True)
 
-class ProductWriteSerializer(serializers.ModelSerializer):
+class ProductOwnerWriteSerializer(serializers.ModelSerializer):
     new_category = serializers.PrimaryKeyRelatedField(read_only=False, many=False, queryset=NewCategory.objects.all())
     Image = Base64ImageField(max_length=None, use_url=True)
     Product_Banner = ProductBannerWriteSerializer(many=True, read_only=False)
@@ -399,7 +399,30 @@ class ProductWriteSerializer(serializers.ModelSerializer):
         instance.post_range_cities.add(*product_post_ranges)
         
         
-
+class ProductOwnerReadSerializer(serializers.ModelSerializer):
+    new_category = NewCategoryChildSerializer(many=False, read_only=True)
+    Product_Banner = ProductBannerWriteSerializer(many=True, read_only=True)
+    post_range = serializers.PrimaryKeyRelatedField(source='post_range_cities', read_only=True, many=True)
+    class Meta:
+        model = Product
+        fields = [
+            'ID',
+            'Title',
+            'Inventory',
+            'Price',
+            'OldPrice',
+            'Net_Weight',
+            'Weight_With_Packing',
+            'Description',
+            'Status',
+            'Image',
+            'Product_Banner',
+            'PostRangeType',
+            'PreparationDays',
+            'new_category',
+            'post_range'
+        ]
+ 
         
 
 
