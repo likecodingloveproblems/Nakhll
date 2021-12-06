@@ -3,7 +3,7 @@ from nakhll_market.models import BigCity, City, NewCategory, Product, State
 
 class ProductFilter(filters.FilterSet):
     min_price = filters.NumberFilter(field_name="Price", lookup_expr='gte')
-    max_price = filters.NumberFilter(field_name="Price", lookup_expr='lte')
+    # max_price = filters.NumberFilter(field_name="Price", lookup_expr='lte')
     ready = filters.BooleanFilter(method='filter_ready')
     search = filters.CharFilter(method='filter_search')
     available = filters.BooleanFilter(method='filter_available')
@@ -17,7 +17,8 @@ class ProductFilter(filters.FilterSet):
 
     class Meta:
         model = Product
-        fields = ['search', 'min_price', 'max_price', 'ready', 'available', 'category',
+        fields = ['search', 'min_price', 'ready', 'available', 'category',
+        # fields = ['search', 'min_price', 'max_price', 'ready', 'available', 'category',
                     'new_category', 'city', 'discounted', 'is_advertisement', 'shop']
 
     def filter_ready(self, queryset, name, value):
