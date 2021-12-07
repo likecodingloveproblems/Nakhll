@@ -42,7 +42,7 @@ class AlertInterface:
 
     @staticmethod
     def not_enogth_in_stock(product, count):
-        desc = 'Not enogth in stock: {} {}'.format(count, product.name)
+        desc = 'Not enogth in stock: {} {}'.format(count, product.Title)
         DiscordAlertInterface.send_alert(desc)
         alert = models.Alert()
         alert.FK_User = None

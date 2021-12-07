@@ -2692,7 +2692,7 @@ class Alert(models.Model):
     Status=models.BooleanField(verbose_name='وضعیت تغییرات', choices=STATUS, null=True)
     DateCreate=models.DateTimeField(verbose_name='تاریخ ثبت هشدار', auto_now_add=True)
     DateUpdate=models.DateTimeField(verbose_name='تاریخ ثبت تغییرات', auto_now=True)
-    Description=models.TextField(verbose_name='توضیحات', blank=True, help_text='در صورت عدم پذیرش تغییرات انجام شده، لطفا دلایل خودت را اینجا وارد نمایید.')
+    Description=models.TextField(verbose_name='توضیحات', blank=True, null=True, help_text='در صورت عدم پذیرش تغییرات انجام شده، لطفا دلایل خودت را اینجا وارد نمایید.')
     FK_Staff=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='ثبت کننده', related_name='Alert_User_Published', blank=True, null=True) 
 
     def __str__(self):
