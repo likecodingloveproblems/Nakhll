@@ -55,7 +55,7 @@ pilkit==2.0
 Pillow==7.2.0
 prometheus-client==0.11.0
 prompt-toolkit==3.0.20
-psycopg2-binary==2.8.6
+psycopg2-binary==2.9.2
 ptyprocess==0.7.0
 pycodestyle==2.7.0
 Pygments==2.10.0
