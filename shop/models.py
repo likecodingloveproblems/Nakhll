@@ -61,6 +61,10 @@ class ShopFeature(models.Model):
             expire_datetime__gte=now,
             status=ShopFeatureInvoice.ShopFeatureInvoiceStatuses.COMPLETED
         ).first())
+
+    @staticmethod
+    def has_active_landing_page(shop):
+        return bool(shop.landings.filter(status=ShopLanding.Statuses.ACTIVE).first())
         
         
 

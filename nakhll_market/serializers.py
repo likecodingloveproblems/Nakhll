@@ -15,6 +15,7 @@ from nakhll_market.models import (
     SubMarket, LandingPageSchema, ShopPageSchema, UserImage,
     )
 from shop.models import ShopFeature
+from shop.serializers import ShopLandingDetailsSerializer
 
 # landing serializers
 class SliderSerializer(serializers.ModelSerializer):
@@ -103,20 +104,22 @@ class ShopSerializer(serializers.ModelSerializer):
     FK_ShopManager = UserSerializer(read_only=True)
     profile = ProfileImageSerializer(read_only=True)
     banners = ShopBannerSerializer(many=True, read_only=True)
-    is_landing = serializers.SerializerMethodField()
+    landing_data = serializers.SerializerMethodField()
     class Meta:
         model = Shop
         fields = [
             'ID', 'slug', 'title', 'image_thumbnail_url', 'total_products',
             'state', 'big_city', 'city', 'registered_months', 'FK_ShopManager',
-            'is_landing', 'has_product_group_add_edit_permission',
-            'banners', 'profile',
+            'has_product_group_add_edit_permission', 'banners', 'profile', 'landing_data'
         ]
     def get_registered_months(self, obj):
         ''' Calculate months from DateCreate till now '''
         return (timezone.now() - obj.DateCreate).days // 30
-    def is_landing(self, obj):
-        return ShopFeature.has_shop_landing_access(obj)
+   
+    def get_landing_data(self, obj):
+        if ShopFeature.has_shop_landing_access(obj) and ShopFeature.has_active_landing_page(obj):
+            return ShopLandingDetailsSerializer(obj.get_active_landing()).data
+        return None
 
 class ShopSimpleSerializer(serializers.ModelSerializer):
     class Meta:

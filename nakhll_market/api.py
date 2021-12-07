@@ -38,6 +38,7 @@ from nakhll_market.permissions import IsInvoiceOwner
 from nakhll_market.paginators import StandardPagination
 from nakhll_market.product_bulk_operations import BulkException, BulkProductHandler
 from shop.mixins import MultipleFieldLookupMixin
+from shop.serializers import ShopLandingDetailsSerializer, ShopLandingSerializer
 
 class SliderViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = SliderSerializer

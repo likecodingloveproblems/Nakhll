@@ -855,6 +855,9 @@ class Shop(models.Model):
     def get_shop_manager_full_name(self):
         return '{} {}'.format(self.FK_ShopManager.first_name, self.FK_ShopManager.last_name)
 
+    def get_active_landing(self):
+        return self.landings.filter(status=shop_models.ShopLanding.Statuses.ACTIVE).first()
+
 
     class Meta:
         ordering = ('DateCreate','Title',)  
@@ -2954,3 +2957,5 @@ def auto_delete_file_on_change(sender, instance, **kwargs):
     if not old_image == new_image:
         if os.path.isfile(old_image.path):
             os.remove(old_image.path)
+
+from shop import models as shop_models
