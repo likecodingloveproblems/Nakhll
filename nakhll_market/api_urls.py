@@ -59,6 +59,7 @@ urlpatterns = [
     path('product-page/', include(product_page_router.urls)),
     path('product-page/same-factor/<uuid:ID>/', ProductsInSameFactorViewSet.as_view()),
     path('shop/create/', CreateShop.as_view()),
+    path('shop/<Slug>/', GetShop.as_view({'get': 'retrieve'})),
     path('shop/<shop_slug>/', include(shop_owner_router.urls)),
 
     path('markets/', MarketList.as_view()),
@@ -71,7 +72,6 @@ urlpatterns = [
     path('shop/<shop_slug>/settings/bank_account/', BankAccountShopSettings.as_view()),
     path('shop/<shop_slug>/settings/social_media/', SocialMediaShopSettings.as_view()),
     path('shop/<shop_slug>/settings/avatar/', ImageShopSettings.as_view()),
-    path('shop/<Slug>/', GetShop.as_view({'get': 'retrieve'})),
     path('shop/check/', CheckShopSlug.as_view()),
     path('shop/multiple-update/price/', ShopMultipleUpdatePrice.as_view()),
     path('shop/multiple-update/inventory/', ShopMultipleUpdateInventory.as_view()),
