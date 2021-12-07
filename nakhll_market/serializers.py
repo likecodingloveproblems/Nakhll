@@ -105,16 +105,23 @@ class ShopSerializer(serializers.ModelSerializer):
     profile = ProfileImageSerializer(read_only=True)
     banners = ShopBannerSerializer(many=True, read_only=True)
     landing_data = serializers.SerializerMethodField()
+    is_landing = serializers.SerializerMethodField()
     class Meta:
         model = Shop
         fields = [
             'ID', 'slug', 'title', 'image_thumbnail_url', 'total_products',
-            'state', 'big_city', 'city', 'registered_months', 'FK_ShopManager',
+            'state', 'big_city', 'city', 'registered_months', 'FK_ShopManager', 'is_landing',
             'has_product_group_add_edit_permission', 'banners', 'profile', 'landing_data'
         ]
     def get_registered_months(self, obj):
         ''' Calculate months from DateCreate till now '''
         return (timezone.now() - obj.DateCreate).days // 30
+
+    def get_is_landing(self, obj):
+        # TODO: Remove this IMMEDIATELY
+        if obj.Slug == 'neil-market-food-store':
+            return True
+        return False
    
     def get_landing_data(self, obj):
         if ShopFeature.has_shop_landing_access(obj) and ShopFeature.has_active_landing_page(obj):
