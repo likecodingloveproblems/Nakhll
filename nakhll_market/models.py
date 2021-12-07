@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 import datetime, jdatetime, math, uuid, random, string, os
 from django.contrib.postgres.aggregates import ArrayAgg
+from django.http import Http404
 from django.db import models
 from django.db.models import F, Q, Count
 from django.db.models.fields import FloatField
