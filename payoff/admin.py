@@ -5,9 +5,7 @@ from payoff.models import Transaction, TransactionConfirmation, TransactionResul
 
 # Register your models here.
 
-admin.site.register(TransactionResult)
 admin.site.register(TransactionReverse)
-admin.site.register(TransactionConfirmation)
 
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
@@ -60,7 +58,7 @@ class TransactionResultAdmin(admin.ModelAdmin):
 class TransactionConfirmationAdmin(admin.ModelAdmin):
     list_display=('id', 'token', 'rrn', 'status', 'trans_res_id',
                   'created_datetime_jalali')
-    list_filter=('status', 'created_datetime', 'amount')
+    list_filter=('status', 'created_datetime', )
     ordering=['-id', ]
     fields=('id', 'token', 'rrn', 'status', 'transaction_result',
             'card_number_masked', 'created_datetime_jalali',)
