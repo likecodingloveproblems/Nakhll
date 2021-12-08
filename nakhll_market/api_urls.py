@@ -28,7 +28,6 @@ landing_router.register(r'most-sold-shops', MostSoldShopsViewSet, basename="most
 landing_router.register(r'random-shops', RandomShopsViewSet, basename="random-shops")
 landing_router.register(r'random-products', RandomProductsViewSet, basename="random-products")
 landing_router.register(r'shop_products', ShopProductsViewSet, basename="shop_products")
-landing_router.register(r'product_banner', ProductBannerViewSet, basename="product_banners")
 landing_router.register(r'schema', LandingPageSchemaViewSet, basename="landing_page_schema")
 
 product_page_router = routers.DefaultRouter()
@@ -46,6 +45,9 @@ profile_router.register(r'', UserProfileViewSet, basename="profile")
 profile_router.register(r'orders', UserOrderHistory, basename="orders")
 profile_router.register(r'images', UserImagesViewSet, basename="user_images")
 
+product_banners_router = routers.DefaultRouter()
+product_banners_router.register(r'', ProductBannerViewSet, basename="product_banners")
+
 
 shop_owner_router = routers.DefaultRouter()
 shop_owner_router.register(r'products', ShopOwnerProductViewSet, basename="products")
@@ -56,6 +58,7 @@ categories_router.register(r'', CategoryViewSet, basename="categories")
 urlpatterns = [
     path('landing/', include(landing_router.urls)),
     path('products/', include(product_page_router.urls)),
+    path('product/banners/', include(product_banners_router.urls)),
     path('product-page/', include(product_page_router.urls)),
     path('product-page/same-factor/<uuid:ID>/', ProductsInSameFactorViewSet.as_view()),
     path('shop/create/', CreateShop.as_view()),
