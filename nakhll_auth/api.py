@@ -7,6 +7,7 @@ from rest_framework_simplejwt.views import TokenViewBase
 from rest_framework.decorators import action, permission_classes
 from rest_framework.response import Response
 from rest_framework.validators import ValidationError
+from nakhll_market.models import Profile
 
 from sms.services import Kavenegar
 from .serializers import BeginAuthSerializer, CompleteAuthSerializer, PasswordSerializer, GetTokenSerializer
@@ -51,6 +52,9 @@ class BeginAuthViewSet(viewsets.GenericViewSet):
     def _get_mobile_status(self, mobile):
         user = self._get_user(mobile)
         if not user:
+            user = self._get_user_from_profile(mobile)
+            self._update_username_to_mobile(user, mobile)
+        if not user:
             return AuthRequest.MobileStatuses.NOT_REGISTERED
         if user and user.password:
             return AuthRequest.MobileStatuses.LOGIN_WITH_PASSWORD
@@ -62,6 +66,17 @@ class BeginAuthViewSet(viewsets.GenericViewSet):
             return User.objects.get(username=mobile)
         except User.DoesNotExist:
             return None
+
+    def _get_user_from_profile(self, mobile):
+        try:
+            profile = Profile.objects.get(MobileNumber=mobile)
+            return profile.FK_User
+        except Profile.DoesNotExist:
+            return None
+
+    def _update_username_to_mobile(self, user, mobile):
+        user.username = mobile
+        user.save()
 
 class CompeleteAuthViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
     authentication_classes = []
