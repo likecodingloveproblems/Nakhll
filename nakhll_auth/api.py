@@ -17,6 +17,7 @@ from .models import AuthRequest, generate_uuid_code
 class BeginAuthViewSet(viewsets.GenericViewSet):
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
+    serializer_class = BeginAuthSerializer
 
     @action(methods=['post'], detail=False)
     def login_register(self, request):
