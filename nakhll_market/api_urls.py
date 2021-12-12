@@ -4,14 +4,14 @@ from nakhll_market.api import (
     GroupProductCreateExcel, GroupProductUndo, PublicShopsViewSet, UserImagesViewSet,
     GroupProductUpdateExcel, ImageShopSettings, LastCreatedDiscountedProductsViewSet,
     LastCreatedProductsViewSet, MostDiscountPrecentageProductsViewSet, MostSoldProduct,
-    ShopMultipleUpdateInventory, ShopMultipleUpdatePrice, SocialMediaShopSettings,
+    ShopMultipleUpdateInventory, ShopMultipleUpdatePrice,
     StateFullViewSet, UserProfileViewSet, GetShop, UserOrderHistory, GetShopList,
     ShopOwnerProductViewSet, ProductsInSameFactorViewSet, SliderViewSet, SubMarketList,
     MostSoldShopsViewSet, RandomShopsViewSet, RandomProductsViewSet, ProductsViewSet,
     MarketList, CreateShop, GetShopWithSlug, CheckShopSlug, CheckProductSlug,
     ShopProductsViewSet, ProductCommentsViewSet, ProductRelatedItemsViewSet,
     ProductBannerViewSet, AddImagesToProduct, ProductDetailsViewSet,
-    LandingPageSchemaViewSet, ShopPageSchemaViewSet, BankAccountShopSettings,
+    LandingPageSchemaViewSet, ShopPageSchemaViewSet, 
     )
 from rest_framework import routers
 
@@ -72,8 +72,8 @@ urlpatterns = [
     path('shop/', GetShopWithSlug.as_view()),
     path('shops/', GetShopList.as_view({'get': 'list'})),
     path('shop/<shop_slug>/settings/', AllShopSettings.as_view()),
-    path('shop/<shop_slug>/settings/bank_account/', BankAccountShopSettings.as_view()),
-    path('shop/<shop_slug>/settings/social_media/', SocialMediaShopSettings.as_view()),
+    # path('shop/<shop_slug>/settings/bank_account/', BankAccountShopSettings.as_view()),
+    # path('shop/<shop_slug>/settings/social_media/', SocialMediaShopSettings.as_view()),
     path('shop/<shop_slug>/settings/avatar/', ImageShopSettings.as_view()),
     path('shop/check/', CheckShopSlug.as_view()),
     path('shop/multiple-update/price/', ShopMultipleUpdatePrice.as_view()),

@@ -286,12 +286,14 @@ class ProductRelatedItemsViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixi
     product = None
 
     def get_queryset(self):
-        return Product.objects.filter(
-                    Available = True, Publish = True, Status__in = ['1', '2', '3'],
-                    new_category=self.product.new_category).order_by('?')
+        queryset = Product.objects.filter(Available = True, Publish = True,
+                                          Status__in = ['1', '2', '3'])
+        if self.product and self.product.new_category:
+            queryset = queryset.filter(new_category=self.product.new_category)
+        return queryset.order_by('?')
 
     def retrieve(self, request, *args, **kwargs):
-        self.product = Product.objects.get(Slug=self.kwargs.get(self.lookup_field))
+        self.product = get_object_or_404(Product, Slug=self.kwargs.get(self.lookup_field))
         return self.list(request, *args, **kwargs)
 
     def list(self, request, *args, **kwargs):
@@ -579,37 +581,37 @@ class AllShopSettings(views.APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.data)
 
-class BankAccountShopSettings(views.APIView):
-    # TODO: Check this class entirely
-    permission_classes = [permissions.IsAuthenticated, ]
-    def get_object(self, shop_slug, user):
-        return get_object_or_404(Shop, Slug=shop_slug)
-    def put(self, request, shop_slug, format=None):
-        user = request.user
-        shop = self.get_object(shop_slug, user)
-        self.check_object_permissions(request, shop)
-        serializer = ShopBankAccountSettingsSerializer(data=request.data, instance=shop)
-        if serializer.is_valid():
-            serializer.save()
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response(serializer.data)
+# class BankAccountShopSettings(views.APIView):
+#     # TODO: Check this class entirely
+#     permission_classes = [permissions.IsAuthenticated, ]
+#     def get_object(self, shop_slug, user):
+#         return get_object_or_404(Shop, Slug=shop_slug)
+#     def put(self, request, shop_slug, format=None):
+#         user = request.user
+#         shop = self.get_object(shop_slug, user)
+#         self.check_object_permissions(request, shop)
+#         serializer = ShopBankAccountSettingsSerializer(data=request.data, instance=shop)
+#         if serializer.is_valid():
+#             serializer.save()
+#         else:
+#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#         return Response(serializer.data)
 
-class SocialMediaShopSettings(views.APIView):
-    # TODO: Check this class entirely
-    permission_classes = [permissions.IsAuthenticated, ]
-    def get_object(self, shop_slug, user):
-        return get_object_or_404(Shop, Slug=shop_slug)
-    def put(self, request, shop_slug, format=None):
-        user = request.user
-        shop = self.get_object(shop_slug, user)
-        self.check_object_permissions(request, shop)
-        serializer = SocialMediaAccountSettingsSerializer(data=request.data, instance=shop)
-        if serializer.is_valid():
-            serializer.save()
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response(serializer.data)
+# class SocialMediaShopSettings(views.APIView):
+#     # TODO: Check this class entirely
+#     permission_classes = [permissions.IsAuthenticated, ]
+#     def get_object(self, shop_slug, user):
+#         return get_object_or_404(Shop, Slug=shop_slug)
+#     def put(self, request, shop_slug, format=None):
+#         user = request.user
+#         shop = self.get_object(shop_slug, user)
+#         self.check_object_permissions(request, shop)
+#         serializer = SocialMediaAccountSettingsSerializer(data=request.data, instance=shop)
+#         if serializer.is_valid():
+#             serializer.save()
+#         else:
+#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#         return Response(serializer.data)
 
 
 class ImageShopSettings(views.APIView):
