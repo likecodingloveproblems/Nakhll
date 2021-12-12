@@ -1,3 +1,6 @@
+import json
+from django.utils.timezone import localtime
+import jdatetime
 import requests
 from django.conf import settings
 
@@ -78,10 +81,33 @@ class DiscordAlertInterface:
         url = settings.DISCORD_WEBHOOKS.get('PURCHASE')
         if not url:
             return
-        message = f'{invoice.user.username} has purchased {invoice.items.count()} items'
+        name, phone = '', ''
+        if invoice.address_json:
+            address = json.loads(invoice.address_json)
+            name = address.get('receiver_full_name', 'نامشخص').rjust(50)
+            phone = address.get('receiver_mobile_number', '')
+        dt = localtime(invoice.payment_datetime)
+        datetime = jdatetime.datetime.fromgregorian(datetime=dt).strftime('%Y/%m/%d %H:%M:%S').rjust(50)
+        message = DiscordAlertInterface.build_message(name, phone, invoice.id, datetime, invoice.final_price)
         headers = { "Content-Type": "application/json" }
         data = {'content': message,'username': 'Nakhll Market',}
         requests.post(url, json=data, headers=headers)
+
+    @staticmethod
+    def build_message(name, phone, invoice_id, datetime, price):
+        message = '```'
+        message += '-'*53 + '\n'
+        message += '|' + (' '*20) + 'ﺥﺮﯾﺩ ﺍﺯ ﻦﺨﻟ' + (' '*20) + '|' + '\n'
+        message += '-'*53 + '\n'
+        message += 'ﮎﺍﺮﺑﺭ:' + name.rjust(40) + '\n'
+        message += 'ﻡﻮﺑﺎﯿﻟ:' + phone.rjust(40) + '\n'
+        message += 'ﻑﺎﮑﺗﻭﺭ:' + str(invoice_id).rjust(40) + '\n'
+        message += 'ﺕﺍﺮﯿﺧ:' + datetime.rjust(40) + '\n'
+        message += 'ﻢﺒﻠﻏ:' + '{:,} ﺮﯾﺎﻟ'.format(price).rjust(40) + '\n'
+        message += '-'*53 + '\n'
+        message += '```'
+        return message
+
 
         
 
