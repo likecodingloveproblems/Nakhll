@@ -25,6 +25,8 @@ class BeginAuthViewSet(viewsets.GenericViewSet):
         serializer.is_valid(raise_exception=True)
         mobile = serializer.validated_data.get('mobile')
         mobile_status = self._get_mobile_status(mobile)
+        if mobile_status == AuthRequest.MobileStatuses.NOT_REGISTERED:
+            self._create_user(mobile)
         sms_code = None if mobile_status == AuthRequest.MobileStatuses.LOGIN_WITH_PASSWORD\
                     else self._generate_and_send_sms_code(mobile)
         serializer.save(request_type=AuthRequest.RequestTypes.LOGIN_REGISTER,
@@ -54,10 +56,12 @@ class BeginAuthViewSet(viewsets.GenericViewSet):
         user = self._get_user(mobile)
         if not user:
             user = self._get_user_from_profile(mobile)
+            if not user:
+                return AuthRequest.MobileStatuses.NOT_REGISTERED
             self._update_username_to_mobile(user, mobile)
-        if not user:
-            return AuthRequest.MobileStatuses.NOT_REGISTERED
-        if user and user.password:
+        if user and not user.password:
+            user.set_unusable_password()
+        if user and user.has_usable_password():
             return AuthRequest.MobileStatuses.LOGIN_WITH_PASSWORD
         else:
             return AuthRequest.MobileStatuses.LOGIN_WITH_CODE
@@ -75,7 +79,14 @@ class BeginAuthViewSet(viewsets.GenericViewSet):
         except Profile.DoesNotExist:
             return None
 
+    def _create_user(self, mobile):
+        user = User.objects.create_user(username=mobile)
+        Profile.objects.create(FK_User=user)
+        user.save()
+
     def _update_username_to_mobile(self, user, mobile):
+        if not user:
+            return
         user.username = mobile
         user.save()
 
