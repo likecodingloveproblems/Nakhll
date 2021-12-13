@@ -81,7 +81,7 @@ class BeginAuthViewSet(viewsets.GenericViewSet):
 
     def _create_user(self, mobile):
         user = User.objects.create_user(username=mobile)
-        Profile.objects.create(FK_User=user)
+        Profile.objects.create(FK_User=user, MobileNumber=mobile)
         user.save()
 
     def _update_username_to_mobile(self, user, mobile):
