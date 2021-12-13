@@ -3,7 +3,6 @@ from django.utils.timezone import localtime
 import jdatetime
 import requests
 from django.conf import settings
-from accounting_new.models import Invoice
 
 class AlertInterface:
     @staticmethod
@@ -88,7 +87,7 @@ class DiscordAlertInterface:
         requests.post(url, json=data, headers=headers)
 
     @staticmethod
-    def build_message(invoice: Invoice):
+    def build_message(invoice):
         name, phone = '', ''
         if invoice.address_json:
             address = json.loads(invoice.address_json)
