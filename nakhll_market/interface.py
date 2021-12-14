@@ -88,11 +88,8 @@ class DiscordAlertInterface:
 
     @staticmethod
     def build_message(invoice):
-        name, phone = '', ''
-        if invoice.address_json:
-            address = json.loads(invoice.address_json)
-            name = address.get('receiver_full_name', 'نامشخص')
-            phone = address.get('receiver_mobile_number', '')
+        name = invoice.address.receiver_full_name
+        phone = invoice.address.receiver_mobile_number
         dt = localtime(invoice.payment_datetime)
         datetime = jdatetime.datetime.fromgregorian(datetime=dt).strftime('%Y/%m/%d %H:%M:%S')
         message = '```'
