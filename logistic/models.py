@@ -2,7 +2,7 @@ import json
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
-from nakhll_market.models import BankAccount, State, BigCity, City
+from nakhll_market.models import BankAccount, Product, Shop, State, BigCity, City
 from logistic.managers import AddressManager
 from logistic.interfaces import PostPriceSettingInterface
 
@@ -55,4 +55,94 @@ class PostPriceSetting(models.Model, PostPriceSettingInterface):
     updated_datetime = models.DateTimeField(verbose_name=_('تاریخ بروزرسانی'), auto_now=True)
     def __str__(self):
         return f'{self.user}: {self.inside_city_price} تومان'
+    
+
+class LogisticUnitMetric(models.Model):
+    class Meta:
+        verbose_name = _('متریک ارسال')
+        verbose_name_plural = _('متریک ارسال')
+
+    price_per_kg = models.PositiveIntegerField(verbose_name=_('قیمت هر کیلوگرم'))
+    price_per_extra_kg = models.PositiveIntegerField(verbose_name=_('قیمت هر کیلوگرم اضافه'))
+    is_default = models.BooleanField(default=False, verbose_name=_('پیش فرض؟'))
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name=_('ایجاد کننده'))
+    created_at = models.DateTimeField(_('تاریخ ایجاد'), auto_now_add=True)
+    updated_at = models.DateTimeField(_('تاریخ بروزرسانی'), auto_now=True)
+
+
+class LogisticUnitConstraintParameter(models.Model):
+    class Meta:
+        verbose_name = _('پارامتر محدودیت ارسال')
+        verbose_name_plural = _('پارامتر محدودیت ارسال')
+        
+    cities = models.ManyToManyField(City, verbose_name=_('شهرها'))
+    products = models.ManyToManyField(Product, verbose_name=_('محصولات'))
+    min_price = models.DecimalField(verbose_name=_('حداقل قیمت'), max_digits=10, decimal_places=2)
+    max_weight_g = models.PositiveIntegerField(verbose_name=_('حداکثر وزن (گرم)'))
+    max_package_value = models.PositiveIntegerField(verbose_name=_('حداکثر ارزش بسته'))
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name=_('ایجاد کننده'))
+    created_at = models.DateTimeField(_('تاریخ ایجاد'), auto_now_add=True)
+    updated_at = models.DateTimeField(_('تاریخ بروزرسانی'), auto_now=True)
+
+class LogisticUnit(models.Model):
+    class Meta:
+        verbose_name = _('واحد ارسال')
+        verbose_name_plural = _('واحد ارسال')
+
+    name = models.CharField(max_length=50, verbose_name=_('نام  '))
+    description = models.TextField(null=True, blank=True, verbose_name=_('توضیحات'))
+    is_publish = models.BooleanField(default=True, verbose_name=_('منتشر شده؟'))
+    metric = models.ForeignKey(LogisticUnitMetric, on_delete=models.SET_NULL, null=True, verbose_name=_('متریک'))
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name=_('ایجاد کننده'))
+    created_at = models.DateTimeField(_('تاریخ ایجاد'), auto_now_add=True)
+    updated_at = models.DateTimeField(_('تاریخ بروزرسانی'), auto_now=True)
+
+
+class LogisticUnitConstraint(models.Model):
+    class Meta:
+        verbose_name = _('محدودیت ارسال')
+        verbose_name_plural = _('محدودیت ارسال')
+        
+    logistic_unit = models.ForeignKey(LogisticUnit, on_delete=models.SET_NULL, null=True, verbose_name=_('واحد ارسال'))
+    constraint = models.ForeignKey(LogisticUnitConstraintParameter, on_delete=models.SET_NULL, null=True, verbose_name=_('محدودیت'))
+    is_publish = models.BooleanField(default=True, verbose_name=_('منتشر شده؟'))
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name=_('ایجاد کننده'))
+    created_at = models.DateTimeField(_('تاریخ ایجاد'), auto_now_add=True)
+    updated_at = models.DateTimeField(_('تاریخ بروزرسانی'), auto_now=True)
+
+
+class ShopLogisticUnit(models.Model):
+    class Meta:
+        verbose_name = _('واحد ارسال فروشگاه')
+        verbose_name_plural = _('واحد ارسال فروشگاه')
+        
+    shop = models.ForeignKey(Shop, on_delete=models.SET_NULL, null=True, verbose_name=_('فروشگاه'))
+    logistic_unit = models.ForeignKey(LogisticUnit, on_delete=models.SET_NULL, null=True, verbose_name=_('واحد ارسال'))
+    is_active = models.BooleanField(default=True, verbose_name=_('فعال؟'))
+    use_default_setting = models.BooleanField(default=True, verbose_name=_('استفاده از تنظیم پیش فرض؟'))
+    created_at = models.DateTimeField(_('تاریخ ایجاد'), auto_now_add=True)
+    updated_at = models.DateTimeField(_('تاریخ بروزرسانی'), auto_now=True)
+
+
+class ShopLogisticUnitConstraint(models.Model):
+    class Meta:
+        verbose_name = _('محدودیت ارسال فروشگاه')
+        verbose_name_plural = _('محدودیت ارسال فروشگاه')
+        
+    shop_logistic_unit = models.ForeignKey(ShopLogisticUnit, on_delete=models.SET_NULL, null=True, verbose_name=_('واحد ارسال فروشگاه'))
+    constraint = models.ForeignKey(LogisticUnitConstraintParameter, on_delete=models.SET_NULL, null=True, verbose_name=_('محدودیت'))
+    is_active = models.BooleanField(default=True, verbose_name=_('فعال؟'))
+    created_at = models.DateTimeField(_('تاریخ ایجاد'), auto_now_add=True)
+    updated_at = models.DateTimeField(_('تاریخ بروزرسانی'), auto_now=True)
+
+
+class ShopLogisticUnitMetric(models.Model):
+    class Meta:
+        verbose_name = _('متریک فروشگاه')
+        verbose_name_plural = _('متریک فروشگاه')
+        
+    shop_logistic_unit_constraint = models.ForeignKey(ShopLogisticUnit, on_delete=models.SET_NULL, null=True, verbose_name=_('واحد ارسال فروشگاه'))
+    metric = models.ForeignKey(LogisticUnitMetric, on_delete=models.SET_NULL, null=True, verbose_name=_('متریک'))
+    created_at = models.DateTimeField(_('تاریخ ایجاد'), auto_now_add=True)
+    updated_at = models.DateTimeField(_('تاریخ بروزرسانی'), auto_now=True)
     
