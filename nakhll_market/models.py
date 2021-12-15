@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 import datetime, jdatetime, math, uuid, random, string, os
+from django.db.models.query import QuerySet
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.http import Http404
 from django.db import models
@@ -1077,17 +1078,19 @@ class ProductManager(models.Manager):
             .exclude(OldPrice=0)\
             .order_by('-DateCreate')[:16]
 
+    def available_products(self):
+        return self.filter(
+            Publish = True,
+            Available = True,
+            FK_Shop__Available=True,
+            FK_Shop__Publish=True)
+
     def get_random_products(self):
-        queryset = self.get_queryset()
-        return queryset\
-            .filter(
-                Publish = True,
-                Available = True,
+        return self.available_products().filter(
                 OldPrice = 0,
                 Status__in = ['1', '2', '3'],
                 DateCreate__lt=self.FEW_HOURS_AGO
-                )\
-            .order_by('?')[:16]
+                ).order_by('?')[:16]
 
     def get_most_discount_precentage_products(self):
         return self\
