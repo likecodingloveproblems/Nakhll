@@ -4,8 +4,8 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from logistic.managers import AddressManager
 from django.utils.translation import ugettext as _
-from logistic.models import Address
-from logistic.serializers import AddressSerializer
+from logistic.models import Address, ShopLogisticUnit
+from logistic.serializers import AddressSerializer, ShopLogisticUnitSerializer
 from logistic.permissions import IsAddressOwner
 
 class AddressViewSet(viewsets.ModelViewSet):
@@ -44,3 +44,31 @@ class AddressViewSet(viewsets.ModelViewSet):
     #         return 200000
 
 
+
+class ShopLogisticUnitViewSet(viewsets.ModelViewSet):
+    serializer_class = ShopLogisticUnitSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'id'
+
+    def get_queryset(self):
+        return ShopLogisticUnit.objects.filter(shop__FK_User=self.request.user)
+
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    # def perform_create(self, serializer):
+        # serializer.save(shop__user=self.request.user)
+
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def activate(self, request, pk=None):
+        shop_logistic_unit = self.get_object()
+        shop_logistic_unit.is_active = True
+        shop_logistic_unit.save()
+        return Response({'message': _('Shop logistic unit is activated')}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def deactivate(self, request, pk=None):
+        shop_logistic_unit = self.get_object()
+        shop_logistic_unit.is_active = False
+        shop_logistic_unit.save()
+        return Response({'message': _('Shop logistic unit is deactivated')}, status=status.HTTP_200_OK)
