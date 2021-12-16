@@ -4,9 +4,10 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from logistic.managers import AddressManager
 from django.utils.translation import ugettext as _
-from logistic.models import Address, ShopLogisticUnit, ShopLogisticUnitConstraint
+from logistic.models import Address, ShopLogisticUnit, ShopLogisticUnitConstraint, LogisticUnit
 from logistic.serializers import AddressSerializer, ShopLogisticUnitSerializer, ShopLogisticUnitConstraintSerializer
 from logistic.permissions import IsAddressOwner
+from nakhll_market.models import Shop
 
 class AddressViewSet(viewsets.ModelViewSet):
     serializer_class = AddressSerializer
@@ -45,31 +46,35 @@ class AddressViewSet(viewsets.ModelViewSet):
 
 
 
-class ShopLogisticUnitViewSet(viewsets.ModelViewSet):
+class ShopLogisticUnitViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.UpdateModelMixin):
     serializer_class = ShopLogisticUnitSerializer
     permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'id'
 
     def get_queryset(self):
-        return ShopLogisticUnit.objects.filter(shop__FK_User=self.request.user)
+        queryset = ShopLogisticUnit.objects.filter(shop__FK_ShopManager=self.request.user,
+                                                   logistic_unit__is_publish=True)
+        if self.shop_slug:
+            queryset = queryset.filter(shop__Slug=self.shop_slug)
+        return queryset
 
     def list(self, request, *args, **kwargs):
+        self.sync_shop_logistic_unit()
         return super().list(request, *args, **kwargs)
 
-    # def perform_create(self, serializer):
-        # serializer.save(shop__user=self.request.user)
+    def sync_shop_logistic_unit(self):
+        self.shop_slug = self.request.GET.get('shop')
+        self.shop = Shop.objects.filter(Slug=self.shop_slug).first()
+        if not self.shop:
+            return
+        all_logistic_units_ids = LogisticUnit.objects.filter(is_publish=True).values_list('id', flat=True)
+        shop_logistic_units_ids = self.get_queryset().values_list('logistic_unit__id', flat=True)
+        for id in all_logistic_units_ids:
+            if id not in shop_logistic_units_ids:
+                self.create_shop_logistic_unit(id)
 
-    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
-    def activate(self, request, pk=None):
-        shop_logistic_unit = self.get_object()
-        shop_logistic_unit.is_active = True
-        shop_logistic_unit.save()
-        return Response({'message': _('Shop logistic unit is activated')}, status=status.HTTP_200_OK)
-
-    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
-    def deactivate(self, request, pk=None):
-        shop_logistic_unit = self.get_object()
-        shop_logistic_unit.is_active = False
+    def create_shop_logistic_unit(self, logistic_unit_id):
+        shop_logistic_unit = ShopLogisticUnit(shop=self.shop, logistic_unit_id=logistic_unit_id)
         shop_logistic_unit.save()
         return Response({'message': _('Shop logistic unit is deactivated')}, status=status.HTTP_200_OK)
     
