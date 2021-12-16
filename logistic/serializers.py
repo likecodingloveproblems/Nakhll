@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from logistic.models import Address, ShopLogisticUnit
+from logistic.models import Address, ShopLogisticUnit, LogisticUnit
 from nakhll_market.models import State, BigCity, City
 
 
@@ -25,8 +25,15 @@ class ShopOwnerAddressSerializer(AddressSerializer):
         read_only_fields = ('id', 'user')
 
         
+class LogisticUnitSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LogisticUnit
+        fields = ('id', 'name', 'description',)
+        read_only_fields = ('id',)
         
 class ShopLogisticUnitSerializer(serializers.ModelSerializer):
+    logistic_unit = LogisticUnitSerializer(read_only=True)
     class Meta:
         model = ShopLogisticUnit
-        fields = ('is_active', 'logistic_unit.name', 'logistic_unit.description',)
+        fields = ('id', 'is_active', 'logistic_unit')
+        read_only_fields = ('id', )
