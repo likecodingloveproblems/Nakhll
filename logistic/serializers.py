@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from logistic.models import Address, ShopLogisticUnit
-from nakhll_market.models import State, BigCity, City
+from logistic.models import Address, ShopLogisticUnit, ShopLogisticUnitConstraint
+from nakhll_market.models import Field, State, BigCity, City
 
 
 
@@ -30,3 +30,9 @@ class ShopLogisticUnitSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShopLogisticUnit
         fields = ('is_active', 'logistic_unit.name', 'logistic_unit.description',)
+        
+        
+class ShopLogisticUnitConstraintSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ShopLogisticUnitConstraint
+        Fields = ('constraint.cities','constraint.product','is_active')

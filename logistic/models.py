@@ -2,7 +2,7 @@ import json
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
-from nakhll_market.models import BankAccount, Product, Shop, State, BigCity, City
+from nakhll_market.models import BankAccount, NewCategory, Product, Shop, State, BigCity, City
 from logistic.managers import AddressManager
 from logistic.interfaces import PostPriceSettingInterface
 
@@ -78,6 +78,7 @@ class LogisticUnitConstraintParameter(models.Model):
     cities = models.ManyToManyField(City, verbose_name=_('شهرها'))
     products = models.ManyToManyField(Product, verbose_name=_('محصولات'))
     min_price = models.DecimalField(verbose_name=_('حداقل قیمت'), max_digits=10, decimal_places=2)
+    categories = models.ManyToManyField(NewCategory, verbose_name=_('دسته بندی ها'))
     max_weight_g = models.PositiveIntegerField(verbose_name=_('حداکثر وزن (گرم)'))
     max_package_value = models.PositiveIntegerField(verbose_name=_('حداکثر ارزش بسته'))
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name=_('ایجاد کننده'))

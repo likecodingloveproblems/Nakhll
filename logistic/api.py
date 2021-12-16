@@ -4,8 +4,8 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from logistic.managers import AddressManager
 from django.utils.translation import ugettext as _
-from logistic.models import Address, ShopLogisticUnit
-from logistic.serializers import AddressSerializer, ShopLogisticUnitSerializer
+from logistic.models import Address, ShopLogisticUnit, ShopLogisticUnitConstraint
+from logistic.serializers import AddressSerializer, ShopLogisticUnitSerializer, ShopLogisticUnitConstraintSerializer
 from logistic.permissions import IsAddressOwner
 
 class AddressViewSet(viewsets.ModelViewSet):
@@ -72,3 +72,15 @@ class ShopLogisticUnitViewSet(viewsets.ModelViewSet):
         shop_logistic_unit.is_active = False
         shop_logistic_unit.save()
         return Response({'message': _('Shop logistic unit is deactivated')}, status=status.HTTP_200_OK)
+    
+    
+    class ShopLogisticUnitConstraintViewSet(viewsets.ModelViewSet):
+        serializer_class = ShopLogisticUnitConstraintSerializer
+        permission_classes = [permissions.IsAuthenticated]
+        
+        def get_queryset(self):
+            return ShopLogisticUnitConstraint.objects.filter(shop__FK_User=self.request.user)
+        
+
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
