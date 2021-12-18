@@ -1,11 +1,11 @@
-from rest_framework import status, permissions, viewsets, mixins
+from rest_framework import serializers, status, permissions, viewsets, mixins
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from logistic.managers import AddressManager
 from django.utils.translation import ugettext as _
 from logistic.models import Address, LogisticUnitConstraintParameter, ShopLogisticUnit, ShopLogisticUnitConstraint, LogisticUnit
-from logistic.serializers import AddressSerializer, ShopLogisticUnitSerializer, ShopLogisticUnitConstraintSerializer
+from logistic.serializers import AddressSerializer, LogisticUnitConstraintParameterSerializer, ShopLogisticUnitSerializer, ShopLogisticUnitConstraintSerializer
 from logistic.permissions import IsAddressOwner, IsShopOwner
 from nakhll_market.models import Shop
 
@@ -95,5 +95,37 @@ class ShopLogisticUnitConstraintViewSet(viewsets.ModelViewSet):
             created_by=self.request.user
         )
 
+    def perform_destroy(self, instance):
+        return super().perform_destroy(instance)
+        # TODO: check if slucp will deleted after sluc is deleted
 
 
+
+class ShopLogisticUnitConstraintParametersViewSet(viewsets.GenericViewSet, mixins.UpdateModelMixin, mixins.RetrieveModelMixin):
+    serializer_class = LogisticUnitConstraintParameterSerializer
+    permission_classses = [permissions.IsAuthenticated, IsShopOwner]
+    lookup_field = 'id'
+
+    def get_queryset(self):
+        return LogisticUnitConstraintParameter.objects.filter(
+            shop_logistic_unit_constraint__shop_logistic_unit__shop__FK_ShopManager=self.request.user
+        )
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object() # LogisticUnitConstraintParameter
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
+
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    

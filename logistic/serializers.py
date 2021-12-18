@@ -1,4 +1,6 @@
+import logistic
 from django.db.models import fields
+from django.utils.translation import ugettext as _
 from rest_framework import serializers
 from logistic.models import Address, LogisticUnitConstraint, LogisticUnitMetric, ShopLogisticUnit, ShopLogisticUnitConstraint, LogisticUnit, LogisticUnitConstraintParameter, ShopLogisticUnitMetric
 from nakhll_market.models import Field, Product, State, BigCity, City
@@ -72,6 +74,36 @@ class LogisticUnitConstraintParameterSerializer(serializers.ModelSerializer):
         fields = ("id", "cities", "products", "min_price", "categories",
                   "max_weight_g", "max_package_value", "price_per_kg", "price_per_extra_kg",)
         read_only_fields = ("id",)
+
+    def validate(self, attrs):
+        return super().validate(attrs)
+
+    def validate_products(self, data):
+        products = data.get('products')
+
+        category_set = set()
+        for product in products:
+            category_set.add(product.new_category.id)
+
+        category_constraint_ids = set(LogisticUnitConstraintParameter.objects.filter(
+           logistic_unit_constraint__logistic_unit=self.instance.logistic_unit_contraint.logistic_unit 
+        ).values_list('categories', flat=True))
+
+        diffrence = category_set.intersection(category_constraint_ids)
+        if diffrence:
+            raise serializers.ValidationError(_(
+                'The product categories are not allowed for this logistic unit.'
+            ))
+            
+        
+        
+        
+        
+        
+        
+        
+        
+
 
 # class LogisticUnitConstraintSerializer(serializers.ModelSerializer):
 #     logistic_unit = LogisticUnitSerializer()
