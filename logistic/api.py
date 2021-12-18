@@ -79,13 +79,13 @@ class ShopLogisticUnitViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mi
         return Response({'message': _('Shop logistic unit is deactivated')}, status=status.HTTP_200_OK)
     
     
-    class ShopLogisticUnitConstraintViewSet(viewsets.ModelViewSet):
-        serializer_class = ShopLogisticUnitConstraintSerializer
-        permission_classes = [permissions.IsAuthenticated]
+class ShopLogisticUnitConstraintViewSet(viewsets.ModelViewSet):
+    serializer_class = ShopLogisticUnitConstraintSerializer
+    permission_classes = [permissions.IsAuthenticated]
         
-        def get_queryset(self):
-            return ShopLogisticUnitConstraint.objects.filter(shop__FK_User=self.request.user)
+    def get_queryset(self):
+        return ShopLogisticUnitConstraint.objects.filter(shop__FK_User=self.request.user)
         
-
+        
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)

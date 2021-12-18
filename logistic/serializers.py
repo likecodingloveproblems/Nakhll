@@ -1,5 +1,6 @@
+from django.db.models import fields
 from rest_framework import serializers
-from logistic.models import Address, ShopLogisticUnit, ShopLogisticUnitConstraint, LogisticUnit
+from logistic.models import Address, LogisticUnitMetric, ShopLogisticUnit, ShopLogisticUnitConstraint, LogisticUnit,LogisticUnitConstraintParameter, ShopLogisticUnitMetric
 from nakhll_market.models import Field, State, BigCity, City
 
 
@@ -37,3 +38,42 @@ class ShopLogisticUnitSerializer(serializers.ModelSerializer):
         model = ShopLogisticUnit
         fields = ('id', 'is_active', 'logistic_unit')
         read_only_fields = ('id', )
+        
+        
+class LogisticUnitMetricSerializer(serializers.ModelSerializer):
+    class Meta:
+        modcel = LogisticUnitMetric
+        fields = ("id","price_per_kg","price_per_extra_kg","is_default")
+        read_only_fields = ("id",)
+            
+        
+class LogisticUnitConstraintParameterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LogisticUnitConstraintParameter
+        fields = ("id","cities","products","min_price","categories","max_weight_g","max_package_value")
+        read_only_fields = ("id",)
+
+class LogisticUnitConstraintSerializer(serializers.ModelSerializer):
+    logistic_unit = LogisticUnitSerializer
+    constraint = LogisticUnitConstraintParameter
+    class Meta:
+        model = ShopLogisticUnitConstraint
+        fields = ("id","is_publish",)
+        read_only_fields = ("id",)
+        
+        
+class ShopLogisticUnitConstraintSerializer(serializers.ModelSerializer):
+    shop_logistic_unit = ShopLogisticUnitSerializer
+    constraint = LogisticUnitConstraintParameterSerializer
+    class Meta:
+        model = ShopLogisticUnitConstraint
+        fields = ("id","is_active",)
+        read_only_fields = ("id",)
+        
+class ShopLogisticUnitMetricSerializer(serializers.ModelSerializer):
+    shop_logistic_unit_constraint = ShopLogisticUnitSerializer
+    metric = LogisticUnitMetricSerializer
+    class Meta:
+        model =ShopLogisticUnitMetric
+        fields = ("id",)
+        read_only_fields = ("id",)
