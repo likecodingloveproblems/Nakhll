@@ -43,7 +43,7 @@ class ShopLogisticUnitSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ShopLogisticUnit
-        fields = ('id', 'is_active', 'logistic_unit')
+        fields = ('id', 'is_active', 'logistic_unit', 'use_default_setting')
         read_only_fields = ('id', )
 
 
@@ -83,13 +83,28 @@ class LogisticUnitConstraintParameterSerializer(serializers.ModelSerializer):
 
 
 class ShopLogisticUnitConstraintSerializer(serializers.ModelSerializer):
-    shop_logistic_unit = ShopLogisticUnitSerializer()
-    constraint = LogisticUnitConstraintParameterSerializer()
+    shop_logistic_unit = serializers.PrimaryKeyRelatedField(queryset=ShopLogisticUnit.objects.all())
+    cities_count = serializers.SerializerMethodField()
+    products_count = serializers.SerializerMethodField()
+    title = serializers.SerializerMethodField()
 
     class Meta:
         model = ShopLogisticUnitConstraint
-        fields = ("id", "is_active",)
+        fields = ("id", "is_active", "shop_logistic_unit", "cities_count", "products_count", "title")
         read_only_fields = ("id",)
+
+    def get_cities_count(self, obj):
+        if not obj.constraint or not obj.constraint.cities:
+            return 0
+        return obj.constraint.cities.count()
+
+    def get_products_count(self, obj):
+        if not obj.constraint or not obj.constraint.products:
+            return 0
+        return obj.constraint.products.count()
+
+    def get_title(self, obj):
+        return f'محدوده {obj.id}'
 
 
 class ShopLogisticUnitMetricSerializer(serializers.ModelSerializer):

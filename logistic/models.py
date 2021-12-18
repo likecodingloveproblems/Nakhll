@@ -97,13 +97,13 @@ class LogisticUnitConstraintParameter(models.Model):
     cities = models.ManyToManyField(City, verbose_name=_('شهرها'))
     products = models.ManyToManyField(Product, verbose_name=_('محصولات'))
     min_price = models.DecimalField(verbose_name=_(
-        'حداقل قیمت'), max_digits=10, decimal_places=2)
+        'حداقل قیمت'), max_digits=10, decimal_places=2, null=True, blank=True)
     categories = models.ManyToManyField(
         NewCategory, verbose_name=_('دسته بندی ها'))
     max_weight_g = models.PositiveIntegerField(
-        verbose_name=_('حداکثر وزن (گرم)'))
+        verbose_name=_('حداکثر وزن (گرم)'), null=True, blank=True)
     max_package_value = models.PositiveIntegerField(
-        verbose_name=_('حداکثر ارزش بسته'))
+        verbose_name=_('حداکثر ارزش بسته'), null=True, blank=True)
     created_by = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True, verbose_name=_('ایجاد کننده'))
     created_at = models.DateTimeField(_('تاریخ ایجاد'), auto_now_add=True)
