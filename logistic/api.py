@@ -1,11 +1,13 @@
+from django.db.models import constraints
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers, status, permissions, viewsets, mixins
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from logistic.managers import AddressManager
 from django.utils.translation import ugettext as _
-from logistic.models import Address, LogisticUnitConstraintParameter, ShopLogisticUnit, ShopLogisticUnitConstraint, LogisticUnit
-from logistic.serializers import AddressSerializer, LogisticUnitConstraintParameterSerializer, ShopLogisticUnitSerializer, ShopLogisticUnitConstraintSerializer
+from logistic.models import Address, LogisticUnitConstraintParameter, LogisticUnitMetric, ShopLogisticUnit, ShopLogisticUnitConstraint, LogisticUnit, ShopLogisticUnitMetric
+from logistic.serializers import AddressSerializer, LogisticUnitConstraintParameterReadSerializer, LogisticUnitConstraintParameterSerializer, ShopLogisticUnitSerializer, ShopLogisticUnitConstraintSerializer
 from logistic.permissions import IsAddressOwner, IsShopOwner
 from nakhll_market.models import Shop
 
@@ -83,16 +85,22 @@ class ShopLogisticUnitConstraintViewSet(viewsets.ModelViewSet):
     serializer_class = ShopLogisticUnitConstraintSerializer
     permission_classes = [permissions.IsAuthenticated, IsShopOwner]
     lookup_field = 'id'
-        
+
     def get_queryset(self):
         return ShopLogisticUnitConstraint.objects.filter(shop_logistic_unit__shop__FK_ShopManager=self.request.user)
         
         
     def perform_create(self, serializer):
-        shop_logistic_unit_constraint = serializer.save()
-        LogisticUnitConstraintParameter.objects.create(
-            shop_logistic_unit_constraint=shop_logistic_unit_constraint,
+        param = LogisticUnitConstraintParameter.objects.create(
             created_by=self.request.user
+        )
+        metric = LogisticUnitMetric.objects.create(
+            created_by=self.request.user
+        )
+        serializer.save(constraint=param)
+        ShopLogisticUnitMetric.objects.create(
+            shop_logistic_unit_constraint=serializer.instance,
+            metric=metric,
         )
 
     def perform_destroy(self, instance):
@@ -101,10 +109,24 @@ class ShopLogisticUnitConstraintViewSet(viewsets.ModelViewSet):
 
 
 
-class ShopLogisticUnitConstraintParametersViewSet(viewsets.GenericViewSet, mixins.UpdateModelMixin, mixins.RetrieveModelMixin):
+class LogisticUnitConstraintParameterViewSet(viewsets.GenericViewSet,
+                                             mixins.UpdateModelMixin,
+                                             mixins.RetrieveModelMixin,
+                                             mixins.ListModelMixin):
     serializer_class = LogisticUnitConstraintParameterSerializer
     permission_classses = [permissions.IsAuthenticated, IsShopOwner]
     lookup_field = 'id'
+
+    def get_serializer_class(self):
+        if self.action == 'partial_update':
+            return LogisticUnitConstraintParameterSerializer
+        else:
+            return LogisticUnitConstraintParameterReadSerializer
+
+    def get_object(self):
+        shop_logistic_unit_constraint = get_object_or_404(ShopLogisticUnitConstraint, id=self.kwargs['id'])
+        self.kwargs['id'] = shop_logistic_unit_constraint.constraint.id
+        return super().get_object()
 
     def get_queryset(self):
         return LogisticUnitConstraintParameter.objects.filter(

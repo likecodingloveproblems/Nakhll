@@ -79,9 +79,9 @@ class LogisticUnitMetric(models.Model):
         verbose_name_plural = _('متریک ارسال')
 
     price_per_kg = models.PositiveIntegerField(
-        verbose_name=_('قیمت هر کیلوگرم'))
+        verbose_name=_('قیمت هر کیلوگرم'), null=True, blank=True)
     price_per_extra_kg = models.PositiveIntegerField(
-        verbose_name=_('قیمت هر کیلوگرم اضافه'))
+        verbose_name=_('قیمت هر کیلوگرم اضافه'), null=True, blank=True)
     is_default = models.BooleanField(default=False, verbose_name=_('پیش فرض؟'))
     created_by = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True, verbose_name=_('ایجاد کننده'))

@@ -1,3 +1,4 @@
+from django.db.models.expressions import Case, Value, When
 import logistic
 from django.db.models import fields
 from django.utils.translation import ugettext as _
@@ -51,23 +52,25 @@ class ShopLogisticUnitSerializer(serializers.ModelSerializer):
 
 class LogisticUnitMetricSerializer(serializers.ModelSerializer):
     class Meta:
-        modcel = LogisticUnitMetric
+        model = LogisticUnitMetric
         fields = ("id", "price_per_kg", "price_per_extra_kg", )
         read_only_fields = ("id",)
 
+class ProductSerializer(serializers.ModelSerializer):
+    is_checked = serializers.SerializerMethodField()
+    class Meta:
+        model = Product
+        fields = ('ID', 'Slug', 'Title', 'is_checked')
+
+    def get_is_checked(self, obj):
+        return obj.is_checked
 
 class LogisticUnitConstraintParameterSerializer(serializers.ModelSerializer):
-    price_per_kg = serializers.IntegerField(required=False, source='\
-                                            shop_logistic_unit_constraint.shop_logistic_unit_metric.price_per_kg\
-                                            ')
-    price_per_extra_kg = serializers.IntegerField(required=False, source='\
-                                            shop_logistic_unit_constraint.shop_logistic_unit_metric.price_per_extra_kg\
-                                            ')
-    cities = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=City.objects.all())
+    price_per_kg = serializers.IntegerField(required=False, source='shop_logistic_unit_constraint.shop_logistic_unit_metric.metric.price_per_kg')
+    price_per_extra_kg = serializers.IntegerField(required=False, source='shop_logistic_unit_constraint.shop_logistic_unit_metric.metric.price_per_extra_kg')
+    cities = serializers.PrimaryKeyRelatedField(many=True, queryset=City.objects.all())
     categories = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    products = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Product.objects.all())
+    products = serializers.PrimaryKeyRelatedField(many=True, queryset=Product.objects.all())
 
     class Meta:
         model = LogisticUnitConstraintParameter
@@ -78,15 +81,13 @@ class LogisticUnitConstraintParameterSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         return super().validate(attrs)
 
-    def validate_products(self, data):
-        products = data.get('products')
-
+    def validate_products(self, products):
         category_set = set()
         for product in products:
             category_set.add(product.new_category.id)
 
         category_constraint_ids = set(LogisticUnitConstraintParameter.objects.filter(
-           logistic_unit_constraint__logistic_unit=self.instance.logistic_unit_contraint.logistic_unit 
+           logisticunitconstraint__logistic_unit=self.instance.shop_logistic_unit_constraint.shop_logistic_unit.logistic_unit
         ).values_list('categories', flat=True))
 
         diffrence = category_set.intersection(category_constraint_ids)
@@ -94,10 +95,48 @@ class LogisticUnitConstraintParameterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(_(
                 'The product categories are not allowed for this logistic unit.'
             ))
+        return products
             
+    def update(self, instance, validated_data):
+        sluc = validated_data.pop('shop_logistic_unit_constraint', {})
+        slum = sluc.get('shop_logistic_unit_metric', {})
+        metric = slum.get('metric', {})
+        metric_object = instance.shop_logistic_unit_constraint.shop_logistic_unit_metric.metric
+
+        price_per_extra_kg = metric.get('price_per_extra_kg', metric_object.price_per_extra_kg)
+        price_per_kg = metric.get('price_per_kg', metric_object.price_per_kg)
+
+        instance = super().update(instance, validated_data)
+
+        metric_object.price_per_kg = price_per_kg
+        metric_object.price_per_extra_kg = price_per_extra_kg
+        metric_object.save()
+        return instance
         
+class LogisticUnitConstraintParameterReadSerializer(serializers.ModelSerializer):
+    price_per_kg = serializers.IntegerField(read_only=True, source='shop_logistic_unit_constraint.shop_logistic_unit_metric.metric.price_per_kg')
+    price_per_extra_kg = serializers.IntegerField(read_only=True, source='shop_logistic_unit_constraint.shop_logistic_unit_metric.metric.price_per_extra_kg')
+    cities = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    products = serializers.SerializerMethodField()
+
+    class Meta:
+        model = LogisticUnitConstraintParameter
+        fields = ("id", "cities", "products", "min_price", "max_weight_g", "max_package_value",
+                  "price_per_kg", "price_per_extra_kg",)
+        read_only_fields = ("id",)
+
+    def get_products(self, obj):
+        shop = obj.shop_logistic_unit_constraint.shop_logistic_unit.shop
+        products = Product.objects.filter(
+            FK_Shop=shop).annotate(is_checked=Case(
+                When(ID__in=obj.products.values('ID'), then=Value(True)),
+                default=Value(False),
+                output_field=fields.BooleanField()
+            ))
+        return ProductSerializer(products, many=True).data
         
-        
+
+
         
         
         
