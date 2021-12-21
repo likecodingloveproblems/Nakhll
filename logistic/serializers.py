@@ -60,7 +60,7 @@ class ProductSerializer(serializers.ModelSerializer):
     is_checked = serializers.SerializerMethodField()
     class Meta:
         model = Product
-        fields = ('ID', 'Slug', 'Title', 'is_checked')
+        fields = ('ID', 'Title', 'is_checked')
 
     def get_is_checked(self, obj):
         return obj.is_checked
@@ -82,6 +82,21 @@ class LogisticUnitConstraintParameterSerializer(serializers.ModelSerializer):
         return super().validate(attrs)
 
     def validate_products(self, products):
+        if not self.__are_products_belong_to_shop(products):
+            raise serializers.ValidationError(_("Products must belong to shop"))
+        restricted_products = self._get_restricted_products(products)
+        if restricted_products:
+            raise serializers.ValidationError(_(
+                'محصولات زیر به دلیل محدودیت در واحد پستی، قابل ارسال نیستند: {}'.format(
+                    '/n'.join(restricted_products))))
+        return products
+
+    def _are_products_belong_to_shop(self, products):
+        shop_products = self.instance.shop_logistic_unit_constraint.shop_logistic_unit.shop.ShopProduct.all()
+        return set(products).issubset(set(shop_products))
+            
+            
+    def _get_restricted_products(self, products):
         category_set = set()
         for product in products:
             category_set.add(product.new_category.id)
@@ -90,13 +105,9 @@ class LogisticUnitConstraintParameterSerializer(serializers.ModelSerializer):
            logisticunitconstraint__logistic_unit=self.instance.shop_logistic_unit_constraint.shop_logistic_unit.logistic_unit
         ).values_list('categories', flat=True))
 
-        diffrence = category_set.intersection(category_constraint_ids)
-        if diffrence:
-            raise serializers.ValidationError(_(
-                'The product categories are not allowed for this logistic unit.'
-            ))
-        return products
-            
+        diffrences = category_set.intersection(category_constraint_ids)
+        return  diffrences
+
     def update(self, instance, validated_data):
         sluc = validated_data.pop('shop_logistic_unit_constraint', {})
         slum = sluc.get('shop_logistic_unit_metric', {})
