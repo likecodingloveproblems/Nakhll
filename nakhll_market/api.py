@@ -393,6 +393,12 @@ class CreateShop(generics.CreateAPIView):
         # super().perform_create(serializer)
         # TODO: REFACTOR: Replace state, bigcity and city id to string in front side,
         # TODO: REFACTOR: and this gets do not need anymore
+        shop_manager = serializer.validated_data.pop('FK_ShopManager')
+        fname = shop_manager.get('first_name')
+        lname = shop_manager.get('last_name')
+        self.request.user.first_name = fname
+        self.request.user.last_name = lname
+        self.request.user.save()
         state_id = serializer.validated_data.get('State')
         bigcity_id = serializer.validated_data.get('BigCity')
         city_id = serializer.validated_data.get('City')

@@ -134,13 +134,24 @@ class ShopSimpleSerializer(serializers.ModelSerializer):
         fields = ['ID', 'slug', 'title', ]
 
 class CreateShopSerializer(serializers.ModelSerializer):
+    first_name = serializers.CharField(required=True, source='FK_ShopManager.first_name')
+    last_name = serializers.CharField(required=True, source='FK_ShopManager.last_name')
     class Meta:
         model = Shop
-        fields = ['Slug', 'Title', 'State', 'BigCity', 'City', 'show_contact_info']
+        fields = ['Slug', 'Title', 'State', 'BigCity', 'City', 'show_contact_info', 'last_name', 'first_name']
         extra_kwargs = {
             'Slug': {'validators': [], 'allow_null': True, 'required': False}
         }
-   
+
+    def __init__(self, instance=None, data=..., **kwargs):
+        super().__init__(instance=instance, data=data, **kwargs)
+        user = self.context['request'].user
+        if user.first_name and user.last_name:
+            init_data = self.initial_data.copy()
+            init_data.update({'first_name': user.first_name, 'last_name': user.last_name})
+            self.initial_data = init_data
+            
+
 
 class FilterPageShopSerializer(serializers.ModelSerializer):
     class Meta:
