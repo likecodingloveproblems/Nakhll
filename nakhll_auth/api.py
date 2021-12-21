@@ -1,6 +1,8 @@
 import random, datetime
 from django.contrib.auth.models import User
 from django.http.response import Http404
+from django.utils.translation import ugettext as _
+from django.utils import timezone
 from rest_framework import serializers, viewsets, mixins, status, permissions
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenViewBase
@@ -89,6 +91,32 @@ class BeginAuthViewSet(viewsets.GenericViewSet):
             return
         user.username = mobile
         user.save()
+        
+    #---------------
+    @action(methods=["patch"], detail=False)
+    def resend_sms_code(self, request):
+        serializer = BeginAuthSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        mobile = serializer.validated_data['mobile']
+        auth_request = AuthRequest.objects.filter(mobile=mobile,
+                                                  request_status=AuthRequest.RequestStatuses.PENDING,
+                                                  created_at__gt=timezone.now() - timezone.timedelta(minutes=5)).last()
+        if auth_request == None:
+            raise ValidationError({'error': [_('درخواست احراز هویت نامعتبر است')]}, code=status.HTTP_400_BAD_REQUEST)
+        if timezone.now() > auth_request.updated_at + timezone.timedelta(minutes=1):
+            code = self._generate_and_send_sms_code(mobile)
+            auth_request.sms_code = code
+            auth_request.save()
+            return Response(status=status.HTTP_200_OK)
+        else:
+            raise ValidationError ({'error': ['برای ارسال مجدد کد باید یک دقیقه صبر کنید']},
+                                  code=status.HTTP_400_BAD_REQUEST)
+
+            
+    
+    #--------------
+        
+    
 
 class CompeleteAuthViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
     authentication_classes = []
