@@ -1,4 +1,5 @@
 import random, datetime
+from django.utils import timezone
 from django.contrib.auth.models import User
 from django.http.response import Http404
 from rest_framework import serializers, viewsets, mixins, status, permissions
@@ -19,7 +20,7 @@ class BeginAuthViewSet(viewsets.GenericViewSet):
     permission_classes = [permissions.AllowAny]
     serializer_class = BeginAuthSerializer
 
-    @action(methods=['post'], detail=False)
+    @action(methods=['post'], detail=False, url_path="")
     def login_register(self, request):
         serializer = BeginAuthSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -89,6 +90,26 @@ class BeginAuthViewSet(viewsets.GenericViewSet):
             return
         user.username = mobile
         user.save()
+        
+    #---------------
+    @action(methods=["patch"], detail=False)
+    def resend_sms_code(self, request):
+        serializer = BeginAuthSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        mobile = serializer.validated_data['mobile']
+        auth_request = AuthRequest.objects.filter(mobile=mobile).last()
+        if timezone.now() > auth_request.updated_at + timezone.timedelta(minutes=1):
+            self._generate_and_send_sms_code(mobile)
+            return Response(status=status.HTTP_200_OK)
+        else:
+            raise ValidationError ({'error': ['این شماره در سایت ثبت نشده است']},
+                                  code=status.HTTP_400_BAD_REQUEST)
+
+            
+    
+    #--------------
+        
+    
 
 class CompeleteAuthViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
     authentication_classes = []
