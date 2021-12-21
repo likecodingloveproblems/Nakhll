@@ -48,7 +48,7 @@ class Invoice(models.Model, AccountingInterface):
             # default=InvoiceTypes.HOJREH, choices=InvoiceTypes.choices)
     # cart = models.OneToOneField(Cart, on_delete=models.PROTECT, related_name='invoice', 
             # verbose_name=_('سبد خرید'))
-    address = models.ForeignKey(Address, on_delete=models.PROTECT, null=True,
+    address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True,
             blank=True, related_name='invoices', verbose_name=_('آدرس'))
     address_json = models.JSONField(_('آدرس ثبت شده نهایی'), null=True, blank=True, encoder=DjangoJSONEncoder)
     invoice_price_with_discount = models.DecimalField(_('مبلغ فاکتور با تخفیف'), max_digits=12, decimal_places=0, default=0)
