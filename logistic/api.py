@@ -56,7 +56,7 @@ class ShopLogisticUnitViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mi
     def get_queryset(self):
         queryset = ShopLogisticUnit.objects.filter(shop__FK_ShopManager=self.request.user,
                                                    logistic_unit__is_publish=True)
-        if self.shop_slug:
+        if hasattr(self, 'shop_slug') and self.shop_slug:
             queryset = queryset.filter(shop__Slug=self.shop_slug)
         return queryset
 
@@ -80,7 +80,7 @@ class ShopLogisticUnitViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mi
         shop_logistic_unit.save()
         # return Response({'message': _('Shop logistic unit is deactivated')}, status=status.HTTP_200_OK)
     
-    
+
 class ShopLogisticUnitConstraintViewSet(viewsets.ModelViewSet):
     serializer_class = ShopLogisticUnitConstraintSerializer
     permission_classes = [permissions.IsAuthenticated, IsShopOwner]

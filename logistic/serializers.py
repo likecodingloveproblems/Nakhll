@@ -82,21 +82,27 @@ class LogisticUnitConstraintParameterSerializer(serializers.ModelSerializer):
         return super().validate(attrs)
 
     def validate_products(self, products):
-        if not self.__are_products_belong_to_shop(products):
-            raise serializers.ValidationError(_("Products must belong to shop"))
-        restricted_products = self._get_restricted_products(products)
-        if restricted_products:
+        if not self._are_products_belong_to_shop(products):
+            raise serializers.ValidationError(_('این محصولات متعلق به فروشگاه شما نیستند'))
+        restricted_category_ids = self._get_restricted_products(products)
+        if restricted_category_ids:
+            restricted_products = Product.objects.filter(new_category__in=restricted_category_ids, ID__in=[p.ID for p in products])
             raise serializers.ValidationError(_(
-                'محصولات زیر به دلیل محدودیت در واحد پستی، قابل ارسال نیستند: {}'.format(
-                    '/n'.join(restricted_products))))
+                'محصولات زیر به دلیل محدودیت در واحد پستی، قابل ارسال نیستند:<br />{}'.format(
+                    '<br />'.join(map(str, restricted_products)))
+            ))
         return products
 
     def _are_products_belong_to_shop(self, products):
+        if not products:
+            return True
         shop_products = self.instance.shop_logistic_unit_constraint.shop_logistic_unit.shop.ShopProduct.all()
         return set(products).issubset(set(shop_products))
             
             
     def _get_restricted_products(self, products):
+        if not products:
+            products = self.instance.shop_logistic_unit_constraint.shop_logistic_unit.shop.ShopProduct.all()
         category_set = set()
         for product in products:
             category_set.add(product.new_category.id)
