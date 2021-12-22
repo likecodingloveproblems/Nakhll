@@ -122,6 +122,11 @@ class LogisticUnit(models.Model):
         default=True, verbose_name=_('منتشر شده؟'))
     metric = models.ForeignKey(
         LogisticUnitMetric, on_delete=models.SET_NULL, null=True, verbose_name=_('متریک'))
+    is_always_active = models.BooleanField(default=False, verbose_name=_('همیشه فعال؟'),
+                                           help_text='در صورتی که فعال باشد، امکان غیر فعال سازی توسط کاربر وجود ندارد.')
+    priority = models.PositiveIntegerField(default=0, verbose_name=_('اولویت'))
+    shown_alone = models.BooleanField(default=False, verbose_name=_('نمایش به صورت تنها'),
+                                      help_text='در صورتی که فعال باشد، در لیست واحد‌های ارسالی به صورت تنها نمایش داده می‌شود.')
     created_by = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True, verbose_name=_('ایجاد کننده'))
     created_at = models.DateTimeField(_('تاریخ ایجاد'), auto_now_add=True)
