@@ -87,8 +87,11 @@ class ShopLogisticUnitConstraintViewSet(viewsets.ModelViewSet):
     lookup_field = 'id'
 
     def get_queryset(self):
-        return ShopLogisticUnitConstraint.objects.filter(shop_logistic_unit__shop__FK_ShopManager=self.request.user)
-        
+        shop_logistic_unit_id = self.request.GET.get('id')
+        queryset = ShopLogisticUnitConstraint.objects.filter(shop_logistic_unit__shop__FK_ShopManager=self.request.user)
+        if shop_logistic_unit_id:
+            return queryset.filter(shop_logistic_unit__id=shop_logistic_unit_id)
+        return queryset             
         
     def perform_create(self, serializer):
         param = LogisticUnitConstraintParameter.objects.create(
