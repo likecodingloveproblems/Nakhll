@@ -51,7 +51,7 @@ class ShopLogisticUnitSerializer(serializers.ModelSerializer):
     metric_id = serializers.SerializerMethodField()
     cities_count = serializers.SerializerMethodField()
     products_count = serializers.SerializerMethodField()
-    logo = Base64ImageField(max_length=None, use_url=True)
+    logo = Base64ImageField(max_length=None, use_url=True, allow_empty_file=False, required=False)
     class Meta:
         model = ShopLogisticUnit
         fields = ('id', 'shop', 'name', 'description', 'logo', 'is_active', 'is_publish',
