@@ -1,4 +1,6 @@
+from django.db.models.query_utils import Q
 from rest_framework.validators import ValidationError
+from nakhll_market.models import Product
 
 
 class PostPriceSettingInterface:
@@ -100,3 +102,62 @@ class PostPriceSettingInterface:
             extra_weight = int(extra_weight) + 1 # 1.5kg is 1kg when converted to int, so add 1kg 
         return self.extra_weight_fee * extra_weight
         
+
+class LogisticUnitInterface:
+    def create_logistic_unit_dict(self, invoice):
+        dict = {}
+        for shop in invoice.shops:
+            shop_dict = {}
+            for product in Product.objects.filter(FK_Shop=shop):
+                product_dict = {}
+                logistic_unit = self.get_logistic_unit(invoice, product)
+                logistic_unit = logistic_unit or self.get_default_logistic_unit()
+                if not logistic_unit:
+                    raise Exception('No logistic unit found')
+                product_dict['logistic_unit'] = logistic_unit
+                product_dict['price'] = self.calculate_logistic_unit_price(logistic_unit)
+                shop_dict[product] = product_dict
+            dict[shop] = shop_dict
+        return dict
+
+
+    def calculate_logistic_unit_price(self, logistic_unit, invoice, product):
+        return 22222
+
+
+    def get_logistic_unit(self, invoice, prod):
+        if not models.ShopLogisticUnit.objects.filter(shop=prod.FK_Shop).exists():
+            return None
+
+        # Logistic unit constraint
+        shop_logistic_units = models.ShopLogisticUnit.objects.filter(
+            Q(shop=prod.FK_Shop),
+            ~Q(logistic_unit__logistic_unit_constraints__constraint__products=prod),
+            ~Q(logistic_unit__logistic_unit_constraints__constraint__categories=prod.new_category),
+            ~Q(logistic_unit__logistic_unit_constraints__constraint__cities=invoice.address.city),
+        )
+
+        # shop logistic unit constraint
+        filter_queryset = Q()
+        filter_queryset |= Q(shop=prod.FK_Shop)
+        filter_queryset |= Q(
+            Q(logistic_unit__is_always_active=True) |
+            Q(
+                Q(logistic_unit__is_always_active=False),
+                ~Q(shop_logistic_unit_constraints__constraint__products=prod),
+                ~Q(shop_logistic_unit_constraints__constraint__categories=prod.new_category),
+                ~Q(shop_logistic_unit_constraints__constraint__cities=invoice.address.city)
+            )
+        )
+        
+        shop_logistic_units.filter(filter_queryset).distinct()
+
+        return shop_logistic_units.order_by('-priority').first()
+
+
+
+    def get_default_logistic_unit(self):
+        return models.LogisticUnit.objects.filter(is_default_logistic_unit=True).order_by('priority').first()
+
+
+from logistic import models
