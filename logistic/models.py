@@ -83,7 +83,8 @@ class ShopLogisticUnit(models.Model):
     shop = models.ForeignKey(Shop, verbose_name=_('حجره'),
                              related_name='logistic_units', on_delete=models.CASCADE)
     name = models.CharField(verbose_name=_('نام واحد'), max_length=200)
-    logo = models.ImageField(verbose_name=_('لوگو'), upload_to='media/Pictures/logistic_unit/defaults', null=True, blank=True)
+    logo = models.ImageField(verbose_name=_('لوگو'), upload_to='media/Pictures/logistic_unit/defaults',
+                             null=True, blank=True, default='static/Pictures/unkown_lu.png')
     is_active = models.BooleanField(verbose_name=_('فعال؟'), default=True)
     is_publish = models.BooleanField(verbose_name=_('منتشر شود؟'), default=True)
     description = models.TextField(verbose_name=_('توضیحات'), null=True, blank=True)
