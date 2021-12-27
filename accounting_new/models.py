@@ -2,19 +2,20 @@ from uuid import uuid4
 from datetime import datetime, timedelta
 from django.db import models
 from django.conf import settings
+from django.db.models.query_utils import Q
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth.models import User
 from nakhll_market.interface import AlertInterface
-from nakhll_market.models import Product, Shop
+from nakhll_market.models import NewCategory, Product, Shop
 from payoff.models import Transaction
 from payoff.interfaces import PaymentInterface
 from payoff.exceptions import NoAddressException, InvoiceExpiredException, \
                 InvalidInvoiceStatusException, OutOfPostRangeProductsException
 from accounting_new.interfaces import AccountingInterface
 from accounting_new.managers import AccountingManager, InvoiceItemManager
-from logistic.models import Address, PostPriceSetting
+from logistic.models import Address, PostPriceSetting, ShopLogisticUnit
 from sms.services import Kavenegar
 from shop.models import ShopFeature
 
@@ -60,6 +61,7 @@ class Invoice(models.Model, AccountingInterface):
     payment_unique_id = models.BigIntegerField(_('شماره درخواست پرداخت'), null=True, blank=True)
     extra_data = models.JSONField(null=True, blank=True, encoder=DjangoJSONEncoder)
     total_weight_gram = models.PositiveIntegerField(_('وزن نهایی (گرم)'), null=True, blank=True)
+    logistic_unit_details = models.JSONField(null=True, blank=True, encoder=DjangoJSONEncoder, verbose_name=_('جزئیات واحد حمل و نقل'))
     objects = AccountingManager()
 
     def __str__(self):
@@ -70,6 +72,18 @@ class Invoice(models.Model, AccountingInterface):
     def shops(self):
         shop_ids = self.items.values_list('product__FK_Shop__ID', flat=True).distinct()
         return Shop.objects.filter(ID__in=shop_ids)
+
+    @property
+    def products(self):
+        product_ids = self.items.values_list('product__ID', flat=True).distinct()
+        return Product.objects.filter(ID__in=product_ids)
+
+    @property
+    def categories(self):
+        category_ids = self.items.values_list('product__new_category__id', flat=True).distinct()
+        return NewCategory.objects.filter(id__in=category_ids)
+
+    
 
     # @property
     # def logistic_price(self):
@@ -167,6 +181,16 @@ class Invoice(models.Model, AccountingInterface):
         coupon_usages = self.coupon_usages.all()
         for coupon_usage in coupon_usages:
             coupon_usage.delete()
+
+    def available_logistic_units(self):
+        ''' Return available logistic units for this invoice '''
+        ShopLogisticUnit.objects.filter(
+            # Q(shop__ShopProduct=p),
+            ~Q(logistic_unit__logistic_unit_constraints__constraint__products__in=self.products),
+            ~Q(logistic_unit__logistic_unit_constraints__constraint__categories__in=self.categories),
+            ~Q(logistic_unit__logistic_unit_constraints__constraint__cities=self.address.city),
+        ).distinct()
+
 
 
 class InvoiceItem(models.Model):

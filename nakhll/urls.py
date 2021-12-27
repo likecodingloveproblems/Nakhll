@@ -34,7 +34,7 @@ urlpatterns = [
     path('payoff/', include('payoff.urls', namespace='payoff')),
     path('accounting_new/', include('accounting_new.urls', namespace='accounting_new')),
     url(r'^cart2/', include('cart.urls' , namespace='cart_new')),
-    url(r'^logistic/', include('logistic.urls' , namespace='logistic')),
+    path('', include('logistic.urls' , namespace='logistic')),
     path('', include('nakhll_market.urls', namespace='nakhll_market')),
     url(r'^tinymce/', include('tinymce.urls')),
     url(r'^cart/', include('Payment.urls' , namespace='Payment')),

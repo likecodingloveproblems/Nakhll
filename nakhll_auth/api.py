@@ -1,4 +1,5 @@
 import random, datetime
+from django.utils import timezone
 from django.contrib.auth.models import User
 from django.http.response import Http404
 from django.utils.translation import ugettext as _
@@ -21,7 +22,7 @@ class BeginAuthViewSet(viewsets.GenericViewSet):
     permission_classes = [permissions.AllowAny]
     serializer_class = BeginAuthSerializer
 
-    @action(methods=['post'], detail=False)
+    @action(methods=['post'], detail=False, url_path="")
     def login_register(self, request):
         serializer = BeginAuthSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -92,7 +93,6 @@ class BeginAuthViewSet(viewsets.GenericViewSet):
         user.username = mobile
         user.save()
         
-    #---------------
     @action(methods=["patch"], detail=False)
     def resend_sms_code(self, request):
         serializer = BeginAuthSerializer(data=request.data)
@@ -113,9 +113,7 @@ class BeginAuthViewSet(viewsets.GenericViewSet):
                                   code=status.HTTP_400_BAD_REQUEST)
 
             
-    
-    #--------------
-        
+            
     
 
 class CompeleteAuthViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):

@@ -8,7 +8,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from nakhll_market.serializers import ProductLastStateSerializer
 from cart.managers import CartManager
-from logistic.interfaces import PostPriceSettingInterface
+from logistic.interfaces import PostPriceSettingInterface, LogisticUnitInterface
 from payoff.exceptions import NoAddressException, InvoiceExpiredException,\
             InvalidInvoiceStatusException, OutOfPostRangeProductsException
 from .models import Invoice
@@ -125,12 +125,14 @@ class InvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
         serializer = InvoiceWriteSerializer(instance=invoice, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        logistic, is_created = PostPriceSetting.objects.get_or_create()
-        out_of_range_products = logistic.get_out_of_range_products(invoice)
-        post_price = logistic.get_post_price(invoice)
-        invoice.logistic_price = post_price
+        # logistic, is_created = PostPriceSetting.objects.get_or_create()
+        # out_of_range_products = logistic.get_out_of_range_products(invoice)
+        # post_price = logistic.get_post_price(invoice)
+        lui = LogisticUnitInterface()
+        invoice.logistic_unit_details = lui.create_logistic_unit_dict(invoice)
+        invoice.logistic_price = lui.total_post_price
         invoice.save()
-        return Response({'post_price': post_price, 'out_of_range': out_of_range_products}, status=status.HTTP_200_OK)
+        return Response(invoice.logistic_unit_details, status=status.HTTP_200_OK)
 
 
     @action(methods=['GET'], detail=True)

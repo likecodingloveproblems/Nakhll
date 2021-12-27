@@ -133,6 +133,7 @@ ADMIN_REORDER = (
         'models': (
             'logistic.Address',
             'logistic.PostPriceSetting',
+            'logistic.LogisticUnitGeneralSetting',
         )
     },
     {'app': 'payoff', 'label': 'بخش مالی جدید','models':(
