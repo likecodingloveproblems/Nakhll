@@ -165,7 +165,7 @@ class LogisticUnitInterface:
 
 
     def get_logistic_unit(self, invoice, product: Product):
-        if not models.ShopLogisticUnit.objects.filter(shop=product.FK_Shop).exists():
+        if not models.ShopLogisticUnit.objects.filter(shop=product.FK_Shop, is_active=True).exists():
             return None
 
         filter_queryset = Q(
@@ -175,6 +175,7 @@ class LogisticUnitInterface:
         sum_shop_cart_weight = invoice.products.filter(FK_Shop=product.FK_Shop).aggregate(
             total_price=Sum('Price')
         )['total_price']
+        filter_queryset |= Q(is_active=True)
         filter_queryset |= Q(constraint__cities=invoice.address.city)
         filter_queryset |= Q(constraint__max_weight__gte=product.Weight_With_Packing)
         filter_queryset |= Q(constraint__min_cart_price__lte=sum_shop_cart_weight)
