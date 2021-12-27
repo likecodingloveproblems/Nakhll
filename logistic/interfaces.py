@@ -119,16 +119,17 @@ class LogisticUnitInterface:
                 logistic_unit = self.get_logistic_unit(invoice, product)
                 if not logistic_unit:
                     errors.append(product)
-                logistic_units= shop_dict.pop(logistic_unit.id, None)
-                if not logistic_units:
-                    logistic_units = {
-                        'name': logistic_unit.name,
-                        'products': [],
-                    }
-                products = logistic_units.pop('products')
-                products.append({'title': product.Title, 'slug': product.Slug, 'image': product.image_thumbnail_url})
-                logistic_units['products'] = products
-                shop_dict[logistic_unit.id] = logistic_units
+                else:
+                    logistic_units= shop_dict.pop(logistic_unit.id, None)
+                    if not logistic_units:
+                        logistic_units = {
+                            'name': logistic_unit.name,
+                            'products': [],
+                        }
+                    products = logistic_units.pop('products')
+                    products.append({'title': product.Title, 'slug': product.Slug, 'image': product.image_thumbnail_url})
+                    logistic_units['products'] = products
+                    shop_dict[logistic_unit.id] = logistic_units
             price = self.calculate_logistic_unit_price(shop_dict, invoice)
             self.total_post_price += price
             list.append({
@@ -167,18 +168,26 @@ class LogisticUnitInterface:
         if not models.ShopLogisticUnit.objects.filter(shop=product.FK_Shop, is_active=True).exists():
             return None
 
-        filter_queryset = Q(
-            Q(constraint__products=product) |
-            Q(constraint__products=None)
-        )
+        filter_queryset = Q()
         sum_shop_cart_weight = invoice.products.filter(FK_Shop=product.FK_Shop).aggregate(
             total_price=Sum('Price')
         )['total_price']
-        filter_queryset |= Q(is_active=True)
-        filter_queryset |= Q(shop=product.FK_Shop)
-        filter_queryset |= Q(constraint__cities=invoice.address.city)
-        filter_queryset |= Q(constraint__max_weight__gte=product.Weight_With_Packing)
-        filter_queryset |= Q(constraint__min_cart_price__lte=sum_shop_cart_weight)
+        filter_queryset &= Q(is_active=True)
+        filter_queryset &= Q(shop=product.FK_Shop)
+        filter_queryset &= Q(
+            Q(constraint__cities=invoice.address.city) |
+            Q(constraint__cities=None)
+        )
+        filter_queryset &= Q(
+            Q(constraint__products=product) |
+            Q(constraint__products=None)
+        )
+        weight = int(product.Weight_With_Packing) / 1000
+        filter_queryset &= Q(
+            Q(constraint__max_weight__gte=weight) |
+            Q(constraint__max_weight=0)
+        )
+        filter_queryset &= Q(constraint__min_cart_price__lte=sum_shop_cart_weight)
 
         return models.ShopLogisticUnit.objects.filter(filter_queryset).first()
 
