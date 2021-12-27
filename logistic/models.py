@@ -78,6 +78,7 @@ class ShopLogisticUnit(models.Model):
     class Meta:
         verbose_name = _('واحد ارسال فروشگاه')
         verbose_name_plural = _('واحد ارسال فروشگاه')
+        ordering = ['-id']
 
     shop = models.ForeignKey(Shop, verbose_name=_('حجره'),
                              related_name='logistic_units', on_delete=models.CASCADE)
@@ -98,6 +99,7 @@ class ShopLogisticUnitConstraint(models.Model):
     class Meta:
         verbose_name = _('محدودیت واحد ارسال فروشگاه')
         verbose_name_plural = _('محدودیت واحد ارسال فروشگاه')
+        ordering = ['-id']
         
     shop_logistic_unit = models.OneToOneField(ShopLogisticUnit, verbose_name=_('واحد ارسال'),
                                             related_name='constraint', on_delete=models.CASCADE)
@@ -121,6 +123,7 @@ class ShopLogisticUnitCalculationMetric(models.Model):
     class Meta:
         verbose_name = _('پارامتر‌ محاسبه واحد ارسال فروشگاه')
         verbose_name_plural = _('پارامتر‌ محاسبه واحد ارسال فروشگاه')
+        ordering = ['-id']
     
     shop_logistic_unit = models.OneToOneField(ShopLogisticUnit, verbose_name=_('واحد ارسال'),
                                             related_name='calculation_metric', on_delete=models.CASCADE)
