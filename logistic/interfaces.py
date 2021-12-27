@@ -1,8 +1,9 @@
+from django.core.files import File
 from django.db.models.aggregates import Sum
 from django.db.models.query_utils import Q
 from django.utils.translation import ugettext as _
 from rest_framework.validators import ValidationError
-from nakhll_market.models import Product
+from nakhll_market.models import Product, Shop
 
 
 class PostPriceSettingInterface:
@@ -111,12 +112,14 @@ class LogisticUnitInterface:
 
     def create_logistic_unit_dict(self, invoice):
         list = []
+        errors = []
         for shop in invoice.shops:
             shop_dict = {}
-            for product in invoice.products.filter(FK_Shop=shop):
+            for item in invoice.products.filter(FK_Shop=shop):
+                product: Product = item
                 logistic_unit = self.get_logistic_unit(invoice, product)
                 if not logistic_unit:
-                    raise Exception(_('این محصول هیچ روش ارسالی ندارد'))
+                    errors.append(product)
                 logistic_units= shop_dict.pop(logistic_unit.id, None)
                 if not logistic_units:
                     logistic_units = {
@@ -124,7 +127,7 @@ class LogisticUnitInterface:
                         'products': [],
                     }
                 products = logistic_units.pop('products')
-                products.append({'title': product.Title, 'slug': product.Slug})
+                products.append({'title': product.Title, 'slug': product.Slug, 'image': product.image_thumbnail_url})
                 logistic_units['products'] = products
                 shop_dict[logistic_unit.id] = logistic_units
             price = self.calculate_logistic_unit_price(shop_dict, invoice)
@@ -135,6 +138,11 @@ class LogisticUnitInterface:
                 'logistic_units': shop_dict,
                 'price': price
             })
+        if errors:
+            invoice.items.filter(product__in=errors).delete()
+            raise ValidationError(_('این محصولات هیچ روش ارسالی ندارند و از سبد خرید شما حذف خواهند شد<br>{}').format(
+                '<br>'.join([product.Title for product in errors])
+                ))
         return list
 
 

@@ -103,9 +103,9 @@ class ShopLogisticUnitConstraint(models.Model):
         
     shop_logistic_unit = models.OneToOneField(ShopLogisticUnit, verbose_name=_('واحد ارسال'),
                                             related_name='constraint', on_delete=models.CASCADE)
-    cities = models.ManyToManyField(City, verbose_name=_('شهرها'), related_name='logistic_unit_constraints')
-    products = models.ManyToManyField(Product, verbose_name=_('محصولات'), related_name='logistic_unit_constraints')
-    categories = models.ManyToManyField(NewCategory, verbose_name=_('دسته بندی ها'), related_name='logistic_unit_constraints')
+    cities = models.ManyToManyField(City, verbose_name=_('شهرها'), related_name='logistic_unit_constraints', blank=True)
+    products = models.ManyToManyField(Product, verbose_name=_('محصولات'), related_name='logistic_unit_constraints', blank=True)
+    categories = models.ManyToManyField(NewCategory, verbose_name=_('دسته بندی ها'), related_name='logistic_unit_constraints', blank=True)
     max_weight = models.PositiveIntegerField(verbose_name=_('حداکثر وزن (کیلوگرم)'), default=0, null=True, blank=True)
     min_weight = models.PositiveIntegerField(verbose_name=_('حداقل وزن (کیلوگرم)'), default=0, null=True, blank=True)
     max_cart_price = models.PositiveIntegerField(verbose_name=_('حداکثر قیمت سبد خرید (ریال)'), default=0, null=True, blank=True)
