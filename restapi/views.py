@@ -2450,7 +2450,8 @@ class UserDashboardInfo(APIView):
         unread_comments_count = Comment.objects.filter(FK_Product__FK_Shop__FK_ShopManager=user).count()
 
         # Balance
-        balance = request.user.WalletManager.Inverntory
+        # balance = request.user.WalletManager.Inverntory
+        balance = 0 # TODO Resole Error User.WalletManager
 
         # Total sell in current week
         current_week_total_sell = FactorPost.objects.current_week_user_total_sell(user, shop_slug)
