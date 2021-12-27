@@ -6,6 +6,7 @@ WORKDIR /usr/src/app
 
 # set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1 && PYTHONUNBUFFERED 1
+ENV django python manage.py 
 
 # install dependencies
 COPY ./requirements.txt .
