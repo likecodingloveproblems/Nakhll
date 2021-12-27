@@ -3,7 +3,7 @@ from django.db.models.aggregates import Sum
 from django.db.models.query_utils import Q
 from django.utils.translation import ugettext as _
 from rest_framework.validators import ValidationError
-from nakhll_market.models import Product, Shop
+from nakhll_market.models import City, NewCategory, Product, Shop
 
 
 class PostPriceSettingInterface:
@@ -180,6 +180,63 @@ class LogisticUnitInterface:
         filter_queryset |= Q(constraint__min_cart_price__lte=sum_shop_cart_weight)
 
         return models.ShopLogisticUnit.objects.filter(filter_queryset).first()
+
+def generate_shop_logistic_units():
+    SLU = models.ShopLogisticUnit
+    for shop in Shop.objects.all():
+        logo_path = 'defaults/lu_free.png'
+        logo_file = File(open(logo_path, 'rb'))
+        slu = SLU.objects.create(shop=shop, name='ارسال رایگان', is_active=False, logo=logo_file)
+        sluc = models.ShopLogisticUnitConstraint.objects.create(
+            shop_logistic_unit=slu
+        )
+        slum = models.ShopLogisticUnitCalculationMetric.objects.create(
+            shop_logistic_unit=slu, price_per_kilogram=0, price_per_extra_kilogram=0
+        )
+
+        logo_path = 'defaults/lu_delivery.png'
+        logo_file = File(open(logo_path, 'rb'))
+        slu = SLU.objects.create(shop=shop, name='پیک', is_active=False, logo=logo_file)
+        sluc = models.ShopLogisticUnitConstraint.objects.create(
+            shop_logistic_unit=slu,
+        )
+        try:
+            sluc.cities.add(City.objects.get(name=shop.City))
+        except:
+            pass
+        slum = models.ShopLogisticUnitCalculationMetric.objects.create(
+            shop_logistic_unit=slu, price_per_kilogram=0, price_per_extra_kilogram=0
+        )
+  
+        logo_path = 'defaults/lu_pad.png'
+        logo_file = File(open(logo_path, 'rb'))
+        slu = SLU.objects.create(shop=shop, name='پسکرایه', is_active=True, logo=logo_file)
+        sluc = models.ShopLogisticUnitConstraint.objects.create(
+            shop_logistic_unit=slu
+        )
+        slum = models.ShopLogisticUnitCalculationMetric.objects.create(
+            shop_logistic_unit=slu, price_per_kilogram=0, price_per_extra_kilogram=0
+        )
+
+        logo_path = 'defaults/lu_post_pishtaz.png'
+        logo_file = File(open(logo_path, 'rb'))
+        slu = SLU.objects.create(shop=shop, name='پست پیشتاز', is_active=True, logo=logo_file)
+        sluc = models.ShopLogisticUnitConstraint.objects.create(
+            shop_logistic_unit=slu, max_weight=40
+        )
+        slum = models.ShopLogisticUnitCalculationMetric.objects.create(
+            shop_logistic_unit=slu, price_per_kilogram=150000, price_per_extra_kilogram=25000
+        )
+        
+        logo_path = 'defaults/lu_post_sefareshi.png'
+        logo_file = File(open(logo_path, 'rb'))
+        slu = SLU.objects.create(shop=shop, name='پست سفارشی', is_active=True, logo=logo_file)
+        sluc = models.ShopLogisticUnitConstraint.objects.create(
+            shop_logistic_unit=slu, max_weight=40
+        )
+        slum = models.ShopLogisticUnitCalculationMetric.objects.create(
+            shop_logistic_unit=slu, price_per_kilogram=140000, price_per_extra_kilogram=20000
+        )
 
 
 
