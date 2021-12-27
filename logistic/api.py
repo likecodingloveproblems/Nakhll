@@ -10,7 +10,7 @@ from django.utils.translation import ugettext as _
 from logistic.models import Address, LogisticUnitGeneralSetting, ShopLogisticUnit, ShopLogisticUnitConstraint, ShopLogisticUnitCalculationMetric
 from logistic.serializers import (AddressSerializer, ShopLogisticUnitCalculationMetricSerializer,
                                   ShopLogisticUnitConstraintReadSerializer, ShopLogisticUnitSerializer,
-                                  ShopLogisticUnitConstraintWriteSerializer)
+                                  ShopLogisticUnitConstraintWriteSerializer, ShopLogisticUnitFullSerializer)
 from logistic.permissions import IsAddressOwner, IsShopOwner
 from nakhll_market.models import Product, Shop
 
@@ -76,7 +76,7 @@ class AddressViewSet(viewsets.ModelViewSet):
         
         
 class ShopLogisticUnitViewSet(viewsets.ModelViewSet):
-    serializer_class = ShopLogisticUnitSerializer
+    serializer_class = ShopLogisticUnitFullSerializer
     permission_classes = [permissions.IsAuthenticated, IsShopOwner]
     lookup_field = 'id'
 
@@ -98,7 +98,7 @@ class ShopLogisticUnitViewSet(viewsets.ModelViewSet):
         slu = serializer.save()
         ShopLogisticUnitConstraint.objects.create(shop_logistic_unit=slu)
         ShopLogisticUnitCalculationMetric.objects.create(shop_logistic_unit=slu)
-        
+    
 
 class ShopLogisticUnitConstraintViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.UpdateModelMixin):
     permission_classes = [permissions.IsAuthenticated, IsShopOwner]

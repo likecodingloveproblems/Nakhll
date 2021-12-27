@@ -45,6 +45,7 @@ class ProductSerializer(serializers.ModelSerializer):
         return obj.is_checked
 
 
+
 class ShopLogisticUnitSerializer(serializers.ModelSerializer):
     shop = serializers.SlugRelatedField(slug_field='Slug', queryset=Shop.objects.all())
     constraint_id = serializers.SerializerMethodField()
@@ -123,10 +124,61 @@ class ShopLogisticUnitCalculationMetricSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'shop_logistic_unit', )
 
 
+class ShopLogisticUnitConstraintWithoutM2MSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ShopLogisticUnitConstraint
+        fields = ('id', 'max_weight', 'min_weight', 'max_cart_price',
+                  'min_cart_price', 'max_cart_count', 'min_cart_count', )
+        read_only_fields = ('id', )
 
 
 
+class ShopLogisticUnitFullSerializer(serializers.ModelSerializer):
+    shop = serializers.SlugRelatedField(slug_field='Slug', queryset=Shop.objects.all())
+    constraint = ShopLogisticUnitConstraintWithoutM2MSerializer(read_only=False, required=False)
+    calculation_metric = ShopLogisticUnitCalculationMetricSerializer(read_only=False, required=False)
+    cities_count = serializers.SerializerMethodField()
+    products_count = serializers.SerializerMethodField()
+    logo = Base64ImageField(max_length=None, use_url=True, allow_empty_file=False, required=False)
+    class Meta:
+        model = ShopLogisticUnit
+        fields = ('id', 'shop', 'name', 'description', 'logo', 'is_active', 'is_publish',
+                  'constraint', 'calculation_metric', 'cities_count', 'products_count', )
+        read_only_fields = ('id', 'is_publish', )
 
+    def get_constraint_id(self, obj):
+        return obj.constraint.id if hasattr(obj, 'constraint') else None
+    
+    def get_metric_id(self, obj):
+        return obj.calculation_metric.id if hasattr(obj, 'calculation_metric') else None
+
+    def get_cities_count(self, obj):
+        if not obj.constraint or not obj.constraint.cities:
+            return 0
+        return obj.constraint.cities.count()
+
+    def get_products_count(self, obj):
+        if not obj.constraint or not obj.constraint.products:
+            return 0
+        return obj.constraint.products.count()
+
+ 
+    def update(self, instance, validated_data):
+        constraint_dict = validated_data.pop('constraint', {})
+        metric_dict = validated_data.pop('calculation_metric', {})
+        instance = super().update(instance, validated_data)
+
+        constraint = instance.constraint
+        for key, value in constraint_dict.items():
+            setattr(constraint, key, value)
+        constraint.save()
+
+        metric = instance.calculation_metric
+        for key, value in metric_dict.items():
+            setattr(metric, key, value)
+        metric.save()
+
+        return instance
 
 
 
