@@ -92,7 +92,7 @@ class ShopLogisticUnitViewSet(viewsets.ModelViewSet):
         shop = self.get_shop()
         if shop:
             queryset = queryset.filter(shop=shop)
-        return queryset
+        return queryset.select_related('constraint', 'calculation_metric')
 
     def perform_create(self, serializer):
         slu = serializer.save()
