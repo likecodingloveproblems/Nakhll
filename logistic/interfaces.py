@@ -1,4 +1,6 @@
+from django.db.models.aggregates import Sum
 from django.db.models.query_utils import Q
+from django.utils.translation import ugettext as _
 from rest_framework.validators import ValidationError
 from nakhll_market.models import Product
 
@@ -95,7 +97,7 @@ class PostPriceSettingInterface:
         extra_weight = 0
         total_item_weights = 0
         for item in invoice.items.filter(product__FK_Shop=shop):
-            total_item_weights += int(item.product.net_weight or 0) * item.count
+            total_item_weights += int(item.product.weight or 0) * item.count
         weight_kilogram = total_item_weights / 1000
         if weight_kilogram > 1: # There is a fee for more than 1kg
             extra_weight = weight_kilogram - 1 # for example 2.5kg is 2.5kg - 1kg = 1.5kg
@@ -104,60 +106,73 @@ class PostPriceSettingInterface:
         
 
 class LogisticUnitInterface:
+    def __init__(self) -> None:
+        self.total_post_price = 0
+
     def create_logistic_unit_dict(self, invoice):
-        dict = {}
+        list = []
         for shop in invoice.shops:
             shop_dict = {}
-            for product in Product.objects.filter(FK_Shop=shop):
-                product_dict = {}
+            for product in invoice.products.filter(FK_Shop=shop):
                 logistic_unit = self.get_logistic_unit(invoice, product)
-                logistic_unit = logistic_unit or self.get_default_logistic_unit()
                 if not logistic_unit:
-                    raise Exception('No logistic unit found')
-                product_dict['logistic_unit'] = logistic_unit
-                product_dict['price'] = self.calculate_logistic_unit_price(logistic_unit)
-                shop_dict[product] = product_dict
-            dict[shop] = shop_dict
-        return dict
+                    raise Exception(_('این محصول هیچ روش ارسالی ندارد'))
+                logistic_units= shop_dict.pop(logistic_unit.id, None)
+                if not logistic_units:
+                    logistic_units = {
+                        'name': logistic_unit.name,
+                        'products': [],
+                    }
+                products = logistic_units.pop('products')
+                products.append({'title': product.Title, 'slug': product.Slug})
+                logistic_units['products'] = products
+                shop_dict[logistic_unit.id] = logistic_units
+            price = self.calculate_logistic_unit_price(shop_dict, invoice)
+            self.total_post_price += price
+            list.append({
+                'shop_name': shop.Title,
+                'shop_slug': shop.Slug,
+                'logistic_units': shop_dict,
+                'price': price
+            })
+        return list
 
 
-    def calculate_logistic_unit_price(self, logistic_unit, invoice, product):
-        return 22222
+    def calculate_logistic_unit_price(self, shop_dict, invoice):
+        total_price = 0
+        for logistic_unit_id, products in shop_dict.items():
+            logistic_unit = models.ShopLogisticUnit.objects.get(id=logistic_unit_id)
+            items = invoice.items.filter(product__Slug__in=[product['slug'] for product in products['products']])
+            price = logistic_unit.calculation_metric.price_per_kilogram
+            price += logistic_unit.calculation_metric.price_per_extra_kilogram * self.get_extra_weight(items)
+            total_price += price
+        return total_price
+
+        
+    def get_extra_weight(self, items):
+        total_weight = 0
+        for item in items:
+            total_weight += int(item.weight or 0) * item.count
+        return int(total_weight / 1000)
 
 
-    def get_logistic_unit(self, invoice, prod):
-        if not models.ShopLogisticUnit.objects.filter(shop=prod.FK_Shop).exists():
+    def get_logistic_unit(self, invoice, product: Product):
+        if not models.ShopLogisticUnit.objects.filter(shop=product.FK_Shop).exists():
             return None
 
-        # Logistic unit constraint
-        shop_logistic_units = models.ShopLogisticUnit.objects.filter(
-            Q(shop=prod.FK_Shop),
-            ~Q(logistic_unit__logistic_unit_constraints__constraint__products=prod),
-            ~Q(logistic_unit__logistic_unit_constraints__constraint__categories=prod.new_category),
-            ~Q(logistic_unit__logistic_unit_constraints__constraint__cities=invoice.address.city),
+        filter_queryset = Q(
+            Q(constraint__products=product) |
+            Q(constraint__products=None)
         )
+        sum_shop_cart_weight = invoice.products.filter(FK_Shop=product.FK_Shop).aggregate(
+            total_price=Sum('Price')
+        )['total_price']
+        filter_queryset |= Q(constraint__cities=invoice.address.city)
+        filter_queryset |= Q(constraint__max_weight__gte=product.Weight_With_Packing)
+        filter_queryset |= Q(constraint__min_cart_price__lte=sum_shop_cart_weight)
 
-        # shop logistic unit constraint
-        filter_queryset = Q()
-        filter_queryset |= Q(shop=prod.FK_Shop)
-        filter_queryset |= Q(
-            Q(logistic_unit__is_always_active=True) |
-            Q(
-                Q(logistic_unit__is_always_active=False),
-                ~Q(shop_logistic_unit_constraints__constraint__products=prod),
-                ~Q(shop_logistic_unit_constraints__constraint__categories=prod.new_category),
-                ~Q(shop_logistic_unit_constraints__constraint__cities=invoice.address.city)
-            )
-        )
-        
-        shop_logistic_units.filter(filter_queryset).distinct()
+        return models.ShopLogisticUnit.objects.filter(filter_queryset).first()
 
-        return shop_logistic_units.order_by('-priority').first()
-
-
-
-    def get_default_logistic_unit(self):
-        return models.LogisticUnit.objects.filter(is_default_logistic_unit=True).order_by('priority').first()
 
 
 from logistic import models

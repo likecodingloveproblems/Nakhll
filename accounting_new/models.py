@@ -61,6 +61,7 @@ class Invoice(models.Model, AccountingInterface):
     payment_unique_id = models.BigIntegerField(_('شماره درخواست پرداخت'), null=True, blank=True)
     extra_data = models.JSONField(null=True, blank=True, encoder=DjangoJSONEncoder)
     total_weight_gram = models.PositiveIntegerField(_('وزن نهایی (گرم)'), null=True, blank=True)
+    logistic_unit_details = models.JSONField(null=True, blank=True, encoder=DjangoJSONEncoder, verbose_name=_('جزئیات واحد حمل و نقل'))
     objects = AccountingManager()
 
     def __str__(self):
