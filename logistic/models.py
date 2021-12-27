@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from nakhll_market.models import BankAccount, NewCategory, Product, Shop, State, BigCity, City
-from logistic.managers import AddressManager
+from logistic.managers import AddressManager, ShopLogisticUnitManager
 from logistic.interfaces import PostPriceSettingInterface
 
 
@@ -90,6 +90,7 @@ class ShopLogisticUnit(models.Model):
     description = models.TextField(verbose_name=_('توضیحات'), null=True, blank=True)
     created_at = models.DateTimeField(verbose_name=_('تاریخ ایجاد'), auto_now_add=True)
     updated_at = models.DateTimeField(verbose_name=_('تاریخ بروزرسانی'), auto_now=True)
+    objects = ShopLogisticUnitManager()
 
     def __str__(self):
         return f'{self.shop}: {self.name}'

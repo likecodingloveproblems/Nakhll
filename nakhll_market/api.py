@@ -15,6 +15,7 @@ from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError, PermissionDenied, AuthenticationFailed
 from rest_framework.decorators import action
 from django_filters import rest_framework as restframework_filters
+from logistic.models import ShopLogisticUnit
 from nakhll_market.models import (
     Alert, AmazingProduct, Comment, NewCategory, Product, ProductBanner, Shop, Slider, Category, Market, State, BigCity, City, SubMarket,
     LandingPageSchema, ShopPageSchema, UserImage,
@@ -415,6 +416,7 @@ class CreateShop(generics.CreateAPIView):
 
         new_shop = serializer.save(FK_ShopManager=self.request.user, Publish=True, 
                                 State=state.name, BigCity=bigcity.name, City=city.name, Slug=slug)
+        ShopLogisticUnit.objects.generate_logistic_unit(new_shop)
         Alert.objects.create(Part='2', FK_User=self.request.user, Slug=new_shop.ID)
 
 
