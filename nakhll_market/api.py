@@ -25,7 +25,7 @@ from nakhll_market.serializers import (
     NewProfileSerializer, ProductBannerWithProductSerializer, ProductCommentSerializer,
     ProductDetailSerializer, ProductImagesSerializer, ProductOwnerListSerializer,
     ProductOwnerReadSerializer, ProductOwnerWriteSerializer, ProductPriceWriteSerializer,
-    ProductSerializer, ShopSerializer, ShopSimpleSerializer, ShopSlugSerializer,SliderSerializer,
+    ProductSerializer, ShopSerializer, ShopSimpleSerializer, ShopSlugSerializer, ShopStatisticSerializer,SliderSerializer,
     CategorySerializer, FullMarketSerializer, CreateShopSerializer, ProductInventoryWriteSerializer,
     ProductListSerializer, ShopAllSettingsSerializer, SubMarketProductSerializer, UserOrderSerializer,
     ProductSubMarketSerializer, StateFullSeraializer, ShopPageSchemaSerializer, UserImageSerializer,
@@ -819,3 +819,29 @@ class PublicShopsViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
         shops = self.get_queryset()
         serializer = ShopSlugSerializer(shops, many=True)
         return Response(serializer.data)
+
+
+class ShopsStatisticViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+    permission_classes = [permissions.IsAdminUser, ]
+    serializer_class = ShopStatisticSerializer
+
+    def get_queryset(self):
+        return Shop.objects.select_related('FK_ShopManager').annotate(
+            products_count=Count('ShopProduct'),
+            total_sell=Count('ShopProduct__invoice_items',
+                             filter=Q(
+                                 Q(ShopProduct__invoice_items__invoice__status='wait_store_approv') |
+                                 Q(ShopProduct__invoice_items__invoice__status='preparing_product') |
+                                 Q(ShopProduct__invoice_items__invoice__status='wait_customer_approv') |
+                                 Q(ShopProduct__invoice_items__invoice__status='wait_store_checkout') |
+                                 Q(ShopProduct__invoice_items__invoice__status='completed')
+                            )
+                        )
+                    )
+
+    def list(self, request, *args, **kwargs):
+        shops = self.get_queryset()
+        serializer = ShopStatisticSerializer(shops, many=True)
+        from excel_response import ExcelResponse
+        return ExcelResponse(data=serializer.data)
+        # return Response(serializer.data)

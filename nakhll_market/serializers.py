@@ -717,3 +717,28 @@ class UserImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserImage
         fields = ('id', 'image', 'title', 'description')
+
+
+class ShopStatisticSerializer(serializers.ModelSerializer):
+    products_count = serializers.SerializerMethodField()
+    register_datetime = serializers.SerializerMethodField()
+    total_sell = serializers.SerializerMethodField()
+    mobile_number = serializers.SerializerMethodField()
+    class Meta:
+        model = Shop
+        fields = ['ID', 'Title', 'Slug', 'products_count',
+                  'register_datetime', 'total_sell', 'mobile_number']
+
+    def get_products_count(self, obj):
+        return obj.products_count
+        
+    def get_register_datetime(self, obj):
+        return obj.DateCreate.strftime('%Y-%m-%d')
+    
+    def get_total_sell(self, obj):
+        return obj.total_sell
+    
+    def get_mobile_number(self, obj):
+        if obj.FK_ShopManager:
+            return obj.FK_ShopManager.User_Profile.MobileNumber
+        return None

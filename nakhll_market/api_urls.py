@@ -11,7 +11,7 @@ from nakhll_market.api import (
     MarketList, CreateShop, GetShopWithSlug, CheckShopSlug, CheckProductSlug,
     ShopProductsViewSet, ProductCommentsViewSet, ProductRelatedItemsViewSet,
     ProductBannerViewSet, AddImagesToProduct, ProductDetailsViewSet,
-    LandingPageSchemaViewSet, ShopPageSchemaViewSet, 
+    LandingPageSchemaViewSet, ShopPageSchemaViewSet, ShopsStatisticViewSet
     )
 from rest_framework import routers
 
@@ -55,6 +55,10 @@ shop_owner_router.register(r'products', ShopOwnerProductViewSet, basename="produ
 categories_router = routers.DefaultRouter()
 categories_router.register(r'', CategoryViewSet, basename="categories")
 
+statistic_routers = routers.DefaultRouter()
+statistic_routers.register('shop', ShopsStatisticViewSet, basename='shop')
+
+
 urlpatterns = [
     path('landing/', include(landing_router.urls)),
     path('products/', include(product_page_router.urls)),
@@ -91,6 +95,7 @@ urlpatterns = [
     path('profile/', include(profile_router.urls)),
 
     path('categories/', include(categories_router.urls)),
+    path('statistics/', include(statistic_routers.urls)),
 
     # path('torob/products/', TorobAllProducts.as_view()),
 ]
