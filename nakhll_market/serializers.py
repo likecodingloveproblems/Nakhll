@@ -739,6 +739,6 @@ class ShopStatisticSerializer(serializers.ModelSerializer):
         return obj.total_sell
     
     def get_mobile_number(self, obj):
-        if obj.FK_ShopManager:
+        if obj.FK_ShopManager and hasattr(obj.FK_ShopManager, 'User_Profile'):
             return obj.FK_ShopManager.User_Profile.MobileNumber
         return None
