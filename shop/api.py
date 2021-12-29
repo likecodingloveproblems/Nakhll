@@ -1,4 +1,6 @@
+from django.db.models.expressions import F
 from django.http.response import Http404
+from excel_response import ExcelResponse
 from rest_framework.exceptions import ValidationError
 from datetime import datetime, timedelta
 from django.contrib.auth.models import User
@@ -146,3 +148,29 @@ class PinnedURLViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin,
 
     
 
+class ShopViewSet(viewsets.GenericViewSet):
+    permission_classes = [permissions.IsAuthenticated, IsShopOwner]
+    queryset = Shop.objects.all()
+    lookup_field = 'pk'
+    
+    @action(detail=True, methods=['get'])
+    def products_as_excel(self, request, pk=None):
+        shop = self.get_object()
+        shop_products = shop.ShopProduct.annotate(
+                عنوان=F('Title'),
+                بارکد=F('barcode'),
+                قیمت=F('Price'),
+                قیمت_قبل=F('OldPrice'),
+                موجودی=F('Inventory'),
+                دسته_بندی=F('new_category_id'),
+                وضعیت_انتشار=F('Publish'),
+            ).values(
+                'عنوان',
+                'بارکد',
+                'قیمت',
+                'قیمت_قبل',
+                'موجودی',
+                'دسته_بندی',
+                'وضعیت_انتشار',
+        )
+        return ExcelResponse(data=shop_products)
