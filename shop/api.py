@@ -151,10 +151,10 @@ class PinnedURLViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin,
 class ShopViewSet(viewsets.GenericViewSet):
     permission_classes = [permissions.IsAuthenticated, IsShopOwner]
     queryset = Shop.objects.all()
-    lookup_field = 'pk'
+    lookup_field = 'Slug'
     
     @action(detail=True, methods=['get'])
-    def products_as_excel(self, request, pk=None):
+    def products_as_excel(self, request, Slug=None):
         shop = self.get_object()
         shop_products = shop.ShopProduct.annotate(
                 عنوان=F('Title'),
