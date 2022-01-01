@@ -11,7 +11,9 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import sentry_sdk, os, logging
-from sentry_sdk.integrations.django import DjangoIntegration, LoggingIntegration
+from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
+
 from datetime import timedelta
 from dotenv import load_dotenv
 from django.urls.base import reverse_lazy
