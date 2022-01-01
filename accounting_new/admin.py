@@ -7,9 +7,12 @@ from coupon.models import CouponUsage
 # Register your models here.
 class InvoiceItemInline(admin.TabularInline):
     model = InvoiceItem
-    fields = ('name', 'count', 'price_with_discount', 'price_without_discount', 'weight', 'shop_name', 'barcode')
+    fields = ('name', 'count', 'price_with_discount', 'price_without_discount', 'weight', 'shop_name', 'preparation', 'barcode')
     extra = 0
     # readonly_fields = fields
+
+    def preperation(self, obj):
+        return obj.product.PreparationDays
 
 class CouponUsageInline(admin.TabularInline):
     model = CouponUsage
