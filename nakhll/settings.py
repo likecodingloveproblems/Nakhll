@@ -10,8 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
-import sentry_sdk, os
-from sentry_sdk.integrations.django import DjangoIntegration
+import sentry_sdk, os, logging
+from sentry_sdk.integrations.django import DjangoIntegration, LoggingIntegration
 from datetime import timedelta
 from dotenv import load_dotenv
 from django.urls.base import reverse_lazy
@@ -325,10 +325,18 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = os.environ.get('EMAIL_PORT', 587)
 
+sentry_logging = LoggingIntegration(
+    level=logging.INFO,        # Capture info and above as breadcrumbs
+    event_level=logging.ERROR  # Send errors as events
+)
+
 # setup sentry
 sentry_sdk.init(
     dsn=os.environ.get("SENTRY_DNS"),
-    integrations=[DjangoIntegration()],
+    integrations=[
+        DjangoIntegration(),
+
+        ],
     traces_sample_rate=1.0,
     environment=os.environ.get("SENTRY_ENVIRONMENT", "production"),
     send_default_pii=True,
