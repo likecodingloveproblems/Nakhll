@@ -48,18 +48,13 @@ class Kavenegar:
 
     @staticmethod
     def shop_new_order(receptor, order_id):
-        logging.info('Sending new oeder SMS to {} for order {}'.format(receptor, order_id))
+        logger.debug('Sending new order SMS to {} for order {}'.format(receptor, order_id))
         tokens = { 'token': order_id }
         Kavenegar._raw_send('nakhll-order', receptor, tokens)
 
     @staticmethod
     def send_auth_code(mobile_number, code):
-        logger.info('Sending auth code {} to {}'.format(code, mobile_number))
-        logger.warning('Sending auth code {} to {}'.format(code, mobile_number))
-        logger.error('Sending auth code {} to {}'.format(code, mobile_number))
         logger.debug('Sending auth code {} to {}'.format(code, mobile_number))
-        logger.critical('Sending auth code {} to {}'.format(code, mobile_number))
-        logger.fatal('Sending auth code {} to {}'.format(code, mobile_number))
         tokens = { 'token': code }
         Kavenegar._raw_send('nakhl-register', mobile_number, tokens)
 
