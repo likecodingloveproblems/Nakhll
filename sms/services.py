@@ -2,6 +2,8 @@ import logging
 import requests
 from nakhll.settings import KAVENEGAR_KEY
 from sms.models import SMS, SMSRequest
+logger = logging.getLogger(__name__)
+
 
 # only for test purposes
 def count_sms():
@@ -52,7 +54,12 @@ class Kavenegar:
 
     @staticmethod
     def send_auth_code(mobile_number, code):
-        logging.info('Sending auth code {} to {}'.format(code, mobile_number))
+        logger.info('Sending auth code {} to {}'.format(code, mobile_number))
+        logger.warning('Sending auth code {} to {}'.format(code, mobile_number))
+        logger.error('Sending auth code {} to {}'.format(code, mobile_number))
+        logger.debug('Sending auth code {} to {}'.format(code, mobile_number))
+        logger.critical('Sending auth code {} to {}'.format(code, mobile_number))
+        logger.fatal('Sending auth code {} to {}'.format(code, mobile_number))
         tokens = { 'token': code }
         Kavenegar._raw_send('nakhl-register', mobile_number, tokens)
 
