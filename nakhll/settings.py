@@ -337,7 +337,7 @@ sentry_sdk.init(
     dsn=os.environ.get("SENTRY_DNS"),
     integrations=[
         DjangoIntegration(),
-
+        sentry_logging,
         ],
     traces_sample_rate=1.0,
     environment=os.environ.get("SENTRY_ENVIRONMENT", "production"),
