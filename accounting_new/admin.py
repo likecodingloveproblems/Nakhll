@@ -8,6 +8,7 @@ from coupon.models import CouponUsage
 class InvoiceItemInline(admin.TabularInline):
     model = InvoiceItem
     fields = ('name', 'count', 'price_with_discount', 'price_without_discount', 'weight', 'shop_name', 'preperation', 'barcode')
+    readonly_fields = ('preperation',)
     extra = 0
     # readonly_fields = fields
 
