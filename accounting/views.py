@@ -133,6 +133,7 @@ class ProductStats(View):
                 'FK_Shop__Location', 'FK_Shop__Available', 'FK_Shop__Publish', 
                 'FK_Shop__CanselCount','FK_Shop__FK_ShopManager__username', 'sell_count',
                 'sell_product_count', 'Price', 'OldPrice', 'DateCreate', 'DateUpdate',
+                'Inventory',
                 )
         
         return ExcelResponse(
