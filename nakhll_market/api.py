@@ -416,7 +416,7 @@ class CreateShop(generics.CreateAPIView):
 
         new_shop = serializer.save(FK_ShopManager=self.request.user, Publish=True, 
                                 State=state.name, BigCity=bigcity.name, City=city.name, Slug=slug)
-        ShopLogisticUnit.objects.generate_logistic_unit(new_shop)
+        ShopLogisticUnit.objects.generate_shop_logistic_units(new_shop)
         Alert.objects.create(Part='2', FK_User=self.request.user, Slug=new_shop.ID)
 
 
