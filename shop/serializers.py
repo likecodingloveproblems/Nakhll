@@ -1,7 +1,7 @@
 import jdatetime
 from rest_framework import serializers
 from nakhll_market.models import Shop
-from .models import ShopFeature, ShopFeatureInvoice, ShopLanding, PinnedURL
+from .models import ShopAdvertisement, ShopFeature, ShopFeatureInvoice, ShopLanding, PinnedURL
 
 class ShopFeatureSerializer(serializers.ModelSerializer):
     class Meta:
@@ -98,4 +98,10 @@ class UserPinnedURLSerializer(serializers.ModelSerializer):
         model = PinnedURL
         fields = ('id', 'name', 'link', 'user')
 
+class ShopAdvertisementSerializer(serializers.ModelSerializer):
+    shop = serializers.SlugRelatedField(slug_field='Slug', queryset=Shop.objects.all())
+    class Meta:
+        model = ShopAdvertisement
+        fields = ('id', 'shop', 'yektanet_id', 'yektanet_status')
+        read_only_fields = ('id', )
 

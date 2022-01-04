@@ -13,8 +13,8 @@ from rest_framework.response import Response
 from nakhll_market.models import Shop
 from payoff.exceptions import NoAddressException, InvoiceExpiredException,\
             InvalidInvoiceStatusException, OutOfPostRangeProductsException
-from .models import ShopFeature, ShopFeatureInvoice, ShopLanding, PinnedURL
-from .serializers import (ShopFeatureDetailSerializer, ShopFeatureInvoice, ShopFeatureInvoiceSerializer,
+from .models import ShopAdvertisement, ShopFeature, ShopFeatureInvoice, ShopLanding, PinnedURL
+from .serializers import (ShopAdvertisementSerializer, ShopFeatureDetailSerializer, ShopFeatureInvoice, ShopFeatureInvoiceSerializer,
                          ShopFeatureInvoiceWriteSerializer, ShopFeatureSerializer, ShopLandingDetailsSerializer, ShopLandingSerializer, UserPinnedURLSerializer, )
 from .permissions import IsShopOwner, IsPinnedURLOwner, ShopLandingPermission
 from .mixins import MultipleFieldLookupMixin
@@ -178,3 +178,25 @@ class ShopViewSet(viewsets.GenericViewSet):
                 'وضعیت_انتشار',
         )
         return ExcelResponse(data=shop_products)
+
+class ShopAdvertisementViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin,
+                               mixins.UpdateModelMixin):
+    queryset = ShopAdvertisement.objects.all()
+    permission_classes = [permissions.IsAuthenticated, IsShopOwner]
+    serializer_class = ShopAdvertisementSerializer
+    lookup_field = 'slug'
+
+    def get_queryset(self):
+        return super().get_queryset().filter(shop__FK_ShopManager=self.request.user)
+
+    def get_object(self):
+        shop_slug = self.kwargs.get(self.lookup_field, '')
+        shop = get_object_or_404(Shop, Slug=shop_slug)
+        if not hasattr(shop, 'advertisement'):
+            ads = ShopAdvertisement.objects.create(shop=shop)
+        else:
+            ads = shop.advertisement
+        self.check_object_permissions(self.request, ads)
+        return ads
+
+

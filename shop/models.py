@@ -176,3 +176,21 @@ class PinnedURL(models.Model):
     link = models.URLField(verbose_name=_('لینک'))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('تاریخ ایجاد'))
     updated_at = models.DateTimeField(auto_now=True, verbose_name=_('تاریخ بروزرسانی'))
+
+    
+    
+class ShopAdvertisement(models.Model):
+    class Meta:
+        verbose_name = _('تبلیغات')
+        verbose_name_plural = _('تبلیغات')
+        ordering = ('-id', )
+
+    class YektanetStatuses(models.IntegerChoices):
+        ACTIVE = 1, _('فعال')
+        INACTIVE = 0, _('غیرفعال')
+
+    shop = models.OneToOneField(Shop, on_delete=models.CASCADE, related_name='advertisement', verbose_name=_('حجره'))
+    yektanet_id = models.CharField(verbose_name=_('شناسه تبلیغاتی یکتانت'), max_length=20, null=True, blank=True)
+    yektanet_status = models.IntegerField(verbose_name=_('وضعیت تبلیغاتی یکتانت'),
+                                          choices=YektanetStatuses.choices,
+                                          default=YektanetStatuses.INACTIVE)
