@@ -124,6 +124,14 @@ class ShopLandingViewSet(MultipleFieldLookupMixin, mixins.RetrieveModelMixin,
         shop_landing.save()
         return Response(status=status.HTTP_200_OK)
 
+
+    @action(detail=True, methods=['get'], )
+    def deactivate_landing(self, request, shop__Slug, pk=None):
+        shop_landing = self.get_object()
+        shop_landing.status = ShopLanding.Statuses.INACTIVE
+        shop_landing.save()
+        return Response(status=status.HTTP_200_OK)
+
     def perform_create(self, serializer):
         shop = self.get_shop()
         serializer.save(shop=shop)
