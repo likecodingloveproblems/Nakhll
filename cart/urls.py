@@ -14,8 +14,8 @@ cart_router.register('cart_items', UserCartItemViewSet, basename='api_cart_items
 
 app_name = 'cart_new'
 urlpatterns = [
-    path('add-to-cart/<product_ID>/', add_to_cart, name='add_to_cart'),
-    path('detail/', show_cart, name='show_cart'),
+    # path('add-to-cart/<product_ID>/', add_to_cart, name='add_to_cart'),
+    # path('detail/', show_cart, name='show_cart'),
     path('api/', include(cart_router.urls)),
 ]
 
