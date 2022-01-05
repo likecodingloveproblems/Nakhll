@@ -173,6 +173,6 @@ class PinnedURL(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pinned_urls', verbose_name=_('کاربر'))
     name = models.CharField(max_length=100, verbose_name=_('نام'))
-    link = models.URLField(verbose_name=_('لینک'))
+    link = models.URLField(verbose_name=_('لینک'), max_length=500)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('تاریخ ایجاد'))
     updated_at = models.DateTimeField(auto_now=True, verbose_name=_('تاریخ بروزرسانی'))
