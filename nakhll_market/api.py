@@ -719,6 +719,8 @@ class GroupProductCreateExcel(views.APIView):
     def post(self, request, shop_slug, format=None):
         shop = self.get_object(shop_slug)
         csv_file = request.FILES.get('product-excel-upload')
+        if not csv_file:
+            raise ValidationError('هیچ فایلی جهت بارگذاری انتخاب نشده است')
         zip_file = request.FILES.get('product-zip-file')
         bulk_product_handler = BulkProductHandler(shop=shop, images_zip_file=zip_file, bulk_type=self.bulk_type)
         try:
