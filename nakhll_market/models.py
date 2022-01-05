@@ -1254,7 +1254,7 @@ class Product(models.Model):
     Width_With_Packaging=models.CharField(verbose_name='عرض محصول با بسته بندی (سانتی متر(', max_length=4, default='0')
     Height_With_Packaging=models.CharField(verbose_name='ارتفاع محصول با بسته بندی (سانتی متر(', max_length=4, default='0')
     # Product Inventory
-    Inventory=models.IntegerField(verbose_name='میزان موجودی از این کالا در انبار', default=5)
+    Inventory=models.PositiveIntegerField(verbose_name='میزان موجودی از این کالا در انبار', default=5)
     
     PostRangeType=models.CharField(verbose_name='محدوده ارسال محصولات', max_length=1, choices=POSTRANGE_TYPE, default='1', help_text='محدوده ارسال را بر اساس تایپ های مشخص شده، تعیین کنید.')
     FK_PostRange=models.ManyToManyField('PostRange', verbose_name='استان، شهرستان و شهر', related_name='Product_PostRange', blank=True)
