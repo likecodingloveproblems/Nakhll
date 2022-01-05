@@ -2961,4 +2961,43 @@ def auto_delete_file_on_change(sender, instance, **kwargs):
         if os.path.isfile(old_image.path):
             os.remove(old_image.path)
 
+class LandingPage(models.Model):
+    class Meta:
+        verbose_name = 'صفحه فرود'
+        verbose_name_plural = 'صفحه فرود'
+        ordering = ('-id', )
+
+    class Statuses(models.IntegerChoices):
+        INACTIVE = 0, 'غیرفعال'
+        ACTIVE = 1, 'فعال'
+
+        
+    page_slug = models.CharField(max_length=100, verbose_name='نام صفحه', unique=True)
+    status = models.IntegerField(verbose_name='وضعیت', choices=Statuses.choices, default=Statuses.ACTIVE)
+    staff = models.ForeignKey(User, verbose_name='کارشناس', on_delete=models.SET_NULL, null=True, blank=True, related_name='landing_pages')
+    page_data = models.TextField(verbose_name=_('داده‌های صفحه'), null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='تاریخ ویرایش')
+
+    def __str__(self):
+        return self.page_slug
+
+        
+class LandingImage(models.Model):
+    class Meta:
+        verbose_name = 'تصویر صفحه فرود'
+        verbose_name_plural = 'تصویر صفحه فرود'
+
+    landing_page = models.ForeignKey(LandingPage, verbose_name='صفحه فرود', on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(verbose_name='تصویر', upload_to=PathAndRename('media/Pictures/Landing/'))
+    image_thumbnail = ImageSpecField(source='image', processors=[ResizeToFill(180, 180)], format='JPEG', options={'quality': 60})
+    staff = models.ForeignKey(User, verbose_name='کارشناس', on_delete=models.SET_NULL, null=True, blank=True, related_name='landing_images')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='تاریخ ویرایش')
+
+    def __str__(self):
+        return f'{self.landing_page.page_slug}: {self.image}' 
+
+
+
 from shop import models as shop_models

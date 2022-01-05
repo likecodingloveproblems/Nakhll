@@ -129,6 +129,8 @@ ADMIN_REORDER = (
         'nakhll_market.LandingPageSchema',
         'nakhll_market.ShopPageSchema',
         'shop.ShopFeature',
+        'nakhll_market.LandingPage',
+        'nakhll_market.LandingImage',
     )},
     {
         'app': 'logistic',
