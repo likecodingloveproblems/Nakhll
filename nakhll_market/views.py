@@ -517,6 +517,8 @@ def ProductsDetailWithSlug(request, product_slug, status = None, msg = None):
     ###################################
     ###### REDIRECT TO NEXT JS ########
     product = get_object_or_404(Product, Slug = product_slug)
+    if not product.FK_Shop:
+        return redirect('/')
     return redirect('/shop/' + product.FK_Shop.Slug + '/product/' + product_slug, permanent = True)
 
 # Get Products
