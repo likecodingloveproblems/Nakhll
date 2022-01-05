@@ -2972,7 +2972,7 @@ class LandingPage(models.Model):
         ACTIVE = 1, 'فعال'
 
         
-    page_slug = models.CharField(max_length=100, verbose_name='نام صفحه', unique=True)
+    slug = models.CharField(max_length=100, verbose_name='نام صفحه', unique=True)
     status = models.IntegerField(verbose_name='وضعیت', choices=Statuses.choices, default=Statuses.ACTIVE)
     staff = models.ForeignKey(User, verbose_name='کارشناس', on_delete=models.SET_NULL, null=True, blank=True, related_name='landing_pages')
     page_data = models.TextField(verbose_name=_('داده‌های صفحه'), null=True, blank=True)

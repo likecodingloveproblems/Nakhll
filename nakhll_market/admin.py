@@ -2,7 +2,8 @@ from typing import Dict, Optional
 from django.contrib import admin
 from django.http import HttpRequest, HttpResponse
 from django.utils.timezone import localtime
-from .models import (AmazingProduct, LandingPageSchema, NewCategory, ShopPageSchema, Tag, Market, MarketBanner, SubMarket, 
+from .models import (AmazingProduct, LandingPageSchema, NewCategory, ShopPageSchema,
+                     Tag, Market, MarketBanner, SubMarket, LandingImage, LandingPage,
                      SubMarketBanner,BankAccount, Category ,PostRange, Shop, 
                      ShopBanner, ShopMovie, Attribute, AttrPrice, AttrProduct, 
                      Product, ProductBanner, ProductMovie, Comment, Profile, 
@@ -289,5 +290,23 @@ class ShopPageSchemaAdmin(admin.ModelAdmin):
     list_filter=('shop','publish_status','created_datetime', 'order')
     search_fields=('shop','title','component_type', 'subtitle', 'url', 'data')
     ordering=['publish_status', 'created_datetime']
+    def created_datetime(self,obj):
+        return localtime(obj.created_datetime).strftime('%Y-%m-%d %H:%M:%S')
+
+        
+@admin.register(LandingPage)
+class LandingPageAdmin(admin.ModelAdmin):
+    list_display=('slug', 'status', 'staff', 'created_at', 'updated_at')
+    list_filter=('status', )
+    search_fields=('slug','page_data')
+    ordering=['created_at']
+    def created_datetime(self,obj):
+        return localtime(obj.created_datetime).strftime('%Y-%m-%d %H:%M:%S')
+
+@admin.register(LandingImage)
+class LandingImageAdmin(admin.ModelAdmin):
+    list_display=('image', 'staff', 'created_at', 'updated_at', 'landing_page')
+    list_filter=('landing_page', )
+    ordering=['created_at']
     def created_datetime(self,obj):
         return localtime(obj.created_datetime).strftime('%Y-%m-%d %H:%M:%S')
