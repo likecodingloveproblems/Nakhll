@@ -13,7 +13,7 @@ class AddressManager(models.Manager):
 class ShopLogisticUnitManager(models.Manager):
     
     def generate_shop_logistic_units(self, shop):
-        logo_path = 'defaults/lu_free.png'
+        logo_path = 'static/Pictures/lu_free.png'
         logo_file = File(open(logo_path, 'rb'))
         slu = self.create(shop=shop, name='ارسال رایگان', is_active=False, logo=logo_file)
         sluc = models.ShopLogisticUnitConstraint.objects.create(
@@ -23,7 +23,7 @@ class ShopLogisticUnitManager(models.Manager):
             shop_logistic_unit=slu, price_per_kilogram=0, price_per_extra_kilogram=0
         )
 
-        logo_path = 'defaults/lu_delivery.png'
+        logo_path = 'static/Pictures/lu_delivery.png'
         logo_file = File(open(logo_path, 'rb'))
         slu = self.create(shop=shop, name='پیک', is_active=False, logo=logo_file)
         sluc = models.ShopLogisticUnitConstraint.objects.create(
@@ -37,7 +37,7 @@ class ShopLogisticUnitManager(models.Manager):
             shop_logistic_unit=slu, price_per_kilogram=0, price_per_extra_kilogram=0
         )
   
-        logo_path = 'defaults/lu_pad.png'
+        logo_path = 'static/Pictures/lu_pad.png'
         logo_file = File(open(logo_path, 'rb'))
         slu = self.create(shop=shop, name='پسکرایه', is_active=True, logo=logo_file)
         sluc = models.ShopLogisticUnitConstraint.objects.create(
@@ -47,7 +47,7 @@ class ShopLogisticUnitManager(models.Manager):
             shop_logistic_unit=slu, price_per_kilogram=0, price_per_extra_kilogram=0
         )
 
-        logo_path = 'defaults/lu_post_pishtaz.png'
+        logo_path = 'static/Pictures/lu_post_pishtaz.png'
         logo_file = File(open(logo_path, 'rb'))
         slu = self.create(shop=shop, name='پست پیشتاز', is_active=True, logo=logo_file)
         sluc = models.ShopLogisticUnitConstraint.objects.create(
@@ -57,7 +57,7 @@ class ShopLogisticUnitManager(models.Manager):
             shop_logistic_unit=slu, price_per_kilogram=150000, price_per_extra_kilogram=25000
         )
         
-        logo_path = 'defaults/lu_post_sefareshi.png'
+        logo_path = 'static/Pictures/lu_post_sefareshi.png'
         logo_file = File(open(logo_path, 'rb'))
         slu = self.create(shop=shop, name='پست سفارشی', is_active=True, logo=logo_file)
         sluc = models.ShopLogisticUnitConstraint.objects.create(
