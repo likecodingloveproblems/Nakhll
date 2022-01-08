@@ -105,3 +105,8 @@ class ShopAdvertisementSerializer(serializers.ModelSerializer):
         fields = ('id', 'shop', 'yektanet_id', 'yektanet_status')
         read_only_fields = ('id', )
 
+    def validate(self, data):
+        if data.get('yektanet_status') == 1 and not data.get('yektanet_id'):
+            raise serializers.ValidationError({'error': 'برای فعال کردن یکتانت، ابتدا شناسه یکتانت را وارد کنید'})
+        return data
+
