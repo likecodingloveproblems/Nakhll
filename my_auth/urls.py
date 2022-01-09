@@ -7,9 +7,9 @@ app_name = 'auth'
 urlpatterns = [
     
     # forget password process
-    # path('forget-password-mobile/', views.ForgetPasswordMobile.as_view(), name='forget-password-mobile'),
-    # path('forget-password-code/', views.ForgetPasswordCode.as_view(), name='forget-password-code'),
-    # path('forget-password-data/', views.ForgetPasswordData.as_view(), name='forget-password-data'),
+    path('forget-password-mobile/', views.ForgetPasswordMobile.as_view(), name='forget-password-mobile'),
+    path('forget-password-code/', views.ForgetPasswordCode.as_view(), name='forget-password-code'),
+    path('forget-password-data/', views.ForgetPasswordData.as_view(), name='forget-password-data'),
     # logout process
     re_path(r'^logout/$', views.logout_, name='logout'),
     # authenticate user
