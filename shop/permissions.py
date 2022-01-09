@@ -2,7 +2,7 @@ from django.db.models.manager import BaseManager
 from rest_framework.permissions import BasePermission
 
 from nakhll_market.models import Shop
-from shop.models import ShopFeature, ShopFeatureInvoice
+from shop.models import ShopAdvertisement, ShopFeature, ShopFeatureInvoice
 
 class IsShopOwner(BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -10,7 +10,7 @@ class IsShopOwner(BasePermission):
         user = request.user 
         if isinstance(obj, Shop):
             return prev_result and obj.FK_ShopManager == user
-        if isinstance(obj, ShopFeatureInvoice):
+        if isinstance(obj, ShopFeatureInvoice) or isinstance(obj, ShopAdvertisement):
             return prev_result and obj.shop.FK_ShopManager == user
         return prev_result
 

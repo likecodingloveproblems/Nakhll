@@ -106,12 +106,14 @@ class ShopSerializer(serializers.ModelSerializer):
     banners = ShopBannerSerializer(many=True, read_only=True)
     landing_data = serializers.SerializerMethodField()
     is_landing = serializers.SerializerMethodField()
+    yektanet_advertisement = serializers.SerializerMethodField()
     class Meta:
         model = Shop
         fields = [
             'ID', 'slug', 'title', 'image_thumbnail_url', 'total_products', 'Description',
             'state', 'big_city', 'city', 'registered_months', 'FK_ShopManager', 'is_landing',
-            'has_product_group_add_edit_permission', 'banners', 'profile', 'landing_data'
+            'has_product_group_add_edit_permission', 'banners', 'profile', 'landing_data',
+            'yektanet_advertisement',
         ]
     def get_registered_months(self, obj):
         ''' Calculate months from DateCreate till now '''
@@ -126,6 +128,12 @@ class ShopSerializer(serializers.ModelSerializer):
     def get_landing_data(self, obj):
         if ShopFeature.has_shop_landing_access(obj) and ShopFeature.has_active_landing_page(obj):
             return ShopLandingDetailsSerializer(obj.get_active_landing()).data
+        return None
+
+    def get_yektanet_advertisement(self, obj):
+        if obj.has_advertisement():
+            ads = obj.get_advertisement()
+            return ads.yektanet_id
         return None
 
 class ShopSimpleSerializer(serializers.ModelSerializer):

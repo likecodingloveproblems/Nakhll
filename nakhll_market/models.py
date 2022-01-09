@@ -859,6 +859,17 @@ class Shop(models.Model):
     def get_active_landing(self):
         return self.landings.filter(status=shop_models.ShopLanding.Statuses.ACTIVE).first()
 
+    def has_advertisement(self):
+        if hasattr(self, 'advertisement'):
+            return self.advertisement.yektanet_status == self.advertisement.YektanetStatuses.ACTIVE
+        return False
+
+    def get_advertisement(self):
+        if self.has_advertisement():
+            return self.advertisement
+        return None
+        
+
 
     class Meta:
         ordering = ('DateCreate','Title',)  
