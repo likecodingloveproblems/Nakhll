@@ -59,7 +59,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'analytical',
     'sms',
-    'my_auth',
     'nakhll_auth',
     'tinymce',
     'django_jalali',
