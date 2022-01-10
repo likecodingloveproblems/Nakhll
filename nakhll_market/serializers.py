@@ -321,8 +321,8 @@ class ProductListSerializer(serializers.ModelSerializer):
             'is_advertisement',
             'in_campaign',
         ]
-    def in_campaign(self, obj):
-        if obj.shop.in_campaign:
+    def get_in_campaign(self, obj):
+        if obj.FK_Shop.in_campaign:
             return True
         return False
 
