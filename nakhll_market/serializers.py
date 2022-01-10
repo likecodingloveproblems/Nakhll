@@ -113,7 +113,7 @@ class ShopSerializer(serializers.ModelSerializer):
             'ID', 'slug', 'title', 'image_thumbnail_url', 'total_products', 'Description',
             'state', 'big_city', 'city', 'registered_months', 'FK_ShopManager', 'is_landing',
             'has_product_group_add_edit_permission', 'banners', 'profile', 'landing_data',
-            'yektanet_advertisement',
+            'yektanet_advertisement', 'in_campaign'
         ]
     def get_registered_months(self, obj):
         ''' Calculate months from DateCreate till now '''
@@ -286,16 +286,22 @@ class ProductDetailSerializer(serializers.HyperlinkedModelSerializer):
     post_range = PostRangeSerializer(many=True, read_only=True)
     exception_post_range = PostRangeSerializer(many=True, read_only=True)
     new_category = NewCategoryParentSerializer(many=False, read_only=True)
+    shop_in_campaign = serializers.SerializerMethodField()
     class Meta:
         model = Product
         fields = [
             'id', 'title', 'description', 'slug', 'price', 'old_price',
-            'available', 'salable', 'discount', 'shop', 'image',
+            'available', 'salable', 'discount', 'shop', 'image', 'shop_in_campaign',
             'attributes', 'attributes_price', 'banners', 'inventory',
             'net_weight', 'weight_with_packing',  'length_with_packing',
             'height_with_packaging', 'story', 'width_with_packing', 'PreparationDays',
             'status', 'exception_post_range', 'post_range', 'sub_market', 'new_category'
         ]
+
+    def get_shop_in_campaign(self, obj):
+        if obj.shop.in_campaign:
+            return True
+        return False
 
 class ProductListSerializer(serializers.ModelSerializer):
     FK_Shop = FilterPageShopSerializer(read_only=True)

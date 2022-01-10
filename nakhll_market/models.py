@@ -656,6 +656,7 @@ class Shop(models.Model):
     Holidays=models.CharField(verbose_name='روز های تعطیلی حجره', max_length=15, blank=True)
     DateCreate=models.DateTimeField(verbose_name='تاریخ ثبت حجره', auto_now_add=True)
     DateUpdate=models.DateTimeField(verbose_name='تاریخ بروزرسانی حجره', auto_now=True)
+    in_campaign=models.BooleanField(verbose_name='در کمپین؟', default=False)
     #محدودیت های حجره
     AVAILABLE_STATUS =(
         (True,'فعال'),

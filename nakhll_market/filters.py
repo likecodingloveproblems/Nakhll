@@ -14,10 +14,11 @@ class ProductFilter(filters.FilterSet):
     state = filters.CharFilter(method='filter_state')
     discounted = filters.BooleanFilter(method='filter_discounted')
     shop = filters.CharFilter(method='filter_shop')
+    in_campaign = filters.BooleanFilter(method='filter_in_campaign')
 
     class Meta:
         model = Product
-        fields = ['search', 'min_price', 'ready', 'available', 'category',
+        fields = ['search', 'min_price', 'ready', 'available', 'category', 'in_campaign',
         # fields = ['search', 'min_price', 'max_price', 'ready', 'available', 'category',
                     'new_category', 'city', 'discounted', 'is_advertisement', 'shop']
 
@@ -61,3 +62,6 @@ class ProductFilter(filters.FilterSet):
 
     def filter_shop(self, queryset, name, value):
         return queryset.filter(FK_Shop__Slug=value)
+
+    def filter_in_campaign(self, queryset, name, value):
+        return queryset.filter(FK_Shop__in_campaign=True)
