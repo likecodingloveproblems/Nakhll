@@ -305,6 +305,7 @@ class ProductDetailSerializer(serializers.HyperlinkedModelSerializer):
 
 class ProductListSerializer(serializers.ModelSerializer):
     FK_Shop = FilterPageShopSerializer(read_only=True)
+    in_campaign = serializers.SerializerMethodField()
     class Meta:
         model = Product
         fields = [
@@ -318,7 +319,13 @@ class ProductListSerializer(serializers.ModelSerializer):
             'OldPrice',
             'discount',
             'is_advertisement',
+            'in_campaign',
         ]
+    def in_campaign(self, obj):
+        if obj.shop.in_campaign:
+            return True
+        return False
+
 class ProductOwnerListSerializer(serializers.ModelSerializer):
     FK_Shop = FilterPageShopSerializer(read_only=True)
     post_range_cities = serializers.SlugRelatedField(slug_field='name', read_only=True, many=True)
