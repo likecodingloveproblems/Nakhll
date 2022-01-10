@@ -10,7 +10,7 @@ from rest_framework import serializers
 from rest_framework.relations import HyperlinkedIdentityField, HyperlinkedRelatedField
 from rest_framework.utils import field_mapping
 from nakhll_market.models import (
-    Alert, AmazingProduct, AttrPrice, AttrProduct, Attribute, BankAccount, BigCity, City, NewCategory, ShopBankAccount, ShopSocialMedia,
+    Alert, AmazingProduct, AttrPrice, AttrProduct, Attribute, BigCity, City, NewCategory, ShopBankAccount, ShopSocialMedia,
     Category, Market, PostRange, Product, ProductBanner, Profile, Shop, ShopBankAccount, Slider, Comment, State,
     SubMarket, LandingPageSchema, ShopPageSchema, UserImage,
     )

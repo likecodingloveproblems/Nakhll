@@ -7,7 +7,7 @@ from .models import (AmazingProduct, LandingPageSchema, NewCategory, ShopPageSch
                      SubMarketBanner,BankAccount, Category ,PostRange, Shop, 
                      ShopBanner, ShopMovie, Attribute, AttrPrice, AttrProduct, 
                      Product, ProductBanner, ProductMovie, Comment, Profile, 
-                     Review, Survey, Slider, Option_Meta, Message, Pages, Alert,
+                     Review, Slider, Option_Meta, Message, Pages, Alert,
                      Field, User_Message_Status, UserPoint, DashboardBanner)
 from django.contrib import admin
 from django.contrib.auth.models import Permission

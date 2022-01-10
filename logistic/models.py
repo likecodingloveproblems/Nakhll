@@ -3,7 +3,7 @@ from django.db import models
 from django.core.files import File
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
-from nakhll_market.models import BankAccount, NewCategory, Product, Shop, State, BigCity, City
+from nakhll_market.models import NewCategory, Product, Shop, State, BigCity, City
 from logistic.managers import AddressManager, ShopLogisticUnitManager
 from logistic.interfaces import PostPriceSettingInterface
 
