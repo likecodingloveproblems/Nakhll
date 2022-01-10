@@ -37,8 +37,6 @@ from .models import ProductMovie
 from .models import Comment
 from .models import Profile
 from .models import Review
-from .models import Survey
-from .models import Slider
 from .models import Message
 from .models import Option_Meta
 
