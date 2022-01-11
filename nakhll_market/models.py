@@ -628,7 +628,7 @@ class ShopManager(models.Manager):
         return shops
 
     def public_shops(self):
-        return self.filter(Publish=True, Available=True).annotate(products=ArrayAgg('ShopProduct__Slug'))
+        return self.filter(Publish=True, Available=True)
 
 
 # Shop (حجره) Model

@@ -1,4 +1,5 @@
 import random
+from django.contrib.postgres.aggregates.general import ArrayAgg
 import pandas as pd
 from django.shortcuts import get_object_or_404
 from django.http import response
@@ -21,7 +22,7 @@ from nakhll_market.models import (
     LandingPageSchema, ShopPageSchema, UserImage,
     )
 from nakhll_market.serializers import (
-    AmazingProductSerializer, Base64ImageSerializer, NewCategoryProductCountSerializer,
+    AmazingProductSerializer, Base64ImageSerializer, CampaignShopSerializer, NewCategoryProductCountSerializer,
     NewProfileSerializer, ProductBannerWithProductSerializer, ProductCommentSerializer,
     ProductDetailSerializer, ProductImagesSerializer, ProductOwnerListSerializer,
     ProductOwnerReadSerializer, ProductOwnerWriteSerializer, ProductPriceWriteSerializer,
@@ -815,7 +816,7 @@ class PublicShopsViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
     serializer_class = ProductSerializer
 
     def get_queryset(self):
-        return Shop.objects.public_shops()
+        return Shop.objects.public_shops().annotate(products=ArrayAgg('ShopProduct__Slug'))
 
     def list(self, request, *args, **kwargs):
         shops = self.get_queryset()
@@ -847,3 +848,9 @@ class ShopsStatisticViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
         from excel_response import ExcelResponse
         return ExcelResponse(data=serializer.data)
         # return Response(serializer.data)
+
+class CampaignProductsViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+    serializer_class = CampaignShopSerializer
+    def get_queryset(self):
+        return Shop.objects.public_shops().filter(in_campaign=True)
+

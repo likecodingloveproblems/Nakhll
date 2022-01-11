@@ -763,3 +763,14 @@ class ShopStatisticSerializer(serializers.ModelSerializer):
         if obj.FK_ShopManager and hasattr(obj.FK_ShopManager, 'User_Profile'):
             return obj.FK_ShopManager.User_Profile.MobileNumber
         return None
+
+
+class CampaignShopSerializer(serializers.ModelSerializer):
+    products = serializers.SerializerMethodField()
+    class Meta:
+        model = Shop
+        fields = ['ID', 'Title', 'Slug', 'products']
+
+    def get_products(self, obj):
+        products = obj.ShopProduct.order_by('?')[:2]
+        return ProductListSerializer(products, many=True).data
