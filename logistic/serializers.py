@@ -120,7 +120,8 @@ class ShopLogisticUnitCalculationMetricSerializer(serializers.ModelSerializer):
     shop_logistic_unit = serializers.PrimaryKeyRelatedField(read_only=True)
     class Meta:
         model = ShopLogisticUnitCalculationMetric
-        fields = ('id', 'shop_logistic_unit', 'price_per_kilogram', 'price_per_extra_kilogram', )
+        fields = ('id', 'shop_logistic_unit', 'price_per_kilogram',
+                  'price_per_extra_kilogram', 'payer', 'pay_time', )
         read_only_fields = ('id', 'shop_logistic_unit', )
 
 

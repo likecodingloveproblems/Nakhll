@@ -1,4 +1,7 @@
 from django.db.models.aggregates import Sum
+from django.db.models.functions import Cast
+from django.db.models.fields import FloatField
+from django.db.models.query import QuerySet
 from django.db.models.query_utils import Q
 from django.utils.translation import ugettext as _
 from rest_framework.validators import ValidationError
@@ -109,41 +112,141 @@ class LogisticUnitInterface:
     def __init__(self) -> None:
         self.total_post_price = 0
 
-    def create_logistic_unit_dict(self, invoice):
-        list = []
+    def create_logistic_unit_list(self, invoice):
+        logistic_units = []
         errors = []
+        total_price = 0
+
         for shop in invoice.shops:
-            shop_dict = {}
-            for item in invoice.products.filter(FK_Shop=shop):
-                product: Product = item
-                logistic_unit = self.get_logistic_unit(invoice, product)
-                if not logistic_unit:
-                    errors.append(product)
-                else:
-                    logistic_units= shop_dict.pop(logistic_unit.id, None)
-                    if not logistic_units:
-                        logistic_units = {
-                            'name': logistic_unit.name,
-                            'products': [],
-                        }
-                    products = logistic_units.pop('products')
-                    products.append({'title': product.Title, 'slug': product.Slug, 'image': product.image_thumbnail_url})
-                    logistic_units['products'] = products
-                    shop_dict[logistic_unit.id] = logistic_units
-            price = self.calculate_logistic_unit_price(shop_dict, invoice)
-            self.total_post_price += price
-            list.append({
-                'shop_name': shop.Title,
-                'shop_slug': shop.Slug,
-                'logistic_units': shop_dict,
-                'price': price
-            })
+            shop_logistic_unit_dict = self._generate_shop_logistic_unit_dict(shop, invoice)
+            price = shop_logistic_unit_dict['price']
+            errors.extend(shop_logistic_unit_dict['errors'])
+            total_price += price
+            logistic_units.append(shop_logistic_unit_dict)
+
         if errors:
             invoice.items.filter(product__in=errors).delete()
             raise ValidationError(_('این محصولات هیچ روش ارسالی ندارند و از سبد خرید شما حذف خواهند شد<br>{}').format(
                 '<br>'.join([product.Title for product in errors])
                 ))
-        return list
+
+        self.total_post_price = total_price
+        return {
+            "logistic_units": logistic_units,
+            "total_price": total_price,
+            "errors": errors
+        }
+
+            
+
+   
+    def _generate_shop_logistic_unit_dict(self, shop, invoice):
+        errors = []
+        logistic_units = []
+        products_available_units = []
+        price = 0
+        shop_logistic_units_queryset = self.get_acceptable_logistic_units(invoice, shop)
+        all_products = invoice.products.filter(FK_Shop=shop)
+
+        pad_products = self._get_only_pad_products(shop_logistic_units_queryset, all_products)
+        if pad_products:
+            all_products = all_products.difference(pad_products)
+
+        free_products = self._get_free_products(shop_logistic_units_queryset, all_products)
+        if free_products:
+            all_products = all_products.difference(free_products)
+
+        pad_lu_name = self._get_pad_lu_name(pad_products) # TODO
+        free_lu_name = self._get_free_lu_name(free_products) # TODO
+
+        if all_products:
+            all_products_set = set()
+            for product in all_products:
+                product_available_lus = self.get_product_available_lus(shop_logistic_units_queryset, product, exclude_pads=True)
+                if not product_available_lus:
+                    errors.append(product)
+                    invoice.items.filter(product=product).delete()
+                else:
+                    all_products_set.add(product)
+                    products_available_units.append(set(product_available_lus))
+
+            if not products_available_units or not set.intersection(*products_available_units):
+                raise ValidationError(_('هیچ واحد ارسالی برای این مجموعه یافت نشد'))
+            joint_units = set.intersection(*products_available_units)
+
+
+            total_weight = invoice.items.filter(product__FK_Shop=shop).aggregate(
+                total_weight=Sum(Cast('product__Weight_With_Packing', output_field=FloatField()))
+            )['total_weight']
+            optimal_unit, price = self.get_optimal_unit_and_price(joint_units, total_weight)
+            products = [
+                        {'slug': product.slug, 'title': product.Title, 'image': product.image_thumbnail_url}
+                        for product in all_products_set
+                        ]
+            logistic_units.append({
+                'unit_name': optimal_unit.name, 
+                'products': products,
+                'price': price
+            })
+
+        if pad_products:
+            logistic_units.append({
+                'unit_name': pad_lu_name,
+                'products': [
+                    {'slug': product.slug, 'title': product.Title, 'image': product.image_thumbnail_url}
+                    for product in pad_products
+                ],
+                'price': 0
+            })
+
+        if free_products:
+            logistic_units.append({
+                'unit_name': free_lu_name,
+                'products': [
+                    {'slug': product.slug, 'title': product.Title, 'image': product.image_thumbnail_url}
+                    for product in free_products
+                ],
+                'price': 0
+            })
+
+        return {
+            'shop_name': shop.Title,
+            'shop_slug': shop.Slug,
+            'logistic_units': logistic_units,
+            'price': price,
+            'errors': errors
+        }
+
+    def _get_only_pad_products(self, queryset: QuerySet, all_products: QuerySet):
+        only_pad_ids = []
+        for product in all_products:
+            all_lus = self.get_product_available_lus(queryset, product)
+            pad_lus = self.get_pad_lus(queryset, product)
+            if set(all_lus) == set(pad_lus):
+                only_pad_ids.append(product.ID)
+        only_pad_products = Product.objects.filter(ID__in=only_pad_ids)
+        return only_pad_products
+
+    def get_pad_lus(self, shop_all_lus: QuerySet, product: Product):
+        filter_queryset = Q(calculation_metric__pay_time=models.ShopLogisticUnitCalculationMetric.PayTimes.AT_DELIVERY)
+        filter_queryset &= Q(calculation_metric__payer=models.ShopLogisticUnitCalculationMetric.PayerTypes.CUSTOMER)
+        return shop_all_lus.filter(filter_queryset)
+        
+    def _get_free_products(self, queryset: QuerySet, all_products: set):
+        filter_queryset = Q(calculation_metric__pay_time=models.ShopLogisticUnitCalculationMetric.PayTimes.WHEN_BUYING)
+        filter_queryset &= Q(calculation_metric__payer=models.ShopLogisticUnitCalculationMetric.PayerTypes.SHOP)
+        free_products_qs = queryset.filter(filter_queryset)
+        free_products = Product.objects.filter(ID__in=free_products_qs.values_list('constraint__products__ID', flat=True))
+        return free_products
+
+        
+        
+               
+    def _get_pad_lu_name(self, pad_products):
+        return 'پسکرایه'
+
+    def _get_free_lu_name(self, free_products):
+        return 'رایگان'
 
 
     def calculate_logistic_unit_price(self, shop_dict, invoice):
@@ -156,40 +259,90 @@ class LogisticUnitInterface:
             total_price += price
         return total_price
 
-        
-    def get_extra_weight(self, items):
-        total_weight = 0
-        for item in items:
-            total_weight += int(item.weight or 0) * item.count
-        return int(total_weight / 1000)
 
-
-    def get_logistic_unit(self, invoice, product: Product):
-        if not models.ShopLogisticUnit.objects.filter(shop=product.FK_Shop, is_active=True).exists():
+    def get_acceptable_logistic_units(self, invoice, shop):
+        if not models.ShopLogisticUnit.objects.filter(shop=shop, is_active=True).exists():
             return None
-
         filter_queryset = Q()
-        sum_shop_cart_weight = invoice.products.filter(FK_Shop=product.FK_Shop).aggregate(
+        sum_shop_cart_price = invoice.products.filter(FK_Shop=shop).aggregate(
             total_price=Sum('Price')
         )['total_price']
         filter_queryset &= Q(is_active=True)
-        filter_queryset &= Q(shop=product.FK_Shop)
+        filter_queryset &= Q(shop=shop)
         filter_queryset &= Q(
             Q(constraint__cities=invoice.address.city) |
             Q(constraint__cities=None)
         )
+        filter_queryset &= Q(constraint__min_cart_price__lte=sum_shop_cart_price)
+        return models.ShopLogisticUnit.objects.filter(filter_queryset)
+            
+    def get_product_available_lus(self, queryset: QuerySet, product: Product, *, exclude_pads=False):
+        filter_queryset = Q()
         filter_queryset &= Q(
             Q(constraint__products=product) |
             Q(constraint__products=None)
         )
+        # TODO: max weight should be calculated base on all products, not just one
         weight = int(product.Weight_With_Packing) / 1000
         filter_queryset &= Q(
             Q(constraint__max_weight__gte=weight) |
             Q(constraint__max_weight=0)
         )
-        filter_queryset &= Q(constraint__min_cart_price__lte=sum_shop_cart_weight)
+        queryset = queryset.filter(filter_queryset)
+        if exclude_pads:
+            pad_filter_queryset = Q(calculation_metric__pay_time=models.ShopLogisticUnitCalculationMetric.PayTimes.AT_DELIVERY)
+            pad_filter_queryset &= Q(calculation_metric__payer=models.ShopLogisticUnitCalculationMetric.PayerTypes.CUSTOMER)
+            queryset = queryset.exclude(pad_filter_queryset)
 
-        return models.ShopLogisticUnit.objects.filter(filter_queryset).first()
+        return queryset
+
+
+    def is_only_pad(self, product: Product, invoice):
+        all_logistics = self.get_available_logistic_units(invoice, product)
+        if len(all_logistics) == 1 and all_logistics[0].logistic_type == 'pad':
+            return True
+        return False
+        
+    def get_optimal_unit_and_price(self, units, total_weight):
+        minimum_price = None
+        optimal_unit = None
+        for unit in units:
+            price = self.calculate_logistic_price(unit, total_weight)
+            if minimum_price is None or price < minimum_price:
+                minimum_price = price
+                optimal_unit = unit
+        return optimal_unit, minimum_price
+            
+        
+    def calculate_logistic_price(self, unit, total_weight):
+        extra_weight = int((total_weight + 1) / 1000)
+        price = unit.calculation_metric.price_per_kilogram
+        price += unit.calculation_metric.price_per_extra_kilogram * extra_weight
+        return price
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+
 
 def generate_shop_logistic_units():
     SLU = models.ShopLogisticUnit

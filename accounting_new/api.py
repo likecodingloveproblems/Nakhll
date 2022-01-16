@@ -129,7 +129,7 @@ class InvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
         # out_of_range_products = logistic.get_out_of_range_products(invoice)
         # post_price = logistic.get_post_price(invoice)
         lui = LogisticUnitInterface()
-        invoice.logistic_unit_details = lui.create_logistic_unit_dict(invoice)
+        invoice.logistic_unit_details = lui.create_logistic_unit_list(invoice)
         invoice.logistic_price = lui.total_post_price
         invoice.save()
         return Response(invoice.logistic_unit_details, status=status.HTTP_200_OK)

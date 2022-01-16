@@ -138,6 +138,9 @@ ADMIN_REORDER = (
             'logistic.Address',
             'logistic.PostPriceSetting',
             'logistic.LogisticUnitGeneralSetting',
+            'logistic.ShopLogisticUnit',
+            'logistic.ShopLogisticUnitConstraint',
+            'logistic.ShopLogisticUnitCalculationMetric',
         )
     },
     {'app': 'payoff', 'label': 'بخش مالی جدید','models':(
