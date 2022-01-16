@@ -1,5 +1,6 @@
 import json
 from django.db import models
+from django.core.files import File
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from nakhll_market.models import BankAccount, NewCategory, Product, Shop, State, BigCity, City
@@ -79,7 +80,7 @@ class ShopLogisticUnit(models.Model):
         verbose_name = _('واحد ارسال فروشگاه')
         verbose_name_plural = _('واحد ارسال فروشگاه')
         ordering = ['-id']
-    class IconType(models.IntegerChoices):
+    class LogoType(models.IntegerChoices):
         CUSTOM = 0, _('لوگوی شخصی')
         PPOST = 1, _('پست پیشتاز')
         SPOST = 2, _('پست سفارشی')
@@ -93,7 +94,7 @@ class ShopLogisticUnit(models.Model):
     name = models.CharField(verbose_name=_('نام واحد'), max_length=200)
     logo = models.ImageField(verbose_name=_('لوگو'), upload_to='media/Pictures/logistic_unit/defaults',
                              null=True, blank=True, default='static/Pictures/unkown_lu.png')
-    logo_type = models.IntegerField(verbose_name=_('نوع لوگو'), choices=IconType.choices, default=IconType.CUSTOM)
+    logo_type = models.IntegerField(verbose_name=_('نوع لوگو'), choices=LogoType.choices, default=LogoType.CUSTOM)
     is_active = models.BooleanField(verbose_name=_('فعال؟'), default=True)
     is_publish = models.BooleanField(verbose_name=_('منتشر شود؟'), default=True)
     description = models.TextField(verbose_name=_('توضیحات'), null=True, blank=True)
@@ -103,6 +104,19 @@ class ShopLogisticUnit(models.Model):
 
     def __str__(self):
         return f'{self.shop}: {self.name}'
+
+    
+    def save(self, **kwargs):
+        self.save_logo()
+        return super().save(**kwargs)
+
+        
+    def save_logo(self):
+        if self.logo_type != self.LogoType.CUSTOM:
+            self.logo = File(open(f'static/Pictures/{self.logo_type}.png', 'rb'))
+
+
+            
         
 
 
