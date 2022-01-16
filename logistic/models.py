@@ -79,12 +79,21 @@ class ShopLogisticUnit(models.Model):
         verbose_name = _('واحد ارسال فروشگاه')
         verbose_name_plural = _('واحد ارسال فروشگاه')
         ordering = ['-id']
+    class IconType(models.IntegerChoices):
+        CUSTOM = 0, _('لوگوی شخصی')
+        PPOST = 1, _('پست پیشتاز')
+        SPOST = 2, _('پست سفارشی')
+        DELIVERY = 3, _('پیک')
+        PAD = 4, _('پسکرایه')
+        FREE = 5, _('رایگان')
+    
 
     shop = models.ForeignKey(Shop, verbose_name=_('حجره'),
                              related_name='logistic_units', on_delete=models.CASCADE)
     name = models.CharField(verbose_name=_('نام واحد'), max_length=200)
     logo = models.ImageField(verbose_name=_('لوگو'), upload_to='media/Pictures/logistic_unit/defaults',
                              null=True, blank=True, default='static/Pictures/unkown_lu.png')
+    logo_type = models.IntegerField(verbose_name=_('نوع لوگو'), choices=IconType.choices, default=IconType.CUSTOM)
     is_active = models.BooleanField(verbose_name=_('فعال؟'), default=True)
     is_publish = models.BooleanField(verbose_name=_('منتشر شود؟'), default=True)
     description = models.TextField(verbose_name=_('توضیحات'), null=True, blank=True)
@@ -133,7 +142,8 @@ class ShopLogisticUnitCalculationMetric(models.Model):
     class PayerTypes(models.TextChoices):
         SHOP = 'shop', _('فروشگاه')
         CUSTOMER = 'cust', _('مشتری')
-    
+
+   
     shop_logistic_unit = models.OneToOneField(ShopLogisticUnit, verbose_name=_('واحد ارسال'),
                                             related_name='calculation_metric', on_delete=models.CASCADE)
     price_per_kilogram = models.PositiveIntegerField(verbose_name=_('قیمت به ازای هر کیلو (ریال)'), default=0)

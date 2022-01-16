@@ -143,7 +143,7 @@ class ShopLogisticUnitFullSerializer(serializers.ModelSerializer):
     logo = Base64ImageField(max_length=None, use_url=True, allow_empty_file=False, required=False)
     class Meta:
         model = ShopLogisticUnit
-        fields = ('id', 'shop', 'name', 'description', 'logo', 'is_active', 'is_publish',
+        fields = ('id', 'shop', 'name', 'description', 'logo', 'logo_type', 'is_active', 'is_publish',
                   'constraint', 'calculation_metric', 'cities_count', 'products_count', )
         read_only_fields = ('id', 'is_publish', )
 
