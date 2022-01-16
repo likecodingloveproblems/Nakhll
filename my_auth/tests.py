@@ -1,5 +1,4 @@
 from sms.services import count_sms, create_sms
-from Payment.services import get_wallet_by_mobile_number
 from my_auth.services import create_user, get_mobile_number_auth_code, get_user_by_mobile_number, get_user_by_username
 from django.urls.base import reverse
 from django.test import TestCase, RequestFactory, Client

@@ -13,7 +13,6 @@ from excel_response import ExcelResponse
 from django.db.models import Count, Sum, query, Q
 from django.db.models.functions import Coalesce
 
-from Payment.models import Factor
 from nakhll_market.interface import DiscordAlertInterface
 from nakhll_market.models import Profile, Shop, Product
 from accounting_new.models import Invoice
@@ -124,6 +123,7 @@ class UserMobile(View):
 class ProductStats(View):
 
     def get(self, request):
+        # TODO Factor is removed
         queryset = Product.objects\
             .annotate(sell_count = Count('Factor_Product'))\
             .annotate(sell_product_count=Sum('Factor_Product__ProductCount'))\
@@ -231,6 +231,7 @@ class CustomerPurchaseReport(GroupRequiredMixin, View):
     group_required = u"factor-stats"
 
     def get(self, request):
+        # TODO Factor is removed
         DiscordAlertInterface.send_alert('TEST IN CUSTOMERPURCHASEREPORT: Someone get Customer Purchase Report')
         queryset = Factor.objects.filter(PaymentStatus=True)
         queryset = queryset.annotate(products_list=StringAgg('FK_FactorPost__FK_Product__Title', delimiter=', '))

@@ -250,7 +250,6 @@ class Shop(models.Model):
     ID=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     FK_ShopManager=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='حجره دار', related_name='ShopManager', null=True)
     Title=models.CharField(max_length=100, verbose_name='عنوان حجره', db_index=True)
-    FK_SubMarket=models.ManyToManyField(SubMarket, verbose_name='نام راسته', related_name='FatherSubMarket', blank=True)
     Slug=models.SlugField(verbose_name='شناسه حجره', unique=True, db_index=True, allow_unicode=True)
     Description=models.TextField(verbose_name='درباره حجره', blank=True)
     Image=models.ImageField(verbose_name='عکس حجره', upload_to=PathAndRename('media/Pictures/Markets/SubMarkets/Shops/'), help_text='عکس حجره را اینجا وارد کنید', default='static/Pictures/DefaultShop.png', null=True)
@@ -286,7 +285,6 @@ class Shop(models.Model):
     Available=models.BooleanField(verbose_name='وضعیت ثبت حجره', choices=AVAILABLE_STATUS, default=True)
     Publish=models.BooleanField(verbose_name='وضعیت انتشار حجره', choices=PUBLISH_STATUS, default=False)
     FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='تایید کننده', related_name='Shop_Accept', blank=True, null=True) 
-    FK_Tag=models.ManyToManyField(Tag, verbose_name='تگ ها', related_name='Shop_Tag', blank=True)
     CanselCount=models.PositiveIntegerField(verbose_name='تعداد لغو سفارشات حجره', default = 0)
     CanselFirstDate=models.DateField(verbose_name='تاریخ اولین لغو سفارش', null = True, blank = True)
     LimitCancellationDate=models.DateField(verbose_name='تاریخ محدودیت لغو سفارشات', null = True, blank = True)
@@ -456,12 +454,6 @@ class Shop(models.Model):
         this_shop_product = list(Product.objects.filter(FK_Shop = self, Available = True, Publish = True, Status__in = ['1', '2', '3']).order_by('-DateCreate'))
         this_shop_product += list(Product.objects.filter(FK_Shop = self, Available = True, Publish = True, Status = '4').order_by('-DateCreate'))
         return this_shop_product
-
-    def get_banners(self):
-        return ShopBanner.objects.filter(FK_Shop = self, Available = True, Publish = True)
-
-    def get_comments(self):
-        return ShopComment.objects.filter(FK_Shop = self, Available = True)
 
     def get_managment_image(self):
         return Profile.objects.get(FK_User = self.FK_ShopManager).Image_thumbnail_url()
@@ -693,7 +685,6 @@ class Product(models.Model):
     ID=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     Title=models.CharField(max_length=200, verbose_name='نام محصول', db_index=True)
     Slug=models.SlugField(max_length=200, verbose_name='شناسه محصول', unique=True, db_index=True, allow_unicode=True)
-    FK_SubMarket=models.ForeignKey(SubMarket, verbose_name='نام راسته', related_name='Product_SubMarket', null=True, on_delete=models.SET_NULL)
     Story=models.TextField(verbose_name='داستان محصول', blank=True)
     Description=models.TextField(verbose_name='درباره محصول', blank=True)
     Bio=models.TextField(verbose_name='معرفی محصول', blank=True)
@@ -709,7 +700,6 @@ class Product(models.Model):
     NewImage=models.ImageField(verbose_name='عکس جدید حجره', upload_to=PathAndRename('media/Pictures/Markets/SubMarkets/Shops/Products/'), null=True, blank=True)
     Catalog=models.FileField(verbose_name='کاتالوگ محصول', upload_to=PathAndRename('media/Catalogs/Markets/SubMarkets/Shops/Products/'), help_text='کاتالوگ محصول خود را اینجا وارد کنید', null=True, blank=True)
     FK_Shop=models.ForeignKey(Shop, null=True, on_delete=models.SET_NULL, verbose_name='حجره',related_name='ShopProduct')
-    FK_Category=models.ManyToManyField(Category, verbose_name='دسته بندی های محصول', related_name='ProductCategory', blank=True)
     new_category=models.ForeignKey(NewCategory, verbose_name='دسته بندی جدید', related_name='products', null=True, on_delete=models.PROTECT)
     Price=models.BigIntegerField(verbose_name='قیمت محصول')
     OldPrice=models.BigIntegerField(verbose_name='قیمت حذف محصول', default=0)
@@ -737,7 +727,6 @@ class Product(models.Model):
     Available=models.BooleanField(verbose_name='وضعیت بارگذاری محصول', choices=AVAILABLE_STATUS, default=True)
     Publish=models.BooleanField(verbose_name='وضعیت انتشار محصول', choices=PUBLISH_STATUS, default=False)
     FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='تایید کننده', related_name='Product_Accept', blank=True, null=True) 
-    FK_Tag=models.ManyToManyField(Tag, verbose_name='تگ ها', related_name='Product_Tag', blank=True)
     PreparationDays = models.PositiveSmallIntegerField(verbose_name='زمان آماده‌سازی', null=True)
     post_range_cities = models.ManyToManyField('City', related_name='products', verbose_name=_('شهرهای قابل ارسال'), blank=True)
     is_advertisement = models.BooleanField(verbose_name=_('آگهی'), default=False, null=True)
@@ -1126,51 +1115,6 @@ class Product(models.Model):
                     FK_Category__in = self.FK_Category.all()
                     ).order_by('?')[:12]
 
-    def get_product_categories(self):
-        result = []
-        class item_category:
-            def __init__(self, item, status):
-                self.Category = item
-                self.Status = status
-        for item in Category.objects.filter(Publish = True):
-            if item in self.FK_Category.all():
-                newobject = item_category(item, True)
-                result.append(newobject)
-            else:
-                newobject = item_category(item, False)
-                result.append(newobject)
-        return result
-
-    def get_product_inpostrange(self):
-        result = []
-        class item_postrange:
-            def __init__(self, item, status):
-                self.PostRange = item
-                self.Status = status
-        for item in PostRange.objects.all():
-            if item in self.FK_PostRange.all():
-                newobject = item_postrange(item, True)
-                result.append(newobject)
-            else:
-                newobject = item_postrange(item, False)
-                result.append(newobject)
-        return result
-
-    def get_product_outpostrange(self):
-        result = []
-        class item_postrange:
-            def __init__(self, item, status):
-                self.PostRange = item
-                self.Status = status
-        for item in PostRange.objects.all():
-            if item in self.FK_ExceptionPostRange.all():
-                newobject = item_postrange(item, True)
-                result.append(newobject)
-            else:
-                newobject = item_postrange(item, False)
-                result.append(newobject)
-        return result
-
     def get_shop_slug(self):
         return self.FK_Shop.Slug
 
@@ -1220,7 +1164,6 @@ class ProductBanner (models.Model):
     Available=models.BooleanField(verbose_name='وضعیت بارگذاری بنر محصول', choices=AVAILABLE_STATUS, default=True)
     Publish=models.BooleanField(verbose_name='وضعیت انتشار بنر محصول', choices=PUBLISH_STATUS, default=False)
     FK_User=models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='تایید کننده', related_name='Product_Banner_Accept', blank=True, null=True) 
-    FK_Tag=models.ManyToManyField(Tag, verbose_name='تگ ها', related_name='Product_Banner_Tag', blank=True)
 
     @property
     def image(self):
@@ -1404,26 +1347,6 @@ class Profile(models.Model):
         except:
             url = "https://nakhll.com/static-django/images/image_upload.jpg"
             return url
-
-    # Get User Bank Account Info
-    def get_bank_account_name(self):
-        if BankAccount.objects.filter(FK_Profile = self).exists():
-            return BankAccount.objects.get(FK_Profile = self).AccountOwner
-        else:
-            return None
-
-    def get_credit_card_number(self):
-        if BankAccount.objects.filter(FK_Profile = self).exists():
-            return BankAccount.objects.get(FK_Profile = self).CreditCardNumber
-        else:
-            return None
-
-
-    def get_shaba_number(self):
-        if BankAccount.objects.filter(FK_Profile = self).exists():
-            return BankAccount.objects.get(FK_Profile = self).ShabaBankNumber
-        else:
-            return None
 
     def chack_user_bank_account(self):
         if (self.get_bank_account_name() == None) or (self.get_credit_card_number() == None) or (self.get_shaba_number() == None):
@@ -1661,7 +1584,6 @@ class Alert(models.Model):
     )
     Part=models.CharField(verbose_name='بخش', choices=PART_TYPE, max_length=2, default='0')
     Slug=models.TextField(verbose_name='شناسه بخش', blank=True, null=True)
-    FK_Field=models.ManyToManyField(Field, verbose_name='فیلد ها', related_name='Alert_Fields', blank=True)
     SEEN_STATUS =(
         (True,'دیده شده'),
         (False,'دیده نشده'),
