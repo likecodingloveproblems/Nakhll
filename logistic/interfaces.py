@@ -184,7 +184,8 @@ class LogisticUnitInterface:
                         for product in all_products_set
                         ]
             logistic_units.append({
-                'unit_name': optimal_unit.name, 
+                'unit_name': optimal_unit.name,
+                'unit_type': '',
                 'products': products,
                 'price': price
             })
@@ -192,6 +193,7 @@ class LogisticUnitInterface:
         if pad_products:
             logistic_units.append({
                 'unit_name': pad_lu_name,
+                'unit_type': 'pad',
                 'products': [
                     {'slug': product.slug, 'title': product.Title, 'image': product.image_thumbnail_url}
                     for product in pad_products
@@ -202,6 +204,7 @@ class LogisticUnitInterface:
         if free_products:
             logistic_units.append({
                 'unit_name': free_lu_name,
+                'unit_type': 'free',
                 'products': [
                     {'slug': product.slug, 'title': product.Title, 'image': product.image_thumbnail_url}
                     for product in free_products
