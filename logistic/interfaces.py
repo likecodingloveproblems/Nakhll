@@ -250,10 +250,16 @@ class LogisticUnitInterface:
         
                
     def _get_pad_lu_name(self, shop_all_lus: QuerySet):
-        return self.get_pad_lus(shop_all_lus).first().name
+        lu = self.get_pad_lus(shop_all_lus).first()
+        if lu:
+            return lu.name
+        return 'پسکرایه'
 
     def _get_free_lu_name(self, shop_all_lus: QuerySet):
-        return self.get_free_lus(shop_all_lus).first().name
+        lu = self.get_free_lus(shop_all_lus).first()
+        if lu:
+            return lu.name
+        return 'ارسال رایگان'
 
 
     def calculate_logistic_unit_price(self, shop_dict, invoice):
