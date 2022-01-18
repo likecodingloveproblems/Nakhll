@@ -156,8 +156,8 @@ class LogisticUnitInterface:
         if free_products:
             all_products = all_products.difference(free_products)
 
-        pad_lu_name = self._get_pad_lu_name(pad_products) # TODO
-        free_lu_name = self._get_free_lu_name(free_products) # TODO
+        pad_lu_name = self._get_pad_lu_name(shop_logistic_units_queryset)
+        free_lu_name = self._get_free_lu_name(shop_logistic_units_queryset)
 
         if all_products:
             all_products_set = set()
@@ -245,11 +245,11 @@ class LogisticUnitInterface:
         
         
                
-    def _get_pad_lu_name(self, pad_products):
-        return 'پسکرایه'
+    def _get_pad_lu_name(self, shop_all_lus: QuerySet):
+        return self.get_pad_lus(shop_all_lus).first().name
 
-    def _get_free_lu_name(self, free_products):
-        return 'رایگان'
+    def _get_free_lu_name(self, shop_all_lus: QuerySet):
+        return self.get_free_lus(shop_all_lus).first().name
 
 
     def calculate_logistic_unit_price(self, shop_dict, invoice):
