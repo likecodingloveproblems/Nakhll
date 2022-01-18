@@ -93,7 +93,7 @@ class ShopLogisticUnitConstraintReadSerializer(serializers.ModelSerializer):
                 When(ID__in=obj.products.values('ID'), then=Value(True)),
                 default=Value(False),
                 output_field=fields.BooleanField()
-            ))
+            )).order_by('-is_checked')
         return ProductSerializer(products, many=True).data
         
 
