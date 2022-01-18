@@ -224,21 +224,25 @@ class LogisticUnitInterface:
         only_pad_ids = []
         for product in all_products:
             all_lus = self.get_product_available_lus(queryset, product)
-            pad_lus = self.get_pad_lus(queryset, product)
+            pad_lus = self.get_pad_lus(queryset)
             if set(all_lus) == set(pad_lus):
                 only_pad_ids.append(product.ID)
         only_pad_products = Product.objects.filter(ID__in=only_pad_ids)
         return only_pad_products
 
-    def get_pad_lus(self, shop_all_lus: QuerySet, product: Product):
+    def get_pad_lus(self, shop_all_lus: QuerySet):
         filter_queryset = Q(calculation_metric__pay_time=models.ShopLogisticUnitCalculationMetric.PayTimes.AT_DELIVERY)
         filter_queryset &= Q(calculation_metric__payer=models.ShopLogisticUnitCalculationMetric.PayerTypes.CUSTOMER)
         return shop_all_lus.filter(filter_queryset)
-        
-    def _get_free_products(self, queryset: QuerySet, all_products: set):
+
+    def get_free_lus(self, shop_all_lus: QuerySet):
         filter_queryset = Q(calculation_metric__pay_time=models.ShopLogisticUnitCalculationMetric.PayTimes.WHEN_BUYING)
         filter_queryset &= Q(calculation_metric__payer=models.ShopLogisticUnitCalculationMetric.PayerTypes.SHOP)
-        free_products_qs = queryset.filter(filter_queryset)
+        return shop_all_lus.filter(filter_queryset)
+        
+        
+    def _get_free_products(self, queryset: QuerySet, all_products: set):
+        free_products_qs = self.get_free_lus(queryset)
         free_products = Product.objects.filter(ID__in=free_products_qs.values_list('constraint__products__ID', flat=True))
         return free_products
 
