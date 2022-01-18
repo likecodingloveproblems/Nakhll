@@ -160,8 +160,8 @@ class ShopLogisticUnitCalculationMetric(models.Model):
    
     shop_logistic_unit = models.OneToOneField(ShopLogisticUnit, verbose_name=_('واحد ارسال'),
                                             related_name='calculation_metric', on_delete=models.CASCADE)
-    price_per_kilogram = models.PositiveIntegerField(verbose_name=_('قیمت به ازای هر کیلو (ریال)'), default=0)
-    price_per_extra_kilogram = models.PositiveIntegerField(verbose_name=_('قیمت به ازای هر کیلو اضافه (ریال)'), default=0)
+    price_per_kilogram = models.FloatField(verbose_name=_('قیمت به ازای هر کیلو (ریال)'), default=0)
+    price_per_extra_kilogram = models.FloatField(verbose_name=_('قیمت به ازای هر کیلو اضافه (ریال)'), default=0)
     pay_time = models.CharField(verbose_name=_('زمان پرداخت'), max_length=11, choices=PayTimes.choices, default=PayTimes.WHEN_BUYING)
     payer = models.CharField(verbose_name=_('پرداخت کننده'), max_length=4, choices=PayerTypes.choices, default=PayerTypes.CUSTOMER)
     created_at = models.DateTimeField(verbose_name=_('تاریخ ایجاد'), auto_now_add=True)
