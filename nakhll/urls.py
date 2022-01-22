@@ -27,7 +27,6 @@ urlpatterns = [
     url(r'^oauth/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     path('logintowebsite/', admin.site.urls),
     path('accounting/', include('accounting.urls', namespace='accounting')),
-    path('accounts/', include('my_auth.urls', namespace='my_auth')),
     url(r'^app/api/', include('restapi.urls' , namespace='restapi')),
     path('torob/', include('torob_api.urls', namespace='torob')),
     path('goto/', include('url_redirector.urls', namespace='url_redirector')),
@@ -37,7 +36,6 @@ urlpatterns = [
     path('', include('logistic.urls' , namespace='logistic')),
     path('', include('nakhll_market.urls', namespace='nakhll_market')),
     url(r'^tinymce/', include('tinymce.urls')),
-    url(r'^cart/', include('Payment.urls' , namespace='Payment')),
     # api version 1
     url(r'^api/v1/', include('nakhll_market.api_urls', namespace='nakhll_market_api')),
     url(r'^api/v1/', include('custom_list.urls', namespace='custom_list')),

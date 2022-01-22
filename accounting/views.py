@@ -13,7 +13,6 @@ from excel_response import ExcelResponse
 from django.db.models import Count, Sum, query, Q
 from django.db.models.functions import Coalesce
 
-from Payment.models import Factor
 from nakhll_market.interface import DiscordAlertInterface
 from nakhll_market.models import Profile, Shop, Product
 from accounting_new.models import Invoice
@@ -209,39 +208,6 @@ class ShopInformation(View):
                 'factor_count', 'FK_SubMarket__Title', 'Available', 'Publish'
             )
      
-        return ExcelResponse(
-            data=queryset
-        )
-
-
-class FactorStats(GroupRequiredMixin, View):
-    group_required = u"factor-stats"
-
-    def get(self, request):
-        queryset = Factor.objects.values(
-            'FactorNumber', 'FK_User__username', 'MobileNumber', 'Address',
-            'Location', 'City', 'BigCity', 'State', 'PhoneNumber', 'FK_Coupon__SerialNumber',
-            'DiscountType','PostPrice', 'TotalPrice', 'PaymentStatus', 'OrderDate',
-            'OrderStatus', 'Checkout', 'Publish'
-        )
-        return ExcelResponse(
-            data=queryset
-        )
-class CustomerPurchaseReport(GroupRequiredMixin, View):
-    group_required = u"factor-stats"
-
-    def get(self, request):
-        DiscordAlertInterface.send_alert('TEST IN CUSTOMERPURCHASEREPORT: Someone get Customer Purchase Report')
-        queryset = Factor.objects.filter(PaymentStatus=True)
-        queryset = queryset.annotate(products_list=StringAgg('FK_FactorPost__FK_Product__Title', delimiter=', '))
-        queryset = queryset.annotate(shop_list=StringAgg('FK_FactorPost__FK_Product__FK_Shop__Title', delimiter=', '))
-        queryset = queryset.annotate(market_list=StringAgg('FK_FactorPost__FK_Product__FK_Shop__FK_SubMarket__FK_Market__Title', delimiter=', '))
-        queryset = queryset.annotate(submarket_list=StringAgg('FK_FactorPost__FK_Product__FK_Shop__FK_SubMarket__Title', delimiter=', '))
-        queryset = queryset.values(
-            'FactorNumber', 'FK_User__username', 'FK_User__first_name', 'FK_User__last_name',
-            'MobileNumber', 'Address', 'Location', 'City', 'BigCity', 'State', 'products_list',
-            'market_list', 'submarket_list', 'shop_list',
-        )
         return ExcelResponse(
             data=queryset
         )

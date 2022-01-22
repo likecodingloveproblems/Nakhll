@@ -28,6 +28,7 @@ def test_pec(request):
 
 @csrf_exempt
 def test_pec_callback(request):
+    # TODO
     # if not request.META['HTTP_ORIGIN'].startswith('https://pec.shaparak.ir')\
         # or not request.META['HTTP_REFERER'].startswith('https://pec.shaparak.ir'):
         # raise Exception('Invalid origin or referer')

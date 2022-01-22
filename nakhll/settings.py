@@ -46,8 +46,7 @@ COMPRESS_ENABLED = True
 
 
 # Application definition
-
-INSTALLED_APPS = [
+DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -56,18 +55,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.sitemaps',
+]
+
+THIRD_PARTY_APPS = [
     'corsheaders',
     'analytical',
-    'sms',
-    'nakhll_auth',
     'tinymce',
+    'admin_reorder',
     'django_jalali',
     'simple_history',
-    'admin_reorder',
-    'nakhll_market',
-    'Payment',
-    'Ticketing',
-    'restapi',
     'oauth2_provider',
     'rest_framework',
     'rest_framework.authtoken',
@@ -78,17 +74,27 @@ INSTALLED_APPS = [
     'captcha',
     'django_prometheus',
     'django_extensions',
+    'colorfield',
+]
+
+NAKHLL_APPS = [
+    'nakhll_auth',
+    'nakhll_market',
+    'restapi',
     'cart',
     'coupon',
     'logistic',
     'accounting_new',
+    'accounting',
     'payoff',
     'torob_api',
     'url_redirector',
     'custom_list',
-    'colorfield',
     'shop',
+    'sms',
 ]
+
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + NAKHLL_APPS
 
 MIDDLEWARE = [
     'django_prometheus.middleware.PrometheusBeforeMiddleware',

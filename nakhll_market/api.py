@@ -18,21 +18,21 @@ from rest_framework.decorators import action
 from django_filters import rest_framework as restframework_filters
 from logistic.models import ShopLogisticUnit
 from nakhll_market.models import (
-    Alert, AmazingProduct, Comment, NewCategory, Product, ProductBanner, Shop, Slider, Category, Market, State, BigCity, City, SubMarket,
+    Alert, Comment, NewCategory, Product, ProductBanner, Shop, Slider, State, BigCity, City,
     LandingPageSchema, ShopPageSchema, UserImage,
     )
 from nakhll_market.serializers import (
-    AmazingProductSerializer, Base64ImageSerializer, CampaignShopSerializer, NewCategoryProductCountSerializer,
+    Base64ImageSerializer, NewCategoryProductCountSerializer,
     NewProfileSerializer, ProductBannerWithProductSerializer, ProductCommentSerializer,
     ProductDetailSerializer, ProductImagesSerializer, ProductOwnerListSerializer,
     ProductOwnerReadSerializer, ProductOwnerWriteSerializer, ProductPriceWriteSerializer,
-    ProductSerializer, ShopSerializer, ShopSimpleSerializer, ShopSlugSerializer, ShopStatisticSerializer,SliderSerializer,
-    CategorySerializer, FullMarketSerializer, CreateShopSerializer, ProductInventoryWriteSerializer,
-    ProductListSerializer, ShopAllSettingsSerializer, SubMarketProductSerializer, UserOrderSerializer,
+    ProductSerializer, ShopSerializer, ShopSimpleSerializer, ShopSlugSerializer, ShopStatisticSerializer,
+    CreateShopSerializer, ProductInventoryWriteSerializer,
+    ProductListSerializer, ShopAllSettingsSerializer, UserOrderSerializer,
     ProductSubMarketSerializer, StateFullSeraializer, ShopPageSchemaSerializer, UserImageSerializer,
     LandingPageSchemaSerializer, NewCategoryChildSerializer, NewCategoryParentSerializer
     )
-from restapi.permissions import IsFactorOwner, IsProductOwner, IsShopOwner, IsProductBannerOwner
+from restapi.permissions import IsProductOwner, IsShopOwner, IsProductBannerOwner
 from restapi.serializers import ProfileSerializer
 from accounting_new.models import Invoice
 from nakhll_market.filters import ProductFilter
@@ -41,28 +41,6 @@ from nakhll_market.paginators import StandardPagination
 from nakhll_market.product_bulk_operations import BulkException, BulkProductHandler
 from shop.mixins import MultipleFieldLookupMixin
 from shop.serializers import ShopLandingDetailsSerializer, ShopLandingSerializer
-
-class SliderViewSet(viewsets.ReadOnlyModelViewSet):
-    serializer_class = SliderSerializer
-    permission_classes = [permissions.AllowAny, ]
-    search_fields = ('Location', )
-    filter_backends = (filters.SearchFilter,)
-    queryset = Slider.objects.filter(Publish=True)
-    
-
-class CategoryViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-    serializer_class = CategorySerializer
-    permission_classes = [permissions.AllowAny, ]
-
-    def get_queryset(self):
-        return Category.objects.get_category_publush_avaliable()
-
-class AmazingProductViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-    serializer_class = AmazingProductSerializer
-    permission_classes = [permissions.AllowAny, ]
-
-    def get_queryset(self):
-        return AmazingProduct.objects.get_amazing_products()
 
 class LastCreatedProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductSerializer
@@ -259,8 +237,8 @@ class ProductDetailsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductDetailSerializer
     permission_classes = [permissions.AllowAny, ]
     lookup_field = 'Slug'
-    queryset = Product.objects.select_related('FK_SubMarket', 'FK_Shop').filter(Publish=True)
-
+    queryset = Product.objects.select_related('FK_Shop').filter(Publish=True)
+       
 class ProductCommentsViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductCommentSerializer
     permission_classes = [permissions.AllowAny, ]
@@ -278,7 +256,7 @@ class ProductCommentsViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, v
         if not self.product_slug:
             raise Http404
         return super().list(request, *args, **kwargs)
-        
+
 
 class ProductRelatedItemsViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     pagination_class = StandardPagination
@@ -313,40 +291,6 @@ class ProductsInSameFactorViewSet(generics.ListAPIView):
         return Product.objects.get_products_in_same_factor(id)
  
  
-class MarketList(generics.ListAPIView):
-    serializer_class = FullMarketSerializer
-    permission_classes = [permissions.AllowAny, ]
-    # queryset = Market.objects.filter(Available=True, Publish=True)
-        
-    def list(self, request, *args, **kwargs):
-        query = self.request.GET.get('query')
-        queryset = self.filter_queryset(self.get_queryset())
-        serializer = self.get_serializer(queryset, many=True)
-        # serializer = self.get_serializer(queryset, many=True, context={'query': query})
-        return Response(serializer.data)
-
-    def get_queryset(self):
-        query = self.request.GET.get('query')
-        if query:
-            queryset = Market.objects.filter(FatherMarket__Product_SubMarket__Title__contains=query, Available=True, Publish=True)
-            # queryset = SubMarket.objects.filter(Product_SubMarket__Title__contains=query, Available=True, Publish=True)
-            queryset = queryset.annotate(product_count=Count('FatherMarket__Product_SubMarket'))
-            return queryset.order_by('product_count')
-        return Market.objects.filter(Available=True, Publish=True)
-
-class SubMarketList(generics.ListAPIView):
-    permission_classes = [permissions.AllowAny, ]
-    serializer_class = SubMarketProductSerializer
-
-    def get_queryset(self):
-        query = self.request.GET.get('q')
-        queryset = SubMarket.objects.filter(Available=True, Publish=True)
-        if not query:
-            return queryset.none()
-        queryset = queryset.filter(Product_SubMarket__Title__contains=query)
-        queryset = queryset.annotate(product_count=Count('Product_SubMarket'))
-        return queryset.order_by('-product_count')
-
 
 
 
@@ -444,28 +388,6 @@ class CheckProductSlug(views.APIView):
             return Response({'product_slug': product.ID})
         except Product.DoesNotExist:
             return Response({'product_slug': None})
-class AddSubMarketToProduct(views.APIView):
-    permission_classes = [permissions.IsAuthenticated]
-    def post(self, request, format=None):
-        try:
-            serializer = ProductSubMarketSerializer(data=request.data)
-            if serializer.is_valid():
-                product_id = serializer.data.get('product')
-                submarket_ids = serializer.data.get('submarkets', [])
-                product = Product.objects.get(ID=product_id)
-                self.check_object_permissions(request, product)
-                for submarket_id in submarket_ids:
-                    submarket = SubMarket.objects.get(ID=submarket_id)
-                    submarket.Product_SubMarket.add(product)
-
-                # TODO: Check if created product alert display images and submarkets
-                # TODO: or I should create an alert for submarkets and images
-
-                return Response({'details': 'done'}, status=status.HTTP_200_OK)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except:
-            return Response({'details': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
 
 class AddImagesToProduct(views.APIView):
     # parser_classes = (MultiPartParser, FormParser)
@@ -848,9 +770,3 @@ class ShopsStatisticViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
         from excel_response import ExcelResponse
         return ExcelResponse(data=serializer.data)
         # return Response(serializer.data)
-
-class CampaignProductsViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
-    serializer_class = CampaignShopSerializer
-    def get_queryset(self):
-        return Shop.objects.public_shops().filter(in_campaign=True)
-

@@ -24,7 +24,7 @@ class CouponUsageInline(admin.TabularInline):
 
 @admin.register(Invoice)
 class InvoiceAdmin(admin.ModelAdmin):
-    list_display=('id', 'FactorNumber', 'user', 'status',  'final_price', 'post_price', 'coupons_total_price',
+    list_display=('id', 'user', 'status',  'final_price', 'post_price', 'coupons_total_price',
                     'receiver_mobile_number', 'receiver_full_name', 'created_datetime_jalali', 'post_tracking_code', )
     list_filter=('status','user',)
     readonly_fields = ('id','final_price', 'post_price', 'coupons_total_price', 'display_address',

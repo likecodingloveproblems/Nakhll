@@ -24,8 +24,7 @@ from datetime import datetime
 
 # get model
 from django.contrib.auth.models import User
-from nakhll_market.models import Profile, Product, Shop, BankAccount, AttrProduct, Alert, Field, ShopComment, Review, Comment
-from Payment.models import Factor, FactorPost
+from nakhll_market.models import Profile, Product, Shop, Alert
 
 # -------------------------------------------------------------------------------------------------------------------------------------
 

@@ -4,7 +4,7 @@ from django.utils.timezone import make_aware, now
 from django.utils.translation import ugettext_lazy as _
 from django.core.serializers.json import DjangoJSONEncoder
 from rest_framework.validators import ValidationError
-from nakhll_market.models import Category, Shop, Product
+from nakhll_market.models import Shop, Product
 from accounting_new.models import Invoice
 from coupon.managers import CouponManager, CouponUsageManager
 from coupon.interfaces import CouponValidation

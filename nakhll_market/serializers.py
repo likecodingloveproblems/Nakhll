@@ -1,8 +1,8 @@
-from django.shortcuts import get_object_or_404
 from accounting_new.models import Invoice
 from logistic.serializers import AddressSerializer
 from nakhll_market.serializer_fields import Base64ImageField
-from restapi.serializers import BigCitySerializer, CitySerializer, ProfileImageSerializer, ProfileSerializer, ShopBannerSerializer, UserDetailSerializer
+from restapi.serializers import (BigCitySerializer, CitySerializer,
+                                 ProfileImageSerializer, ProfileSerializer)
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.db.models import fields, query
@@ -10,33 +10,18 @@ from rest_framework import serializers
 from rest_framework.relations import HyperlinkedIdentityField, HyperlinkedRelatedField
 from rest_framework.utils import field_mapping
 from nakhll_market.models import (
-    Alert, AmazingProduct, AttrPrice, AttrProduct, Attribute, BigCity, City, NewCategory, ShopBankAccount, ShopSocialMedia,
-    Category, Market, PostRange, Product, ProductBanner, Profile, Shop, ShopBankAccount, Slider, Comment, State,
-    SubMarket, LandingPageSchema, ShopPageSchema, UserImage,
+    BigCity, City, Comment, NewCategory, ShopBankAccount, ShopSocialMedia,
+    Product, ProductBanner, Profile, Shop, State,
+    LandingPageSchema, ShopPageSchema, UserImage,
     )
 from shop.models import ShopFeature
 from shop.serializers import ShopLandingDetailsSerializer
-
-# landing serializers
-class SliderSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Slider
-        fields = [
-            'url', 'image', 'title', 'show_info', 'description', 'location',
-            ]
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
             'first_name', 'last_name', 
-        ]
-
-class CategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Category
-        fields = [
-            'id', 'Slug', 'title', 'url', 'image_thumbnail',
         ]
 
 
@@ -103,7 +88,6 @@ class ShopSerializer(serializers.ModelSerializer):
     registered_months = serializers.SerializerMethodField()
     FK_ShopManager = UserSerializer(read_only=True)
     profile = ProfileImageSerializer(read_only=True)
-    banners = ShopBannerSerializer(many=True, read_only=True)
     landing_data = serializers.SerializerMethodField()
     is_landing = serializers.SerializerMethodField()
     yektanet_advertisement = serializers.SerializerMethodField()
@@ -175,43 +159,26 @@ class ProductSerializer(serializers.ModelSerializer):
             'Title', 'discount', 'ID', 'FK_Shop', 'discount', 'is_advertisement'
         ]
 
-class AmazingProductSerializer(serializers.ModelSerializer):
-    product = ProductSerializer(many=False, read_only=True)
-    class Meta:
-        model = AmazingProduct
-        fields = [
-            'product', 'start_date_field', 'end_date_field'
-        ]
-
-# product page serializer
-class AttributeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Attribute
-        fields = [
-            'title', 'unit'
-        ]
-
-class AttrProductSerializer(serializers.ModelSerializer):
-    FK_Attribute = AttributeSerializer(many=False, read_only=True)
-    class Meta:
-        model = AttrProduct
-        fields = [
-            'FK_Attribute', 'value'
-        ]
-
-class AttrPriceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AttrPrice
-        fields = [
-            'description', 'id', 'value', 'extra_price', 'unit',
-            'available', 'publish',
-        ]
-
 class ProductBannerSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductBanner
         fields = [
             'image', 'id'
+        ]
+
+
+class ProductDetailSerializer(serializers.HyperlinkedModelSerializer):
+    banners = ProductBannerSerializer(many=True, read_only=True)
+    shop = ShopSerializer(many=False, read_only=False)
+    new_category = NewCategoryParentSerializer(many=False, read_only=True)
+    class Meta:
+        model = Product
+        fields = [
+            'id', 'title', 'description', 'slug', 'price', 'old_price',
+            'available', 'salable', 'discount', 'shop', 'image',
+            'banners', 'inventory', 'status', 'exception_post_range', 'new_category',
+            'net_weight', 'weight_with_packing',  'length_with_packing',
+            'height_with_packaging', 'story', 'width_with_packing', 'PreparationDays',
         ]
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -229,6 +196,7 @@ class ProductCommentSerializer(serializers.ModelSerializer):
     comment_replies = serializers.SerializerMethodField()
     class Meta:
         model = Comment
+        
         fields = [
             'user', 'description', 'number_like',
             'reply', 'date_create', 'comment_replies',
@@ -238,65 +206,6 @@ class ProductCommentSerializer(serializers.ModelSerializer):
         if obj.Comment_Pater:
             replies = obj.Comment_Pater
             return CommentSerializer(replies, many=True).data
-class MarketSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Market
-        fields = [
-            'title', 'url', 'id',
-        ]
-
-class SubMarketProductSerializer(serializers.ModelSerializer):
-    product_count = serializers.SerializerMethodField()
-    class Meta:
-        model = SubMarket
-        fields = [
-            'title', 'url', 'id', 'product_count'
-        ]
-    def get_product_count(self, obj):
-        return obj.product_count
-
-
-class SubMarketSerializer(serializers.ModelSerializer):
-    market = MarketSerializer(many=False, read_only=False)
-    class Meta:
-        model = SubMarket
-        fields = [
-            'title', 'market', 'url', 'id'
-        ]
-
-class PostRangeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PostRange
-        fields = [
-            'state', 'big_city', 'city'
-        ]
-
-class SimplePostRangeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PostRange
-        fields = ['city', ]
-
-
-class ProductDetailSerializer(serializers.HyperlinkedModelSerializer):
-    attributes = AttrProductSerializer(many=True, read_only=True)
-    attributes_price = AttrPriceSerializer(many=True, read_only=True)
-    banners = ProductBannerSerializer(many=True, read_only=True)
-    sub_market = SubMarketSerializer(many=False, read_only=True)
-    shop = ShopSerializer(many=False, read_only=False)
-    post_range = PostRangeSerializer(many=True, read_only=True)
-    exception_post_range = PostRangeSerializer(many=True, read_only=True)
-    new_category = NewCategoryParentSerializer(many=False, read_only=True)
-    shop_in_campaign = serializers.SerializerMethodField()
-    class Meta:
-        model = Product
-        fields = [
-            'id', 'title', 'description', 'slug', 'price', 'old_price',
-            'available', 'salable', 'discount', 'shop', 'image', 'shop_in_campaign',
-            'attributes', 'attributes_price', 'banners', 'inventory',
-            'net_weight', 'weight_with_packing',  'length_with_packing',
-            'height_with_packaging', 'story', 'width_with_packing', 'PreparationDays',
-            'status', 'exception_post_range', 'post_range', 'sub_market', 'new_category'
-        ]
 
     def get_shop_in_campaign(self, obj):
         if obj.shop.in_campaign:
@@ -497,25 +406,6 @@ class ProductOwnerReadSerializer(serializers.ModelSerializer):
         
 
 
-class FullMarketSerializer(serializers.ModelSerializer):
-    submarkets = SubMarketSerializer(many=True, read_only=True)
-    # submarkets = serializers.SerializerMethodField()
-    def get_submarkets(self, obj):
-        query = self.context.get('query')
-        return [submarket.id for submarket in obj.submarkets.all()]
-    class Meta:
-        model = Market
-        fields = [
-            'id',
-            'title',
-            'description',
-            'image',
-            'slug',
-            'url',
-            'submarkets',
-        ]
-
-
 class ProductCategorySerializer(serializers.Serializer):
     product = serializers.UUIDField()
     categories = serializers.ListField(
@@ -525,12 +415,11 @@ class ProductCategorySerializer(serializers.Serializer):
 
 class ShopFullSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer(read_only=True, many=False)
-    sub_market = SubMarketSerializer(read_only=True, many=True)
     class Meta:
         model = Shop
         fields = [
             'title', 'slug', 'url', 'description', 'profile', 'image_thumbnail_url',
-            'state', 'sub_market',
+            'state',
         ]
 
 class ShopBankAccountSerializer(serializers.ModelSerializer):
@@ -665,12 +554,12 @@ class ShopProductSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'slug', 'image_thumbnail_url', 'shop', 'price', 'old_price', 'discount',]
 
 class NewProfileSerializer(serializers.ModelSerializer):
-    wallet = serializers.ReadOnlyField(source='FK_User.WalletManager.Inverntory')
     FK_User = UserSerializer(many=False, read_only=False)
     Image = Base64ImageField(max_length=None, use_url=True, allow_empty_file=False, required=False)
     class Meta:
         model = Profile
-        fields = ['id', 'NationalCode', 'MobileNumber', 'FK_User', 'BrithDay', 'Image', 'wallet', 'State', 'BigCity', 'City', 'Sex', 'Bio', 'image']
+        fields = ['id', 'NationalCode', 'MobileNumber', 'FK_User', 'BrithDay', 'Image',
+                  'State', 'BigCity', 'City', 'Sex', 'Bio', 'image']
         read_only_fields = ['MobileNumber']
         extra_kwargs = {
             'NationalCode': {'validators': []},

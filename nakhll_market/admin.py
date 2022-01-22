@@ -2,13 +2,11 @@ from typing import Dict, Optional
 from django.contrib import admin
 from django.http import HttpRequest, HttpResponse
 from django.utils.timezone import localtime
-from .models import (AmazingProduct, LandingPageSchema, NewCategory, ShopPageSchema,
-                     Tag, Market, MarketBanner, SubMarket, LandingImage, LandingPage,
-                     SubMarketBanner,BankAccount, Category ,PostRange, Shop, 
-                     ShopBanner, ShopMovie, Attribute, AttrPrice, AttrProduct, 
-                     Product, ProductBanner, ProductMovie, Comment, Profile, 
-                     Review, Slider, Option_Meta, Message, Pages, Alert,
-                     Field, User_Message_Status, UserPoint, DashboardBanner)
+from .models import (LandingPageSchema, NewCategory, ShopPageSchema,
+                     LandingImage, LandingPage,
+                     Shop, 
+                     Product, ProductBanner, Profile, 
+                     Alert, DashboardBanner)
 from django.contrib import admin
 from django.contrib.auth.models import Permission
 
@@ -16,16 +14,6 @@ admin.site.site_header = 'مدیریت بازار نخل '
 
 # enable django permission setting in admin panel to define custom permissions
 admin.site.register(Permission)
-#tag admin panel
-@admin.register(Tag)
-class TagAdmin(admin.ModelAdmin):
-    list_display=('Title','Description')
-    search_fields=('Title','Description')
-    ordering=['id']
-#-------------------------------------------------
-class BankAccountInline(admin.TabularInline):
-    model=BankAccount
-    list_display=('AccountOwner','CreditCardNumber','ShabaBankNumber',)
     
 #profile admin panel
 @admin.register(Profile)
@@ -35,50 +23,8 @@ class ProfileAdmin(admin.ModelAdmin):
     list_filter=('BrithDay',)
     ordering=['ID','BrithDay','Point','UserReferenceCode']
     search_fields=('MobileNumber','UserReferenceCode',)
-    inlines=[BankAccountInline]
 #-------------------------------------------------
 #market admin panel
-class MarketBannerInline(admin.StackedInline):
-    model=MarketBanner
-    extra=1
-
-@admin.register(Market)
-class MarketAdmin(admin.ModelAdmin):
-    list_display=('Title','Slug','DateCreate','Available','Publish')
-    list_filter=('Publish','Available','DateCreate','DateUpdate')
-    search_fields=('Title','Slug')
-    ordering=['ID','DateCreate','DateUpdate']
-    prepopulated_fields={'Slug':('Title',)}
-    inlines=[MarketBannerInline]
-    def DateCreate(self,obj:Market):
-        return localtime(obj.DateCreate).strftime('%Y-%m-%d %H:%M:%S')
-#-------------------------------------------------
-#SubMarket admin panel
-class SubMarketBannerInline(admin.StackedInline):
-    model=SubMarketBanner
-    extra=1
-
-@admin.register(SubMarket)
-class SubMarketAdmin(admin.ModelAdmin):
-    list_display=('Title','Slug','DateCreate','Available','Publish')
-    list_filter=('Publish','Available','DateCreate','DateUpdate')
-    search_fields=('Title','Slug')
-    ordering=['ID','DateCreate','DateUpdate']
-    prepopulated_fields={'Slug':('Title',)}
-    inlines=[SubMarketBannerInline]
-    def DateCreate(self,obj):
-        return localtime(obj.DateCreate).strftime('%Y-%m-%d %H:%M:%S')
-    def DateUpdate(self,obj):
-        return localtime(obj.DateUpdate).strftime('%Y-%m-%d %H:%M:%S')
-#-------------------------------------------------
-#Shop admin panel
-class ShopBannerInline(admin.StackedInline):
-    model=ShopBanner
-    extra=1
-
-class ShopMovieInline(admin.StackedInline):
-    model=ShopMovie
-    extra=1
 
 
 @admin.register(Shop)
@@ -87,39 +33,16 @@ class ShopAdmin(admin.ModelAdmin):
     list_filter=('City','State','Publish','Available','DateCreate','DateUpdate')
     search_fields=('Title','Slug')
     ordering=['ID','DateCreate','DateUpdate']
-    inlines=[ShopBannerInline, ShopMovieInline,]
     raw_id_fields = ('FK_ShopManager', )
     def DateCreate(self,obj):
         return localtime(obj.DateCreate).strftime('%Y-%m-%d %H:%M:%S')
     def DateUpdate(self,obj):
         return localtime(obj.DateUpdate).strftime('%Y-%m-%d %H:%M:%S')
 #-------------------------------------------------
-#Attribute admin panel
-@admin.register(Attribute)
-class AttributeAdmin(admin.ModelAdmin):
-    list_display=('Title','Unit','Publish',)
-    list_filter=('Publish',)
-    search_fields=('Title',)
-    ordering=['id']
-#-------------------------------------------------
-#AttrPrice admin panel
-@admin.register(AttrPrice)
-class AttrPriceAdmin(admin.ModelAdmin):
-    list_display=('FK_Product','Value','ExtraPrice','Unit',)
-    ordering=['id','FK_Product','Value','ExtraPrice']
-#-------------------------------------------------
-# Product admin panel
-class AttrProductInline(admin.TabularInline):
-    model=AttrProduct
-    extra=3
-
 class ProductBannerInline(admin.StackedInline):
     model=ProductBanner
     extra=1
 
-class ProductMovieInline(admin.StackedInline):
-    model=ProductMovie
-    extra=1
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
@@ -127,7 +50,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter=('Status','Publish','Available','DateCreate','DateUpdate')
     search_fields=('Title','Slug','Description','Bio','Story')
     ordering=['ID','DateCreate','DateUpdate']
-    inlines=[AttrProductInline, ProductBannerInline, ProductMovieInline]
+    inlines=[ProductBannerInline,]
 
     def DateCreate(self,obj):
         return localtime(obj.DateCreate).strftime('%Y-%m-%d %H:%M:%S')
@@ -140,38 +63,6 @@ class ProductAdmin(admin.ModelAdmin):
             self.fields = None
         return super().change_view(request, object_id, form_url=form_url, extra_context=extra_context)
 #-------------------------------------------------
-#Comment admin panel
-@admin.register(Comment)
-class CommentAdmin(admin.ModelAdmin):
-    list_display=('Type','Description','FK_User','Available','DateCreate')
-    list_filter=('Type','Available','DateCreate',)
-    search_fields=('Type','Slug','Description')
-    ordering=['DateCreate','id']
-    def DateCreate(self,obj):
-        return localtime(obj.DateCreate).strftime('%Y-%m-%d %H:%M:%S')
-#-------------------------------------------------
-#Review admin panel
-@admin.register(Review)
-class ReviewAdmin(admin.ModelAdmin):
-    list_display=('Title','FK_Product','FK_User','DateCreate','Available')
-    list_filter=('Available','DateCreate')
-    search_fields=('Title','Positive','Negative','Description')
-    ordering=['DateCreate','id']
-    def DateCreate(self,obj):
-        return localtime(obj.DateCreate).strftime('%Y-%m-%d %H:%M:%S')
-#-------------------------------------------------
-#Category admin panel
-@admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
-    list_display=('Title','Slug','FK_SubCategory','Publish','DateCreate')
-    list_filter=('Available','Publish','DateCreate','DateUpdate')
-    search_fields=('Title','Slug','Description')
-    ordering=['DateCreate','id','Available','Publish']
-    def DateCreate(self,obj):
-        return localtime(obj.DateCreate).strftime('%Y-%m-%d %H:%M:%S')
-    def DateUpdate(self,obj):
-        return localtime(obj.DateUpdate).strftime('%Y-%m-%d %H:%M:%S')
-
 
 @admin.register(NewCategory)
 class NewCategoryAdmin(admin.ModelAdmin):
@@ -180,58 +71,6 @@ class NewCategoryAdmin(admin.ModelAdmin):
     ordering=('-parent', 'id', )
 
 
-#-------------------------------------------------
-# Message admin panel
-@admin.register(Message)
-class MessageAdmin(admin.ModelAdmin):
-    list_display=('Title','Text','FK_Sender','Date')
-    list_filter=('Date','FK_Sender')
-    search_fields=('Title','Text')
-    ordering=['id','Title','Date']
-#-------------------------------------------------
-# User_Message_Status admin panel
-@admin.register(User_Message_Status)
-class User_Message_StatusAdmin(admin.ModelAdmin):
-    list_display=('FK_User','SeenStatus')
-    ordering=['id']
-#-------------------------------------------------
-#PostRange admin panel
-@admin.register(PostRange)
-class PostRangeAdmin(admin.ModelAdmin):
-    list_display=('State','City','BigCity')
-    list_filter=('State','City', 'BigCity')
-    search_fields=('State','City','BigCity')
-    ordering=['id','State','City','BigCity']
-#-------------------------------------------------
-#Slider admin panel
-@admin.register(Slider)
-class SliderAdmin(admin.ModelAdmin):
-    list_display=('Title','Description','Location','DateCreate','Publish')
-    list_filter=('Location','DateCreate','DtatUpdate','Publish')
-    ordering=['DateCreate','id','Publish','Title','Location']
-    def DateCreate(self,obj):
-        return localtime(obj.DateCreate).strftime('%Y-%m-%d %H:%M:%S')
-    def DtatUpdate(self,obj):
-        return localtime(obj.DtatUpdate).strftime('%Y-%m-%d %H:%M:%S')
-#----------------------------------------------------------------------------------------------------------------------------------
-#Option_Meta admin panel
-@admin.register(Option_Meta)
-class Option_MetaAdmin(admin.ModelAdmin):
-    list_display=('id', 'Title', 'Description', 'Value_1', 'Value_2',)
-    ordering=['id','Title','Value_1', 'Value_2',]
-
-#-------------------------------------------------
-#pages admin panel
-@admin.register(Pages)
-class PagesAdmin(admin.ModelAdmin):
-    list_display=('Title','Slug','DateCreate','DtatUpdate','Publish','FK_User',)
-    list_filter=('Publish','DateCreate','DtatUpdate',)
-    search_fields=('Title','Slug','Content',)
-    ordering=['id','DateCreate',]
-    def DateCreate(self,obj):
-        return localtime(obj.DateCreate).strftime('%Y-%m-%d %H:%M:%S')
-    def DateUpdate(self,obj):
-        return localtime(obj.DateUpdate).strftime('%Y-%m-%d %H:%M:%S')
 #-------------------------------------------------
 #Alert admin panel
 @admin.register(Alert)
@@ -256,15 +95,6 @@ class ProductBanner(admin.ModelAdmin):
     def DateUpdate(self,obj):
         return localtime(obj.DateUpdate).strftime('%Y-%m-%d %H:%M:%S')
 
-@admin.register(AmazingProduct)
-class AmazingProduct(admin.ModelAdmin):
-    raw_id_fields = ("product",)
-    list_display=('product', 'start_date', 'end_date')
-    list_filter=('product', 'start_date', 'end_date')
-    def start_date(self,obj):
-        return localtime(obj.start_date).strftime('%Y-%m-%d %H:%M:%S')
-    def end_date(self,obj):
-        return localtime(obj.end_date).strftime('%Y-%m-%d %H:%M:%S')
 @admin.register(DashboardBanner)
 class DashboardBannerAdmin(admin.ModelAdmin):
     list_display=('image','url','staff_user','created_datetime','publish_status')

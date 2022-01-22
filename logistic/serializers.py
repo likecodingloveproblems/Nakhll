@@ -4,7 +4,7 @@ from django.db.models import fields
 from django.utils.translation import ugettext as _
 from rest_framework import serializers
 from logistic.models import Address, ShopLogisticUnit, ShopLogisticUnitConstraint, ShopLogisticUnitCalculationMetric
-from nakhll_market.models import Field, Product, Shop, State, BigCity, City
+from nakhll_market.models import Product, Shop, State, BigCity, City
 from nakhll_market.serializer_fields import Base64ImageField
 
 

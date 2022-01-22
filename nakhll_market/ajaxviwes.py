@@ -1,15 +1,14 @@
+import io
+import jdatetime
+from datetime import datetime
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
-from datetime import datetime
-import jdatetime
 
 from django.contrib.auth.models import User
 
-from .models import Shop, Profile, Product, AttrPrice, Alert, BankAccount
-from Payment.models import Factor, FactorPost, Wallet, Transaction, Coupon
-import io
+from .models import Shop, Profile, Product, Alert
 
 from django.http.response import HttpResponse
 

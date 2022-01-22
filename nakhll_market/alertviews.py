@@ -27,36 +27,11 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group 
 
-from .models import Tag
-from .models import Market
-from .models import MarketBanner
-from .models import SubMarket
-from .models import SubMarketBanner
-from .models import BankAccount
-from .models import Category
-from .models import PostRange
 from .models import Shop
-from .models import ShopBanner
-from .models import ShopMovie
-from .models import Attribute
-from .models import AttrPrice, OptinalAttribute
-from .models import AttrProduct
 from .models import Product
 from .models import ProductBanner
-from .models import ProductMovie
-from .models import Comment, ShopComment
 from .models import Profile
-from .models import Review
-from .models import Slider
-from .models import Message
-from .models import User_Message_Status
-from .models import Option_Meta
 from .models import Alert
-from .models import Field 
-
-from Payment.models import PostTrackingCode, Wallet, Transaction, Factor, FactorPost, PostBarCode, Coupon
-
-from Ticketing.models import Ticketing, TicketingMessage, Complaint
 
 from .forms import Login, CheckEmail
 

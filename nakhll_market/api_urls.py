@@ -4,11 +4,11 @@ from nakhll_market.api import (
     GroupProductCreateExcel, GroupProductUndo, PublicShopsViewSet, UserImagesViewSet,
     GroupProductUpdateExcel, ImageShopSettings, LastCreatedDiscountedProductsViewSet,
     LastCreatedProductsViewSet, MostDiscountPrecentageProductsViewSet, MostSoldProduct,
-    ShopMultipleUpdateInventory, ShopMultipleUpdatePrice,
+    ShopMultipleUpdateInventory, ShopMultipleUpdatePrice, CategoryViewSet,
     StateFullViewSet, UserProfileViewSet, GetShop, UserOrderHistory, GetShopList,
-    ShopOwnerProductViewSet, ProductsInSameFactorViewSet, SliderViewSet, SubMarketList,
+    ShopOwnerProductViewSet, ProductsInSameFactorViewSet, 
     MostSoldShopsViewSet, RandomShopsViewSet, RandomProductsViewSet, ProductsViewSet,
-    MarketList, CreateShop, GetShopWithSlug, CheckShopSlug, CheckProductSlug,
+    CreateShop, GetShopWithSlug, CheckShopSlug, CheckProductSlug,
     ShopProductsViewSet, ProductCommentsViewSet, ProductRelatedItemsViewSet,
     ProductBannerViewSet, AddImagesToProduct, ProductDetailsViewSet,
     LandingPageSchemaViewSet, ShopPageSchemaViewSet, ShopsStatisticViewSet
@@ -18,9 +18,6 @@ from rest_framework import routers
 app_name = 'nakhll_market'
 
 landing_router = routers.DefaultRouter()
-landing_router.register(r'sliders', SliderViewSet, basename="sliders")
-landing_router.register(r'categories', CategoryViewSet, basename="categories")
-landing_router.register(r'amazing-products', AmazingProductViewSet, basename="amazing-products")
 landing_router.register(r'last-created-products', LastCreatedProductsViewSet, basename="last-created-products")
 landing_router.register(r'last-created-discounted-products', LastCreatedDiscountedProductsViewSet, basename="last-created-discounted-products")
 landing_router.register(r'most-discount-prec-products', MostDiscountPrecentageProductsViewSet, basename="most-discount-prec-products")
@@ -70,8 +67,6 @@ urlpatterns = [
     path('shop/<Slug>/', GetShop.as_view({'get': 'retrieve'})),
     path('shop/<shop_slug>/', include(shop_owner_router.urls)),
 
-    path('markets/', MarketList.as_view()),
-    path('sub_markets/', SubMarketList.as_view()),
     path('util/', include(util_router.urls)),
 
     path('shop/', GetShopWithSlug.as_view()),
@@ -86,7 +81,6 @@ urlpatterns = [
     path('shop/schema/<shop_id>/', ShopPageSchemaViewSet.as_view()),
 
     path('product/check/', CheckProductSlug.as_view()),
-    path('product/categories/', AddSubMarketToProduct.as_view()),
     path('product/images/', AddImagesToProduct.as_view()),
     path('product/group-create/<shop_slug>/', GroupProductCreateExcel.as_view()),
     path('product/group-update/<shop_slug>/', GroupProductUpdateExcel.as_view()),

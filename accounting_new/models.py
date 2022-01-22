@@ -1,3 +1,4 @@
+import logging
 from uuid import uuid4
 from datetime import datetime, timedelta
 from django.db import models
@@ -18,6 +19,8 @@ from accounting_new.managers import AccountingManager, InvoiceItemManager
 from logistic.models import Address, PostPriceSetting, ShopLogisticUnit
 from sms.services import Kavenegar
 from shop.models import ShopFeature
+
+logger = logging.getLogger(__name__)
 
 # Create your models here.
 
@@ -159,6 +162,7 @@ class Invoice(models.Model, AccountingInterface):
         ''' Send SMS to user and shop_owner and create alert for staff'''
         shop_owner_mobiles = self.items.all().values_list(
             'product__FK_Shop__FK_ShopManager__User_Profile__MobileNumber', flat=True).distinct()
+        logger.debug(f'Shop owner mobiles: {shop_owner_mobiles}') 
         for mobile_number in shop_owner_mobiles:
             Kavenegar.shop_new_order(mobile_number, self.id)
         AlertInterface.new_order(self)

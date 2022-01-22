@@ -35,7 +35,7 @@ class ShopLogisticUnitManager(models.Manager):
             shop_logistic_unit=slu, price_per_kilogram=0, price_per_extra_kilogram=0
         )
   
-        slu = self.create(shop=shop, name='پسکرایه', is_active=True,
+        slu = self.create(shop=shop, name='پسکرایه', is_active=False,
                           logo_type=models.ShopLogisticUnit.LogoType.PAD)
         sluc = models.ShopLogisticUnitConstraint.objects.create(
             shop_logistic_unit=slu

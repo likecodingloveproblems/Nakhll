@@ -1,6 +1,6 @@
 from django.urls import path, re_path 
 from django.conf.urls import url  
-from . import views, profileviews, cartviews, alertviews, ajaxviwes
+from . import views
 from nakhll_market import management_coupon_views, management_content_views
 from django.contrib.sitemaps.views import sitemap
 from .sitemaps import ShopSitemap , ProductSitemap ,StaticViewSitemap
