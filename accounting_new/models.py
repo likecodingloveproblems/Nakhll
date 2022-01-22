@@ -83,16 +83,9 @@ class Invoice(models.Model, AccountingInterface):
         category_ids = self.items.values_list('product__new_category__id', flat=True).distinct()
         return NewCategory.objects.filter(id__in=category_ids)
 
-    
-
-    # @property
-    # def logistic_price(self):
-    #     try:
-    #         post_setting, is_created = PostPriceSetting.objects.get_or_create()
-    #         post_price = post_setting.get_post_price(self)
-    #         return post_price
-    #     except:
-    #         return 0
+    @property
+    def barcodes(self):
+        return [item.barcode for item in self.items.all()]
 
     @property
     def logistic_errors(self):

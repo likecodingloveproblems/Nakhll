@@ -59,3 +59,13 @@ class Kavenegar:
         Kavenegar._raw_send('nakhl-register', mobile_number, tokens)
 
     
+
+    @staticmethod
+    def invoice_has_been_sent(invoice):
+        tokens = {
+            'token': invoice.id,
+            'token2': '-'.join(invoice.barcodes),
+            }
+        template = 'nakhll-sendpostcode'
+        mobile = invoice.user.username
+        Kavenegar._raw_send(template, mobile, tokens)

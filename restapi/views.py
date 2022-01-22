@@ -40,6 +40,8 @@ from rest_framework.generics import (
     CreateAPIView,
 )
 
+from sms.services import Kavenegar
+
 from .serializers import *
 from .serializers import FactorDesSerializer
 from restapi.permissions import IsFactorOwner, IsShopOwner
@@ -2591,10 +2593,7 @@ class ChangeFactorToSent(APIView):
                 response_msg = 'Done'
             else:
                 response_msg = 'Wait for other shops to send'
-
-
-
-
+            Kavenegar.invoice_has_been_sent(invoice)
 
             # Set Alert
             #! TODO: There is no part with code 34. Code 34 should be created later and it should be for
