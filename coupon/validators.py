@@ -118,7 +118,7 @@ class ProductValidator:
 class BudgetValidator:
     def __call__(self, coupon):
         coupon_total_usage = coupon.usages.aggregate(Sum('price_applied'))['price_applied__sum']
-        if coupon_total_usage and coupon.constraint.budget and self.budget < coupon_total_usage:
+        if coupon_total_usage and coupon.constraint.budget and coupon.constraint.budget < coupon_total_usage:
             raise BudgetException(coupon, _('بودجه این کوپن تمام شده است'), self.budget)
 
 
