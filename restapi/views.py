@@ -272,8 +272,3 @@ class ChangeFactorToSent(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({'details': response_msg, 'data': serializer.data}, status=status.HTTP_200_OK)
-
-
-
-
-

@@ -123,6 +123,7 @@ class UserMobile(View):
 class ProductStats(View):
 
     def get(self, request):
+        # TODO Factor is removed
         queryset = Product.objects\
             .annotate(sell_count = Count('Factor_Product'))\
             .annotate(sell_product_count=Sum('Factor_Product__ProductCount'))\

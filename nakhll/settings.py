@@ -65,6 +65,7 @@ THIRD_PARTY_APPS = [
     'django_jalali',
     'simple_history',
     'oauth2_provider',
+    'admin_reorder',
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
@@ -161,29 +162,10 @@ ADMIN_REORDER = (
         'shop.ShopFeatureInvoice',
         'shop.ShopLanding',
     )},
-    {'app': 'Payment', 'label': 'بخش مالی','models':(
-        'Payment.Wallet',
-        'Payment.Factor',
-        'Payment.PostBarCode',
-        'Payment.PostTrackingCode',
-        'Payment.ManegerFactor',
-        'Payment.Transaction',
-        'coupon.Coupon',
-        'Payment.Campaign',
-        'Payment.Installment',
-        'Payment.Invitation',
-        'Payment.PecOrder',
-        'Payment.PecTransaction',
-        'Payment.PecConfirmation',        
-        'Payment.PecReverse',        
-    )},
-    
     {'app': 'Ticketing', 'label': 'بخش پشتیبانی و گزارشات','models':(
         'Ticketing.Ticketing',
     )},
-
     {'app': 'auth','label':'کاربران و دسترسی ها'},
-    
     {'app': 'sites','label':'دسترسی SiteMap'},
     {'app': 'url_redirector', 'label': 'تغییر دهنده Url'},
     

@@ -28,6 +28,7 @@ from imagekit.processors import ResizeToFill
 from simple_history.models import HistoricalRecords
 
 from nakhll_market.interface import AlertInterface
+from nakhll_market.models import UserImage
 
 
 OUTOFSTOCK_LIMIT_NUM = 5
