@@ -65,7 +65,6 @@ THIRD_PARTY_APPS = [
     'django_jalali',
     'simple_history',
     'oauth2_provider',
-    'admin_reorder',
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
