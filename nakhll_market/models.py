@@ -359,10 +359,6 @@ class Shop(models.Model):
             return self.FK_ShopManager.User_Profile
         return None
     
-    @property
-    def banners(self):
-        return self.get_banners()
-
     def __str__(self):
         return "{}".format(self.Title)
 
@@ -453,9 +449,6 @@ class Shop(models.Model):
         this_shop_product = list(Product.objects.filter(FK_Shop = self, Available = True, Publish = True, Status__in = ['1', '2', '3']).order_by('-DateCreate'))
         this_shop_product += list(Product.objects.filter(FK_Shop = self, Available = True, Publish = True, Status = '4').order_by('-DateCreate'))
         return this_shop_product
-
-    def get_banners(self):
-        raise NotImplementedError()
 
     def get_comments(self):
         raise NotImplementedError()

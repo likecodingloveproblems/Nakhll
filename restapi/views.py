@@ -10,9 +10,10 @@ from nakhll_market.models import  BigCity, City, Product, Shop, Alert, State, Da
 from nakhll_market.permissions import IsInvoiceProvider
 from nakhll_market.serializers import  ProductOwnerListSerializer
 from accounting_new.models import Invoice, InvoiceItem
-from accounting_new.serializers import InvoiceRetrieveSerializer, InvoiceProviderRetrieveSerializer
+from accounting_new.serializers import BarcodeSerializer, InvoiceRetrieveSerializer, InvoiceProviderRetrieveSerializer
 from restapi.permissions import IsShopOwner
 from restapi.serializers import BigCitySerializer, CitySerializer, ProfileSerializer, StateSerializer
+from sms.services import Kavenegar
 
 
 
@@ -46,7 +47,7 @@ class ShopCompeletedFactors(ListAPIView):
         shop_slug = self.kwargs.get('shop_slug')
         shop = get_object_or_404(Shop, Slug=shop_slug)
         self.check_object_permissions(self.request, shop)
-        return Invoice.objects.completed_user_shop_factors(user, shop_slug)
+        return Invoice.objects.completed_user_shop_invoices(user, shop_slug)
 
 
 class ShopUncompeletedFactors(ListAPIView):
@@ -58,7 +59,7 @@ class ShopUncompeletedFactors(ListAPIView):
         shop_slug = self.kwargs.get('shop_slug')
         shop = get_object_or_404(Shop, Slug=shop_slug)
         self.check_object_permissions(self.request, shop)
-        return Invoice.objects.uncompleted_user_shop_factors(user, shop_slug).distinct()
+        return Invoice.objects.uncompleted_user_shop_invoices(user, shop_slug).distinct()
 
 class ShopProductList(ListAPIView):
     serializer_class = ProductOwnerListSerializer
@@ -233,10 +234,9 @@ class ChangeFactorToSent(APIView):
 
     def post(self, request, factor_id):
         # TODO: to replace with new logistic module
-        serializer = PostTrackingCodeWriteSerializer(data=request.data)
+        serializer = BarcodeSerializer(data=request.data)
         if serializer.is_valid():
             barcode = serializer.validated_data.get('barcode')
-            post_type = serializer.validated_data.get('post_type') or PostTrackingCode.PostTypes.IRPOST
             invoice = self.get_object(factor_id)
             invoice_items = invoice.items.filter(product__FK_Shop__FK_ShopManager=request.user) 
 

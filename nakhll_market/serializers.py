@@ -96,7 +96,7 @@ class ShopSerializer(serializers.ModelSerializer):
         fields = [
             'ID', 'slug', 'title', 'image_thumbnail_url', 'total_products', 'Description',
             'state', 'big_city', 'city', 'registered_months', 'FK_ShopManager', 'is_landing',
-            'has_product_group_add_edit_permission', 'banners', 'profile', 'landing_data',
+            'has_product_group_add_edit_permission', 'profile', 'landing_data',
             'yektanet_advertisement', 'in_campaign'
         ]
     def get_registered_months(self, obj):

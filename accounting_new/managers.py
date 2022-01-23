@@ -37,7 +37,7 @@ class AccountingManager(models.Manager):
         return self.filter(items__product__FK_Shop__FK_ShopManager=user,
                             items__product__FK_Shop__Slug=shop_slug,
                             items__status=models.InvoiceItem.ItemStatuses.AWAIT_SHOP_APPROVAL
-                        ).order_by('-OrderDate')
+                        ).order_by('-created_datetime')
 
 
 
@@ -74,7 +74,7 @@ class InvoiceItemManager(models.Manager):
         now = jdatetime.datetime.now()
         current_week_start_date =  now - jdatetime.timedelta(days=4)
         last_week_start_date = current_week_start_date - jdatetime.timedelta(days=7)
-        return self.filter(product__FK_Shop__FK_ShopManager=user, inovoice__status=models.Invoice.Statuses.COMPLETED,
+        return self.filter(product__FK_Shop__FK_ShopManager=user, invoice__status=models.Invoice.Statuses.COMPLETED,
                             invoice__created_datetime__gt=str(last_week_start_date.togregorian()),
                             invoice__created_datetime__lt=str(current_week_start_date.togregorian()),
                             product__FK_Shop__Slug=shop_slug,

@@ -1,6 +1,6 @@
 from django.urls import re_path, include, path
 from nakhll_market.api import (
-    AddSubMarketToProduct, AllShopSettings, AmazingProductViewSet, CampaignProductsViewSet, CategoryViewSet,
+    AllShopSettings, CategoryViewSet,
     GroupProductCreateExcel, GroupProductUndo, PublicShopsViewSet, UserImagesViewSet,
     GroupProductUpdateExcel, ImageShopSettings, LastCreatedDiscountedProductsViewSet,
     LastCreatedProductsViewSet, MostDiscountPrecentageProductsViewSet, MostSoldProduct,
@@ -26,7 +26,6 @@ landing_router.register(r'random-shops', RandomShopsViewSet, basename="random-sh
 landing_router.register(r'random-products', RandomProductsViewSet, basename="random-products")
 landing_router.register(r'shop_products', ShopProductsViewSet, basename="shop_products")
 landing_router.register(r'schema', LandingPageSchemaViewSet, basename="landing_page_schema")
-landing_router.register(r'campaign', CampaignProductsViewSet, basename="landing_campaign_producds")
 
 product_page_router = routers.DefaultRouter()
 product_page_router.register(r'', ProductsViewSet, basename="all_products")

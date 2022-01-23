@@ -195,3 +195,7 @@ class InvoiceProviderRetrieveSerializer(serializers.ModelSerializer):
             'logistic_unit_details',
         )
 
+class BarcodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InvoiceItem
+        fields = ('barcode', )

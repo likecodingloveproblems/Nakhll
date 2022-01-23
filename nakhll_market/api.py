@@ -224,13 +224,6 @@ class ProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             ), default=0)).order_by('-new_category_id')
 
 
-    def get_most_product_submarkets(self, query):
-        queryset = SubMarket.objects.filter(Available=True, Publish=True)
-        queryset = queryset.filter(Product_SubMarket__Title__contains=query)
-        queryset = queryset.annotate(product_count=Count('Product_SubMarket'))
-        return queryset.order_by('-product_count').values_list('ID')
-
-
 
 
 class ProductDetailsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):

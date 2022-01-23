@@ -9,7 +9,6 @@ import random
 
 from django.db.models.query_utils import Q
 from nakhll_market.models import Profile
-from my_auth.models import UserphoneValid
 
 from django.utils import timezone
 from django.utils.timezone import make_aware
@@ -123,14 +122,6 @@ class Kavenegar(SMS):
             messageid=res['messageid'],
             user_ip = ip,
         )
-
-    def generate_code(self, mobile_number):
-        yesterday = make_aware(datetime.today() - timedelta(days=1))
-        user_phone_valid = UserphoneValid.objects.filter(MobileNumber = mobile_number, Date__gte=yesterday, Validation=False)
-        if user_phone_valid.exists():
-            return user_phone_valid[0].ValidCode
-        else:
-            return str(random.randint(100000, 999999))
 
     def _get_try_count(self,mobile_number, ip, deltatime):
         return SMSModel.objects.filter(
