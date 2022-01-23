@@ -28,7 +28,7 @@ from nakhll_market.serializers import (
     ProductOwnerReadSerializer, ProductOwnerWriteSerializer, ProductPriceWriteSerializer,
     ProductSerializer, ShopSerializer, ShopSimpleSerializer, ShopSlugSerializer, ShopStatisticSerializer,
     CreateShopSerializer, ProductInventoryWriteSerializer,
-    ProductListSerializer, ShopAllSettingsSerializer, UserOrderSerializer,
+    ProductListSerializer, ShopAllSettingsSerializer, SliderSerializer, UserOrderSerializer,
     ProductSubMarketSerializer, StateFullSeraializer, ShopPageSchemaSerializer, UserImageSerializer,
     LandingPageSchemaSerializer, NewCategoryChildSerializer, NewCategoryParentSerializer
     )
@@ -83,6 +83,13 @@ class MostSoldShopsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def get_queryset(self):
         return Shop.objects.most_last_week_sale_shops()
+
+class SliderViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = SliderSerializer
+    permission_classes = [permissions.AllowAny, ]
+    search_fields = ('Location', )
+    filter_backends = (filters.SearchFilter,)
+    queryset = Slider.objects.filter(Publish=True)
 
 class ShopProductsViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.ListModelMixin):
     serializer_class = ProductListSerializer

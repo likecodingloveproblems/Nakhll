@@ -6,7 +6,7 @@ from nakhll_market.api import (
     LastCreatedProductsViewSet, MostDiscountPrecentageProductsViewSet, MostSoldProduct,
     ShopMultipleUpdateInventory, ShopMultipleUpdatePrice, CategoryViewSet,
     StateFullViewSet, UserProfileViewSet, GetShop, UserOrderHistory, GetShopList,
-    ShopOwnerProductViewSet, ProductsInSameFactorViewSet, 
+    ShopOwnerProductViewSet, ProductsInSameFactorViewSet, SliderViewSet,
     MostSoldShopsViewSet, RandomShopsViewSet, RandomProductsViewSet, ProductsViewSet,
     CreateShop, GetShopWithSlug, CheckShopSlug, CheckProductSlug,
     ShopProductsViewSet, ProductCommentsViewSet, ProductRelatedItemsViewSet,
@@ -18,6 +18,7 @@ from rest_framework import routers
 app_name = 'nakhll_market'
 
 landing_router = routers.DefaultRouter()
+landing_router.register(r'sliders', SliderViewSet, basename="sliders")
 landing_router.register(r'last-created-products', LastCreatedProductsViewSet, basename="last-created-products")
 landing_router.register(r'last-created-discounted-products', LastCreatedDiscountedProductsViewSet, basename="last-created-discounted-products")
 landing_router.register(r'most-discount-prec-products', MostDiscountPrecentageProductsViewSet, basename="most-discount-prec-products")

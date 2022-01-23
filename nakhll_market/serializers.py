@@ -11,7 +11,7 @@ from rest_framework.relations import HyperlinkedIdentityField, HyperlinkedRelate
 from rest_framework.utils import field_mapping
 from nakhll_market.models import (
     BigCity, City, Comment, NewCategory, ShopBankAccount, ShopSocialMedia,
-    Product, ProductBanner, Profile, Shop, State,
+    Product, ProductBanner, Profile, Shop, Slider, State,
     LandingPageSchema, ShopPageSchema, UserImage,
     )
 from shop.models import ShopFeature
@@ -24,6 +24,13 @@ class UserSerializer(serializers.ModelSerializer):
             'first_name', 'last_name', 
         ]
 
+
+class SliderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Slider
+        fields = [
+            'url', 'image', 'title', 'show_info', 'description', 'location',
+            ]
 
 class NewCategorySerializer(serializers.ModelSerializer):
     class Meta:
