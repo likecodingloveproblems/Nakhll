@@ -199,14 +199,22 @@ class ShopInformation(View):
                     When(ShopProduct__Status='4', then=Value(8)),
                 ))\
             .annotate(not_exist_product_count=Count('not_exist_product'))\
-            .annotate(factor_count=Count('ShopProduct__Factor_Product__Factor_Products'))\
+            .annotate(invoice_count=Count(
+                'ShopProduct__invoice_items__invoice',
+                filter=Q(
+                    ShopProduct__invoice_items__invoice__status__in=[
+                        'preparing_product',
+                        'wait_customer_approv',
+                        'wait_store_checkout',
+                        'completed']
+                    )))\
             .values(
                 'Title' , 'DateCreate' , 'FK_ShopManager__first_name' , 'FK_ShopManager__last_name',
                 'State' , 'BigCity' , 'City', 'available_product_count' , 'unavailable_product_count',
                 'publish_product_count', 'unpublish_product_count', 'exist_product_count',
                 'production_after_order_count', 'sale_customization_product_count',
                 'not_exist_product_count', 'FK_ShopManager__User_Profile__MobileNumber',
-                'factor_count', 'FK_SubMarket__Title', 'Available', 'Publish'
+                'invoice_count', 'FK_SubMarket__Title', 'Available', 'Publish'
             )
      
         return ExcelResponse(
