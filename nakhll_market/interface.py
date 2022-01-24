@@ -129,7 +129,7 @@ class DiscordAlertInterface:
         webhook.add_embed(embed)
         try:
             with open(product.Image.path, 'rb') as f:
-                webhook.add_file(file=f.read(), filename=product.Slug)
+                webhook.add_file(file=f.read(), filename=f'{product.Slug}.png')
         except FileNotFoundError as ex:
             pass
         response = webhook.execute()
