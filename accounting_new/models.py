@@ -214,7 +214,7 @@ class InvoiceItem(models.Model):
 
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name='items',
                         verbose_name=_('فاکتور'))
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, 
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, 
                         related_name='invoice_items')
     count = models.IntegerField(_('تعداد'), default=1)
     status = models.CharField(_('وضعیت'), max_length=20, choices=ItemStatuses.choices,
