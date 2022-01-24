@@ -17,6 +17,7 @@ from rest_framework.exceptions import ValidationError, PermissionDenied, Authent
 from rest_framework.decorators import action
 from django_filters import rest_framework as restframework_filters
 from logistic.models import ShopLogisticUnit
+from nakhll_market.interface import DiscordAlertInterface
 from nakhll_market.models import (
     Alert, Comment, NewCategory, Product, ProductBanner, Shop, Slider, State, BigCity, City,
     LandingPageSchema, ShopPageSchema, UserImage,
@@ -171,6 +172,7 @@ class ShopOwnerProductViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin
         
         # TODO: Check if product created successfully and published and alerts created as well
         Alert.objects.create(Part='6', FK_User=self.request.user, Slug=product.ID)
+        DiscordAlertInterface.new_product(product)
 
     def perform_update(self, serializer):
         shop = self.get_shop()
