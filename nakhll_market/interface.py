@@ -1,8 +1,9 @@
-import json
+from urllib.parse import urljoin
+from django.conf import settings
 from django.utils.timezone import localtime
+from discord_webhook import DiscordWebhook, DiscordEmbed, webhook
 import jdatetime
 import requests
-from django.conf import settings
 
 class AlertInterface:
     @staticmethod
@@ -105,6 +106,33 @@ class DiscordAlertInterface:
         message += '```'
         return message
 
+    @staticmethod
+    def new_product(product):
+        base_url = settings.DOMAIN_NAME
+        url = settings.DISCORD_WEBHOOKS.get('NEW_PRODUCT')
+        webhook = DiscordWebhook(url=url, username='بازار آنلاین نخل')
+        embed = DiscordEmbed(title='یک محصول جدید!', description='در فروشگاه {}'.format(product.FK_Shop.Title), color=0x007700)
+        embed.set_author(
+            name=product.FK_Shop.FK_ShopManager.get_full_name(),
+            url=urljoin(base_url, '/shop/{}/product/{}'.format(product.FK_Shop.Slug, product.Slug)),
+            icon_url=product.FK_Shop.Image_thumbnail_url(),
+        )
+        embed.add_embed_field(name='نام', value=product.Title, inline=False)
+        embed.add_embed_field(name='دسته بندی', value=product.new_category.name, inline=False)
+        embed.add_embed_field(name='قیمت', value=product.Price, inline=False)
+        embed.add_embed_field(name='قیمت با تخفیف', value=product.OldPrice, inline=False)
+        embed.add_embed_field(name='وزن خالص', value=product.Net_Weight, inline=False)
+        embed.add_embed_field(name='وزن با بسته بندی', value=product.Weight_With_Packing, inline=False)
+        embed.add_embed_field(name='موجودی', value=product.Inventory, inline=False)
+        embed.add_embed_field(name='زمان آماده سازی', value=product.PreparationDays, inline=False)
+        embed.add_embed_field(name='توضیحات', value=product.Description, inline=False)
+        webhook.add_embed(embed)
+        try:
+            with open(product.Image.path, 'rb') as f:
+                webhook.add_file(file=f.read(), filename=product.Slug)
+        except FileNotFoundError as ex:
+            pass
+        response = webhook.execute()
 
         
 
