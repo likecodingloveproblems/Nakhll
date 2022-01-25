@@ -30,7 +30,8 @@ class BulkProductHandler:
                     'barcode': object,
                     'Price': 'Int64',
                     'OldPrice': 'Int64',
-                    'Inventory': 'Int64'
+                    'Inventory': 'Int64',
+                    'image_1': object,
                 },
                  optional_fields_with_types={
                     'Net_Weight': 'Int64',
@@ -62,6 +63,7 @@ class BulkProductHandler:
         df = pd.read_csv(csv_file, dtype=dtypes)
         # df = pd.read_csv(csv_file)
         self.df = df
+        self.total_rows = df.shape[0]
         return self.dataframe_parser()
 
     def dataframe_parser(self):
@@ -88,7 +90,7 @@ class BulkProductHandler:
         return {
             'old_products': len(old_products),
             'new': len(new_products),
-            'total_rows': df.shape[0],
+            'total_rows': self.total_rows,
             'na_rows': len(self.na_rows),
             'slug_duplicate_rows': len(self.slug_duplicate_rows),
         }
@@ -107,6 +109,7 @@ class BulkProductHandler:
         self._validate_required_fields(df)
         self._validate_fields_dtype(df)
         self.__drop_extra_fields(df)
+        self.__drop_non_exists_image_rows(df)
         return df
 
     def __update_old_products_instance(self, df):
@@ -194,6 +197,11 @@ class BulkProductHandler:
         na_free = df.dropna(subset=self.required_fields_with_types.keys())
         self.na_rows = df[~df.index.isin(na_free.index)]
         return na_free
+
+    def __drop_non_exists_image_rows(self, df):
+        exists_image_names = os.listdir(self.images_path)
+        indexes = df[~df['image_1'].isin(exists_image_names)].index
+        df.drop(indexes, inplace=True)
 
     def __drop_df_duplicate_slugs(self, df):
         duplicate_free = df.drop_duplicates(subset='Slug', keep='first')
