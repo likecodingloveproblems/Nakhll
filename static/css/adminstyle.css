@@ -12,7 +12,10 @@ td, th {
 
 p {
     font-family: IRANSans,"Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
-    color: #ddd;
+    color: #555;
+}
+.submit-row a.closelink {
+    color: #444;
 }
 .dashboard a:link,.dashboard a:visited,.dashboard a{
     color: #000;
