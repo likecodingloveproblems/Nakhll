@@ -1,3 +1,4 @@
+import enum
 from urllib.parse import urljoin
 from django.conf import settings
 from django.utils.timezone import localtime
@@ -5,6 +6,10 @@ from discord_webhook import DiscordWebhook, DiscordEmbed, webhook
 import jdatetime
 import requests
 
+class ProductChangeTypes(enum.Enum):
+    CREATE = 'create'
+    UPDATE = 'update'
+        
 class AlertInterface:
     @staticmethod
     def new_order(invoice):
@@ -107,24 +112,27 @@ class DiscordAlertInterface:
         return message
 
     @staticmethod
-    def new_product(product):
+    def product_alert(product, *, change_type=ProductChangeTypes.CREATE):
+        title = 'یک محصول جدید!' if change_type == ProductChangeTypes.CREATE else 'تغییر در محصول!'
         base_url = settings.DOMAIN_NAME
-        url = settings.DISCORD_WEBHOOKS.get('NEW_PRODUCT')
-        webhook = DiscordWebhook(url=url, username='بازار آنلاین نخل')
-        embed = DiscordEmbed(title='یک محصول جدید!', description='در فروشگاه {}'.format(product.FK_Shop.Title), color=0x007700)
+        product_url = urljoin(base_url, '/shop/{}/product/{}'.format(product.FK_Shop.Slug, product.Slug))
+        webhook_url = settings.DISCORD_WEBHOOKS.get('NEW_PRODUCT')
+        webhook = DiscordWebhook(url=webhook_url, username='بازار آنلاین نخل')
+        embed = DiscordEmbed(title=title, description='در فروشگاه {}'.format(product.FK_Shop.Title), color=0x007700)
         embed.set_author(
             name=product.FK_Shop.FK_ShopManager.get_full_name(),
-            url=urljoin(base_url, '/shop/{}/product/{}'.format(product.FK_Shop.Slug, product.Slug)),
+            url=product_url,
             icon_url=product.FK_Shop.Image_thumbnail_url(),
         )
-        embed.add_embed_field(name='نام', value=product.Title, inline=False)
-        embed.add_embed_field(name='دسته بندی', value=product.new_category.name, inline=False)
-        embed.add_embed_field(name='قیمت', value='{:,} ریال'.format(product.Price), inline=False)
-        embed.add_embed_field(name='قیمت با تخفیف', value='{:,} ریال'.format(product.OldPrice), inline=False)
-        embed.add_embed_field(name='وزن خالص', value=product.Net_Weight, inline=False)
-        embed.add_embed_field(name='وزن با بسته بندی', value=product.Weight_With_Packing, inline=False)
-        embed.add_embed_field(name='موجودی', value=product.Inventory, inline=False)
-        embed.add_embed_field(name='زمان آماده سازی', value=product.PreparationDays, inline=False)
+        embed.add_embed_field(name='نام', value=product.Title, inline=True)
+        embed.add_embed_field(name='دسته بندی', value=product.new_category.name, inline=True)
+        embed.add_embed_field(name='قیمت', value='{:,} ریال'.format(product.Price), inline=True)
+        embed.add_embed_field(name='قیمت با تخفیف', value='{:,} ریال'.format(product.OldPrice), inline=True)
+        embed.add_embed_field(name='وزن خالص', value=product.Net_Weight, inline=True)
+        embed.add_embed_field(name='وزن با بسته بندی', value=product.Weight_With_Packing, inline=True)
+        embed.add_embed_field(name='موجودی', value=product.Inventory, inline=True)
+        embed.add_embed_field(name='زمان آماده سازی', value=product.PreparationDays, inline=True)
+        embed.add_embed_field(name='لینک محصول', value=product_url, inline=False)
         embed.add_embed_field(name='توضیحات', value=product.Description, inline=False)
         webhook.add_embed(embed)
         try:
