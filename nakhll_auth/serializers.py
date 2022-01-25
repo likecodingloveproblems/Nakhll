@@ -30,7 +30,7 @@ class CompleteAuthSerializer(serializers.ModelSerializer):
         user_key = data.get('user_key')
         self.instance = self._get_auth_request(auth_key)
         if not self.auth_is_valid(self.instance, user_key):
-            raise serializers.ValidationError('اطلاعات برای احراز هویت معتبر نیست', code=status.HTTP_401_UNAUTHORIZED)
+            raise serializers.ValidationError({'password': 'اطلاعات برای احراز هویت معتبر نیست'}, code=status.HTTP_401_UNAUTHORIZED)
         return data
 
     def auth_is_valid(self, auth_request, user_key):
