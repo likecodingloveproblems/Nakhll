@@ -177,8 +177,11 @@ class LogisticUnitInterface:
 
 
             total_weight = invoice.items.filter(product__FK_Shop=shop).aggregate(
-                total_weight=Sum(F(Cast('product__Weight_With_Packing', output_field=FloatField())) * F('count'))
-            )['total_weight']
+                    total_weight=Sum(Cast(Cast(
+                        'product__Weight_With_Packing',
+                        output_field=FloatField()
+                    ) * F('count'), output_field=FloatField()))
+                )['total_weight']
             optimal_unit, price = self.get_optimal_unit_and_price(joint_units, total_weight)
             products = [
                         {'slug': product.slug, 'title': product.Title, 'image': product.image_thumbnail_url}
