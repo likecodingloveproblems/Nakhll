@@ -3,6 +3,7 @@ from django.db.models.functions import Cast
 from django.db.models.fields import FloatField
 from django.db.models.query import QuerySet
 from django.db.models.query_utils import Q
+from django.db.models import  F
 from django.utils.translation import ugettext as _
 from rest_framework.validators import ValidationError
 from nakhll_market.models import City, NewCategory, Product, Shop
@@ -176,7 +177,7 @@ class LogisticUnitInterface:
 
 
             total_weight = invoice.items.filter(product__FK_Shop=shop).aggregate(
-                total_weight=Sum(Cast('product__Weight_With_Packing', output_field=FloatField()))
+                total_weight=Sum(F(Cast('product__Weight_With_Packing', output_field=FloatField())) * F('count'))
             )['total_weight']
             optimal_unit, price = self.get_optimal_unit_and_price(joint_units, total_weight)
             products = [
