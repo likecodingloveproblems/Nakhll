@@ -24,7 +24,7 @@ load_dotenv()
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 LOGIN = '/profile/'
-LOGIN_URL = reverse_lazy('auth:get-phone')
+LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/profile/'
 LOGOUT_REDIRECT_URL = '/'
 REDIRECT_FIELD_NAME = 'next'
