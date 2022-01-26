@@ -199,6 +199,8 @@ class BulkProductHandler:
         return na_free
 
     def __drop_non_exists_image_rows(self, df):
+        if self.bulk_type == self.BULK_TYPE_UPDATE:
+            return
         exists_image_names = os.listdir(self.images_path)
         indexes = df[~df['image_1'].isin(exists_image_names)].index
         df.drop(indexes, inplace=True)
