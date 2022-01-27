@@ -172,7 +172,11 @@ class ShopOwnerProductViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin
         
         # TODO: Check if product created successfully and published and alerts created as well
         Alert.objects.create(Part='6', FK_User=self.request.user, Slug=product.ID)
-        DiscordAlertInterface.product_alert(product, change_type=ProductChangeTypes.CREATE)
+        try:
+            DiscordAlertInterface.product_alert(product, change_type=ProductChangeTypes.CREATE)
+        except:
+            DiscordAlertInterface.product_alert(product, change_type=ProductChangeTypes.CREATE, without_image=True)
+            
 
     def perform_update(self, serializer):
         shop = self.get_shop()
@@ -195,7 +199,10 @@ class ShopOwnerProductViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin
 
         # TODO: Check if product created successfully and published and alerts created as well
         Alert.objects.create(Part='7', FK_User=self.request.user, Slug=ID)
-        DiscordAlertInterface.product_alert(product, change_type=ProductChangeTypes.UPDATE)
+        try:
+            DiscordAlertInterface.product_alert(product, change_type=ProductChangeTypes.UPDATE)
+        except:
+            DiscordAlertInterface.product_alert(product, change_type=ProductChangeTypes.UPDATE, without_image=True)
 
     def __check_shop_owner(self, shop):
         if shop.FK_ShopManager != self.request.user:

@@ -112,7 +112,7 @@ class DiscordAlertInterface:
         return message
 
     @staticmethod
-    def product_alert(product, *, change_type=ProductChangeTypes.CREATE):
+    def product_alert(product, *, change_type=ProductChangeTypes.CREATE, without_image=False):
         title = 'یک محصول جدید!' if change_type == ProductChangeTypes.CREATE else 'تغییر در محصول!'
         base_url = settings.DOMAIN_NAME
         product_url = urljoin(base_url, '/shop/{}/product/{}'.format(product.FK_Shop.Slug, product.Slug))
@@ -135,11 +135,12 @@ class DiscordAlertInterface:
         embed.add_embed_field(name='لینک محصول', value=product_url, inline=False)
         embed.add_embed_field(name='توضیحات', value=product.Description, inline=False)
         webhook.add_embed(embed)
-        try:
-            with open(product.Image.path, 'rb') as f:
-                webhook.add_file(file=f.read(), filename=f'{product.Slug}.png')
-        except FileNotFoundError as ex:
-            pass
+        if not without_image:
+            try:
+                with open(product.Image.path, 'rb') as f:
+                    webhook.add_file(file=f.read(), filename=f'{product.Slug}.png')
+            except FileNotFoundError as ex:
+                pass
         response = webhook.execute()
 
         
