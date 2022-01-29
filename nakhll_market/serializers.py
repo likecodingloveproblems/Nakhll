@@ -441,7 +441,7 @@ class ShopSocialMediaSerializer(serializers.ModelSerializer):
 class SettingsProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ['NationalCode', 'PhoneNumber', 'State', 'BigCity', 'City', 'Address', 'ZipCode']
+        fields = ['NationalCode', 'CityPerCode', 'PhoneNumber', 'State', 'BigCity', 'City', 'Address', 'ZipCode']
         extra_kwargs = {
             'NationalCode': {'validators': []},
             'MobileNumber': {'validators': []}
