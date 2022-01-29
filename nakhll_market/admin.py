@@ -6,7 +6,7 @@ from .models import (LandingPageSchema, NewCategory, ShopPageSchema,
                      LandingImage, LandingPage,
                      Shop, 
                      Product, ProductBanner, Profile, 
-                     Alert, DashboardBanner)
+                     Alert, DashboardBanner, Slider)
 from django.contrib import admin
 from django.contrib.auth.models import Permission
 
@@ -140,3 +140,14 @@ class LandingImageAdmin(admin.ModelAdmin):
     ordering=['created_at']
     def created_datetime(self,obj):
         return localtime(obj.created_datetime).strftime('%Y-%m-%d %H:%M:%S')
+
+        
+@admin.register(Slider)
+class SliderAdmin(admin.ModelAdmin):
+    list_display=('Title','Description','Location','DateCreate','Publish')
+    list_filter=('Location','DateCreate','DtatUpdate','Publish')
+    ordering=['DateCreate','id','Publish','Title','Location']
+    def DateCreate(self,obj):
+        return localtime(obj.DateCreate).strftime('%Y-%m-%d %H:%M:%S')
+    def DtatUpdate(self,obj):
+        return localtime(obj.DtatUpdate).strftime('%Y-%m-%d %H:%M:%S')
