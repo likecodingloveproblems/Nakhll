@@ -10,8 +10,7 @@ class UserFavoriteProductSerializer(serializers.ModelSerializer):
         model = Favorite
         fields = ['product', 'user']
 
-class SimpleFavoriteSerializer(serializers.ModelSerializer):
-    product = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
-    class Meta:
-        model = Favorite
-        fields = ['product', ]
+    def save(self, **kwargs):
+        fav_list = kwargs.pop('fav_list')
+        validated_data = {**self.validated_data, 'user': fav_list.user}
+        return self.update(self.instance, validated_data)
