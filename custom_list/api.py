@@ -44,18 +44,17 @@ class UserFavoriteProductsViewset(viewsets.GenericViewSet):
     def add_product_to_fav_list(self, request):
         '''Add a product to the current user's favorite list'''
         user_fav_list = self.get_object()
-        serializer = UserFavoriteProductSerializer(request.data)
+        serializer = UserFavoriteProductSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(fav_list=user_fav_list)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=['DELETE'])
     def remove(self, request, pk):
         '''Remove a product from the current user's favorite list'''
         user_fav_list = self.get_object()
         product = self.get_product(pk)
-        user_fav_list.product.remove(product)
+        user_fav_list.products.remove(product)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
