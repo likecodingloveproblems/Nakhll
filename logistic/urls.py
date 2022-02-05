@@ -4,10 +4,8 @@ from logistic.api import AddressViewSet, ShopLogisticUnitCalculationMetricViewSe
                          ShopLogisticUnitViewSet, ShopLogisticUnitConstraintViewSet
 
 
-old_logistic_router = routers.DefaultRouter()
-old_logistic_router.register('address', AddressViewSet, basename='address')
-
 logistic_router = routers.DefaultRouter()
+logistic_router.register('addresses', AddressViewSet, basename='addresses')
 logistic_router.register(
     'shop-logistic-unit', ShopLogisticUnitViewSet, basename='shop_logistic_unit')
 logistic_router.register('shop-logistic-unit-constraint',
@@ -15,8 +13,6 @@ logistic_router.register('shop-logistic-unit-constraint',
 logistic_router.register('shop-logistic-unit-metric', ShopLogisticUnitCalculationMetricViewSet,
                          basename='shop_logistic_unit_constraint_parameter')
 
-app_name = 'logistic'
 urlpatterns = [
-    path('api/v1/logistic/', include(logistic_router.urls)),
-    path('logistic/api/', include(old_logistic_router.urls)),  # TODO: fix later
+    path('', include(logistic_router.urls)),
 ]
