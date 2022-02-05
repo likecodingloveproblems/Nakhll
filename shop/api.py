@@ -172,7 +172,7 @@ class ShopViewSet(viewsets.GenericViewSet):
                 موجودی=F('Inventory'),
                 وزن=F('Net_Weight'),
                 وزن_با_بسته_بندی=F('Weight_With_Packing'),
-                دسته_بندی=F('new_category_id'),
+                دسته_بندی=F('category_id'),
                 وضعیت_انتشار=F('Publish'),
             ).values(
                 'عنوان',

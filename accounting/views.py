@@ -15,7 +15,7 @@ from django.db.models.functions import Coalesce
 
 from nakhll_market.interface import DiscordAlertInterface
 from nakhll_market.models import Profile, Shop, Product
-from accounting_new.models import Invoice
+from invoice.models import Invoice
 
 
 class ShopManagersInformation(GroupRequiredMixin, View):

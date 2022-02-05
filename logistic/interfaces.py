@@ -6,7 +6,7 @@ from django.db.models.query_utils import Q
 from django.db.models import  F
 from django.utils.translation import ugettext as _
 from rest_framework.validators import ValidationError
-from nakhll_market.models import City, NewCategory, Product, Shop
+from nakhll_market.models import Product, Shop
 
 
 class PostPriceSettingInterface:

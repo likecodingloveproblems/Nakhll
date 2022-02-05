@@ -36,10 +36,10 @@ class BulkProductHandler:
                  optional_fields_with_types={
                     'Net_Weight': 'Int64',
                     'Weight_With_Packing': 'Int64',
-                    'new_category_id': 'Int64',
+                    'category_id': 'Int64',
                 },
                  update_fields=['Title', 'Price', 'OldPrice', 'Inventory', 'Net_Weight',
-                                'Weight_With_Packing', 'new_category_id'],
+                                'Weight_With_Packing', 'category_id'],
                  image_fields={'image_1': object, 'image_2': object, 'image_3': object},
                  bulk_type=None, is_undo_operation=False):
         self.df = None

@@ -1,4 +1,4 @@
-from accounting_new.models import Invoice
+from invoice.models import Invoice
 from logistic.serializers import AddressSerializer
 from nakhll_market.serializer_fields import Base64ImageField
 from restapi.serializers import (BigCitySerializer, CitySerializer,
@@ -10,7 +10,7 @@ from rest_framework import serializers
 from rest_framework.relations import HyperlinkedIdentityField, HyperlinkedRelatedField
 from rest_framework.utils import field_mapping
 from nakhll_market.models import (
-    BigCity, City, Comment, NewCategory, ShopBankAccount, ShopSocialMedia,
+    BigCity, City, Comment, Category, ShopBankAccount, ShopSocialMedia,
     Product, ProductBanner, Profile, Shop, Slider, State,
     LandingPageSchema, ShopPageSchema, UserImage,
     )
@@ -32,24 +32,26 @@ class SliderSerializer(serializers.ModelSerializer):
             'url', 'image', 'title', 'show_info', 'description', 'location',
             ]
 
-class NewCategorySerializer(serializers.ModelSerializer):
+class CategorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = NewCategory
+        model = Category
         fields = ['id', 'name', 'order', 'slug']
 
-class NewCategoryProductCountSerializer(serializers.ModelSerializer):
+class CategoryProductCountSerializer(serializers.ModelSerializer):
+    ''' Represents the product count of a category '''
     product_count = serializers.SerializerMethodField()
     class Meta:
-        model = NewCategory
+        model = Category
         fields = ['id', 'name', 'order', 'slug', 'product_count']
 
     def get_product_count(self, obj):
         return obj.products_count
 
-class NewCategoryChildSerializer(serializers.ModelSerializer):
+class CategoryChildSerializer(serializers.ModelSerializer):
+    ''' Represents the child categories of a category '''
     childrens = serializers.SerializerMethodField(read_only=True)
     class Meta:
-        model = NewCategory
+        model = Category
         fields = ['id', 'name', 'order', 'slug', 'childrens']
 
     def get_childrens(self, obj):
@@ -57,12 +59,13 @@ class NewCategoryChildSerializer(serializers.ModelSerializer):
         if max_depth == 0:
             return []
         context = {'max_depth': max_depth}
-        return NewCategoryChildSerializer(obj.childrens, many=True, context=context).data
+        return CategoryChildSerializer(obj.childrens, many=True, context=context).data
 
-class NewCategoryParentSerializer(serializers.ModelSerializer):
+class CategoryParentSerializer(serializers.ModelSerializer):
+    ''' Represents the parent categories of a category to root '''
     parents = serializers.SerializerMethodField(read_only=True, method_name='parents_to_root')
     class Meta:
-        model = NewCategory
+        model = Category
         fields = ['id', 'name', 'order', 'slug', 'parents']
 
     def parents_to_root(self, obj):
@@ -71,22 +74,23 @@ class NewCategoryParentSerializer(serializers.ModelSerializer):
         while parent:
             parents.append(parent)
             parent = parent.parent
-        return NewCategorySerializer(parents, many=True).data
+        return CategorySerializer(parents, many=True).data
 
-class NewCategoryParentChildSerializer(serializers.ModelSerializer):
+class CategoryParentChildSerializer(serializers.ModelSerializer):
+    ''' Represents both the childs and the parent categories of a category to root '''
     parents = serializers.SerializerMethodField(read_only=True, method_name='parents_to_root')
     childrens = serializers.SerializerMethodField(read_only=True)
     class Meta:
-        model = NewCategory
+        model = Category
         fields = ['id', 'name', 'order', 'slug', 'parents', 'childrens']
 
     def parents_to_root(self, obj):
-        return NewCategoryParentSerializer(NewCategory.objects.parents_to_root(obj), many=True).data    
+        return CategoryParentSerializer(Category.objects.parents_to_root(obj), many=True).data    
 
     def get_childrens(self, obj):
         max_depth = self.context.get('max_depth', -1) - 1
         context = {'max_depth': max_depth}
-        return NewCategoryChildSerializer(obj.childrens, many=True, context=context).data
+        return CategoryChildSerializer(obj.childrens, many=True, context=context).data
 
    
 
@@ -177,13 +181,13 @@ class ProductBannerSerializer(serializers.ModelSerializer):
 class ProductDetailSerializer(serializers.HyperlinkedModelSerializer):
     banners = ProductBannerSerializer(many=True, read_only=True)
     shop = ShopSerializer(many=False, read_only=False)
-    new_category = NewCategoryParentSerializer(many=False, read_only=True)
+    category = CategoryParentSerializer(many=False, read_only=True)
     class Meta:
         model = Product
         fields = [
             'id', 'title', 'description', 'slug', 'price', 'old_price',
             'available', 'salable', 'discount', 'shop', 'image',
-            'banners', 'inventory', 'status', 'exception_post_range', 'new_category',
+            'banners', 'inventory', 'status', 'exception_post_range', 'category',
             'net_weight', 'weight_with_packing',  'length_with_packing',
             'height_with_packaging', 'story', 'width_with_packing', 'PreparationDays',
         ]
@@ -263,7 +267,7 @@ class ProductOwnerListSerializer(serializers.ModelSerializer):
             'PreparationDays',
             'Available',
             'Publish',
-            'new_category_id',
+            'category_id',
             'post_range_cities'
         ]
 
@@ -289,7 +293,7 @@ class ProductOwnerListSerializer(serializers.ModelSerializer):
             'PreparationDays',
             'Available',
             'Publish',
-            'new_category_id',
+            'category_id',
             'post_range_cities'
         ]
 
@@ -327,7 +331,7 @@ class Base64ImageSerializer(serializers.Serializer):
     image = Base64ImageField(max_length=None, use_url=True)
 
 class ProductOwnerWriteSerializer(serializers.ModelSerializer):
-    new_category = serializers.PrimaryKeyRelatedField(read_only=False, many=False, queryset=NewCategory.objects.all())
+    category = serializers.PrimaryKeyRelatedField(read_only=False, many=False, queryset=Category.objects.all())
     Image = Base64ImageField(max_length=None, use_url=True)
     Product_Banner = ProductBannerWriteSerializer(many=True, read_only=False)
     post_range = serializers.PrimaryKeyRelatedField(source='post_range_cities', read_only=False, many=True, queryset=City.objects.all())
@@ -347,7 +351,7 @@ class ProductOwnerWriteSerializer(serializers.ModelSerializer):
             'Product_Banner',
             'PostRangeType',
             'PreparationDays',
-            'new_category',
+            'category',
             'post_range'
         ]
     
@@ -387,7 +391,7 @@ class ProductOwnerWriteSerializer(serializers.ModelSerializer):
         
         
 class ProductOwnerReadSerializer(serializers.ModelSerializer):
-    new_category = NewCategoryChildSerializer(many=False, read_only=True)
+    category = CategoryChildSerializer(many=False, read_only=True)
     Product_Banner = ProductBannerWriteSerializer(many=True, read_only=True)
     post_range = serializers.PrimaryKeyRelatedField(source='post_range_cities', read_only=True, many=True)
     class Meta:
@@ -406,7 +410,7 @@ class ProductOwnerReadSerializer(serializers.ModelSerializer):
             'Product_Banner',
             'PostRangeType',
             'PreparationDays',
-            'new_category',
+            'category',
             'post_range'
         ]
  

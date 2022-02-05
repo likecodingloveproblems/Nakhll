@@ -17,7 +17,7 @@ def test_pec(request):
     order_number = str(int(datetime.now().timestamp() * 1000000)).strip()
     data = {
         'referrer_model': 'Invoice',
-        'referrer_app': 'accounting_new',
+        'referrer_app': 'invoice',
         'amount': int(amount),
         'order_number': int(order_number),
         'description': f'Paying invioce {order_number}',
