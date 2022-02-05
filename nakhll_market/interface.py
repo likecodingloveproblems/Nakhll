@@ -125,7 +125,7 @@ class DiscordAlertInterface:
             icon_url=product.FK_Shop.Image_thumbnail_url(),
         )
         embed.add_embed_field(name='نام', value=product.Title, inline=True)
-        embed.add_embed_field(name='دسته بندی', value=product.new_category.name, inline=True)
+        embed.add_embed_field(name='دسته بندی', value=product.category.name, inline=True)
         embed.add_embed_field(name='قیمت', value='{:,} ریال'.format(product.Price), inline=True)
         embed.add_embed_field(name='قیمت با تخفیف', value='{:,} ریال'.format(product.OldPrice), inline=True)
         embed.add_embed_field(name='وزن خالص', value=product.Net_Weight, inline=True)

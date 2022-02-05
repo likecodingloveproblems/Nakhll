@@ -19,11 +19,11 @@ from django_filters import rest_framework as restframework_filters
 from logistic.models import ShopLogisticUnit
 from nakhll_market.interface import DiscordAlertInterface, ProductChangeTypes
 from nakhll_market.models import (
-    Alert, Comment, NewCategory, Product, ProductBanner, Shop, Slider, State, BigCity, City,
+    Alert, Comment, Category, Product, ProductBanner, Shop, Slider, State, BigCity, City,
     LandingPageSchema, ShopPageSchema, UserImage,
     )
 from nakhll_market.serializers import (
-    Base64ImageSerializer, NewCategoryProductCountSerializer,
+    Base64ImageSerializer, CategoryProductCountSerializer,
     NewProfileSerializer, ProductBannerWithProductSerializer, ProductCommentSerializer,
     ProductDetailSerializer, ProductImagesSerializer, ProductOwnerListSerializer,
     ProductOwnerReadSerializer, ProductOwnerWriteSerializer, ProductPriceWriteSerializer,
@@ -31,11 +31,11 @@ from nakhll_market.serializers import (
     CreateShopSerializer, ProductInventoryWriteSerializer,
     ProductListSerializer, ShopAllSettingsSerializer, SliderSerializer, UserOrderSerializer,
     ProductSubMarketSerializer, StateFullSeraializer, ShopPageSchemaSerializer, UserImageSerializer,
-    LandingPageSchemaSerializer, NewCategoryChildSerializer, NewCategoryParentSerializer
+    LandingPageSchemaSerializer, CategoryChildSerializer, CategoryParentSerializer
     )
 from restapi.permissions import IsProductOwner, IsShopOwner, IsProductBannerOwner
 from restapi.serializers import ProfileSerializer
-from accounting_new.models import Invoice
+from invoice.models import Invoice
 from nakhll_market.filters import ProductFilter
 from nakhll_market.permissions import IsInvoiceOwner
 from nakhll_market.paginators import StandardPagination
@@ -238,7 +238,7 @@ class ProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             Q(Publish=True), ~Q(FK_Shop=None)).annotate(DiscountPrecentage=Case(
             When(OldPrice__gt=0, then=(
                 (F('OldPrice') - F('Price')) * 100 / F('OldPrice'))
-            ), default=0)).order_by('-new_category_id')
+            ), default=0)).order_by('-category_id')
 
 
 
@@ -278,8 +278,8 @@ class ProductRelatedItemsViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixi
     def get_queryset(self):
         queryset = Product.objects.filter(Available = True, Publish = True,
                                           Status__in = ['1', '2', '3'])
-        if self.product and self.product.new_category:
-            queryset = queryset.filter(new_category=self.product.new_category)
+        if self.product and self.product.category:
+            queryset = queryset.filter(category=self.product.category)
         return queryset.order_by('?')
 
     def retrieve(self, request, *args, **kwargs):
@@ -714,17 +714,25 @@ class MostSoldProduct(views.APIView):
         return Response(serializer.data)
 
 
-class CategoryViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
+class CategoryViewSet(viewsets.GenericViewSet, mixins.ListModelMixin,
+                      mixins.RetrieveModelMixin):
+    '''
+    Represents categories in Nakhll system
+    
+    You can specify how deep you want to get categories by defining max_depth
+    query string parameter. No max_depth or max_depth=-1 means that you will
+    get all categories.
+    '''
     permission_classes = [permissions.AllowAny, ]
-    queryset = NewCategory.objects.all_ordered()
-    serializer_class = NewCategoryParentSerializer
+    queryset = Category.objects.all_ordered()
+    serializer_class = CategoryParentSerializer
     lookup_field = 'slug'
 
     def get_queryset(self):
         if self.action == 'list':
-            self.serializer_class = NewCategoryChildSerializer
-            return NewCategory.objects.get_root_categories()
-        return NewCategory.objects.all_ordered()
+            self.serializer_class = CategoryChildSerializer
+            return Category.objects.get_root_categories()
+        return Category.objects.all_ordered()
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -738,10 +746,17 @@ class CategoryViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Ret
 
     @action(methods=['GET'], detail=False)
     def category_product_count(self, request):
-        query = request.GET.get('q', None)
+        '''
+        Without any query string, it gives you all categories with their
+        product count. You can narrow down the categories by specifying
+        a search parameter as q which search in product name, and/or a
+        shop_slug parameter, which only gives you categories of a specific
+        shop.
+        '''
+        product_title_query = request.GET.get('q', None)
         shop = request.GET.get('shop', None)
-        queryset = NewCategory.objects.categories_with_product_count(query, shop)
-        return Response(NewCategoryProductCountSerializer(queryset, many=True).data)        
+        queryset = Category.objects.categories_with_product_count(product_title_query, shop)
+        return Response(CategoryProductCountSerializer(queryset, many=True).data)        
     
 class PublicShopsViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
     permission_classes = [permissions.AllowAny, ]

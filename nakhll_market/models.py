@@ -66,7 +66,7 @@ def upload_path(instance,filename):
     return '{0}/{1}'.format("disforum", filename)
 
 
-class NewCategoryManager(models.Manager):
+class CategoryManager(models.Manager):
     def all_childs(self, category):
         childs = []
         for child in category.get_sub_category():
@@ -106,7 +106,7 @@ class NewCategoryManager(models.Manager):
         return self.all().order_by('order')
 
 
-class NewCategory(models.Model):
+class Category(models.Model):
     class Meta:
         verbose_name = "دسته بندی"
         verbose_name_plural = "دسته بندی ها"
@@ -125,7 +125,7 @@ class NewCategory(models.Model):
     market_uuid = models.UUIDField(verbose_name='شناسه بازار', null=True, editable=False)
     submarket_uuid = models.UUIDField(verbose_name='شناسه بازارچه', null=True, editable=False)
     order = models.PositiveIntegerField(verbose_name='ترتیب', default=99999)
-    objects = NewCategoryManager()
+    objects = CategoryManager()
 
     def __str__(self):
         return "{}".format(self.name)
@@ -698,7 +698,7 @@ class Product(models.Model):
     NewImage=models.ImageField(verbose_name='عکس جدید حجره', upload_to=PathAndRename('media/Pictures/Markets/SubMarkets/Shops/Products/'), null=True, blank=True)
     Catalog=models.FileField(verbose_name='کاتالوگ محصول', upload_to=PathAndRename('media/Catalogs/Markets/SubMarkets/Shops/Products/'), help_text='کاتالوگ محصول خود را اینجا وارد کنید', null=True, blank=True)
     FK_Shop=models.ForeignKey(Shop, null=True, on_delete=models.SET_NULL, verbose_name='حجره',related_name='ShopProduct')
-    new_category=models.ForeignKey(NewCategory, verbose_name='دسته بندی جدید', related_name='products', null=True, on_delete=models.PROTECT)
+    category=models.ForeignKey(Category, verbose_name='دسته بندی جدید', related_name='products', null=True, on_delete=models.PROTECT, db_column='category_id')
     Price=models.BigIntegerField(verbose_name='قیمت محصول')
     OldPrice=models.BigIntegerField(verbose_name='قیمت حذف محصول', default=0)
     # Product Weight Info
@@ -810,10 +810,6 @@ class Product(models.Model):
     @property
     def story(self):
         return self.Story
-
-    @property
-    def category(self):
-        return self.FK_Category.all()
 
     @property
     def post_range(self):

@@ -2,7 +2,7 @@ from typing import Dict, Optional
 from django.contrib import admin
 from django.http import HttpRequest, HttpResponse
 from django.utils.timezone import localtime
-from .models import (LandingPageSchema, NewCategory, ShopPageSchema,
+from .models import (LandingPageSchema, Category, ShopPageSchema,
                      LandingImage, LandingPage,
                      Shop, 
                      Product, ProductBanner, Profile, 
@@ -64,8 +64,8 @@ class ProductAdmin(admin.ModelAdmin):
         return super().change_view(request, object_id, form_url=form_url, extra_context=extra_context)
 #-------------------------------------------------
 
-@admin.register(NewCategory)
-class NewCategoryAdmin(admin.ModelAdmin):
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
     list_display=('id', 'name', 'order', 'slug', 'description', 'parent', 'available')
     list_filter=('parent','available')
     ordering=('-parent', 'id', )

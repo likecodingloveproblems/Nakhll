@@ -1,5 +1,5 @@
 from django_filters import rest_framework as filters
-from nakhll_market.models import BigCity, City, NewCategory, Product, State
+from nakhll_market.models import BigCity, City, Category, Product, State
 
 class ProductFilter(filters.FilterSet):
     min_price = filters.NumberFilter(field_name="Price", lookup_expr='gte')
@@ -8,7 +8,6 @@ class ProductFilter(filters.FilterSet):
     search = filters.CharFilter(method='filter_search')
     available = filters.BooleanFilter(method='filter_available')
     category = filters.CharFilter(method='filter_category')
-    new_category = filters.CharFilter(method='filter_new_category')
     city = filters.CharFilter(method='filter_city')
     big_city = filters.CharFilter(method='filter_big_city')
     state = filters.CharFilter(method='filter_state')
@@ -19,8 +18,7 @@ class ProductFilter(filters.FilterSet):
     class Meta:
         model = Product
         fields = ['search', 'min_price', 'ready', 'available', 'category', 'in_campaign',
-        # fields = ['search', 'min_price', 'max_price', 'ready', 'available', 'category',
-                    'new_category', 'city', 'discounted', 'is_advertisement', 'shop']
+                    'category', 'city', 'discounted', 'is_advertisement', 'shop']
 
     def filter_ready(self, queryset, name, value):
         READY_IN_STOCK = '1'
@@ -39,11 +37,11 @@ class ProductFilter(filters.FilterSet):
     def filter_category(self, queryset, name, value):
         return queryset.filter(FK_SubMarket__in=value.split(',')) if value else queryset
 
-    def filter_new_category(self, queryset, name, value):
+    def filter_category(self, queryset, name, value):
         category_ids = value.split(',')
-        categories = NewCategory.objects.filter(id__in=category_ids)
-        subcategories = NewCategory.objects.all_subcategories(categories)
-        return queryset.filter(new_category__in=subcategories)
+        categories = Category.objects.filter(id__in=category_ids)
+        subcategories = Category.objects.all_subcategories(categories)
+        return queryset.filter(category__in=subcategories)
 
     def filter_state(self, queryset, name, value):
         states = State.objects.filter(id__in=value.split(',')).values_list('name', flat=True)

@@ -10,7 +10,7 @@ from django.contrib.sessions.models import Session
 from django.db.models.functions import Cast
 from django.core.serializers.json import DjangoJSONEncoder
 from rest_framework.exceptions import ValidationError
-from accounting_new.models import Invoice, InvoiceItem
+from invoice.models import Invoice, InvoiceItem
 from cart.managers import CartItemManager, CartManager
 from cart.utils import get_user_or_guest
 from logistic.models import Address

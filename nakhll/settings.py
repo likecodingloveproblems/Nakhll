@@ -75,6 +75,7 @@ THIRD_PARTY_APPS = [
     'django_prometheus',
     'django_extensions',
     'colorfield',
+    'django_rename_app',
 ]
 
 NAKHLL_APPS = [
@@ -84,7 +85,7 @@ NAKHLL_APPS = [
     'cart',
     'coupon',
     'logistic',
-    'accounting_new',
+    'invoice',
     'accounting',
     'payoff',
     'torob_api',
@@ -119,7 +120,7 @@ ADMIN_REORDER = (
         'nakhll_market.Shop',
         'nakhll_market.Product',
         'nakhll_market.ProductBanner',
-        'nakhll_market.NewCategory',
+        'nakhll_market.Category',
         'nakhll_market.Tag',
         'nakhll_market.Attribute',
         'nakhll_market.AttrPrice',
@@ -155,9 +156,9 @@ ADMIN_REORDER = (
         'payoff.TransactionReverse',
         'payoff.TransactionConfirmation',
     )},
-    {'app': 'accounting_new', 'label': 'بخش حسابداری جدید','models':(
-        'accounting_new.Invoice',
-        'accounting_new.InvoiceItem',
+    {'app': 'invoice', 'label': 'بخش حسابداری جدید','models':(
+        'invoice.Invoice',
+        'invoice.InvoiceItem',
         'shop.ShopFeature',
         'shop.ShopFeatureInvoice',
         'shop.ShopLanding',

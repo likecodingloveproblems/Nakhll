@@ -3,7 +3,7 @@ from django.db import models
 from django.core.files import File
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
-from nakhll_market.models import NewCategory, Product, Shop, State, BigCity, City
+from nakhll_market.models import Category, Product, Shop, State, BigCity, City
 from logistic.managers import AddressManager, ShopLogisticUnitManager
 from logistic.interfaces import PostPriceSettingInterface
 
@@ -130,7 +130,7 @@ class ShopLogisticUnitConstraint(models.Model):
                                             related_name='constraint', on_delete=models.CASCADE)
     cities = models.ManyToManyField(City, verbose_name=_('شهرها'), related_name='logistic_unit_constraints', blank=True)
     products = models.ManyToManyField(Product, verbose_name=_('محصولات'), related_name='logistic_unit_constraints', blank=True)
-    categories = models.ManyToManyField(NewCategory, verbose_name=_('دسته بندی ها'), related_name='logistic_unit_constraints', blank=True)
+    categories = models.ManyToManyField(Category, verbose_name=_('دسته بندی ها'), related_name='logistic_unit_constraints', blank=True)
     max_weight = models.PositiveIntegerField(verbose_name=_('حداکثر وزن (کیلوگرم)'), default=0, null=True, blank=True)
     min_weight = models.PositiveIntegerField(verbose_name=_('حداقل وزن (کیلوگرم)'), default=0, null=True, blank=True)
     max_cart_price = models.PositiveIntegerField(verbose_name=_('حداکثر قیمت سبد خرید (ریال)'), default=0, null=True, blank=True)
@@ -260,7 +260,7 @@ class LogisticUnitGeneralSetting(models.Model):
 #     min_price = models.DecimalField(verbose_name=_(
 #         'حداقل قیمت'), max_digits=10, decimal_places=2, null=True, blank=True)
 #     categories = models.ManyToManyField(
-#         NewCategory, verbose_name=_('دسته بندی ها'))
+#         Category, verbose_name=_('دسته بندی ها'))
 #     max_weight_g = models.PositiveIntegerField(
 #         verbose_name=_('حداکثر وزن (گرم)'), null=True, blank=True)
 #     max_package_value = models.PositiveIntegerField(
