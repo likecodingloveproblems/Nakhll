@@ -5,7 +5,7 @@ from custom_list.models import Favorite
 
 
 class UserFavoriteProductSerializer(serializers.ModelSerializer):
-    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
+    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all(), write_only=True)
     products = ProductSerializer(many=True, read_only=True)
     user = UserSerializer(many=False, read_only=True)
     class Meta:
@@ -14,5 +14,5 @@ class UserFavoriteProductSerializer(serializers.ModelSerializer):
 
     def save(self, **kwargs):
         fav_list = kwargs.pop('fav_list')
-        fav_list.products.add(self.validated_data['product_id'])
+        fav_list.products.add(self.validated_data['product'])
         return fav_list
