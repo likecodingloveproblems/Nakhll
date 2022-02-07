@@ -229,6 +229,7 @@ class InvoiceStats(GroupRequiredMixin, View):
         DiscordAlertInterface.send_alert('TEST IN INVOICE STATS: Someone get Invoice Stats')
         queryset = Invoice.objects.filter(FactorNumber=None).annotate(
             products_list=StringAgg('items__product__Title', delimiter=', '),
+            shops_list=StringAgg('items__product__FK_Shop__Title', delimiter=', ', distinct=True),
             coupons_list=StringAgg('coupon_usages__coupon__code', delimiter=', '),
             coupons_total_price=Coalesce(Sum('coupon_usages__price_applied', output_field=FloatField()), 0),
             total_price=ExpressionWrapper(F('invoice_price_with_discount') + F('logistic_price')
