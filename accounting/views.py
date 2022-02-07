@@ -237,7 +237,7 @@ class InvoiceStats(GroupRequiredMixin, View):
 
         queryset = queryset.values(
             'id', 'user__username', 'user__User_Profile__MobileNumber',
-            'address_json', 'coupons_list', 'products_list', 'invoice_price_with_discount',
+            'address_json', 'coupons_list', 'products_list', 'shops_list', 'invoice_price_with_discount',
             'invoice_price_without_discount', 'logistic_price', 'coupons_total_price',
             'status', 'created_datetime', 'payment_datetime', 'total_weight_gram', 'total_price',
         )
