@@ -136,6 +136,7 @@ ADMIN_REORDER = (
         'shop.ShopFeature',
         'nakhll_market.LandingPage',
         'nakhll_market.LandingImage',
+        'coupon.Coupon',
     )},
     {
         'app': 'logistic',
