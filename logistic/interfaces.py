@@ -229,7 +229,7 @@ class LogisticUnitInterface:
         for product in all_products:
             all_lus = self.get_product_available_lus(queryset, product)
             pad_lus = self.get_pad_lus(queryset)
-            if set(all_lus) == set(pad_lus):
+            if all_lus and set(all_lus) == set(pad_lus):
                 only_pad_ids.append(product.ID)
         only_pad_products = Product.objects.filter(ID__in=only_pad_ids)
         return only_pad_products
