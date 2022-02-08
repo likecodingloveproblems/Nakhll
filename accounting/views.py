@@ -16,6 +16,7 @@ from django.db.models.functions import Coalesce
 from nakhll_market.interface import DiscordAlertInterface
 from nakhll_market.models import Profile, Shop, Product
 from accounting_new.models import Invoice
+from logistic.models import ShopLogisticUnit
 
 
 class ShopManagersInformation(GroupRequiredMixin, View):
@@ -257,3 +258,31 @@ class InvoiceStats(GroupRequiredMixin, View):
             del q['address_json']
         
         return ExcelResponse(data=queryset)
+
+class ShopLogisticUnitView(View):
+
+    def get(self, request):
+        DiscordAlertInterface.send_alert('TEST IN SHOP LOGISTIC UNIT STATS: Someone get Shop Logistic Unit Stats')
+        queryset = ShopLogisticUnit.objects.values(
+            'shop__Title',
+            'name',
+            'logo',
+            'logo_type',
+            'is_active',
+            'is_publish',
+            'description','created_at',
+            'updated_at',
+            'constraint__categories',
+            'constraint__cities',
+            'constraint__max_weight',
+            'constraint__min_weight',
+            'constraint__max_cart_price',
+            'constraint__min_cart_price',
+            'constraint__max_cart_count',
+            'constraint__min_cart_count',
+            'calculation_metric__price_per_kilogram',
+            'calculation_metric__price_per_extra_kilogram',
+            'calculation_metric__pay_time',
+            'calculation_metric__payer',
+            )
+        return ExcelResponse(data = queryset)

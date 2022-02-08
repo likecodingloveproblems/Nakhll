@@ -1,5 +1,5 @@
 from django.urls import path 
-from accounting.views import (ShopManagersInformation, ShopManagersInformationV2, ShopInformation,
+from accounting.views import (ShopLogisticUnitView, ShopManagersInformation, ShopManagersInformationV2, ShopInformation,
                               UserMobile, ProductStats, UserStats, InvoiceStats)
 
 app_name = 'accounting'
@@ -12,5 +12,5 @@ urlpatterns = [
     path('user-stats/' , UserStats.as_view() , name='user_stats'),
     path('shop-info/' , ShopInformation.as_view() , name='shop-information'),
     path('invoice-stats/' , InvoiceStats.as_view() , name='invoice-stats'),
-    
+    path('shop-logistic-stats/' , ShopLogisticUnitView.as_view() , name='shop-logistic-stats'),
 ]
