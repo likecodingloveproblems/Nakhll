@@ -13,6 +13,7 @@ from rest_framework.exceptions import ValidationError
 from accounting_new.models import Invoice, InvoiceItem
 from cart.managers import CartItemManager, CartManager
 from cart.utils import get_user_or_guest
+from logistic.models import Address
 from nakhll_market.models import Shop, Product, ProductManager
 from nakhll_market.serializers import ProductLastStateSerializer
 
@@ -26,6 +27,10 @@ class Cart(models.Model):
     user = models.OneToOneField(User, verbose_name=_('کاربر'), on_delete=models.CASCADE, related_name='cart', null=True)
     guest_unique_id = models.CharField(_('شناسه کاربر مهمان'), max_length=100, null=True, blank=True)
     extra_data = models.JSONField(null=True, encoder=DjangoJSONEncoder)
+    address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True,
+            blank=True, related_name='invoices', verbose_name=_('آدرس'))
+    logistic_details = models.JSONField(null=True, blank=True, encoder=DjangoJSONEncoder, verbose_name=_('جزئیات واحد ارسال'))
+    coupons = models.ManyToManyField('cart.Coupon', verbose_name=_('کوپن ها'), blank=True)
     objects = CartManager()
 
     @property
@@ -114,17 +119,33 @@ class Cart(models.Model):
 
     def convert_to_invoice(self):
         ''' Convert cart to invoice '''
+
+        # validations
+        logistic_details = self.get_logistic_details()
+        coupons = self.get_coupons()
+        self._validate_items()
+
+        # create invoice
         invoice = Invoice.objects.create(
             user=self.user,
             created_datetime=timezone.now(),
             invoice_price_with_discount=self.total_price,
             invoice_price_without_discount=self.total_old_price or self.total_price,
             total_weight_gram=self.cart_weight,
-            logistic_price=0,
+            logistic_price=logistic_details.total_post_price,
+            logistic_details=logistic_details.as_dict(),
         )
+
+        # set coupons
+        for coupon in coupons:
+            coupon.apply(invoice)
+
+        # convert items
         cart_items = self.items.all()
         for item in cart_items:
             item.convert_to_invoice_item(invoice)
+
+        # clear cart
         self.__clear_items()
         return invoice
 

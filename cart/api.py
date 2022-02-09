@@ -4,12 +4,19 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from cart.managers import CartManager
 from django.utils.translation import ugettext as _
-from rest_framework import viewsets
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
 from nakhll_market.models import ProductManager
 from cart.models import Cart, CartItem
-from cart.serializers import CartSerializer, CartItemSerializer
+from cart.serializers import (CartSerializer, CartItemSerializer,
+                              CartWriteSerializer)
 from cart.utils import get_user_or_guest
 from cart.permissions import IsCartOwner, IsCartItemOwner
+from payoff.exceptions import (NoAddressException, InvoiceExpiredException,
+                            InvalidInvoiceStatusException, NoItemValidation,
+                            OutOfPostRangeProductsException)
+from logistic.interfaces import LogisticUnitInterface
 
 
 class UserCartViewSet(viewsets.GenericViewSet):
@@ -34,8 +41,78 @@ class UserCartViewSet(viewsets.GenericViewSet):
         if self.request.user and self.request.user.is_authenticated:
             response.delete_cookie('guest_unique_id')
         return response
-        
 
+        
+    @action(methods=['PATCH'], detail=False)
+    def set_address(self, request):
+        # TODO: do I raise error if address is not valid?
+        # TODO: do I clear the cart if no address is available?
+        cart = self.get_object()
+        serializer = CartWriteSerializer(instance=cart, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        cart.logistic_details = self.get_logistic_details()
+        cart.save()
+        return Response(cart.logistic_details.as_dict(), status=status.HTTP_200_OK)
+
+
+    def get_logistic_details(self):
+        if not self.address:
+            raise ValidationError(_('آدرس سفارش را وارد کنید'))
+        lui = LogisticUnitInterface()
+        return lui.create_logistic_unit_list(self)
+        
+        
+    @action(methods=['PATCH'], detail=False)
+    def set_coupon(self, request):
+        ''' Verify and calculate user coupon and return discount amount
+        
+            ensure that user address is filled.
+            Send this invoice with coupon to coupon app and get amount of 
+            discount that should applied, or errors if there is any. Coupon
+            should be applied and saved in invoice for future reference
+        '''
+        cart = self.get_object()
+        serializer = CartWriteSerializer(instance=cart, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        coupon = serializer.validated_data.get('coupon')
+        if coupon.is_valid(cart):
+            serializer.save()
+        return Response({'coupon': coupon.code, 'result': coupon.final_price, 'errors': coupon.errors}, status=status.HTTP_200_OK)
+
+    @action(methods=['PATCH'], detail=False)
+    def unset_coupon(self, request):
+        ''' Unset coupon from cart'''
+        cart = self.get_object()
+        serializer = CartWriteSerializer(instance=cart, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        coupon = serializer.validated_data.get('coupon')
+        if coupon not in cart.coupons.all():
+            return Response({'result': 'چنین کوپنی برای این سبد خرید ثبت نشده است'}, status=status.HTTP_400_BAD_REQUEST)
+        cart.coupons.delete(coupon)
+        serializer.save()
+        return Response({'result': 0}, status=status.HTTP_200_OK)
+
+        
+    @action(methods=['POST'], detail=False)
+    def pay(self, request):
+        ''' Convert cart to invoice and send to payment app '''
+        cart = self.get_object()
+        invoice = cart.convert_to_invoice()
+        try:
+            return invoice.send_to_payment()
+        except NoItemValidation:
+            return Response({'error': 'سبد خرید شما خالی است. لطفا سبد خرید خود را تکمیل کنید'}, status=status.HTTP_400_BAD_REQUEST)
+        except NoAddressException:
+            return Response({'error': 'آدرس خریدار را تکمیل کنید'}, status=status.HTTP_400_BAD_REQUEST)
+        except InvoiceExpiredException:
+            return Response({'error': 'فاکتور منقضی شده است'}, status=status.HTTP_400_BAD_REQUEST)
+        except InvalidInvoiceStatusException:
+            return Response({'error': 'فاکتور در حال حاضر قابل پرداخت نیست'}, status=status.HTTP_400_BAD_REQUEST)
+        except OutOfPostRangeProductsException as ex:
+            return Response({'error': f'این محصولات خارج از محدوده ارسال شما هستند: {ex}'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            return Response({'error': str(ex)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserCartItemViewSet(viewsets.GenericViewSet):

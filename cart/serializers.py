@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from cart.models import Cart, CartItem
+from coupon.models import Coupon
+from logistic.models import Address
 from nakhll_market.models import Product
 from nakhll_market.serializers import ProductSerializer
 
@@ -43,3 +45,15 @@ class CartSerializer(serializers.ModelSerializer):
     
     def get_count(self, object):
         return object.items.count()
+
+
+class CartWriteSerializer(serializers.ModelSerializer):
+    address = serializers.PrimaryKeyRelatedField(queryset=Address.objects.all(), required=False)
+    coupon = serializers.SlugRelatedField(slug_field='code', queryset=Coupon.objects.all(), required=False)
+
+    class Meta:
+        model = Cart
+        fields = (
+            'address',
+            'coupon',
+        )
