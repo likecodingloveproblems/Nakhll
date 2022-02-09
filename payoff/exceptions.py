@@ -1,3 +1,6 @@
+class NoItemValidation(Exception):
+    """No item in invoice"""
+
 class NoTransactionException(Exception):
     """
     Exception raised when a transaction is not found.

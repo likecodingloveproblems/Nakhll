@@ -10,7 +10,7 @@ from nakhll_market.serializers import ProductLastStateSerializer
 from cart.managers import CartManager
 from logistic.interfaces import PostPriceSettingInterface, LogisticUnitInterface
 from payoff.exceptions import NoAddressException, InvoiceExpiredException,\
-            InvalidInvoiceStatusException, OutOfPostRangeProductsException
+            InvalidInvoiceStatusException, NoItemValidation, OutOfPostRangeProductsException
 from .models import Invoice
 from .serializers import InvoiceWriteSerializer, InvoiceRetrieveSerializer
 from .permissions import IsInvoiceOwner
@@ -156,6 +156,8 @@ class InvoiceViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
             # return Response({'error': 'تغییراتی در سبد خرید شما به وجود آمده است. لطفا سبد خرید را بررسی کنید'}, status=status.HTTP_400_BAD_REQUEST)
         try:
             return invoice.send_to_payment()
+        except NoItemValidation:
+            return Response({'error': 'سبد خرید شما خالی است. لطفا سبد خرید خود را تکمیل کنید'}, status=status.HTTP_400_BAD_REQUEST)
         except NoAddressException:
             return Response({'error': 'آدرس خریدار را تکمیل کنید'}, status=status.HTTP_400_BAD_REQUEST)
         except InvoiceExpiredException:

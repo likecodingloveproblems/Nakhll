@@ -13,7 +13,7 @@ from nakhll_market.models import NewCategory, Product, Shop
 from payoff.models import Transaction
 from payoff.interfaces import PaymentInterface
 from payoff.exceptions import NoAddressException, InvoiceExpiredException, \
-                InvalidInvoiceStatusException, OutOfPostRangeProductsException
+                InvalidInvoiceStatusException, NoItemValidation, OutOfPostRangeProductsException
 from accounting_new.interfaces import AccountingInterface
 from accounting_new.managers import AccountingManager, InvoiceItemManager
 from logistic.models import Address, PostPriceSetting, ShopLogisticUnit
@@ -113,6 +113,7 @@ class Invoice(models.Model, AccountingInterface):
         return total_price + logistic_price - coupon_price
 
     def send_to_payment(self, bank_port=Transaction.IPGTypes.PEC):
+        self.__validate_items()
         self.__validate_address()
         self.__validate_factor_status()
         self.__validate_invoice_expiring_date()
@@ -120,6 +121,10 @@ class Invoice(models.Model, AccountingInterface):
         self.payment_request_datetime = timezone.now()
         self.save()
         return PaymentInterface.from_invoice(self, bank_port)
+
+    def __validate_items(self):
+        if not self.items.count():
+            raise NoItemValidation()
 
     def __validate_address(self):
         if not self.address:
