@@ -12,8 +12,14 @@ class CartItemSerializer(serializers.ModelSerializer):
     product = serializers.PrimaryKeyRelatedField(many=False, read_only=False, queryset=Product.objects.all())
     class Meta:
         model = CartItem
-        fields = ('cart', 'product', 'count', 'added_datetime', 'product_last_state', )
+        fields = ('cart', 'product', 'count', 'added_datetime', )
         read_only_fields = ('product_last_state', )
+
+    def create(self, validated_data):
+        cart = validated_data.pop('cart')
+        product = validated_data.pop('product')
+        cart.add_product(product)
+        
 
 
 class CartItemReadSerializer(serializers.ModelSerializer):
@@ -41,7 +47,9 @@ class CartSerializer(serializers.ModelSerializer):
     count = serializers.SerializerMethodField()
     class Meta:
         model = Cart
-        fields = ('user', 'total_price', 'total_old_price', 'ordered_items', 'get_diffrences', 'count')
+        fields = ('user', 'total_price', 'total_old_price',
+                  'address', 'logistic_details', 'coupons',
+                  'ordered_items', 'count')
     
     def get_count(self, object):
         return object.items.count()

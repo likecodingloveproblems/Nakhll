@@ -29,6 +29,5 @@ class Migration(migrations.Migration):
                 'verbose_name': 'تنظیمات قیمت پستی',
                 'verbose_name_plural': 'تنظیمات قیمت پستی',
             },
-            bases=(models.Model, logistic.interfaces.PostPriceSettingInterface),
         ),
     ]

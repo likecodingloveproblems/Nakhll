@@ -12,13 +12,15 @@ from nakhll_market.interface import AlertInterface
 from nakhll_market.models import Category, Product, Shop
 from payoff.models import Transaction
 from payoff.interfaces import PaymentInterface
-from payoff.exceptions import NoAddressException, InvoiceExpiredException, \
-                InvalidInvoiceStatusException, NoItemValidation, OutOfPostRangeProductsException
+from payoff.exceptions import (
+                NoAddressException, InvoiceExpiredException,
+                InvalidInvoiceStatusException, NoItemException,
+                OutOfPostRangeProductsException
+            )
 from invoice.interfaces import AccountingInterface
 from invoice.managers import AccountingManager, InvoiceItemManager
-from logistic.models import Address, PostPriceSetting, ShopLogisticUnit
+from logistic.models import Address, ShopLogisticUnit
 from sms.services import Kavenegar
-from shop.models import ShopFeature
 
 logger = logging.getLogger(__name__)
 
@@ -82,9 +84,10 @@ class Invoice(models.Model, AccountingInterface):
 
     @property
     def logistic_errors(self):
-        post_setting, is_created = PostPriceSetting.objects.get_or_create()
-        out_of_range = post_setting.get_out_of_range_products(self)
-        return out_of_range
+        return ""
+        # post_setting, is_created = PostPriceSetting.objects.get_or_create()
+        # out_of_range = post_setting.get_out_of_range_products(self)
+        # return out_of_range
 
     @property
     def coupons_total_price(self):
@@ -105,7 +108,7 @@ class Invoice(models.Model, AccountingInterface):
     def send_to_payment(self, bank_port=Transaction.IPGTypes.PEC):
         self.__validate_items()
         self.__validate_address()
-        self.__validate_factor_status()
+        self.__validate_invoice_status()
         self.__validate_invoice_expiring_date()
         self.payment_unique_id = int(datetime.now().timestamp() * 1000000)
         self.payment_request_datetime = timezone.now()
@@ -114,21 +117,18 @@ class Invoice(models.Model, AccountingInterface):
 
     def __validate_items(self):
         if not self.items.count():
-            raise NoItemValidation()
+            raise NoItemException()
 
     def __validate_address(self):
-        if not self.address:
+        if not self.address_json:
             raise NoAddressException()
-        logistic_errors = self.logistic_errors
-        if logistic_errors:
-            raise OutOfPostRangeProductsException({'error': f'این محصولات خارج از محدوده ارسال شما هستند: {logistic_errors}'})
 
     def __validate_invoice_expiring_date(self):
         expire_datetime = self.created_datetime + timedelta(hours=settings.INVOICE_EXPIRING_HOURS)
         if expire_datetime < timezone.now():
             raise InvoiceExpiredException()
 
-    def __validate_factor_status(self):
+    def __validate_invoice_status(self):
         if self.status != self.Statuses.AWAIT_PAYMENT:
             raise InvalidInvoiceStatusException()
 
@@ -136,7 +136,7 @@ class Invoice(models.Model, AccountingInterface):
         ''' Payment is succeeded '''
         self.__reduce_inventory()
         self.__send_notifications()
-        self.__save_address_as_json()
+        # self.__save_address_as_json()
         self.status = self.Statuses.AWAIT_SHOP_APPROVAL
         self.payment_datetime = timezone.now()
         self.save()
@@ -147,11 +147,11 @@ class Invoice(models.Model, AccountingInterface):
         for item in items:
             item.product.reduce_stock(item.count)
             
-    def __save_address_as_json(self):
-        ''' Save invoice address as json to prevent address loss in case of editing'''
-        address_json = self.address.to_json() 
-        self.address_json = address_json
-        self.save()
+    # def __save_address_as_json(self):
+    #     ''' Save invoice address as json to prevent address loss in case of editing'''
+    #     address_json = self.address.to_json() 
+    #     self.address_json = address_json
+    #     self.save()
     
     def __send_notifications(self):
         ''' Send SMS to user and shop_owner and create alert for staff'''

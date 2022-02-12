@@ -110,9 +110,10 @@ class InvoiceViewSet(viewsets.GenericViewSet,
         serializer = InvoiceWriteSerializer(instance=invoice, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        lui = LogisticUnitInterface()
-        invoice.logistic_unit_details = lui.create_logistic_unit_list(invoice)
-        invoice.logistic_price = lui.total_post_price
+        lui = LogisticUnitInterface(invoice)
+        lui.generate_logistic_unit_list()
+        invoice.logistic_price = lui.total_price
+        invoice.logistic_unit_details = lui.as_dict()
         invoice.save()
         return Response(invoice.logistic_unit_details, status=status.HTTP_200_OK)
 

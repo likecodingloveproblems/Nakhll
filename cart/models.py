@@ -13,6 +13,7 @@ from rest_framework.exceptions import ValidationError
 from invoice.models import Invoice, InvoiceItem
 from cart.managers import CartItemManager, CartManager
 from cart.utils import get_user_or_guest
+from logistic.interfaces import LogisticUnitInterface
 from logistic.models import Address
 from nakhll_market.models import Shop, Product, ProductManager
 from nakhll_market.serializers import ProductLastStateSerializer
@@ -30,7 +31,7 @@ class Cart(models.Model):
     address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True,
             blank=True, related_name='invoices', verbose_name=_('آدرس'))
     logistic_details = models.JSONField(null=True, blank=True, encoder=DjangoJSONEncoder, verbose_name=_('جزئیات واحد ارسال'))
-    coupons = models.ManyToManyField('cart.Coupon', verbose_name=_('کوپن ها'), blank=True)
+    coupons = models.ManyToManyField('coupon.Coupon', verbose_name=_('کوپن ها'), blank=True)
     objects = CartManager()
 
     @property
@@ -86,32 +87,6 @@ class Cart(models.Model):
 
 
     @property
-    def get_diffrences(self):
-        ''' Compare current and latest state of products in the cart and show diffrences 
-        '''
-        # TODO: Check functionallity deeply
-        items = self.items.all()
-        diffs = {}
-        for item in items:
-            diff = self.__get_item_diffs(item.product, item.product_last_state)
-            if diff:
-                diffs[item.product_last_state.get('Title')] = diff
-        return diffs
-
-    @staticmethod
-    def __get_item_diffs(item, item_json):
-        diffs = []
-        if not item_json:
-            return []
-        for key in item_json:
-           old = item_json[key] 
-           new = getattr(item, key)
-           if old != new:
-               diffs.append({'prop': key, 'old': old, 'new': new})
-        return diffs
-
-
-    @property
     def ordered_items(self):
         ''' Return all cart items in order by shop'''
         return self.items.order_by('-product__FK_Shop')
@@ -121,7 +96,9 @@ class Cart(models.Model):
         ''' Convert cart to invoice '''
 
         # validations
-        logistic_details = self.get_logistic_details()
+        lui = LogisticUnitInterface(self)
+        lui.generate_logistic_unit_list()
+        logistic_details = lui.as_dict()
         coupons = self.get_coupons()
         self._validate_items()
 
@@ -132,11 +109,13 @@ class Cart(models.Model):
             invoice_price_with_discount=self.total_price,
             invoice_price_without_discount=self.total_old_price or self.total_price,
             total_weight_gram=self.cart_weight,
-            logistic_price=logistic_details.total_post_price,
-            logistic_details=logistic_details.as_dict(),
+            logistic_price=lui.total_price,
+            logistic_unit_details=logistic_details,
+            address_json=self.address.as_json(),
         )
 
         # set coupons
+        # TODO: test
         for coupon in coupons:
             coupon.apply(invoice)
 
@@ -146,11 +125,15 @@ class Cart(models.Model):
             item.convert_to_invoice_item(invoice)
 
         # clear cart
-        self.__clear_items()
+        # TODO: uncomment
+        # self.__clear_items()
         return invoice
 
     def __clear_items(self):
         self.items.all().delete()
+
+    def _validate_items(self):
+        return self.items.count() > 0
 
     def add_product(self, product):
         cart_item = CartItem.objects.filter(product=product, cart=self).first()
@@ -178,11 +161,14 @@ class Cart(models.Model):
         return cart_item
 
     @staticmethod
-    def get_active_cart(request):
+    def get_user_cart(request):
         user, guid = get_user_or_guest(request)
         active_cart = CartManager.user_active_cart(user, guid)
         return active_cart
 
+
+    def get_coupons(self):
+        return self.coupons.all()
 class CartItem(models.Model):
     class Meta:
         verbose_name = 'کالای سبد خرید'

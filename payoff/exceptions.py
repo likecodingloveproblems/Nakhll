@@ -1,7 +1,10 @@
+from django.utils.translation import gettext as _
 from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.exceptions import APIException
-class NoItemValidation(APIException):
+
+class NoItemException(APIException):
     """No item in invoice"""
+    default_detail = _('هیچ محصولی در این فاکتور وجود ندارد. لطفا مجددا سبد خرید خود را ایجاد کنید')
 
 class NoTransactionException(APIException):
     """

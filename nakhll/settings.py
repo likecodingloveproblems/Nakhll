@@ -143,7 +143,6 @@ ADMIN_REORDER = (
         'app': 'logistic',
         'models': (
             'logistic.Address',
-            'logistic.PostPriceSetting',
             'logistic.LogisticUnitGeneralSetting',
             'logistic.ShopLogisticUnit',
             'logistic.ShopLogisticUnitConstraint',
