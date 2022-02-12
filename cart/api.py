@@ -30,7 +30,7 @@ class UserCartViewSet(viewsets.GenericViewSet):
         return None
         
     @action(detail=False, methods=['GET'], name='View current user active cart')
-    def my(self, request):
+    def me(self, request):
         cart = self.get_object()
         serializer = self.get_serializer(cart)
         response = Response(serializer.data)
