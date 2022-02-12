@@ -32,7 +32,7 @@ class InvoiceAdmin(admin.ModelAdmin):
     ordering=['-created_datetime', ]
     search_fields = ('id', 'FactorNumber')
     fields = ('id', 'user', 'old_id', 'FactorNumber', 'status', 'display_address', 'invoice_price_with_discount', 
-                'invoice_price_without_discount', 'logistic_price', 'payment_request_datetime', 'payment_datetime',
+                'invoice_price_without_discount', 'logistic_price', 'payment_request_datetime', 'payment_datetime', 'logistic_unit_details',
                 'payment_unique_id', 'total_weight_gram', 'final_price', 'created_datetime_jalali', 'coupons_total_price')
         
     inlines = [InvoiceItemInline, CouponUsageInline]
