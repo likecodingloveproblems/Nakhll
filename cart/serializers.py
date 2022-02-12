@@ -18,7 +18,7 @@ class CartItemSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         cart = validated_data.pop('cart')
         product = validated_data.pop('product')
-        cart.add_product(product)
+        return cart.add_product(product)
         
 
 
