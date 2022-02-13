@@ -121,20 +121,19 @@ class UserMobile(View):
             data=queryset,
             )
 
-class ProductStats(View):
-
+class ProductStats(GroupRequiredMixin, View):
+    group_required = u"factor-stats"
     def get(self, request):
-        # TODO Factor is removed
         queryset = Product.objects\
-            .annotate(sell_count = Count('Factor_Product'))\
-            .annotate(sell_product_count=Sum('Factor_Product__ProductCount'))\
+            .annotate(sell_count = Count('invoice_items'))\
+            .annotate(sell_product_count=Sum('invoice_items__count'))\
             .values(
-                'Title', 'Slug', 'FK_SubMarket__Title', 'FK_Shop__Title', 
+                'Title', 'Slug', 'new_category__name', 'FK_Shop__Title', 
                 'FK_Shop__Slug', 'FK_Shop__State', 'FK_Shop__BigCity', 'FK_Shop__City',
                 'FK_Shop__Location', 'FK_Shop__Available', 'FK_Shop__Publish', 
-                'FK_Shop__CanselCount','FK_Shop__FK_ShopManager__username', 'sell_count',
+                'FK_Shop__FK_ShopManager__username', 'sell_count',
                 'sell_product_count', 'Price', 'OldPrice', 'DateCreate', 'DateUpdate',
-                'Inventory',
+                'Inventory', 'Net_Weight', 'Weight_With_Packing',
                 )
         
         return ExcelResponse(
@@ -142,7 +141,6 @@ class ProductStats(View):
         )
 
 class UserStats(View):
-
     def get (self , request):
         queryset =  Profile.objects\
             .annotate(shop_count=Count('FK_User__ShopManager'))\
