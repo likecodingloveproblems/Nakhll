@@ -129,8 +129,8 @@ class Pec(PaymentMethod):
             response = self.__send_confirmation_request(transaction_result)
             self.__create_transaction_confirmation(response, transaction_result)
             if response and self.__confirmation_response_is_valid(response):
-                self._complete_payment(transaction_result)
-                return {'status': self.SUCCESS_STATUS, 'code': transaction_result.order_id}
+                referrer_object = self._complete_payment(transaction_result)
+                return {'status': self.SUCCESS_STATUS, 'code': referrer_object.id}
             else:
                 AlertInterface.developer_alert(where='confirm_trans',
                                                 trans_id=transaction_result.transaction.id,
@@ -189,12 +189,13 @@ class Pec(PaymentMethod):
 
     def _complete_payment(self, transaction_result):
         ''' Send transaction_result to referrer model to finish purchase process'''
-        self.__complete_referrer_model(transaction_result)
-        return transaction_result
+        referrer_object = self.__complete_referrer_model(transaction_result)
+        return referrer_object
 
     def __complete_referrer_model(self, transaction_result):
         referrer_object = self.__get_referrer_object(transaction_result)
         referrer_object.complete_payment()
+        return referrer_object
 
     def __send_confirmation_request(self, transaction_result):
         ''' Validate payment '''
