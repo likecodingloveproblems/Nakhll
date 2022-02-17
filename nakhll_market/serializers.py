@@ -447,6 +447,11 @@ class SettingsProfileSerializer(serializers.ModelSerializer):
             'MobileNumber': {'validators': []}
         }
 
+    def validate_NationalCode(self, national_code):
+        if Profile.objects.filter(NationalCode=national_code).exists():
+            raise serializers.ValidationError('کد ملی وارد شده از قبل در سایت وجود دارد.')
+        return national_code
+
 class UserProfileSerializer(serializers.ModelSerializer):
     User_Profile = SettingsProfileSerializer(read_only=False)
     class Meta:
