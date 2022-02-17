@@ -447,11 +447,6 @@ class SettingsProfileSerializer(serializers.ModelSerializer):
             'MobileNumber': {'validators': []}
         }
 
-    def validate_NationalCode(self, national_code):
-        if Profile.objects.filter(NationalCode=national_code).exists():
-            raise serializers.ValidationError('کد ملی وارد شده از قبل در سایت وجود دارد.')
-        return national_code
-
 class UserProfileSerializer(serializers.ModelSerializer):
     User_Profile = SettingsProfileSerializer(read_only=False)
     class Meta:
@@ -481,6 +476,13 @@ class ShopAllSettingsSerializer(serializers.ModelSerializer):
             'bank_account', 'social_media', 'Description', 'FK_ShopManager',
         ]
         read_only_fields = ['Title', 'Slug', 'image_thumbnail_url']
+
+    
+    def validate(self, data):
+        national_code = data['FK_ShopManager']['User_Profile']['NationalCode']
+        if Profile.objects.filter(NationalCode=national_code).exists():
+            raise serializers.ValidationError({'errors': 'کد ملی وارد شده از قبل در سایت وجود دارد.'})
+        return national_code
 
     def update(self, instance, validated_data):
         profile = instance.FK_ShopManager.User_Profile
