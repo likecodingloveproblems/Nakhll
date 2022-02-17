@@ -4,9 +4,10 @@ import pandas as pd
 from django.shortcuts import get_object_or_404
 from django.http import response
 from django.http.response import Http404
-from django.db.models import Q, F, Count
+from django.db.models import Q, F, Count, Value, BooleanField
 from django.db.models.aggregates import Sum
 from django.db.models.expressions import Case, When
+from django.db.models.functions import Cast
 from django.contrib.auth.models import User
 from django.utils.text import slugify
 from rest_framework import generics, routers, status, views, viewsets
@@ -234,11 +235,17 @@ class ProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     ordering_fields = ('Title', 'Price', 'DiscountPrecentage', 'DateCreate', )
 
     def get_queryset(self):
-        return Product.objects.select_related('FK_Shop').filter(
+        return Product.objects.select_related('FK_Shop').annotate(
+            is_available=Cast(Case(
+                When(Q(FK_Shop__Publish=True) & Q(FK_Shop__Available=True) &
+                     Q(Publish=True) & Q(Available=True) & Q(Inventory__gt=0),
+                     then=Value(True)),
+                default=Value(False)), output_field=BooleanField())
+        ).filter(
             Q(Publish=True), ~Q(FK_Shop=None)).annotate(DiscountPrecentage=Case(
             When(OldPrice__gt=0, then=(
                 (F('OldPrice') - F('Price')) * 100 / F('OldPrice'))
-            ), default=0)).order_by('-new_category_id')
+        ), default=0)).order_by('-is_available', '-new_category_id')
 
 
 
