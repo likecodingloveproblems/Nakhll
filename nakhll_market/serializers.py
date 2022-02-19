@@ -482,7 +482,7 @@ class ShopAllSettingsSerializer(serializers.ModelSerializer):
         national_code = data['FK_ShopManager']['User_Profile']['NationalCode']
         if Profile.objects.filter(NationalCode=national_code).exists():
             raise serializers.ValidationError({'errors': 'کد ملی وارد شده از قبل در سایت وجود دارد.'})
-        return national_code
+        return data
 
     def update(self, instance, validated_data):
         profile = instance.FK_ShopManager.User_Profile
