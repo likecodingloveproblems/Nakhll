@@ -1,5 +1,3 @@
-import os
-from django.core import serializers
 from django.db import models
 from django.db.models.aggregates import Sum
 from django.db.models.lookups import EndsWith
@@ -10,6 +8,7 @@ from django.contrib.sessions.models import Session
 from django.db.models.functions import Cast
 from django.core.serializers.json import DjangoJSONEncoder
 from rest_framework.exceptions import ValidationError
+from coupon.serializers import CouponSerializer
 from invoice.models import Invoice, InvoiceItem
 from cart.managers import CartItemManager, CartManager
 from cart.utils import get_user_or_guest
@@ -17,6 +16,7 @@ from logistic.interfaces import LogisticUnitInterface
 from logistic.models import Address
 from nakhll_market.models import Shop, Product, ProductManager
 from nakhll_market.serializers import ProductLastStateSerializer
+from payoff.exceptions import NoItemException
 
 
 class Cart(models.Model):
@@ -45,7 +45,15 @@ class Cart(models.Model):
         return sum(discounts)
 
     @property
-    def total_old_price(self):
+    def cart_price(self):
+        prices = []
+        for item in self.items.all():
+            price = item.product.Price 
+            prices.append(price * item.count)
+        return sum(prices)
+
+    @property
+    def cart_old_price(self):
         old_prices= []
         for item in self.items.all():
             price = item.product.Price 
@@ -64,26 +72,19 @@ class Cart(models.Model):
         return Product.objects.filter(ID__in=product_ids)
 
     @property
+    def logistic_price(self):
+        return self.logistic_details.get('total_price', 0) if self.logistic_details else 0
+
+    @property
     def cart_weight(self):
         return self.items.aggregate(tw=Sum(Cast(
             'product__Weight_With_Packing', output_field=models.IntegerField()
             )))['tw'] or 0
-        # total_weight = 0
-        # for item in self.items.all():
-        #     try:
-        #         product_weight = int(item.product.Weight_With_Packing)
-        #     except:
-        #         product_weight = 0
-        #     total_weight += product_weight
-        # return total_weight
 
     @property
     def total_price(self):
-        prices = []
-        for item in self.items.all():
-            price = item.product.Price 
-            prices.append(price * item.count)
-        return sum(prices)
+        total_coupon_price = sum([coupon['price'] for coupon in self.get_coupons_price()])
+        return self.cart_price + self.logistic_price - total_coupon_price
 
 
     @property
@@ -94,46 +95,41 @@ class Cart(models.Model):
 
     def convert_to_invoice(self):
         ''' Convert cart to invoice '''
-
-        # validations
-        lui = LogisticUnitInterface(self)
-        lui.generate_logistic_unit_list()
-        logistic_details = lui.as_dict()
-        coupons = self.get_coupons()
+        logistic_details = self._generate_logistic_details()
+        self._validate_coupons()
         self._validate_items()
+        invoice = self._create_invoice(logistic_details)
+        self._clear_cart_items()
+        return invoice
 
-        # create invoice
+
+    def _create_invoice(self, lud):
         invoice = Invoice.objects.create(
             user=self.user,
             created_datetime=timezone.now(),
-            invoice_price_with_discount=self.total_price,
-            invoice_price_without_discount=self.total_old_price or self.total_price,
+            invoice_price_with_discount=self.cart_price,
+            invoice_price_without_discount=self.cart_old_price,
             total_weight_gram=self.cart_weight,
-            logistic_price=lui.total_price,
-            logistic_unit_details=logistic_details,
+            logistic_price=lud.total_price,
+            logistic_unit_details=lud.as_dict(),
             address_json=self.address.as_json(),
         )
 
-        # set coupons
-        # TODO: test
-        for coupon in coupons:
+        for coupon in self.coupons.all():
             coupon.apply(invoice)
 
-        # convert items
         cart_items = self.items.all()
         for item in cart_items:
             item.convert_to_invoice_item(invoice)
-
-        # clear cart
-        # TODO: uncomment
-        # self.__clear_items()
+        
         return invoice
 
-    def __clear_items(self):
+    def _clear_cart_items(self):
         self.items.all().delete()
 
     def _validate_items(self):
-        return self.items.count() > 0
+        if self.items.count() < 1:
+            raise NoItemException
 
     def add_product(self, product):
         cart_item = CartItem.objects.filter(product=product, cart=self).first()
@@ -166,9 +162,36 @@ class Cart(models.Model):
         active_cart = CartManager.user_active_cart(user, guid)
         return active_cart
 
+    def get_coupon_errors(self):
+        errors = []
+        for coupon in self.coupons.all():
+            if coupon.is_valid(self):
+                continue
+            errors.extend(coupon.errors)
+        return errors
+        
+    def get_coupons_price(self):
+        result = []
+        for coupon in self.coupons.all():
+            price = coupon.calculate_coupon_price()
+            result.append({
+                'coupon': CouponSerializer(coupon).data,
+                'price': price
+            })
+        return result
+        
+    
+    def _generate_logistic_details(self):
+        lui = LogisticUnitInterface(self)
+        lui.generate_logistic_unit_list()
+        return lui
 
-    def get_coupons(self):
-        return self.coupons.all()
+    def _validate_coupons(self):
+        errors = self.get_coupon_errors()
+        if errors:
+            raise errors    
+        
+
 class CartItem(models.Model):
     class Meta:
         verbose_name = 'کالای سبد خرید'

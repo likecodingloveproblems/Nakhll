@@ -1,7 +1,9 @@
 from rest_framework import serializers
 from cart.models import Cart, CartItem
 from coupon.models import Coupon
+from coupon.serializers import CouponSerializer
 from logistic.models import Address
+from logistic.serializers import AddressSerializer
 from nakhll_market.models import Product
 from nakhll_market.serializers import ProductSerializer
 
@@ -45,19 +47,28 @@ class CartItemReadSerializer(serializers.ModelSerializer):
 class CartSerializer(serializers.ModelSerializer):
     ordered_items = CartItemReadSerializer(many=True, read_only=True)
     count = serializers.SerializerMethodField()
+    address = AddressSerializer(read_only=True)
+    coupon_details = serializers.SerializerMethodField()
     class Meta:
         model = Cart
-        fields = ('user', 'total_price', 'total_old_price',
-                  'address', 'logistic_details', 'coupons',
-                  'ordered_items', 'count')
+        fields = ('user', 'cart_price', 'cart_old_price',
+                  'address', 'logistic_details', 'coupon_details',
+                  'ordered_items', 'count', 'total_price')
     
     def get_count(self, object):
         return object.items.count()
 
+    def get_coupon_details(self, cart):
+        coupons = cart.get_coupons_price()
+        total_price = sum([coupon['price'] for coupon in coupons])
+        return {'total': total_price, 'coupons': coupons}
+
 
 class CartWriteSerializer(serializers.ModelSerializer):
     address = serializers.PrimaryKeyRelatedField(queryset=Address.objects.all(), required=False)
-    coupon = serializers.SlugRelatedField(slug_field='code', queryset=Coupon.objects.all(), required=False)
+    coupon = serializers.SlugRelatedField(slug_field='code', error_messages={
+        'does_not_exist': 'کوپن تخفیف وارد شده نامعتبر است',
+    }, required=False, queryset=Coupon.objects.all())
 
     class Meta:
         model = Cart

@@ -176,6 +176,9 @@ class Pec(PaymentMethod):
         try:
             transaction_result.save()
         except Exception as e:
+            # There may be a TransactionResult.objects.get(transaction=transaction) which cause integrity error
+            # This may occure when the response is sent twice from Pec gateway
+            # We simply send an alert to Discord and continue,
             AlertInterface.developer_alert(where='link_to_trans', trans_res_id=transaction_result.id, error=str(e))
         return transaction_result
 
@@ -189,10 +192,6 @@ class Pec(PaymentMethod):
 
     def _complete_payment(self, transaction_result):
         ''' Send transaction_result to referrer model to finish purchase process'''
-        referrer_object = self.__complete_referrer_model(transaction_result)
-        return referrer_object
-
-    def __complete_referrer_model(self, transaction_result):
         referrer_object = self.__get_referrer_object(transaction_result)
         referrer_object.complete_payment()
         return referrer_object

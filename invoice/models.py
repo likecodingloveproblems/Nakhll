@@ -8,6 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth.models import User
+from cart.managers import CartManager
 from nakhll_market.interface import AlertInterface
 from nakhll_market.models import Category, Product, Shop
 from payoff.models import Transaction
@@ -134,26 +135,19 @@ class Invoice(models.Model, AccountingInterface):
 
     def complete_payment(self):
         ''' Payment is succeeded '''
-        self.__reduce_inventory()
-        self.__send_notifications()
-        # self.__save_address_as_json()
+        self._reduce_inventory()
+        self._send_notifications()
         self.status = self.Statuses.AWAIT_SHOP_APPROVAL
         self.payment_datetime = timezone.now()
         self.save()
-
-    def __reduce_inventory(self):
+         
+    def _reduce_inventory(self):
         ''' Reduce bought items from shops stock '''
         items = self.items.all()
         for item in items:
             item.product.reduce_stock(item.count)
-            
-    # def __save_address_as_json(self):
-    #     ''' Save invoice address as json to prevent address loss in case of editing'''
-    #     address_json = self.address.to_json() 
-    #     self.address_json = address_json
-    #     self.save()
-    
-    def __send_notifications(self):
+   
+    def _send_notifications(self):
         ''' Send SMS to user and shop_owner and create alert for staff'''
         shop_owner_mobiles = self.items.all().values_list(
             'product__FK_Shop__FK_ShopManager__User_Profile__MobileNumber', flat=True).distinct()
@@ -165,6 +159,7 @@ class Invoice(models.Model, AccountingInterface):
     def revert_payment(self):
         ''' Payment is failed'''
         self.unset_coupons()
+        self.fill_cart()
         self.status = self.Statuses.AWAIT_PAYMENT
         self.save()
 
@@ -183,7 +178,10 @@ class Invoice(models.Model, AccountingInterface):
             ~Q(logistic_unit__logistic_unit_constraints__constraint__cities=self.address.city),
         ).distinct()
 
-
+    def fill_cart(self):
+        cart = CartManager.user_active_cart(self.user)
+        for item in self.items.all():
+            cart.add_product(item.product)
 
 class InvoiceItem(models.Model):
     class Meta:

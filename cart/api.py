@@ -81,6 +81,7 @@ class UserCartViewSet(viewsets.GenericViewSet):
         coupon = serializer.validated_data.get('coupon')
         if coupon.is_valid(cart):
             serializer.save()
+            cart.coupons.add(coupon)
         return Response({'coupon': coupon.code, 'result': coupon.final_price, 'errors': coupon.errors}, status=status.HTTP_200_OK)
 
     @action(methods=['PATCH'], detail=False)
@@ -91,8 +92,8 @@ class UserCartViewSet(viewsets.GenericViewSet):
         serializer.is_valid(raise_exception=True)
         coupon = serializer.validated_data.get('coupon')
         if coupon not in cart.coupons.all():
-            return Response({'result': 'چنین کوپنی برای این سبد خرید ثبت نشده است'}, status=status.HTTP_400_BAD_REQUEST)
-        cart.coupons.delete(coupon)
+            return Response({'coupon': 'کوپن تخفیف وارد شده نامعتبر است'}, status=status.HTTP_400_BAD_REQUEST)
+        cart.coupons.remove(coupon)
         serializer.save()
         return Response({'result': 0}, status=status.HTTP_200_OK)
 
@@ -101,8 +102,8 @@ class UserCartViewSet(viewsets.GenericViewSet):
     def pay(self, request):
         ''' Convert cart to invoice and send to payment app '''
         cart = self.get_object()
-        invoice = cart.convert_to_invoice()
         try:
+            invoice = cart.convert_to_invoice()
             return invoice.send_to_payment()
         except NoItemException:
             return Response({'error': 'سبد خرید شما خالی است. لطفا سبد خرید خود را تکمیل کنید'}, status=status.HTTP_400_BAD_REQUEST)
@@ -112,8 +113,6 @@ class UserCartViewSet(viewsets.GenericViewSet):
             return Response({'error': 'فاکتور منقضی شده است'}, status=status.HTTP_400_BAD_REQUEST)
         except InvalidInvoiceStatusException:
             return Response({'error': 'فاکتور در حال حاضر قابل پرداخت نیست'}, status=status.HTTP_400_BAD_REQUEST)
-        except OutOfPostRangeProductsException as ex:
-            return Response({'error': f'این محصولات خارج از محدوده ارسال شما هستند: {ex}'}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
             return Response({'error': str(ex)}, status=status.HTTP_400_BAD_REQUEST)
 
