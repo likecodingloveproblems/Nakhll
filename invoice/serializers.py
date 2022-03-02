@@ -1,5 +1,6 @@
 from django.utils.timezone import localtime
 import jdatetime
+import json
 from rest_framework import serializers
 from .models import Invoice, InvoiceItem
 from cart.models import Cart
@@ -20,19 +21,36 @@ class InvoiceItemSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
     image_thumbnail = serializers.SerializerMethodField()
     shop_slug = serializers.SerializerMethodField()
+
     class Meta:
         model = InvoiceItem
-        fields = ['id', 'product', 'slug', 'name', 'count', 'price_with_discount', 'weight',
-                    'price_without_discount',  'barcode', 'image', 'image_thumbnail', 'shop_slug',
-                    'shop_name', 'added_date_jalali', 'added_time_jalali', 'buyer', 'status']
+        fields = [
+            'id',
+            'product',
+            'slug',
+            'name',
+            'count',
+            'price_with_discount',
+            'weight',
+            'price_without_discount',
+            'barcode',
+            'image',
+            'image_thumbnail',
+            'shop_slug',
+            'shop_name',
+            'added_date_jalali',
+            'added_time_jalali',
+            'buyer',
+            'status']
 
-            
     def get_added_date_jalali(self, obj):
-        jalali_datetime = jdatetime.datetime.fromgregorian(datetime=obj.added_datetime, locale='fa_IR')
+        jalali_datetime = jdatetime.datetime.fromgregorian(
+            datetime=obj.added_datetime, locale='fa_IR')
         return jalali_datetime.strftime('%Y/%m/%d')
-        
+
     def get_added_time_jalali(self, obj):
-        jalali_datetime = jdatetime.datetime.fromgregorian(datetime=obj.added_datetime, locale='fa_IR')
+        jalali_datetime = jdatetime.datetime.fromgregorian(
+            datetime=obj.added_datetime, locale='fa_IR')
         return jalali_datetime.strftime('%H:%M')
 
     def get_buyer(self, obj):
@@ -51,9 +69,14 @@ class InvoiceItemSerializer(serializers.ModelSerializer):
     def get_shop_slug(self, obj):
         return obj.product.shop.slug
 
+
 class InvoiceWriteSerializer(serializers.ModelSerializer):
-    address = serializers.PrimaryKeyRelatedField(queryset=Address.objects.all(), required=False)
-    coupon = serializers.SlugRelatedField(slug_field='code', queryset=Coupon.objects.all(), required=False)
+    address = serializers.PrimaryKeyRelatedField(
+        queryset=Address.objects.all(), required=False)
+    coupon = serializers.SlugRelatedField(
+        slug_field='code',
+        queryset=Coupon.objects.all(),
+        required=False)
 
     class Meta:
         model = Invoice
@@ -73,20 +96,27 @@ class InvoiceRetrieveSerializer(serializers.ModelSerializer):
     created_date_jalali = serializers.SerializerMethodField()
 
     def get_receiver_mobile_number(self, obj):
-        if obj.address:
-            return obj.address.receiver_mobile_number
+        if obj.address_json:
+            address = json.loads(obj.address_json)
+            return address.get('receiver_mobile_number')
         return None
+
     def get_created_date_jalali(self, obj):
-        jalali_datetime = jdatetime.datetime.fromgregorian(datetime=obj.created_datetime, locale='fa_IR')
+        jalali_datetime = jdatetime.datetime.fromgregorian(
+            datetime=obj.created_datetime, locale='fa_IR')
         return jalali_datetime.strftime('%Y/%m/%d')
+
     def get_created_time_jalali(self, obj):
         time = obj.created_datetime
         time = localtime(obj.created_datetime)
-        jalali_datetime = jdatetime.datetime.fromgregorian(datetime=time, locale='fa_IR')
+        jalali_datetime = jdatetime.datetime.fromgregorian(
+            datetime=time, locale='fa_IR')
         return jalali_datetime.strftime('%H:%M')
+
     def get_invoie_items(self, obj):
         items = obj.items.order_by('product__FK_Shop')
         return InvoiceItemSerializer(items, many=True, read_only=True).data
+
     class Meta:
         model = Invoice
         fields = (
@@ -113,8 +143,6 @@ class InvoiceRetrieveSerializer(serializers.ModelSerializer):
         )
 
 
-
-
 class InvoiceProviderRetrieveSerializer(serializers.ModelSerializer):
     address = AddressSerializer(many=False, read_only=True)
     coupon_usages = CouponUsageSerializer(read_only=True, many=True)
@@ -135,23 +163,26 @@ class InvoiceProviderRetrieveSerializer(serializers.ModelSerializer):
             total += price
         return total
 
-
     def get_receiver_mobile_number(self, obj):
-        if obj.address:
-            return obj.address.receiver_mobile_number
+        if obj.address_json:
+            address = json.loads(obj.address_json)
+            return address.get('receiver_mobile_number')
         return None
 
     def get_created_date_jalali(self, obj):
-        jalali_datetime = jdatetime.datetime.fromgregorian(datetime=obj.created_datetime, locale='fa_IR')
+        jalali_datetime = jdatetime.datetime.fromgregorian(
+            datetime=obj.created_datetime, locale='fa_IR')
         return jalali_datetime.strftime('%Y/%m/%d')
 
     def get_created_time_jalali(self, obj):
-        jalali_datetime = jdatetime.datetime.fromgregorian(datetime=obj.created_datetime, locale='fa_IR')
+        jalali_datetime = jdatetime.datetime.fromgregorian(
+            datetime=obj.created_datetime, locale='fa_IR')
         return jalali_datetime.strftime('%H:%M')
 
     def get_invoie_items(self, obj):
         user = self.context.get('request').user
-        items = obj.items.filter(product__FK_Shop__FK_ShopManager=user).order_by('product__FK_Shop')
+        items = obj.items.filter(
+            product__FK_Shop__FK_ShopManager=user).order_by('product__FK_Shop')
         return InvoiceItemSerializer(items, many=True, read_only=True).data
 
     def get_invoice_price_with_discount(self, obj):
@@ -194,6 +225,7 @@ class InvoiceProviderRetrieveSerializer(serializers.ModelSerializer):
             'receiver_mobile_number',
             'logistic_unit_details',
         )
+
 
 class BarcodeSerializer(serializers.ModelSerializer):
     class Meta:
