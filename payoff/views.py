@@ -52,5 +52,5 @@ def test_pec_callback(request):
 
     code = result.get('code')
     if result.get('status') == Pec.SUCCESS_STATUS:
-        return redirect(f'{domain}/payment/success/data?code={code}')
-    return redirect(f'{domain}/payment/failure/data?code={code}')
+        return redirect(f'{domain}/cart/payment/success/data?code={code}')
+    return redirect(f'{domain}/cart/payment/failure/data?code={code}')
