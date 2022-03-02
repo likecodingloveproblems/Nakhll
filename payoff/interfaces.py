@@ -11,7 +11,7 @@ class PaymentInterface:
         data = {
             'referrer_model': invoice._meta.model.__name__,
             'referrer_app': invoice._meta.app_label,
-            'amount': invoice.final_price,
+            'amount': int(invoice.final_price),
             'order_number': str(invoice.payment_unique_id),
             'description': _('Invoice %s') % invoice.id,
             'ipg': bank_port,
