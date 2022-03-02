@@ -1,13 +1,24 @@
-import jdatetime, json
+import jdatetime
+import json
 from django.contrib import admin
 from django.utils.timezone import localtime
 from invoice.models import Invoice, InvoiceItem
 from coupon.models import CouponUsage
 
 # Register your models here.
+
+
 class InvoiceItemInline(admin.TabularInline):
     model = InvoiceItem
-    fields = ('name', 'count', 'price_with_discount', 'price_without_discount', 'weight', 'shop_name', 'preperation', 'barcode')
+    fields = (
+        'name',
+        'count',
+        'price_with_discount',
+        'price_without_discount',
+        'weight',
+        'shop_name',
+        'preperation',
+        'barcode')
     readonly_fields = ('preperation',)
     extra = 0
     # readonly_fields = fields
@@ -16,25 +27,66 @@ class InvoiceItemInline(admin.TabularInline):
         return obj.product.PreparationDays
     preperation.short_description = 'زمان آماده سازی'
 
+
 class CouponUsageInline(admin.TabularInline):
     model = CouponUsage
     extra = 0
     fields = ('coupon', 'price_applied', )
     # readonly_fields = ('coupon', 'used_count', 'used_at', )
 
+
 @admin.register(Invoice)
 class InvoiceAdmin(admin.ModelAdmin):
-    list_display=('id', 'user', 'status',  'final_price', 'post_price', 'coupons_total_price',
-                    'receiver_mobile_number', 'receiver_full_name', 'created_datetime_jalali', 'post_tracking_code', )
-    list_filter=('status','user',)
-    readonly_fields = ('id','final_price', 'post_price', 'coupons_total_price', 'display_address',
-                'receiver_mobile_number', 'receiver_full_name', 'created_datetime_jalali', 'post_tracking_code',)
-    ordering=['-created_datetime', ]
+    list_display = (
+        'id',
+        'user',
+        'status',
+        'final_price',
+        'post_price',
+        'coupons_total_price',
+        'receiver_mobile_number',
+        'receiver_full_name',
+        'created_datetime_jalali',
+        'post_tracking_code',
+        'payment_status',
+    )
+    list_filter = ('status', 'user',)
+    readonly_fields = (
+        'id',
+        'final_price',
+        'post_price',
+        'coupons_total_price',
+        'display_address',
+        'receiver_mobile_number',
+        'receiver_full_name',
+        'created_datetime_jalali',
+        'post_tracking_code',
+        'shop_iban',
+        'payment_status',
+    )
+    ordering = ['-created_datetime', ]
     search_fields = ('id', 'FactorNumber')
-    fields = ('id', 'user', 'old_id', 'FactorNumber', 'status', 'display_address', 'invoice_price_with_discount', 
-                'invoice_price_without_discount', 'logistic_price', 'payment_request_datetime', 'payment_datetime', 'logistic_unit_details',
-                'payment_unique_id', 'total_weight_gram', 'final_price', 'created_datetime_jalali', 'coupons_total_price')
-        
+    fields = (
+        'id',
+        'user',
+        'old_id',
+        'FactorNumber',
+        'status',
+        'display_address',
+        'invoice_price_with_discount',
+        'invoice_price_without_discount',
+        'logistic_price',
+        'payment_request_datetime',
+        'payment_datetime',
+        'logistic_unit_details',
+        'payment_unique_id',
+        'total_weight_gram',
+        'final_price',
+        'shop_iban',
+        'payment_status',
+        'created_datetime_jalali',
+        'coupons_total_price')
+
     inlines = [InvoiceItemInline, CouponUsageInline]
 
     def receiver_mobile_number(self, obj):
@@ -55,8 +107,21 @@ class InvoiceAdmin(admin.ModelAdmin):
     def created_datetime_jalali(self, obj):
         localtime_time = localtime(obj.created_datetime)
         return jdatetime.datetime.fromgregorian(
-                datetime=localtime_time).strftime('%Y/%m/%d %H:%M:%S')
+            datetime=localtime_time).strftime('%Y/%m/%d %H:%M:%S')
     created_datetime_jalali.short_description = 'تاریخ ثبت'
+
+    def shop_iban(self, obj):
+        text = ''
+        for shop in obj.shops.all():
+            text += f'{shop.Title}: {shop.bank_account.iban}\n'
+        return text
+    shop_iban.short_description = 'شماره حساب'
+
+    def payment_status(self, obj: Invoice):
+        if obj.status == obj.Statuses.AWAIT_PAYMENT:
+            return 'پرداخت نشده'
+        return 'پرداخت شده'
+    payment_status.short_description = 'وضعیت پرداخت'
 
     def final_price(self, obj):
         return f'{obj.final_price:,} ریال'
