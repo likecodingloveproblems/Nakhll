@@ -1,5 +1,3 @@
-import os
-from django.core import serializers
 from django.db import models
 from django.db.models.aggregates import Sum
 from django.db.models.lookups import EndsWith
@@ -10,11 +8,15 @@ from django.contrib.sessions.models import Session
 from django.db.models.functions import Cast
 from django.core.serializers.json import DjangoJSONEncoder
 from rest_framework.exceptions import ValidationError
-from accounting_new.models import Invoice, InvoiceItem
+from coupon.serializers import CouponSerializer
+from invoice.models import Invoice, InvoiceItem
 from cart.managers import CartItemManager, CartManager
 from cart.utils import get_user_or_guest
+from logistic.interfaces import LogisticUnitInterface
+from logistic.models import Address
 from nakhll_market.models import Shop, Product, ProductManager
 from nakhll_market.serializers import ProductLastStateSerializer
+from payoff.exceptions import NoItemException
 
 
 class Cart(models.Model):
@@ -26,6 +28,10 @@ class Cart(models.Model):
     user = models.OneToOneField(User, verbose_name=_('کاربر'), on_delete=models.CASCADE, related_name='cart', null=True)
     guest_unique_id = models.CharField(_('شناسه کاربر مهمان'), max_length=100, null=True, blank=True)
     extra_data = models.JSONField(null=True, encoder=DjangoJSONEncoder)
+    address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True,
+            blank=True, related_name='invoices', verbose_name=_('آدرس'))
+    logistic_details = models.JSONField(null=True, blank=True, encoder=DjangoJSONEncoder, verbose_name=_('جزئیات واحد ارسال'))
+    coupons = models.ManyToManyField('coupon.Coupon', verbose_name=_('کوپن ها'), blank=True)
     objects = CartManager()
 
     @property
@@ -39,7 +45,15 @@ class Cart(models.Model):
         return sum(discounts)
 
     @property
-    def total_old_price(self):
+    def cart_price(self):
+        prices = []
+        for item in self.items.all():
+            price = item.product.Price 
+            prices.append(price * item.count)
+        return sum(prices)
+
+    @property
+    def cart_old_price(self):
         old_prices= []
         for item in self.items.all():
             price = item.product.Price 
@@ -58,52 +72,19 @@ class Cart(models.Model):
         return Product.objects.filter(ID__in=product_ids)
 
     @property
+    def logistic_price(self):
+        return self.logistic_details.get('total_price', 0) if self.logistic_details else 0
+
+    @property
     def cart_weight(self):
         return self.items.aggregate(tw=Sum(Cast(
             'product__Weight_With_Packing', output_field=models.IntegerField()
             )))['tw'] or 0
-        # total_weight = 0
-        # for item in self.items.all():
-        #     try:
-        #         product_weight = int(item.product.Weight_With_Packing)
-        #     except:
-        #         product_weight = 0
-        #     total_weight += product_weight
-        # return total_weight
 
     @property
     def total_price(self):
-        prices = []
-        for item in self.items.all():
-            price = item.product.Price 
-            prices.append(price * item.count)
-        return sum(prices)
-
-
-    @property
-    def get_diffrences(self):
-        ''' Compare current and latest state of products in the cart and show diffrences 
-        '''
-        # TODO: Check functionallity deeply
-        items = self.items.all()
-        diffs = {}
-        for item in items:
-            diff = self.__get_item_diffs(item.product, item.product_last_state)
-            if diff:
-                diffs[item.product_last_state.get('Title')] = diff
-        return diffs
-
-    @staticmethod
-    def __get_item_diffs(item, item_json):
-        diffs = []
-        if not item_json:
-            return []
-        for key in item_json:
-           old = item_json[key] 
-           new = getattr(item, key)
-           if old != new:
-               diffs.append({'prop': key, 'old': old, 'new': new})
-        return diffs
+        total_coupon_price = sum([coupon['price'] for coupon in self.get_coupons_price()])
+        return self.cart_price + self.logistic_price - total_coupon_price
 
 
     @property
@@ -114,22 +95,41 @@ class Cart(models.Model):
 
     def convert_to_invoice(self):
         ''' Convert cart to invoice '''
+        logistic_details = self._generate_logistic_details()
+        self._validate_coupons()
+        self._validate_items()
+        invoice = self._create_invoice(logistic_details)
+        self._clear_cart_items()
+        return invoice
+
+
+    def _create_invoice(self, lud):
         invoice = Invoice.objects.create(
             user=self.user,
             created_datetime=timezone.now(),
-            invoice_price_with_discount=self.total_price,
-            invoice_price_without_discount=self.total_old_price or self.total_price,
+            invoice_price_with_discount=self.cart_price,
+            invoice_price_without_discount=self.cart_old_price,
             total_weight_gram=self.cart_weight,
-            logistic_price=0,
+            logistic_price=lud.total_price,
+            logistic_unit_details=lud.as_dict(),
+            address_json=self.address.as_json(),
         )
+
+        for coupon in self.coupons.all():
+            coupon.apply(invoice)
+
         cart_items = self.items.all()
         for item in cart_items:
             item.convert_to_invoice_item(invoice)
-        self.__clear_items()
+        
         return invoice
 
-    def __clear_items(self):
+    def _clear_cart_items(self):
         self.items.all().delete()
+
+    def _validate_items(self):
+        if self.items.count() < 1:
+            raise NoItemException
 
     def add_product(self, product):
         cart_item = CartItem.objects.filter(product=product, cart=self).first()
@@ -157,10 +157,40 @@ class Cart(models.Model):
         return cart_item
 
     @staticmethod
-    def get_active_cart(request):
+    def get_user_cart(request):
         user, guid = get_user_or_guest(request)
         active_cart = CartManager.user_active_cart(user, guid)
         return active_cart
+
+    def get_coupon_errors(self):
+        errors = []
+        for coupon in self.coupons.all():
+            if coupon.is_valid(self):
+                continue
+            errors.extend(coupon.errors)
+        return errors
+        
+    def get_coupons_price(self):
+        result = []
+        for coupon in self.coupons.all():
+            price = coupon.calculate_coupon_price()
+            result.append({
+                'coupon': CouponSerializer(coupon).data,
+                'price': price
+            })
+        return result
+        
+    
+    def _generate_logistic_details(self):
+        lui = LogisticUnitInterface(self)
+        lui.generate_logistic_unit_list()
+        return lui
+
+    def _validate_coupons(self):
+        errors = self.get_coupon_errors()
+        if errors:
+            raise errors    
+        
 
 class CartItem(models.Model):
     class Meta:

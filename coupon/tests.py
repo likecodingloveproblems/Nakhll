@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from django.utils.timezone import make_aware
 from coupon.models import Coupon, CouponConstraint, CouponUsage
-from accounting_new.models import Invoice, InvoiceItem
+from invoice.models import Invoice, InvoiceItem
 from nakhll_market.models import Product, Shop
 
 

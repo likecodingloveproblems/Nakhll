@@ -1,4 +1,5 @@
 import enum
+import json
 from urllib.parse import urljoin
 from django.conf import settings
 from django.utils.timezone import localtime
@@ -94,8 +95,10 @@ class DiscordAlertInterface:
 
     @staticmethod
     def build_message(invoice):
-        name = invoice.address.receiver_full_name
-        phone = invoice.address.receiver_mobile_number
+        address = json.loads(invoice.address_json)
+        name = address['receiver_full_name']
+        phone = address['receiver_mobile_number']
+
         dt = localtime(invoice.payment_datetime)
         datetime = jdatetime.datetime.fromgregorian(datetime=dt).strftime('%Y/%m/%d %H:%M:%S')
         message = '```'
@@ -125,7 +128,7 @@ class DiscordAlertInterface:
             icon_url=product.FK_Shop.Image_thumbnail_url(),
         )
         embed.add_embed_field(name='نام', value=product.Title, inline=True)
-        embed.add_embed_field(name='دسته بندی', value=product.new_category.name, inline=True)
+        embed.add_embed_field(name='دسته بندی', value=product.category.name, inline=True)
         embed.add_embed_field(name='قیمت', value='{:,} ریال'.format(product.Price), inline=True)
         embed.add_embed_field(name='قیمت با تخفیف', value='{:,} ریال'.format(product.OldPrice), inline=True)
         embed.add_embed_field(name='وزن خالص', value=product.Net_Weight, inline=True)

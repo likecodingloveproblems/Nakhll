@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('nakhll_market', '0106_auto_20210806_1748'),
-        ('accounting_new', '0002_remove_invoice_coupon'),
+        ('invoice', '0002_remove_invoice_coupon'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('coupon', '0003_auto_20210821_1540'),
     ]
@@ -95,7 +95,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='couponusage',
             name='invoice',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, related_name='coupon_usages', to='accounting_new.invoice', verbose_name='سفارش'),
+            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, related_name='coupon_usages', to='invoice.invoice', verbose_name='سفارش'),
             preserve_default=False,
         ),
         migrations.AlterField(

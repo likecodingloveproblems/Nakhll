@@ -9,8 +9,8 @@ from rest_framework import permissions
 from nakhll_market.models import  BigCity, City, Product, Shop, Alert, State, DashboardBanner
 from nakhll_market.permissions import IsInvoiceProvider
 from nakhll_market.serializers import  ProductOwnerListSerializer
-from accounting_new.models import Invoice, InvoiceItem
-from accounting_new.serializers import BarcodeSerializer, InvoiceRetrieveSerializer, InvoiceProviderRetrieveSerializer
+from invoice.models import Invoice, InvoiceItem
+from invoice.serializers import BarcodeSerializer, InvoiceRetrieveSerializer, InvoiceProviderRetrieveSerializer
 from restapi.permissions import IsShopOwner
 from restapi.serializers import BigCitySerializer, CitySerializer, ProfileSerializer, StateSerializer
 from sms.services import Kavenegar

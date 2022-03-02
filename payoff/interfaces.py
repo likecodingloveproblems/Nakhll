@@ -15,7 +15,7 @@ class PaymentInterface:
             'order_number': str(invoice.payment_unique_id),
             'description': _('Invoice %s') % invoice.id,
             'ipg': bank_port,
-            'mobile': invoice.address.receiver_mobile_number,
+            'mobile': invoice.user.username,
         }
 
         payment = Payment()

@@ -3,9 +3,8 @@ from django.db import models
 from django.core.files import File
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
-from nakhll_market.models import NewCategory, Product, Shop, State, BigCity, City
+from nakhll_market.models import Category, Product, Shop, State, BigCity, City
 from logistic.managers import AddressManager, ShopLogisticUnitManager
-from logistic.interfaces import PostPriceSettingInterface
 
 
 # Create your models here.
@@ -38,7 +37,7 @@ class Address(models.Model):
     def __str__(self):
         return f'{self.user}: {self.address}'
 
-    def to_json(self):
+    def as_json(self):
         address_data = {
             'state': self.state.name,
             'big_city': self.big_city.name,
@@ -50,28 +49,6 @@ class Address(models.Model):
             'receiver_mobile_number': self.receiver_mobile_number
         }
         return json.dumps(address_data, ensure_ascii=False)
-
-
-class PostPriceSetting(models.Model, PostPriceSettingInterface):
-    ''' Post price settings '''
-    class Meta:
-        verbose_name = _('تنظیمات قیمت پستی')
-        verbose_name_plural = _('تنظیمات قیمت پستی')
-    user = models.ForeignKey(User, verbose_name=_(
-        'کاربر'), related_name='post_price_settings', on_delete=models.SET_NULL, null=True)
-    inside_city_price = models.PositiveIntegerField(
-        verbose_name=_('قیمت پست درون شهری (ریال)'), default=150000)
-    outside_city_price = models.PositiveIntegerField(
-        verbose_name=_('قیمت پست برون شهری (ریال)'), default=200000)
-    extra_weight_fee = models.PositiveIntegerField(
-        verbose_name=_('قیمت به ازای هر کیلو اضافه (ریال)'), default=20000)
-    created_datetime = models.DateTimeField(
-        verbose_name=_('تاریخ ایجاد'), auto_now_add=True)
-    updated_datetime = models.DateTimeField(
-        verbose_name=_('تاریخ بروزرسانی'), auto_now=True)
-
-    def __str__(self):
-        return f'{self.user}: {self.inside_city_price} تومان'
 
 
 
@@ -130,7 +107,7 @@ class ShopLogisticUnitConstraint(models.Model):
                                             related_name='constraint', on_delete=models.CASCADE)
     cities = models.ManyToManyField(City, verbose_name=_('شهرها'), related_name='logistic_unit_constraints', blank=True)
     products = models.ManyToManyField(Product, verbose_name=_('محصولات'), related_name='logistic_unit_constraints', blank=True)
-    categories = models.ManyToManyField(NewCategory, verbose_name=_('دسته بندی ها'), related_name='logistic_unit_constraints', blank=True)
+    categories = models.ManyToManyField(Category, verbose_name=_('دسته بندی ها'), related_name='logistic_unit_constraints', blank=True)
     max_weight = models.PositiveIntegerField(verbose_name=_('حداکثر وزن (کیلوگرم)'), default=0, null=True, blank=True)
     min_weight = models.PositiveIntegerField(verbose_name=_('حداقل وزن (کیلوگرم)'), default=0, null=True, blank=True)
     max_cart_price = models.PositiveIntegerField(verbose_name=_('حداکثر قیمت سبد خرید (ریال)'), default=0, null=True, blank=True)
@@ -260,7 +237,7 @@ class LogisticUnitGeneralSetting(models.Model):
 #     min_price = models.DecimalField(verbose_name=_(
 #         'حداقل قیمت'), max_digits=10, decimal_places=2, null=True, blank=True)
 #     categories = models.ManyToManyField(
-#         NewCategory, verbose_name=_('دسته بندی ها'))
+#         Category, verbose_name=_('دسته بندی ها'))
 #     max_weight_g = models.PositiveIntegerField(
 #         verbose_name=_('حداکثر وزن (گرم)'), null=True, blank=True)
 #     max_package_value = models.PositiveIntegerField(

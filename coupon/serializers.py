@@ -10,11 +10,6 @@ class CouponSerializer(serializers.ModelSerializer):
         fields = (
             'code',
             'title',
-            'amout',
-            'max_amout',
-            'precentage',
-            'available',
-            'price',
             'description',
         )
 
