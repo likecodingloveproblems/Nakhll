@@ -15,8 +15,6 @@ view_urls = [
 ]
 
 api_urls = [
-    path('', include('restapi.urls' , namespace='restapi')),
-    path('', include('nakhll_market.api_urls', namespace='nakhll_market_api')),
     path('auth/', include('nakhll_auth.auth_urls')),
     path('profile/', include('nakhll_auth.profile_urls')),
     path('lists/', include('custom_list.urls')),
@@ -24,7 +22,8 @@ api_urls = [
     path('invoices/', include('invoice.urls')),
     path('cart/', include('cart.urls')),
     path('logistic/', include('logistic.urls')),
-    
+    path('', include('restapi.urls', namespace='restapi')),
+    path('', include('nakhll_market.api_urls', namespace='nakhll_market_api')),
 ]
 
 urlpatterns = [
@@ -33,5 +32,6 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)\
-    + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL,
+                          document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL,
+                                                                       document_root=settings.MEDIA_ROOT)
