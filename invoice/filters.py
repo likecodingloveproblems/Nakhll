@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django_filters import rest_framework as filters
 from .models import Invoice
 
@@ -17,8 +18,8 @@ class InvoiceFilter(filters.FilterSet):
         field_name="created_datetime", lookup_expr='lte')
     created_after = filters.DateFilter(
         field_name="created_datetime", lookup_expr='gte')
-    address = filters.CharFilter(method='filter_address')
     is_completed = filters.BooleanFilter(method='filter_completed')
+    q = filters.CharFilter(method='filter_search')
 
     class Meta:
         # pylint: disable=missing-docstring
@@ -29,6 +30,20 @@ class InvoiceFilter(filters.FilterSet):
             'status',
             'payment_unique_id',
         ]
+
+    def filter_search(self, queryset, name, value):
+        return queryset.filter(
+            Q(
+                Q(id=value) |
+                Q(items__product__Title__icontains=value) |
+                Q(items__product__FK_Shop__Title__icontains=value) |
+                Q(address_json__icontains=value) |
+                Q(user__first_name__icontains=value) |
+                Q(user__last_name__icontains=value) |
+                Q(user__username__icontains=value) |
+                Q(payment_unique_id__icontains=value)
+            )
+        )
 
     def filter_completed(self, queryset, name, is_completed):
         if is_completed == True:

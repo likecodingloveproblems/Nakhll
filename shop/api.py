@@ -31,6 +31,8 @@ from .serializers import (
 from .permissions import IsInvoiceProvider, IsShopOwner, IsPinnedURLOwner, ShopLandingPermission
 from .mixins import MultipleFieldLookupMixin
 
+class ExtendedPagination(StandardPagination):
+    page_size = 200
 
 class ShopFeatureViewSet(viewsets.GenericViewSet,
                          mixins.RetrieveModelMixin, mixins.ListModelMixin):
@@ -244,7 +246,7 @@ class ShopInvoicesViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin,
     lookup_field = 'id'
     filter_class = InvoiceFilter
     filter_backends = (filters.DjangoFilterBackend,)
-    pagination_class = StandardPagination
+    pagination_class = ExtendedPagination
 
     def get_queryset(self):
         shop_slug = self.kwargs.get('shop__Slug')
