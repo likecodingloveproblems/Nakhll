@@ -248,7 +248,7 @@ class ShopInvoicesViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin,
 
     def get_queryset(self):
         shop_slug = self.kwargs.get('shop__Slug')
-        shop = get_object_or_404(Shop, ID=shop_slug)
+        shop = get_object_or_404(Shop, Slug=shop_slug)
         self.check_object_permissions(self.request, shop)
         return Invoice.objects.shop_invoices(shop_slug)
 
