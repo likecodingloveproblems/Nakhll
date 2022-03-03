@@ -1,7 +1,8 @@
 from rest_framework.permissions import BasePermission
+from invoice.models import Invoice
 
 class IsInvoiceOwner(BasePermission):
     def has_object_permission(self, request, view, obj):
-        prev_result = super().has_object_permission(request, view, obj)
-        result = obj.user == request.user
-        return prev_result and result
+        if isinstance(obj, Invoice):
+            return obj.user == request.user
+        return True

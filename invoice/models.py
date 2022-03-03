@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 # Create your models here.
 
-class Invoice(models.Model, AccountingInterface):
+class Invoice(models.Model):
     class Statuses(models.TextChoices):
         AWAIT_PAYMENT = 'awaiting_paying', _('در انتظار پرداخت')
         AWAIT_SHOP_APPROVAL = 'wait_store_approv', _('در انتظار تأیید فروشگاه')
