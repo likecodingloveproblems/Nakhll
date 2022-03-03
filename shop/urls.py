@@ -17,7 +17,7 @@ shop_router.register(
     'landings/(?P<shop__Slug>[^/.]+)',
     ShopLandingViewSet,
     basename='shop_landings')
-shop_router.register('pinned_urls', PinnedURLViewSet, basename='pinned_urls')
+shop_router.register('pinned-urls', PinnedURLViewSet, basename='pinned_urls')
 
 urlpatterns = [
     path('', include(shop_router.urls)),
