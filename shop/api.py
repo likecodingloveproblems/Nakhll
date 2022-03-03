@@ -244,10 +244,10 @@ class ShopInvoicesViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin,
     pagination_class = StandardPagination
 
     def get_queryset(self):
-        shop_slug = self.kwargs.get('shop__Slug')
-        shop = get_object_or_404(Shop, Slug=shop_slug)
+        shop_id = self.kwargs.get('shop__ID')
+        shop = get_object_or_404(Shop, ID=shop_id)
         self.check_object_permissions(self.request, shop)
-        return Invoice.objects.shop_invoices(shop_slug)
+        return Invoice.objects.shop_invoices(shop_id)
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())

@@ -43,7 +43,7 @@ class AccountingManager(models.Manager):
                            items__status=models.InvoiceItem.ItemStatuses.AWAIT_SHOP_APPROVAL
                            ).order_by('-created_datetime')
 
-    def shop_invoices(self, shop_slug):
+    def shop_invoices(self, shop_id):
         return self.annotate(
             coupon_price=Coalesce(
                 Sum('coupon_usages__price_applied',
@@ -52,7 +52,7 @@ class AccountingManager(models.Manager):
                   F('logistic_price') -
                   F('coupon_price'),
             weight=F('total_weight_gram'),
-        ).filter(items__product__FK_Shop__Slug=shop_slug).order_by('-created_datetime')
+        ).filter(items__product__FK_Shop__ID=shop_id).order_by('-created_datetime')
 
 
 class InvoiceItemManager(models.Manager):

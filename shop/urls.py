@@ -22,7 +22,7 @@ shop_router.register(
     basename='shop_landings')
 shop_router.register('pinned-urls', PinnedURLViewSet, basename='pinned_urls')
 shop_router.register(
-    '(?P<shop__Slug>[^/.]+)/invoices',
+    '(?P<shop__ID>[^/.]+)/invoices',
     ShopInvoicesViewSet,
     basename='shop_invoices')
 
