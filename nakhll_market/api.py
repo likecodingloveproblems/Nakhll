@@ -619,7 +619,7 @@ class AllShopSettings(views.APIView):
         user = request.user
         shop = self.get_object(shop_slug, user)
         self.check_object_permissions(request, shop)
-        serializer = ShopAllSettingsSerializer(data=request.data, instance=shop)
+        serializer = ShopAllSettingsSerializer(data=request.data, instance=shop, context={'user': user})
         if serializer.is_valid():
             serializer.save()
         else:
