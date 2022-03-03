@@ -236,7 +236,10 @@ class ShopAdvertisementViewSet(
 
 class ShopInvoicesViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin,
                           mixins.ListModelMixin, mixins.UpdateModelMixin):
-    permission_classes = [permissions.IsAuthenticated, IsShopOwner, IsInvoiceProvider]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsShopOwner,
+        IsInvoiceProvider]
     serializer_class = InvoiceProviderRetrieveSerializer
     lookup_field = 'id'
     filter_class = InvoiceFilter
@@ -244,10 +247,10 @@ class ShopInvoicesViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin,
     pagination_class = StandardPagination
 
     def get_queryset(self):
-        shop_id = self.kwargs.get('shop__ID')
-        shop = get_object_or_404(Shop, ID=shop_id)
+        shop_slug = self.kwargs.get('shop__Slug')
+        shop = get_object_or_404(Shop, ID=shop_slug)
         self.check_object_permissions(self.request, shop)
-        return Invoice.objects.shop_invoices(shop_id)
+        return Invoice.objects.shop_invoices(shop_slug)
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
