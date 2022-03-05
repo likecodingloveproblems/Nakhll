@@ -41,6 +41,7 @@ class InvoiceAdmin(admin.ModelAdmin):
         'id',
         'user',
         'status',
+        'payment_status',
         'final_price',
         'post_price',
         'coupons_total_price',
@@ -48,7 +49,6 @@ class InvoiceAdmin(admin.ModelAdmin):
         'receiver_full_name',
         'created_datetime_jalali',
         'post_tracking_code',
-        'payment_status',
     )
     list_filter = ('status', 'user',)
     readonly_fields = (
