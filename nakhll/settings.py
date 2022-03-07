@@ -10,7 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
-import sentry_sdk, os, logging
+import sentry_sdk
+import os
+import logging
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
@@ -40,7 +42,7 @@ DEBUG = int(os.environ.get("DEBUG", default=0))
 
 # 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a space between each.
 # For example: 'DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]'
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ") 
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 
 COMPRESS_ENABLED = True
 
@@ -112,7 +114,7 @@ MIDDLEWARE = [
 ]
 
 ADMIN_REORDER = (
-    {'app': 'nakhll_market','models':(
+    {'app': 'nakhll_market', 'models': (
         'nakhll_market.Pages',
         'nakhll_market.Profile',
         'nakhll_market.Market',
@@ -149,26 +151,26 @@ ADMIN_REORDER = (
             'logistic.ShopLogisticUnitCalculationMetric',
         )
     },
-    {'app': 'payoff', 'label': 'بخش مالی جدید','models':(
+    {'app': 'payoff', 'label': 'بخش مالی جدید', 'models': (
         'payoff.Transaction',
         'payoff.TransactionResult',
         'payoff.TransactionReverse',
         'payoff.TransactionConfirmation',
     )},
-    {'app': 'invoice', 'label': 'بخش حسابداری جدید','models':(
+    {'app': 'invoice', 'label': 'بخش حسابداری جدید', 'models': (
         'invoice.Invoice',
         'invoice.InvoiceItem',
         'shop.ShopFeature',
         'shop.ShopFeatureInvoice',
         'shop.ShopLanding',
     )},
-    {'app': 'Ticketing', 'label': 'بخش پشتیبانی و گزارشات','models':(
+    {'app': 'Ticketing', 'label': 'بخش پشتیبانی و گزارشات', 'models': (
         'Ticketing.Ticketing',
     )},
-    {'app': 'auth','label':'کاربران و دسترسی ها'},
-    {'app': 'sites','label':'دسترسی SiteMap'},
+    {'app': 'auth', 'label': 'کاربران و دسترسی ها'},
+    {'app': 'sites', 'label': 'دسترسی SiteMap'},
     {'app': 'url_redirector', 'label': 'تغییر دهنده Url'},
-    
+
 )
 
 STATICFILES_FINDERS = (
@@ -183,7 +185,7 @@ ROOT_URLCONF = 'nakhll.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR,'templates/')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates/')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -221,8 +223,8 @@ DATABASES = {
     #     },
     #     'CONN_MAX_AGE': None,
     # },
-    'default':{
-        'ENGINE':os.environ.get('POSTGRES_ENGINE', 'django.db.backends.postgresql'),
+    'default': {
+        'ENGINE': os.environ.get('POSTGRES_ENGINE', 'django.db.backends.postgresql'),
         'NAME': os.environ.get('POSTGRES_DB', 'nakhlldb'),
         'USER': os.environ.get('POSTGRES_USER', 'nakhll'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD', '12345'),
@@ -270,7 +272,7 @@ USE_TZ = True
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
- 
+
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static-django/'
 
@@ -284,7 +286,7 @@ CART_SESSION_ID = 'cart'
 OAUTH2_PROVIDER = {
     # this is the list of available scopes
     'SCOPES': {'read': 'Read scope', 'write': 'Write scope', 'groups': 'Access to your groups'},
-    'OAUTH_BACKEND_CLASS' : 'oauth2_provider.oauth2_backends.JSONOAuthLibCore',
+    'OAUTH_BACKEND_CLASS': 'oauth2_provider.oauth2_backends.JSONOAuthLibCore',
     'ACCESS_TOKEN_EXPIRE_SECONDS': 86400,
 }
 
@@ -297,8 +299,14 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ.get('ACCESS_TOKEN_EXPIRE_MINUTES', 5)) # 5 minutes
-REFRESH_TOKEN_EXPIRE_MINUTES = int(os.environ.get('REFRESH_TOKEN_EXPIRE_MINUTES', 1440)) # 24 hours
+ACCESS_TOKEN_EXPIRE_MINUTES = int(
+    os.environ.get(
+        'ACCESS_TOKEN_EXPIRE_MINUTES',
+        5))  # 5 minutes
+REFRESH_TOKEN_EXPIRE_MINUTES = int(
+    os.environ.get(
+        'REFRESH_TOKEN_EXPIRE_MINUTES',
+        1440))  # 24 hours
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
     'REFRESH_TOKEN_LIFETIME': timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES),
@@ -307,10 +315,10 @@ SIMPLE_JWT = {
     'USER_ID_CLAIM': 'user_id',
 }
 
-SITE_ID = os.environ.get('SITE_ID',2)
+SITE_ID = os.environ.get('SITE_ID', 2)
 
 # admin users that detail trace back of unhandelled exception are sent to them.
-ADMINS = [tuple(os.environ.get('ADMINS').split())]
+ADMINS = [tuple(os.environ.get('ADMINS', '').split())]
 SERVER_EMAIL = os.environ.get('EMAIL_HOST_USER')
 
 # setup email configurations
@@ -332,7 +340,7 @@ sentry_sdk.init(
     integrations=[
         DjangoIntegration(),
         sentry_logging,
-        ],
+    ],
     traces_sample_rate=1.0,
     environment=os.environ.get("SENTRY_ENVIRONMENT", "production"),
     send_default_pii=True,
@@ -342,7 +350,7 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 
 KAVENEGAR_KEY = os.environ.get('KAVENEGAR_KEY')
 
-SESSION_SAVE_EVERY_REQUEST: bool=True
+SESSION_SAVE_EVERY_REQUEST: bool = True
 
 # analytical
 GOOGLE_ANALYTICS_SITE_SPEED = True
@@ -352,7 +360,8 @@ ANALYTICAL_AUTO_IDENTIFY = True
 GOOGLE_ANALYTICS_PROPERTY_ID = 'UA-189302977-1'
 GOOGLE_ANALYTICS_GTAG_PROPERTY_ID = 'UA-189302977-1'
 GOOGLE_ANALYTICS_JS_PROPERTY_ID = 'UA-189302977-1'
-IDENTITY_FUNCTION = lambda user: user.id
+def IDENTITY_FUNCTION(user): return user.id
+
 
 RECAPTCHA_PUBLIC_KEY = os.environ.get('RECAPTCHA_PUBLIC_KEY', '')
 RECAPTCHA_PRIVATE_KEY = os.environ.get('RECAPTCHA_PRIVATE_KEY', '')
@@ -367,13 +376,16 @@ HOTJAR_SITE_ID = '2447146'
 # CORS Settings
 CORS_ORIGIN_ALLOW_ALL = bool(os.environ.get('CORS_ALLOW_ALL_ORIGINS'))
 CORS_ALLOW_CREDENTIALS = bool(os.environ.get('CORS_ALLOW_CREDENTIALS', True))
-if not CORS_ORIGIN_ALLOW_ALL :
-    CORS_ORIGIN_WHITELIST = os.environ.get('CORS_ORIGIN_WHITELIST', 'http://localhost:3007').split(' ')
-CORS_ALLOW_HEADERS = os.environ.get('CORS_ALLOW_HEADERS',
-                        'accept accept-encoding authorization content-type origin\
+if not CORS_ORIGIN_ALLOW_ALL:
+    CORS_ORIGIN_WHITELIST = os.environ.get(
+        'CORS_ORIGIN_WHITELIST',
+        'http://localhost:3007').split(' ')
+CORS_ALLOW_HEADERS = os.environ.get(
+    'CORS_ALLOW_HEADERS', 'accept accept-encoding authorization content-type origin\
                          dnt user-agent x-csrftoken x-requested-with').split(' ')
-CORS_ALLOW_METHODS = os.environ.get('CORS_ALLOW_METHODS',
-                        'DELETE GET OPTIONS PATCH POST PUT').split(' ')
+CORS_ALLOW_METHODS = os.environ.get(
+    'CORS_ALLOW_METHODS',
+    'DELETE GET OPTIONS PATCH POST PUT').split(' ')
 
 DOMAIN_NAME = os.environ.get('DOMAIN_NAME', 'https://nakhll.com')
 
@@ -391,7 +403,7 @@ LOGGING = {
     'formatters': {
         'default': {
             'format': '[DJANGO] %(levelname)s %(asctime)s %(module)s '
-                        '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
+            '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
     },
     'handlers': {
