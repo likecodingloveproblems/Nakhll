@@ -1186,7 +1186,7 @@ class Tag(models.Model):
         verbose_name_plural = _('تگ‌')
 
     def __str__(self):
-        return f"{self.name} - {self.shop}"
+        return f"{self.name}"
 
 
 class ProductTag(models.Model):
