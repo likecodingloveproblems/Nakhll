@@ -418,7 +418,7 @@ class TagOwnerListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tag
-        fields = ['id', 'text', ]
+        fields = ['id', 'text', 'shop']
 
 
 class ProductBannerWriteSerializer(serializers.ModelSerializer):
