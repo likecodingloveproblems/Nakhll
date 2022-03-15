@@ -413,6 +413,14 @@ class ProductTagWriteSerializer(serializers.ModelSerializer):
         fields = ['id', 'text', ]
 
 
+class TagOwnerListSerializer(serializers.ModelSerializer):
+    text = serializers.CharField(source="name")
+
+    class Meta:
+        model = Tag
+        fields = ['id', 'text', ]
+
+
 class ProductBannerWriteSerializer(serializers.ModelSerializer):
     Image = Base64ImageField(max_length=None, use_url=True)
 
@@ -476,6 +484,7 @@ class ProductOwnerWriteSerializer(serializers.ModelSerializer):
             Tag.objects.bulk_create([Tag(name=tag, shop=instance.shop) for tag in new_tag])
             tags = Tag.objects.filter(name__in=tags_list, shop=instance.shop)
             ProductTag.objects.bulk_create([ProductTag(product=instance, tag=tag) for tag in tags])
+
     @staticmethod
     def update_tags(instance, validated_data):
         if 'product_tags' not in validated_data:
