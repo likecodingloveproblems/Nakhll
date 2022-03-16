@@ -18,6 +18,7 @@ from rest_framework.exceptions import ValidationError, PermissionDenied, Authent
 from rest_framework.decorators import action
 from django_filters import rest_framework as restframework_filters
 from logistic.models import ShopLogisticUnit
+from nakhll.utils import get_dict
 from nakhll_market.interface import DiscordAlertInterface, ProductChangeTypes
 from nakhll_market.models import (
     Alert,
@@ -32,7 +33,7 @@ from nakhll_market.models import (
     City,
     LandingPageSchema,
     ShopPageSchema,
-    UserImage,
+    UserImage, Tag, ProductTag,
 )
 from nakhll_market.serializers import (
     Base64ImageSerializer,
@@ -63,8 +64,8 @@ from nakhll_market.serializers import (
     UserImageSerializer,
     LandingPageSchemaSerializer,
     CategoryChildSerializer,
-    CategoryParentSerializer)
-from restapi.permissions import IsProductOwner, IsShopOwner, IsProductBannerOwner
+    CategoryParentSerializer, TagOwnerListSerializer)
+from restapi.permissions import IsProductOwner, IsShopOwner, IsProductBannerOwner, IsTagOwner
 from restapi.serializers import ProfileSerializer
 from invoice.models import Invoice
 from nakhll_market.filters import ProductFilter
@@ -76,7 +77,7 @@ from shop.serializers import ShopLandingDetailsSerializer, ShopLandingSerializer
 
 
 class LastCreatedProductsViewSet(
-        mixins.ListModelMixin, viewsets.GenericViewSet):
+    mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductSerializer
     permission_classes = [permissions.AllowAny, ]
 
@@ -85,7 +86,7 @@ class LastCreatedProductsViewSet(
 
 
 class LastCreatedDiscountedProductsViewSet(
-        mixins.ListModelMixin, viewsets.GenericViewSet):
+    mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductSerializer
     permission_classes = [permissions.AllowAny, ]
 
@@ -110,7 +111,7 @@ class RandomProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 
 class MostDiscountPrecentageProductsViewSet(
-        mixins.ListModelMixin, viewsets.GenericViewSet):
+    mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductSerializer
     permission_classes = [permissions.AllowAny, ]
 
@@ -129,7 +130,7 @@ class MostSoldShopsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 class SliderViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = SliderSerializer
     permission_classes = [permissions.AllowAny, ]
-    search_fields = ('Location', )
+    search_fields = ('Location',)
     filter_backends = (filters.SearchFilter,)
     queryset = Slider.objects.filter(Publish=True)
 
@@ -159,8 +160,8 @@ class ShopProductsViewSet(viewsets.GenericViewSet,
 
 
 class ShopOwnerProductViewSet(
-        viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.CreateModelMixin,
-        mixins.ListModelMixin, mixins.UpdateModelMixin):
+    viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.CreateModelMixin,
+    mixins.ListModelMixin, mixins.UpdateModelMixin):
     permission_classes = [permissions.IsAuthenticated, IsProductOwner]
     pagination_class = StandardPagination
     filter_class = ProductFilter
@@ -204,9 +205,9 @@ class ShopOwnerProductViewSet(
         slug = self.__generate_unique_slug(title)
         product_extra_fileds = {'Publish': True, 'Slug': slug, 'FK_Shop': shop}
         # TODO: This behavior should be inhanced later
-        #! Check if price have dicount or not
-        #! Swap Price and OldPrice value if discount exists
-        #! Note that, request should use OldPrice as price with discount
+        # ! Check if price have dicount or not
+        # ! Swap Price and OldPrice value if discount exists
+        # ! Note that, request should use OldPrice as price with discount
         # Convert price and old price from Toman to Rial to store in DB
         old_price = data.get('OldPrice', 0) * 10
         price = data.get('Price', 0) * 10
@@ -243,18 +244,25 @@ class ShopOwnerProductViewSet(
         ID = self.kwargs.get('ID')
 
         # TODO: This behavior should be inhanced later
-        #! Check if price have dicount or not
-        #! Swap Price and OldPrice value if discount exists
-        #! Note that, request should use OldPrice as price with discount
+        # ! Check if price have dicount or not
+        # ! Swap Price and OldPrice value if discount exists
+        # ! Note that, request should use OldPrice as price with discount
         # Convert price and old price from Toman to Rial to store in DB
         old_price = data.get('OldPrice', 0) * 10
         price = data.get('Price', 0) * 10
+        if "product_tags" in data:
+            tag_lst = data.pop("product_tags")
+        else:
+            tag_lst = None
+
         if old_price:
             product = serializer.save(
                 OldPrice=price, Price=old_price, FK_Shop=shop)
         else:
             product = serializer.save(
                 OldPrice=old_price, Price=price, FK_Shop=shop)
+        if tag_lst:
+            self.update_tags(product, tag_lst)
         # product.post_range_cities.add(*post_range)
 
         # TODO: Check if product created successfully and published and alerts
@@ -267,6 +275,27 @@ class ShopOwnerProductViewSet(
             DiscordAlertInterface.product_alert(
                 product, change_type=ProductChangeTypes.UPDATE,
                 without_image=True)
+
+    @staticmethod
+    def update_tags(product, tags_list):
+        tags_list: list = [x['tag'] for x in tags_list]
+        all_tags_lst = Tag.objects.filter(shop=product.shop).values_list('name', flat=True)
+        new_tag = []
+        product_tags_id_list = ProductTag.objects.filter(product=product).values_list('tag', flat=True)
+        if product_tags_id_list:
+            product_tags_list = get_dict(Tag.objects.filter(id__in=product_tags_id_list), 'name')
+        else:
+            product_tags_list = None
+        for item in tags_list:
+            if item not in all_tags_lst:
+                new_tag.append(item)
+            if product_tags_list and item in product_tags_list:
+                tags_list.remove(item)
+        if new_tag:
+            Tag.objects.bulk_create([Tag(name=tag, shop=product.shop) for tag in new_tag])
+        if tags_list:
+            tags = Tag.objects.filter(name__in=tags_list, shop=product.shop)
+            ProductTag.objects.bulk_create([ProductTag(product=product, tag=tag) for tag in tags])
 
     def __check_shop_owner(self, shop):
         if shop.FK_ShopManager != self.request.user:
@@ -283,10 +312,42 @@ class ShopOwnerProductViewSet(
         slug = slugify(title, allow_unicode=True)
         counter = 1
         new_slug = slug
-        while(Product.objects.filter(Slug=new_slug).exists()):
+        while (Product.objects.filter(Slug=new_slug).exists()):
             new_slug = f'{slug}_{counter}'
             counter += 1
         return new_slug
+
+
+class TagsOwnerViewSet(
+    viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.ListModelMixin, ):
+    permission_classes = [permissions.IsAuthenticated, IsTagOwner]
+    serializer_class = TagOwnerListSerializer
+
+    def get_queryset(self):
+        shop = self.get_shop()
+        return Tag.objects.filter(shop=shop)
+
+    def get_shop(self):
+        shop = get_object_or_404(Shop, Slug=self.kwargs.get('shop_slug'))
+        self.__check_shop_owner(shop)
+        return shop
+
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+        filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
+        obj = get_object_or_404(queryset, **filter_kwargs)
+
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+    def __check_shop_owner(self, shop):
+        if shop.FK_ShopManager != self.request.user:
+            raise serializers.ValidationError(
+                {'FK_Shop': f'شما به فروشگاه {shop.Title} دسترسی ندارید'},
+                code=status.HTTP_403_FORBIDDEN
+            )
 
 
 class ProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -297,7 +358,7 @@ class ProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         filters.OrderingFilter)
     serializer_class = ProductListSerializer
     permission_classes = [permissions.AllowAny, ]
-    ordering_fields = ('Title', 'Price', 'DiscountPrecentage', 'DateCreate', )
+    ordering_fields = ('Title', 'Price', 'DiscountPrecentage', 'DateCreate',)
 
     def get_queryset(self):
         return Product.objects.select_related('FK_Shop').annotate(
@@ -308,9 +369,9 @@ class ProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                 default=Value(False)), output_field=BooleanField())
         ).filter(
             Q(Publish=True), ~Q(FK_Shop=None)).annotate(DiscountPrecentage=Case(
-                When(OldPrice__gt=0, then=(
+            When(OldPrice__gt=0, then=(
                     (F('OldPrice') - F('Price')) * 100 / F('OldPrice'))
-                ), default=0)).order_by('-is_available', '-category_id')
+                 ), default=0)).order_by('-is_available', '-category_id')
 
 
 class ProductDetailsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -321,7 +382,7 @@ class ProductDetailsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
 
 class ProductCommentsViewSet(
-        mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductCommentSerializer
     permission_classes = [permissions.AllowAny, ]
     lookup_field = 'FK_Product__Slug'
@@ -343,7 +404,7 @@ class ProductCommentsViewSet(
 
 
 class ProductRelatedItemsViewSet(
-        mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     pagination_class = StandardPagination
     serializer_class = ProductSerializer
     permission_classes = [permissions.AllowAny, ]
@@ -417,7 +478,7 @@ class CreateShop(generics.CreateAPIView):
         slug = slugify(title, allow_unicode=True)
         counter = 1
         new_slug = slug
-        while(Shop.objects.filter(Slug=new_slug).exists()):
+        while (Shop.objects.filter(Slug=new_slug).exists()):
             new_slug = f'{slug}_{counter}'
             counter += 1
         return new_slug
@@ -550,9 +611,9 @@ class ShopMultipleUpdatePrice(views.APIView):
                     price = price_item.get('Price')
                     if product.FK_Shop.FK_ShopManager == user:
                         # TODO: This behavior should be inhanced later
-                        #! Check if price have dicount or not
-                        #! Swap Price and OldPrice value if discount exists
-                        #! Note that, request should use OldPrice as price with discount
+                        # ! Check if price have dicount or not
+                        # ! Swap Price and OldPrice value if discount exists
+                        # ! Note that, request should use OldPrice as price with discount
                         if old_price:
                             product.OldPrice = price
                             product.Price = old_price
@@ -626,6 +687,7 @@ class AllShopSettings(views.APIView):
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.data)
+
 
 # class BankAccountShopSettings(views.APIView):
 #     # TODO: Check this class entirely

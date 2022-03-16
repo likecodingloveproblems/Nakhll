@@ -31,7 +31,6 @@ LOGIN_REDIRECT_URL = '/profile/'
 LOGOUT_REDIRECT_URL = '/'
 REDIRECT_FIELD_NAME = 'next'
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
@@ -45,7 +44,6 @@ DEBUG = int(os.environ.get("DEBUG", default=0))
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 
 COMPRESS_ENABLED = True
-
 
 # Application definition
 DJANGO_APPS = [
@@ -124,6 +122,7 @@ ADMIN_REORDER = (
         'nakhll_market.ProductBanner',
         'nakhll_market.Category',
         'nakhll_market.Tag',
+        'nakhll_market.ProductTag',
         'nakhll_market.Attribute',
         'nakhll_market.AttrPrice',
         'nakhll_market.Comment',
@@ -199,7 +198,6 @@ TEMPLATES = [
     },
 ]
 
-
 WSGI_APPLICATION = 'nakhll.wsgi.application'
 IMAGEKIT_CACHEFILE_DIR = 'media/CACHE/images'
 
@@ -251,7 +249,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
@@ -264,7 +261,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
@@ -330,7 +326,7 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = os.environ.get('EMAIL_PORT', 587)
 
 sentry_logging = LoggingIntegration(
-    level=logging.INFO,        # Capture info and above as breadcrumbs
+    level=logging.INFO,  # Capture info and above as breadcrumbs
     event_level=logging.ERROR  # Send errors as events
 )
 
@@ -360,6 +356,8 @@ ANALYTICAL_AUTO_IDENTIFY = True
 GOOGLE_ANALYTICS_PROPERTY_ID = 'UA-189302977-1'
 GOOGLE_ANALYTICS_GTAG_PROPERTY_ID = 'UA-189302977-1'
 GOOGLE_ANALYTICS_JS_PROPERTY_ID = 'UA-189302977-1'
+
+
 def IDENTITY_FUNCTION(user): return user.id
 
 
@@ -371,7 +369,6 @@ if DEBUG:
 
 SENDSMS_BACKEND = 'sms.backend.SmsBackend'
 HOTJAR_SITE_ID = '2447146'
-
 
 # CORS Settings
 CORS_ORIGIN_ALLOW_ALL = bool(os.environ.get('CORS_ALLOW_ALL_ORIGINS'))
@@ -403,7 +400,7 @@ LOGGING = {
     'formatters': {
         'default': {
             'format': '[DJANGO] %(levelname)s %(asctime)s %(module)s '
-            '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
+                      '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
     },
     'handlers': {

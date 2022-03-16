@@ -11,8 +11,8 @@ from nakhll_market.api import (
     CreateShop, GetShopWithSlug, CheckShopSlug, CheckProductSlug,
     ShopProductsViewSet, ProductCommentsViewSet, ProductRelatedItemsViewSet,
     ProductBannerViewSet, AddImagesToProduct, ProductDetailsViewSet,
-    LandingPageSchemaViewSet, ShopPageSchemaViewSet, ShopsStatisticViewSet
-    )
+    LandingPageSchemaViewSet, ShopPageSchemaViewSet, ShopsStatisticViewSet, TagsOwnerViewSet
+)
 from rest_framework import routers
 
 app_name = 'nakhll_market'
@@ -49,6 +49,7 @@ product_banners_router.register(r'', ProductBannerViewSet, basename="product_ban
 
 shop_owner_router = routers.DefaultRouter()
 shop_owner_router.register(r'products', ShopOwnerProductViewSet, basename="products")
+shop_owner_router.register(r'tags', TagsOwnerViewSet, basename="tags")
 
 categories_router = routers.DefaultRouter()
 categories_router.register(r'', CategoryViewSet, basename="categories")

@@ -8,7 +8,8 @@ from .models import (LandingPageSchema, Category, ShopPageSchema,
                      LandingImage, LandingPage,
                      Shop,
                      Product, ProductBanner, Profile,
-                     Alert, DashboardBanner, Slider)
+                     Alert, DashboardBanner, Slider, Tag, ProductTag)
+from django.contrib import admin
 from django.contrib.admin import ModelAdmin
 from django.contrib.auth.models import Permission
 
@@ -24,68 +25,43 @@ ModelAdmin.construct_change_message = (
 )
 
 
+# profile admin panel
 @admin.register(Profile)
-class ProfileAdmin(ModelAdmin):
-    list_display = (
-        'FK_User',
-        'MobileNumber',
-        'BrithDay',
-        'UserReferenceCode',
-        'Point')
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ('FK_User', 'MobileNumber', 'BrithDay', 'UserReferenceCode', 'Point')
     readonly_fields = ('UserReferenceCode',)
     list_filter = ('BrithDay',)
     ordering = ['ID', 'BrithDay', 'Point', 'UserReferenceCode']
     search_fields = ('MobileNumber', 'UserReferenceCode',)
+
+
 # -------------------------------------------------
 # market admin panel
 
 
 @admin.register(Shop)
-class ShopAdmin(ModelAdmin):
-    list_display = (
-        'Title',
-        'Slug',
-        'City',
-        'State',
-        'Point',
-        'DateCreate',
-        'Available',
-        'Publish',
-    )
-    list_filter = (
-        'City',
-        'State',
-        'Publish',
-        'Available',
-        'DateCreate',
-        'DateUpdate')
+class ShopAdmin(admin.ModelAdmin):
+    list_display = ('Title', 'Slug', 'City', 'State', 'Point', 'DateCreate', 'Available', 'Publish',)
+    list_filter = ('City', 'State', 'Publish', 'Available', 'DateCreate', 'DateUpdate')
     search_fields = ('Title', 'Slug')
     ordering = ['ID', 'DateCreate', 'DateUpdate']
-    raw_id_fields = ('FK_ShopManager', )
+    raw_id_fields = ('FK_ShopManager',)
 
     def DateCreate(self, obj):
         return localtime(obj.DateCreate).strftime('%Y-%m-%d %H:%M:%S')
 
     def DateUpdate(self, obj):
         return localtime(obj.DateUpdate).strftime('%Y-%m-%d %H:%M:%S')
-# -------------------------------------------------
 
-
+      
 class ProductBannerInline(admin.StackedInline):
     model = ProductBanner
     extra = 1
 
 
 @admin.register(Product)
-class ProductAdmin(ModelAdmin):
-    list_display = (
-        'Title',
-        'Slug',
-        'Bio',
-        'Price',
-        'Status',
-        'DateCreate',
-        'Publish')
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('Title', 'Slug', 'Bio', 'Price', 'Status', 'DateCreate', 'Publish')
     list_filter = ('Status', 'Publish', 'Available', 'DateCreate', 'DateUpdate')
     search_fields = ('Title', 'Slug', 'Description', 'Bio', 'Story')
     ordering = ['ID', 'DateCreate', 'DateUpdate']
@@ -97,35 +73,27 @@ class ProductAdmin(ModelAdmin):
     def DateUpdate(self, obj):
         return localtime(obj.DateUpdate).strftime('%Y-%m-%d %H:%M:%S')
 
-    def change_view(
-            self, request: HttpRequest, object_id: str, form_url: str = '',
-            extra_context: Optional[Dict[str, bool]] = None) -> HttpResponse:
+    def change_view(self, request: HttpRequest, object_id: str, form_url: str = '',
+                    extra_context: Optional[Dict[str, bool]] = None) -> HttpResponse:
         if request.user.groups.filter(name='Photo-compress').exists():
             self.fields = ('Image', 'NewImage')
         else:
             self.fields = None
-        return super().change_view(request, object_id,
-                                   form_url=form_url, extra_context=extra_context)
+        return super().change_view(request, object_id, form_url=form_url, extra_context=extra_context)
+
+
 # -------------------------------------------------
 
-
 @admin.register(Category)
-class CategoryAdmin(ModelAdmin):
-    list_display = (
-        'id',
-        'name',
-        'order',
-        'slug',
-        'description',
-        'parent',
-        'available')
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'order', 'slug', 'description', 'parent', 'available')
     list_filter = ('parent', 'available')
-    ordering = ('-parent', 'id', )
+    ordering = ('-parent', 'id',)
+
+
 
 # -------------------------------------------------
 # Alert admin panel
-
-
 @admin.register(Alert)
 class AlertAdmin(ModelAdmin):
     list_display = ('Part', 'Slug', 'Seen', 'DateCreate', 'Description',)
@@ -155,13 +123,9 @@ class ProductBanner(ModelAdmin):
 
 
 @admin.register(DashboardBanner)
-class DashboardBannerAdmin(ModelAdmin):
-    list_display = (
-        'image',
-        'url',
-        'staff_user',
-        'created_datetime',
-        'publish_status')
+class DashboardBannerAdmin(admin.ModelAdmin):
+    list_display = ('image', 'url', 'staff_user', 'created_datetime', 'publish_status')
+
     list_filter = ('staff_user', 'created_datetime', 'publish_status')
     search_fields = ('url',)
     ordering = ['id', 'created_datetime', 'publish_status']
@@ -253,3 +217,18 @@ class SliderAdmin(ModelAdmin):
 
     def DtatUpdate(self, obj):
         return localtime(obj.DtatUpdate).strftime('%Y-%m-%d %H:%M:%S')
+
+
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    list_display = ['id', 'name', 'shop']
+    list_filter = ['shop']
+    search_fields = ['name']
+
+
+@admin.register(ProductTag)
+class ProductTagAdmin(admin.ModelAdmin):
+    list_display = ['id', 'tag', 'product']
+    search_fields = ['tag__name']
+    autocomplete_fields = ['product', 'tag']
+
