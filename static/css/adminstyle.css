@@ -1,211 +1,256 @@
-body{
-    font-family: IRANSans;
-    font-style: normal;
-    background: url(https://upload.wikimedia.org/wikipedia/commons/b/b9/Grand_Bazaar%2C_Tehran_14.jpg);
-    background: url('/static-django/Pictures/bg-admin-dark.jpg');
-    background-size: cover;
-    background-attachment: fixed;
+body {
+  font-family: IRANSans;
+  font-style: normal;
+  background: url(https://upload.wikimedia.org/wikipedia/commons/b/b9/Grand_Bazaar%2C_Tehran_14.jpg);
+  background: url("/static-django/Pictures/bg-admin-dark.jpg");
+  background-size: cover;
+  background-attachment: fixed;
 }
-td, th {
-    font-family: IRANSans,"Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
+td,
+th {
+  font-family: IRANSans, "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
 }
 
 p {
-    font-family: IRANSans,"Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
-    color: #555;
+  font-family: IRANSans, "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
+  color: #555;
 }
 .submit-row a.closelink {
-    color: #444;
+  color: #444;
 }
-.dashboard a:link,.dashboard a:visited,.dashboard a{
-    color: #000;
-    text-decoration: none;
-    text-shadow: none;
+.dashboard a:link,
+.dashboard a:visited,
+.dashboard a {
+  color: #000;
+  text-decoration: none;
+  text-shadow: none;
 }
 
-.a:link, a:visited ,a{
-    color: #fff;
-    text-decoration: none;
+.a:link,
+a:visited,
+a {
+  color: #fff;
+  text-decoration: none;
 }
 .module table {
-    width: 100%;
+  width: 100%;
 }
+
+#change-history {
+  color: black;
+}
+
 .inline-related h3 span.delete label {
-    color: #000;
-    text-shadow: 0px 0px 5px #fff;
+  color: #000;
+  text-shadow: 0px 0px 5px #fff;
 }
-#content h1{
-    font-size: 20px;
-    color: #fff;
-    text-shadow: 0px 0px 10px #000;
+#content h1 {
+  font-size: 20px;
+  color: #fff;
+  text-shadow: 0px 0px 10px #000;
 }
-.dashboard #content h1{
-    color: #fff;
-    text-shadow: 0px 0px 15px #ccc;
+.dashboard #content h1 {
+  color: #fff;
+  text-shadow: 0px 0px 15px #ccc;
 }
-#header{
-    background: #AA850E;
-    color: #ccd6ff;
-    overflow: hidden;
-    position: sticky;
-    top: 0px;
-    z-index: 99999;
+#header {
+  background: #aa850e;
+  color: #ccd6ff;
+  overflow: hidden;
+  position: sticky;
+  top: 0px;
+  z-index: 99999;
 }
-.module h2, .module caption, .inline-group h2 {
-    background: #6c6c6c;
-    color: #fff;
-    font-size: 16px !important;
-    padding: 12px !important;
+.module h2,
+.module caption,
+.inline-group h2 {
+  background: #6c6c6c;
+  color: #fff;
+  font-size: 16px !important;
+  padding: 12px !important;
 }
 div.breadcrumbs {
-    background: #273238;
+  background: #273238;
 }
-.dashboard .module{
-    background: #ffffff !important;
-    color: #000;
+.dashboard .module {
+  background: #ffffff !important;
+  color: #000;
 }
 .module {
-    background: rgba(0, 0, 0, 0.46) !important;
-    color: #ffff;
+  background: rgba(0, 0, 0, 0.46) !important;
+  color: #ffff;
 }
-form .aligned p.help, form .aligned div.help {
-    color: #ddf;
+form .aligned p.help,
+form .aligned div.help {
+  color: #ddf;
 }
-.help, p.help, form p.help, div.help, form div.help, div.help li {
-    font-size: 11px;
-    color: #e1e1e1;
+.help,
+p.help,
+form p.help,
+div.help,
+form div.help,
+div.help li {
+  font-size: 11px;
+  color: #e1e1e1;
 }
-.dashboard #content p{
-    color: #000;
+.dashboard #content p {
+  color: #000;
 }
-.dashboard #content-main p{
-    color: #000 !important;
-    text-shadow: none !important;
+.dashboard #content-main p {
+  color: #000 !important;
+  text-shadow: none !important;
 }
 .form-row {
-    border-bottom: none;
+  border-bottom: none;
 }
 label {
-    font-size: 13px;
-    font-weight: normal;
-    color: #fff;
+  font-size: 13px;
+  font-weight: normal;
+  color: #fff;
 }
-.required label, label.required {
-    font-size: 14px;
-    font-weight: bold;
-    color: #fff;
+.required label,
+label.required {
+  font-size: 14px;
+  font-weight: bold;
+  color: #fff;
 }
 .submit-row {
-    background: #273238;
-    border: none;
-    border-radius: 4px;
+  background: #273238;
+  border: none;
+  border-radius: 4px;
 }
-.button:active, input[type=submit]:active, input[type=button]:active, .button:focus, input[type=submit]:focus, input[type=button]:focus, .button:hover, input[type=submit]:hover, input[type=button]:hover {
-    font-family: IRANSans,"Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
-    background: #AA850E;
+.button:active,
+input[type="submit"]:active,
+input[type="button"]:active,
+.button:focus,
+input[type="submit"]:focus,
+input[type="button"]:focus,
+.button:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover {
+  font-family: IRANSans, "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
+  background: #aa850e;
 }
-.button, input[type=submit], input[type=button], .submit-row input, a.button {
-    font-family: IRANSans,"Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
-    background: #AA850E;
+.button,
+input[type="submit"],
+input[type="button"],
+.submit-row input,
+a.button {
+  font-family: IRANSans, "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
+  background: #aa850e;
 }
-.button.default, input[type=submit].default, .submit-row input.default {
-    background: #AA850E;
+.button.default,
+input[type="submit"].default,
+.submit-row input.default {
+  background: #aa850e;
 }
-.button.default:hover, input[type=submit].default:hover, .submit-row input.default:hover{
-    background: #AA850E;
+.button.default:hover,
+input[type="submit"].default:hover,
+.submit-row input.default:hover {
+  background: #aa850e;
 }
-input, textarea, select, .form-row p, form .button{
-    font-family: IRANSans,"Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
+input,
+textarea,
+select,
+.form-row p,
+form .button {
+  font-family: IRANSans, "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
 }
 #changelist-filter {
-    margin: 52px 15px;
+  margin: 52px 15px;
 }
-#changelist-form{
-    padding:15px 15px 15px 0px;
-    margin-top: 40px;
-    flex-grow: 4;
+#changelist-form {
+  padding: 15px 15px 15px 0px;
+  margin-top: 40px;
+  flex-grow: 4;
 }
 ul.messagelist li {
-    border: 2px solid #f80000;
-    background: rgb(255, 212, 212) ;
+  border: 2px solid #f80000;
+  background: rgb(255, 212, 212);
 }
-#result_list td{
-    color: #000;
+#result_list td {
+  color: #000;
 }
-#content-related .actionlist li{
-    list-style: none;
+#content-related .actionlist li {
+  list-style: none;
 }
-.change-related,.add-related,.delete-related{
-    background: #fff;
-    padding: 3px 7px;
-    border-radius: 3px;
+.change-related,
+.add-related,
+.delete-related {
+  background: #fff;
+  padding: 3px 7px;
+  border-radius: 3px;
 }
 img.ui-datepicker-trigger {
-    background: #ffff;
-    height: 17px;
-    padding: 3px;
-    margin: 5px;
-    border-radius: 15px;
+  background: #ffff;
+  height: 17px;
+  padding: 3px;
+  margin: 5px;
+  border-radius: 15px;
 }
-.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
-    font-family: IRANSans,"Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
-    font-size: 12px !important;
+.ui-widget input,
+.ui-widget select,
+.ui-widget textarea,
+.ui-widget button {
+  font-family: IRANSans, "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
+  font-size: 12px !important;
 }
-a.section:link, a.section:visited {
-    color: #fff !important;
-    text-decoration: none;
+a.section:link,
+a.section:visited {
+  color: #fff !important;
+  text-decoration: none;
 }
 #content-related {
-    background: #ffffff;
+  background: #ffffff;
 }
-.row1 a ,.row2 a{
-    color: #140031;
+.row1 a,
+.row2 a {
+  color: #140031;
 }
 
-@media (max-width: 500px){
-    #changelist-form{
-        padding:15px;
-    }
+@media (max-width: 500px) {
+  #changelist-form {
+    padding: 15px;
+  }
 }
-.errornote{
-    color: #000!important;
-    text-shadow: none !important;
+.errornote {
+  color: #000 !important;
+  text-shadow: none !important;
 }
-.success a{
-    color: #000 !important;
+.success a {
+  color: #000 !important;
 }
-.delete-selected-confirmation #content{
-    color: #fff;
+.delete-selected-confirmation #content {
+  color: #fff;
 }
-.delete-selected-confirmation #content a{
-    color: #fff !important;
+.delete-selected-confirmation #content a {
+  color: #fff !important;
 }
 .mce-panel {
-    width: 100% !important;
-    float: left !important;
+  width: 100% !important;
+  float: left !important;
 }
 
-
-.mce-container{
-    font-family: IRANSans !important;
+.mce-container {
+  font-family: IRANSans !important;
 }
 
 #toolbar {
-    position: absolute;
-    margin-right: 15px;
-    min-width: 300px;
+  position: absolute;
+  margin-right: 15px;
+  min-width: 300px;
 }
 
 .tabular {
-    overflow-x: scroll;
+  overflow-x: scroll;
 }
 
 #changelist .actions {
-    padding: 10px 0px;
+  padding: 10px 0px;
 }
 
 .login #header {
-    background: #273238;
-    color: #fff;
-    text-shadow: 0px 0px 15px #ccc;
+  background: #273238;
+  color: #fff;
+  text-shadow: 0px 0px 15px #ccc;
 }
