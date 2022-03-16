@@ -493,14 +493,12 @@ class ProductOwnerWriteSerializer(serializers.ModelSerializer):
                 for tag in tags])
 
     @staticmethod
-    def update_tags(instance, validated_data):
+    def __update_tags(instance, validated_data):
         if 'product_tags' not in validated_data:
             return
         tags_list: list = [x['tag'] for x in validated_data.pop('product_tags')]
         if tags_list:
-            all_tags = Tag.objects.filter(
-                shop=instance.shop).values_list(
-                'text', flat=True)
+            all_tags = Tag.objects.filter(shop=instance.shop).values_list('name', flat=True)
             new_tag = []
             product_tags_id_list = ProductTag.objects.filter(
                 product=instance).values_list('tag', flat=True)
@@ -510,11 +508,14 @@ class ProductOwnerWriteSerializer(serializers.ModelSerializer):
                         id__in=product_tags_id_list), 'name')
             else:
                 product_tags_list = None
+
+            tags_lst_b = tags_list.copy()
             for item in tags_list:
                 if item not in all_tags:
                     new_tag.append(item)
                 if product_tags_list and item in product_tags_list:
-                    tags_list.pop(item)
+                    tags_lst_b.remove(item)
+            tags_list = tags_lst_b
             if new_tag:
                 Tag.objects.bulk_create([Tag(
                     name=tag, shop=instance.shop)
@@ -529,6 +530,7 @@ class ProductOwnerWriteSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         self.__update_banners(instance, validated_data)
+        self.__update_tags(instance, validated_data)
         self.__update_post_range(instance, validated_data)
         for prop, value in validated_data.items():
             setattr(instance, prop, value)
@@ -558,6 +560,7 @@ class ProductOwnerReadSerializer(serializers.ModelSerializer):
     Product_Banner = ProductBannerWriteSerializer(many=True, read_only=True)
     post_range = serializers.PrimaryKeyRelatedField(
         source='post_range_cities', read_only=True, many=True)
+    product_tags = ProductTagWriteSerializer(many=True, read_only=False)
 
     class Meta:
         model = Product
@@ -576,7 +579,9 @@ class ProductOwnerReadSerializer(serializers.ModelSerializer):
             'PostRangeType',
             'PreparationDays',
             'category',
-            'post_range'
+            'post_range',
+            'product_tags',
+
         ]
 
 
