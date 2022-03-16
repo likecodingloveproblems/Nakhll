@@ -561,6 +561,7 @@ class ProductOwnerReadSerializer(serializers.ModelSerializer):
     post_range = serializers.PrimaryKeyRelatedField(
         source='post_range_cities', read_only=True, many=True)
     product_tags = ProductTagWriteSerializer(many=True, read_only=False)
+    all_tags = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -581,9 +582,12 @@ class ProductOwnerReadSerializer(serializers.ModelSerializer):
             'category',
             'post_range',
             'product_tags',
-
+            'all_tags',
         ]
 
+    def get_all_tags(self, obj):
+        tags = Tag.objects.filter(shop=obj.shop)
+        return tags
 
 class ProductCategorySerializer(serializers.Serializer):
     product = serializers.UUIDField()
