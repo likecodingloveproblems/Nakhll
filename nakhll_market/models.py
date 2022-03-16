@@ -531,7 +531,9 @@ class ShopBankAccount(models.Model):
         verbose_name_plural = 'حساب‌های حجره'
 
     def __str__(self):
-        return self.Shop.Slug
+        if hasattr(self, 'shop'):
+            return self.shop.Slug
+        return self.id
 
     shop = models.OneToOneField(Shop, verbose_name='حجره', on_delete=models.CASCADE, related_name='bank_account')
     iban = models.CharField('شماره شبا', max_length=24, help_text='شماره شبا بدون IR', null=True, blank=True,
