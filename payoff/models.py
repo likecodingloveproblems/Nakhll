@@ -20,7 +20,7 @@ class Transaction(models.Model):
     referrer_model = models.CharField(_('مدل ارجاع دهنده'), max_length=255, null=True, blank=True)
     referrer_app = models.CharField(_('ماژول ارجاع دهنده'), max_length=255, null=True, blank=True)
     amount = models.DecimalField(_('مبلغ (ریال)'), max_digits=15, decimal_places=0)
-    order_number = models.CharField(_('شماره سفارش'), max_length=50, null=True, blank=True)
+    order_number = models.BigIntegerField(_('شماره سفارش'), null=True, blank=True)
     created_datetime = models.DateTimeField(_('تاریخ ایجاد تراکنش'), auto_now_add=True)
     payoff_datetime = models.DateTimeField(_('تاریخ پرداخت'), null=True, blank=True)
     description = models.TextField(_('توضیحات'), null=True, blank=True)

@@ -505,7 +505,9 @@ class ShopSocialMedia(models.Model):
         verbose_name_plural = 'شبکه‌های اجتماعی حجره'
 
     def __str__(self):
-        return self.Shop.Slug
+        if hasattr(self, 'shop'):
+            return self.shop.Slug
+        return self.id
 
     shop = models.OneToOneField(Shop, verbose_name='حجره', on_delete=models.CASCADE, related_name='social_media')
     telegram = models.CharField('تلگرام', max_length=100, help_text='آی‌دی تلگرام بدون نام سایت', null=True, blank=True)
@@ -529,7 +531,9 @@ class ShopBankAccount(models.Model):
         verbose_name_plural = 'حساب‌های حجره'
 
     def __str__(self):
-        return self.Shop.Slug
+        if hasattr(self, 'shop'):
+            return self.shop.Slug
+        return self.id
 
     shop = models.OneToOneField(Shop, verbose_name='حجره', on_delete=models.CASCADE, related_name='bank_account')
     iban = models.CharField('شماره شبا', max_length=24, help_text='شماره شبا بدون IR', null=True, blank=True,
@@ -1166,6 +1170,17 @@ class Product(models.Model):
             return
         self.Inventory -= count
         self.save()
+
+    def clean(self):
+        'Check Product Title must be unique in shop'
+        self._check_product_title_uniqueness_in_shop()
+
+    def _check_product_title_uniqueness_in_shop(self):
+        # Check Product Title must be unique in shop
+        if Product.objects.filter(Title = self.Title, FK_Shop_id = self.FK_Shop_id).exist():
+            raise ValidationError({
+                'message': _('محصولی با این عنوان قبلا در فروشگاه شما ثبت شده است')
+            })
 
     class Meta:
         ordering = ('DateCreate', 'Title',)
