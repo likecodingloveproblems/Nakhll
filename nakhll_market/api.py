@@ -250,10 +250,6 @@ class ShopOwnerProductViewSet(
         # Convert price and old price from Toman to Rial to store in DB
         old_price = data.get('OldPrice', 0) * 10
         price = data.get('Price', 0) * 10
-        if "product_tags" in data:
-            tag_lst = data.pop("product_tags")
-        else:
-            tag_lst = None
 
         if old_price:
             product = serializer.save(
@@ -261,8 +257,6 @@ class ShopOwnerProductViewSet(
         else:
             product = serializer.save(
                 OldPrice=old_price, Price=price, FK_Shop=shop)
-        if tag_lst:
-            self.update_tags(product, tag_lst)
         # product.post_range_cities.add(*post_range)
 
         # TODO: Check if product created successfully and published and alerts
@@ -275,27 +269,6 @@ class ShopOwnerProductViewSet(
             DiscordAlertInterface.product_alert(
                 product, change_type=ProductChangeTypes.UPDATE,
                 without_image=True)
-
-    @staticmethod
-    def update_tags(product, tags_list):
-        tags_list: list = [x['tag'] for x in tags_list]
-        all_tags_lst = Tag.objects.filter(shop=product.shop).values_list('name', flat=True)
-        new_tag = []
-        product_tags_id_list = ProductTag.objects.filter(product=product).values_list('tag', flat=True)
-        if product_tags_id_list:
-            product_tags_list = get_dict(Tag.objects.filter(id__in=product_tags_id_list), 'name')
-        else:
-            product_tags_list = None
-        for item in tags_list:
-            if item not in all_tags_lst:
-                new_tag.append(item)
-            if product_tags_list and item in product_tags_list:
-                tags_list.remove(item)
-        if new_tag:
-            Tag.objects.bulk_create([Tag(name=tag, shop=product.shop) for tag in new_tag])
-        if tags_list:
-            tags = Tag.objects.filter(name__in=tags_list, shop=product.shop)
-            ProductTag.objects.bulk_create([ProductTag(product=product, tag=tag) for tag in tags])
 
     def __check_shop_owner(self, shop):
         if shop.FK_ShopManager != self.request.user:
