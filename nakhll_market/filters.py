@@ -51,7 +51,7 @@ class ProductFilter(filters.FilterSet):
 
     # TODO: in all shops or in owenshop?
     def filter_tags(self, queryset, name, value):
-        tags_id = list(map(lambda x : int(x),value.split(' ')))
+        tags_id = list(map(lambda x : int(x),value.split(',')))
         product_id = ProductTag.objects.filter(tag__id__in=tags_id).values_list('product', flat=True)
         return queryset.filter(ID__in=product_id)
 
