@@ -1,5 +1,6 @@
 from django_filters import rest_framework as filters
-from nakhll_market.models import BigCity, City, Category, Product, State
+from nakhll_market.models import BigCity, City, Category, Product, State, Tag, ProductTag
+
 
 class ProductFilter(filters.FilterSet):
     min_price = filters.NumberFilter(field_name="Price", lookup_expr='gte')
@@ -11,6 +12,7 @@ class ProductFilter(filters.FilterSet):
     city = filters.CharFilter(method='filter_city')
     big_city = filters.CharFilter(method='filter_big_city')
     state = filters.CharFilter(method='filter_state')
+    tags = filters.CharFilter(method='filter_tags')
     discounted = filters.BooleanFilter(method='filter_discounted')
     shop = filters.CharFilter(method='filter_shop')
     in_campaign = filters.BooleanFilter(method='filter_in_campaign')
@@ -18,13 +20,13 @@ class ProductFilter(filters.FilterSet):
     class Meta:
         model = Product
         fields = ['search', 'min_price', 'ready', 'available', 'category', 'in_campaign',
-                    'category', 'city', 'discounted', 'is_advertisement', 'shop']
+                  'category', 'city', 'discounted', 'is_advertisement', 'shop']
 
     def filter_ready(self, queryset, name, value):
         READY_IN_STOCK = '1'
         filter_queryset = {'Status': READY_IN_STOCK, 'Inventory__gt': 0}
         return queryset.filter(**filter_queryset) if value else queryset
-    
+
     def filter_search(self, queryset, name, value):
         return queryset.filter(Title__icontains=value)
 
@@ -46,6 +48,10 @@ class ProductFilter(filters.FilterSet):
     def filter_state(self, queryset, name, value):
         states = State.objects.filter(id__in=value.split(',')).values_list('name', flat=True)
         return queryset.filter(FK_Shop__State__in=states)
+
+    def filter_tags(self, queryset, name, value):
+        product_id = ProductTag.objects.filter(id__in=value.split(' ')).values_list('product', flat=True)
+        return queryset.filter(ID__in=product_id)
 
     def filter_big_city(self, queryset, name, value):
         big_cities = BigCity.objects.filter(id__in=value.split(',')).values_list('name', flat=True)
