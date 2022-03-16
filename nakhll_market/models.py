@@ -255,7 +255,7 @@ class Shop(models.Model):
     ID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     FK_ShopManager = models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='حجره دار',
                                        related_name='ShopManager', null=True)
-    Title = models.CharField(max_length=100, verbose_name='عنوان حجره', db_index=True)
+    Title = models.CharField(max_length=100, verbose_name='عنوان حجره', db_index=True, unique=True)
     Slug = models.SlugField(verbose_name='شناسه حجره', unique=True, db_index=True, allow_unicode=True)
     Description = models.TextField(verbose_name='درباره حجره', blank=True)
     Image = models.ImageField(verbose_name='عکس حجره',
