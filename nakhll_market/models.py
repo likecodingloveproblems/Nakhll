@@ -505,7 +505,9 @@ class ShopSocialMedia(models.Model):
         verbose_name_plural = 'شبکه‌های اجتماعی حجره'
 
     def __str__(self):
-        return self.Shop.Slug
+        if hasattr(self, 'shop'):
+            return self.shop.Slug
+        return self.id
 
     shop = models.OneToOneField(Shop, verbose_name='حجره', on_delete=models.CASCADE, related_name='social_media')
     telegram = models.CharField('تلگرام', max_length=100, help_text='آی‌دی تلگرام بدون نام سایت', null=True, blank=True)
