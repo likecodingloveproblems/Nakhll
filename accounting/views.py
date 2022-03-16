@@ -206,49 +206,7 @@ class ShopInformation(View):
         )
 
 
-class ShopManagersinfoV3(GroupRequiredMixin, View):
-    group_required = u"factor-stats"
-
-    def get(self, request):
-        queryset = Invoice.objects.annotate(
-            coupons_total_price=Coalesce(Sum('coupon_usages__price_applied', output_field=FloatField()), 0),
-            ردیف=Value(' ', output_field=CharField()),
-            شماره_فاکتور=F('id'),
-            تاریخ_خرید=F('payment_datetime'),
-            نام_کالا=StringAgg('items__product__Title', delimiter=', '),
-            تعداد_کالا=StringAgg(Cast('items__count', output_field=CharField()), delimiter=', '),
-            مبلغ_هرکالا_باتخفیف=StringAgg(Cast('items__price_with_discount', output_field=CharField()), delimiter=', '),
-            نام_حجره=StringAgg('items__product__FK_Shop__Title', delimiter=', ', distinct=True),
-            کدملی_حجره_دار=StringAgg('items__product__FK_Shop__FK_ShopManager__User_Profile__NationalCode', delimiter=', ', distinct=True),
-            مبلغ_تراکنش=ExpressionWrapper(F('invoice_price_with_discount') + F('logistic_price') 
-                        - F('coupons_total_price'), output_field=FloatField()),
-            مبلغ_فاکتور=F('invoice_price_with_discount'),
-            مبلغ_حمل=F('logistic_price'),
-            وضعیت_فاکتور=F('status'),
-            شماره_شبا=StringAgg('items__product__FK_Shop__bank_account__iban', delimiter=', '),
-            کارمزدنخل=Value(0, output_field=CharField()),
-            مبلغ_پرداختی_کالا=Value(0, output_field=CharField()),
-            طلب_حجره_دار=Value(' ', output_field=CharField()),
-            تاریخ_پرداخت=Value(' ', output_field=CharField()),
-        ).order_by('-created_datetime')
-
-        queryset = queryset.values(
-            'ردیف', 'شماره_فاکتور', 'تاریخ_خرید', 'نام_کالا', 'تعداد_کالا', 'نام_حجره', 'کدملی_حجره_دار',
-            'مبلغ_تراکنش', 'مبلغ_فاکتور', 'مبلغ_حمل', 'وضعیت_فاکتور', 'شماره_شبا', 'کارمزدنخل', 'مبلغ_پرداختی_کالا',
-            'طلب_حجره_دار', 'تاریخ_پرداخت', 'address_json'
-        )
-        
-        for q in queryset:
-            address = json.loads(q['address_json']) if q['address_json'] else None
-            q['شهر_خریدار'] = address['big_city'] if address else ''
-            q['آدرس_خریدار'] = address['address'] if address else ''
-            q['خریدار'] = address['receiver_full_name'] if address else ''
-            del q['address_json']
-
-        return ExcelResponse(data=queryset)
-
-
-class Buyersinfo(GroupRequiredMixin, View):
+class BuyersInfo(GroupRequiredMixin, View):
     group_required = u"factor-stats"
 
     def get(self, request):
@@ -293,7 +251,7 @@ class Buyersinfo(GroupRequiredMixin, View):
         return ExcelResponse(data=queryset)
 
 
-class Invoicesinfo(GroupRequiredMixin, View):
+class InvoicesInfo(GroupRequiredMixin, View):
     group_required = u"factor-stats"
 
     def get(self, request):
@@ -328,72 +286,6 @@ class Invoicesinfo(GroupRequiredMixin, View):
             q['خریدار'] = address['receiver_full_name'] if address else ''
             del q['address_json']
 
-        return ExcelResponse(data=queryset)
-
-
-class SaleData(GroupRequiredMixin, View):
-    group_required = u"factor-stats"
-
-    def get(self, request):
-        queryset = Invoice.objects.annotate(
-            coupons_total_price=Coalesce(Sum('coupon_usages__price_applied', output_field=FloatField()), 0),
-            total_price=ExpressionWrapper(F('invoice_price_with_discount') + F('logistic_price')
-                    - F('coupons_total_price'), output_field=FloatField())).order_by('-created_datetime')
-        queryset = queryset.values(                    
-            'id', 'user__username', 'user__first_name', 'user__last_name', 'created_datetime', 
-            'payment_datetime', 'total_price','invoice_price_with_discount', 'invoice_price_without_discount', 
-            'logistic_price', 'address_json', 'status'
-        )
-
-        for q in queryset:
-            address = json.loads(q['address_json']) if q['address_json'] else None
-            q['city'] = address['city'] if address else ''
-            q['big_city'] = address['big_city'] if address else ''
-            q['state'] = address['state'] if address else ''
-            q['address'] = address['address'] if address else ''
-            q['zip_code'] = address['zip_code'] if address else ''
-            q['phone_number'] = address['phone_number'] if address else ''
-            q['receiver_full_name'] = address['receiver_full_name'] if address else ''
-            q['receiver_mobile_number'] = address['receiver_mobile_number'] if address else ''
-            del q['address_json']
-        
-        return ExcelResponse(data=queryset)
-
-
-class ItemData(GroupRequiredMixin, View):
-    group_required = u"factor-stats"
-
-    def get(self, request):
-        queryset = Invoice.objects.annotate(
-            products_list=StringAgg('items__product__Title', delimiter=', '),
-            products_price_list=StringAgg(Cast('items__product__Price', output_field=CharField()), delimiter=', '),
-            products_count_list=StringAgg(Cast('items__count', output_field=CharField()), delimiter=', '),
-            shops_list=StringAgg('items__product__FK_Shop__Title', delimiter=', ', distinct=True),
-            shopManagers_list=StringAgg('items__product__FK_Shop__FK_ShopManager__username', delimiter=', '),
-            shopManagers_first_name_list=StringAgg('items__product__FK_Shop__FK_ShopManager__first_name', delimiter=', '),
-            shopManagers_last_name_list=StringAgg('items__product__FK_Shop__FK_ShopManager__last_name', delimiter=', '),
-            coupons_total_price=Coalesce(Sum('coupon_usages__price_applied', output_field=FloatField()), 0),
-            total_price=ExpressionWrapper(F('invoice_price_with_discount') + F('logistic_price')
-                    - F('coupons_total_price'), output_field=FloatField())).order_by('-created_datetime')
-        queryset = queryset.values(
-            'user__username', 'user__first_name', 'user__last_name', 'created_datetime', 'payment_datetime',
-            'total_price', 'invoice_price_with_discount','invoice_price_without_discount', 'logistic_price',
-            'address_json', 'status', 'id','products_list', 'products_price_list', 'products_count_list',
-            'shops_list', 'shopManagers_list','shopManagers_first_name_list', 'shopManagers_last_name_list'
-        )
-
-        for q in queryset:
-            address = json.loads(q['address_json']) if q['address_json'] else None
-            q['city'] = address['city'] if address else ''
-            q['big_city'] = address['big_city'] if address else ''
-            q['state'] = address['state'] if address else ''
-            q['address'] = address['address'] if address else ''
-            q['zip_code'] = address['zip_code'] if address else ''
-            q['phone_number'] = address['phone_number'] if address else ''
-            q['receiver_full_name'] = address['receiver_full_name'] if address else ''
-            q['receiver_mobile_number'] = address['receiver_mobile_number'] if address else ''
-            del q['address_json']
-        
         return ExcelResponse(data=queryset)
 
 
