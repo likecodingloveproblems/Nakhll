@@ -544,6 +544,7 @@ class ProductOwnerReadSerializer(serializers.ModelSerializer):
     Product_Banner = ProductBannerWriteSerializer(many=True, read_only=True)
     post_range = serializers.PrimaryKeyRelatedField(
         source='post_range_cities', read_only=True, many=True)
+    product_tags = ProductTagWriteSerializer(many=True, read_only=False)
 
     class Meta:
         model = Product
@@ -562,7 +563,9 @@ class ProductOwnerReadSerializer(serializers.ModelSerializer):
             'PostRangeType',
             'PreparationDays',
             'category',
-            'post_range'
+            'post_range',
+            'product_tags',
+
         ]
 
 
