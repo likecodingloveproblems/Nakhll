@@ -49,8 +49,10 @@ class ProductFilter(filters.FilterSet):
         states = State.objects.filter(id__in=value.split(',')).values_list('name', flat=True)
         return queryset.filter(FK_Shop__State__in=states)
 
+    # TODO: in all shops or in owenshop?
     def filter_tags(self, queryset, name, value):
-        product_id = ProductTag.objects.filter(id__in=value.split(' ')).values_list('product', flat=True)
+        tags_id = list(map(lambda x : int(x),value.split(' ')))
+        product_id = ProductTag.objects.filter(tag__id__in=tags_id).values_list('product', flat=True)
         return queryset.filter(ID__in=product_id)
 
     def filter_big_city(self, queryset, name, value):
