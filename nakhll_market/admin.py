@@ -2,18 +2,27 @@ from typing import Dict, Optional
 from django.contrib import admin
 from django.http import HttpRequest, HttpResponse
 from django.utils.timezone import localtime
+
+from nakhll import utils
 from .models import (LandingPageSchema, Category, ShopPageSchema,
                      LandingImage, LandingPage,
                      Shop,
                      Product, ProductBanner, Profile,
                      Alert, DashboardBanner, Slider, Tag, ProductTag)
 from django.contrib import admin
+from django.contrib.admin import ModelAdmin
 from django.contrib.auth.models import Permission
 
 admin.site.site_header = 'مدیریت بازار نخل '
 
 # enable django permission setting in admin panel to define custom permissions
 admin.site.register(Permission)
+
+
+ModelAdmin.construct_change_message = (
+    lambda self, request, form, formsets, add:
+    utils.construct_change_message(request, form, formsets, add)
+)
 
 
 # profile admin panel
@@ -44,8 +53,7 @@ class ShopAdmin(admin.ModelAdmin):
     def DateUpdate(self, obj):
         return localtime(obj.DateUpdate).strftime('%Y-%m-%d %H:%M:%S')
 
-
-# -------------------------------------------------
+      
 class ProductBannerInline(admin.StackedInline):
     model = ProductBanner
     extra = 1
@@ -83,10 +91,11 @@ class CategoryAdmin(admin.ModelAdmin):
     ordering = ('-parent', 'id',)
 
 
+
 # -------------------------------------------------
 # Alert admin panel
 @admin.register(Alert)
-class AlertAdmin(admin.ModelAdmin):
+class AlertAdmin(ModelAdmin):
     list_display = ('Part', 'Slug', 'Seen', 'DateCreate', 'Description',)
     list_filter = ('Seen', 'Status', 'DateCreate', 'DateCreate', 'DateUpdate')
     search_fields = ('FK_Field', 'Description', 'Content',)
@@ -100,7 +109,7 @@ class AlertAdmin(admin.ModelAdmin):
 
 
 @admin.register(ProductBanner)
-class ProductBanner(admin.ModelAdmin):
+class ProductBanner(ModelAdmin):
     list_display = ('FK_Product', 'Title', 'DateCreate', 'DateUpdate')
     list_filter = ('FK_Product', 'Title', 'DateCreate', 'DateUpdate')
     search_fields = ('FK_Product__Title',)
@@ -116,6 +125,7 @@ class ProductBanner(admin.ModelAdmin):
 @admin.register(DashboardBanner)
 class DashboardBannerAdmin(admin.ModelAdmin):
     list_display = ('image', 'url', 'staff_user', 'created_datetime', 'publish_status')
+
     list_filter = ('staff_user', 'created_datetime', 'publish_status')
     search_fields = ('url',)
     ordering = ['id', 'created_datetime', 'publish_status']
@@ -126,8 +136,16 @@ class DashboardBannerAdmin(admin.ModelAdmin):
 
 
 @admin.register(LandingPageSchema)
-class LandingPageSchemaAdmin(admin.ModelAdmin):
-    list_display = ('component_type', 'title', 'subtitle', 'image', 'url', 'data', 'order', 'publish_status')
+class LandingPageSchemaAdmin(ModelAdmin):
+    list_display = (
+        'component_type',
+        'title',
+        'subtitle',
+        'image',
+        'url',
+        'data',
+        'order',
+        'publish_status')
     list_filter = ('publish_status', 'created_datetime', 'order')
     search_fields = ('title', 'component_type', 'subtitle', 'url', 'data')
     ordering = ['publish_status', 'created_datetime']
@@ -137,10 +155,25 @@ class LandingPageSchemaAdmin(admin.ModelAdmin):
 
 
 @admin.register(ShopPageSchema)
-class ShopPageSchemaAdmin(admin.ModelAdmin):
-    list_display = ('shop', 'component_type', 'title', 'subtitle', 'image', 'url', 'data', 'order', 'publish_status')
+class ShopPageSchemaAdmin(ModelAdmin):
+    list_display = (
+        'shop',
+        'component_type',
+        'title',
+        'subtitle',
+        'image',
+        'url',
+        'data',
+        'order',
+        'publish_status')
     list_filter = ('shop', 'publish_status', 'created_datetime', 'order')
-    search_fields = ('shop', 'title', 'component_type', 'subtitle', 'url', 'data')
+    search_fields = (
+        'shop',
+        'title',
+        'component_type',
+        'subtitle',
+        'url',
+        'data')
     ordering = ['publish_status', 'created_datetime']
 
     def created_datetime(self, obj):
@@ -148,9 +181,9 @@ class ShopPageSchemaAdmin(admin.ModelAdmin):
 
 
 @admin.register(LandingPage)
-class LandingPageAdmin(admin.ModelAdmin):
+class LandingPageAdmin(ModelAdmin):
     list_display = ('slug', 'status', 'staff', 'created_at', 'updated_at')
-    list_filter = ('status',)
+    list_filter = ('status', )
     search_fields = ('slug', 'page_data')
     ordering = ['created_at']
 
@@ -159,9 +192,14 @@ class LandingPageAdmin(admin.ModelAdmin):
 
 
 @admin.register(LandingImage)
-class LandingImageAdmin(admin.ModelAdmin):
-    list_display = ('image', 'staff', 'created_at', 'updated_at', 'landing_page')
-    list_filter = ('landing_page',)
+class LandingImageAdmin(ModelAdmin):
+    list_display = (
+        'image',
+        'staff',
+        'created_at',
+        'updated_at',
+        'landing_page')
+    list_filter = ('landing_page', )
     ordering = ['created_at']
 
     def created_datetime(self, obj):
@@ -169,7 +207,7 @@ class LandingImageAdmin(admin.ModelAdmin):
 
 
 @admin.register(Slider)
-class SliderAdmin(admin.ModelAdmin):
+class SliderAdmin(ModelAdmin):
     list_display = ('Title', 'Description', 'Location', 'DateCreate', 'Publish')
     list_filter = ('Location', 'DateCreate', 'DtatUpdate', 'Publish')
     ordering = ['DateCreate', 'id', 'Publish', 'Title', 'Location']
@@ -193,3 +231,4 @@ class ProductTagAdmin(admin.ModelAdmin):
     list_display = ['id', 'tag', 'product']
     search_fields = ['tag__name']
     autocomplete_fields = ['product', 'tag']
+
