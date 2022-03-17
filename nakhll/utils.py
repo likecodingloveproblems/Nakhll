@@ -47,6 +47,8 @@ def construct_change_message(request, form, formsets, add):
             value = form.cleaned_data[field]
             fields[field] = value
         data = dict_to_table(fields)
+    elif 'checkout_invoice' in request.POST:
+        data = 'فاکتور تسویه شد'
     change_message += 'تغییر در آیتم:<br>{data}'
 
     change_message = change_message.format(data=data)

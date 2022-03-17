@@ -14,10 +14,10 @@ from nakhll_market.models import Category, Product, Shop
 from payoff.models import Transaction
 from payoff.interfaces import PaymentInterface
 from payoff.exceptions import (
-                NoAddressException, InvoiceExpiredException,
-                InvalidInvoiceStatusException, NoItemException,
-                OutOfPostRangeProductsException
-            )
+    NoAddressException, InvoiceExpiredException,
+    InvalidInvoiceStatusException, NoItemException,
+    OutOfPostRangeProductsException
+)
 from invoice.interfaces import AccountingInterface
 from invoice.managers import AccountingManager, InvoiceItemManager
 from logistic.models import Address, ShopLogisticUnit
@@ -27,13 +27,16 @@ logger = logging.getLogger(__name__)
 
 # Create your models here.
 
+
 class Invoice(models.Model):
     class Statuses(models.TextChoices):
         AWAIT_PAYMENT = 'awaiting_paying', _('در انتظار پرداخت')
         AWAIT_SHOP_APPROVAL = 'wait_store_approv', _('در انتظار تأیید فروشگاه')
         PREPATING_PRODUCT = 'preparing_product', _('در حال آماده سازی')
-        AWAIT_CUSTOMER_APPROVAL = 'wait_customer_approv', _('در انتظار تأیید مشتری')
-        AWAIT_SHOP_CHECKOUT = 'wait_store_checkout', _('در انتظار تسویه با فروشگاه') 
+        AWAIT_CUSTOMER_APPROVAL = 'wait_customer_approv', _(
+            'در انتظار تأیید مشتری')
+        AWAIT_SHOP_CHECKOUT = 'wait_store_checkout', _(
+            'در انتظار تسویه با فروشگاه')
         COMPLETED = 'completed', _('تکمیل شده')
         CANCELED = 'canceled', _('لغو شده')
 
@@ -42,41 +45,72 @@ class Invoice(models.Model):
         verbose_name_plural = _('فاکتورها')
         ordering = ('-id',)
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_('کاربر'))
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name=_('کاربر'))
     old_id = models.UUIDField(null=True, blank=True)
-    FactorNumber = models.CharField(_('شماره فاکتور'), max_length=50, null=True, blank=True, unique=True)
-    status = models.CharField(_('وضعیت فاکتور'), max_length=20, 
-            default=Statuses.AWAIT_PAYMENT, choices=Statuses.choices)
-    address_json = models.JSONField(_('آدرس ثبت شده نهایی'), null=True, blank=True, encoder=DjangoJSONEncoder)
-    invoice_price_with_discount = models.DecimalField(_('مبلغ فاکتور با تخفیف'), max_digits=12, decimal_places=0, default=0)
-    invoice_price_without_discount = models.DecimalField(_('مبلغ فاکتور بدون تخفیف'), max_digits=12, decimal_places=0, default=0)
-    logistic_price = models.DecimalField(_('هزینه حمل و نقل'), max_digits=12, decimal_places=0, default=0)
-    created_datetime = models.DateTimeField(_('تاریخ ایجاد فاکتور'), auto_now_add=True)
-    payment_request_datetime = models.DateTimeField(_('تاریخ درخواست پرداخت'), null=True, blank=True)
-    payment_datetime = models.DateTimeField(_('تاریخ پرداخت'), null=True, blank=True)
-    payment_unique_id = models.BigIntegerField(_('شماره درخواست پرداخت'), null=True, blank=True)
-    extra_data = models.JSONField(null=True, blank=True, encoder=DjangoJSONEncoder)
-    total_weight_gram = models.PositiveIntegerField(_('وزن نهایی (گرم)'), null=True, blank=True)
-    logistic_unit_details = models.JSONField(null=True, blank=True, encoder=DjangoJSONEncoder, verbose_name=_('جزئیات واحد حمل و نقل'))
+    FactorNumber = models.CharField(
+        _('شماره فاکتور'),
+        max_length=50,
+        null=True,
+        blank=True,
+        unique=True)
+    status = models.CharField(
+        _('وضعیت فاکتور'),
+        max_length=20,
+        default=Statuses.AWAIT_PAYMENT,
+        choices=Statuses.choices)
+    address_json = models.JSONField(
+        _('آدرس ثبت شده نهایی'),
+        null=True,
+        blank=True,
+        encoder=DjangoJSONEncoder)
+    invoice_price_with_discount = models.DecimalField(
+        _('مبلغ فاکتور با تخفیف'),
+        max_digits=12, decimal_places=0, default=0)
+    invoice_price_without_discount = models.DecimalField(
+        _('مبلغ فاکتور بدون تخفیف'),
+        max_digits=12, decimal_places=0, default=0)
+    logistic_price = models.DecimalField(
+        _('هزینه حمل و نقل'),
+        max_digits=12, decimal_places=0, default=0)
+    created_datetime = models.DateTimeField(
+        _('تاریخ ایجاد فاکتور'), auto_now_add=True)
+    payment_request_datetime = models.DateTimeField(
+        _('تاریخ درخواست پرداخت'), null=True, blank=True)
+    payment_datetime = models.DateTimeField(
+        _('تاریخ پرداخت'), null=True, blank=True)
+    payment_unique_id = models.BigIntegerField(
+        _('شماره درخواست پرداخت'), null=True, blank=True)
+    extra_data = models.JSONField(
+        null=True, blank=True, encoder=DjangoJSONEncoder)
+    total_weight_gram = models.PositiveIntegerField(
+        _('وزن نهایی (گرم)'), null=True, blank=True)
+    logistic_unit_details = models.JSONField(
+        null=True, blank=True, encoder=DjangoJSONEncoder,
+        verbose_name=_('جزئیات واحد حمل و نقل'))
     objects = AccountingManager()
 
     def __str__(self):
         return f'{self.id} ({self.FactorNumber})'
 
-
     @property
     def shops(self):
-        shop_ids = self.items.values_list('product__FK_Shop__ID', flat=True).distinct()
+        shop_ids = self.items.values_list(
+            'product__FK_Shop__ID', flat=True).distinct()
         return Shop.objects.filter(ID__in=shop_ids)
 
     @property
     def products(self):
-        product_ids = self.items.values_list('product__ID', flat=True).distinct()
+        product_ids = self.items.values_list(
+            'product__ID', flat=True).distinct()
         return Product.objects.filter(ID__in=product_ids)
 
     @property
     def categories(self):
-        category_ids = self.items.values_list('product__category__id', flat=True).distinct()
+        category_ids = self.items.values_list(
+            'product__category__id', flat=True).distinct()
         return Category.objects.filter(id__in=category_ids)
 
     @property
@@ -125,7 +159,8 @@ class Invoice(models.Model):
             raise NoAddressException()
 
     def __validate_invoice_expiring_date(self):
-        expire_datetime = self.created_datetime + timedelta(hours=settings.INVOICE_EXPIRING_HOURS)
+        expire_datetime = self.created_datetime + \
+            timedelta(hours=settings.INVOICE_EXPIRING_HOURS)
         if expire_datetime < timezone.now():
             raise InvoiceExpiredException()
 
@@ -140,18 +175,19 @@ class Invoice(models.Model):
         self.status = self.Statuses.AWAIT_SHOP_APPROVAL
         self.payment_datetime = timezone.now()
         self.save()
-         
+
     def _reduce_inventory(self):
         ''' Reduce bought items from shops stock '''
         items = self.items.all()
         for item in items:
             item.product.reduce_stock(item.count)
-   
+
     def _send_notifications(self):
         ''' Send SMS to user and shop_owner and create alert for staff'''
         shop_owner_mobiles = self.items.all().values_list(
-            'product__FK_Shop__FK_ShopManager__User_Profile__MobileNumber', flat=True).distinct()
-        logger.debug(f'Shop owner mobiles: {shop_owner_mobiles}') 
+            'product__FK_Shop__FK_ShopManager__User_Profile__MobileNumber',
+            flat=True).distinct()
+        logger.debug(f'Shop owner mobiles: {shop_owner_mobiles}')
         for mobile_number in shop_owner_mobiles:
             Kavenegar.shop_new_order(mobile_number, self.id)
         AlertInterface.new_order(self)
@@ -183,16 +219,20 @@ class Invoice(models.Model):
         for item in self.items.all():
             cart.add_product(item.product)
 
+
 class InvoiceItem(models.Model):
     class Meta:
         verbose_name = _('آیتم فاکتور')
         verbose_name_plural = _('آیتم های فاکتور')
+
     class ItemStatuses(models.TextChoices):
         AWAIT_PAYMENT = 'awaiting_paying', _('در انتظار پرداخت')
         AWAIT_SHOP_APPROVAL = 'wait_store_approv', _('در انتظار تأیید فروشگاه')
         PREPATING_PRODUCT = 'preparing_product', _('در حال آماده سازی')
-        AWAIT_CUSTOMER_APPROVAL = 'wait_customer_approv', _('در انتظار تأیید مشتری')
-        AWAIT_SHOP_CHECKOUT = 'wait_store_checkout', _('در انتظار تسویه با فروشگاه') 
+        AWAIT_CUSTOMER_APPROVAL = 'wait_customer_approv', _(
+            'در انتظار تأیید مشتری')
+        AWAIT_SHOP_CHECKOUT = 'wait_store_checkout', _(
+            'در انتظار تسویه با فروشگاه')
         COMPLETED = 'completed', _('تکمیل شده')
         CANCELED = 'canceled', _('لغو شده')
 
@@ -200,38 +240,71 @@ class InvoiceItem(models.Model):
         AWAIT_CONFIRM = 'awaiting_confirm', _('در انتظار تایید')
         CONFIRMED = 'confirmed', _('تایید شده')
         REJECTED = 'rejected', _('رد شده')
-    
+
     class PostType(models.TextChoices):
         IRPOST = 'irpost', _('شرکت پست')
         INCITY = 'incity', _('درون شهری')
 
-    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name='items',
-                        verbose_name=_('فاکتور'))
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, 
-                        related_name='invoice_items')
+    invoice = models.ForeignKey(
+        Invoice,
+        on_delete=models.CASCADE,
+        related_name='items',
+        verbose_name=_('فاکتور'))
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True,
+                                related_name='invoice_items')
     count = models.IntegerField(_('تعداد'), default=1)
-    status = models.CharField(_('وضعیت'), max_length=20, choices=ItemStatuses.choices,
-                        default=ItemStatuses.AWAIT_PAYMENT)
+    status = models.CharField(
+        _('وضعیت'),
+        max_length=20,
+        choices=ItemStatuses.choices,
+        default=ItemStatuses.AWAIT_PAYMENT)
 
     slug = models.CharField(max_length=500, null=True, blank=True)
     name = models.CharField(_('نام محصول'), max_length=500)
-    price_with_discount = models.DecimalField(_('قیمت با تخفیف'), max_digits=12, decimal_places=0)
-    price_without_discount = models.DecimalField(_('قیمت بدون تخفیف'), max_digits=12, decimal_places=0)
+    price_with_discount = models.DecimalField(
+        _('قیمت با تخفیف'), max_digits=12, decimal_places=0)
+    price_without_discount = models.DecimalField(
+        _('قیمت بدون تخفیف'), max_digits=12, decimal_places=0)
     weight = models.DecimalField(_('وزن'), max_digits=10, decimal_places=0)
-    image = models.ImageField(_('تصویر'), upload_to='invoice_items', null=True, blank=True, max_length=500)
-    image_thumbnail = models.ImageField(_('تصویر کوچک'), upload_to='invoice_items',
-                        null=True, blank=True, max_length=500)
+    image = models.ImageField(
+        _('تصویر'),
+        upload_to='invoice_items',
+        null=True,
+        blank=True,
+        max_length=500)
+    image_thumbnail = models.ImageField(
+        _('تصویر کوچک'),
+        upload_to='invoice_items',
+        null=True,
+        blank=True,
+        max_length=500)
     shop_name = models.CharField(_('نام فروشگاه'), max_length=500)
     added_datetime = models.DateTimeField(_('تاریخ افزودن'), auto_now_add=True)
-    shop_confirmed_datetime = models.DateTimeField(_('تاریخ تایید فروشگاه'), null=True, blank=True)
-    post_type = models.CharField(_('نوع پست'), max_length=20, choices=PostType.choices,
-                        null=True, blank=True)
-    post_tracking_code = models.CharField(_('کد رهگیری پستی'), max_length=100, null=True, blank=True)
-    user_confirm_datetime = models.DateTimeField(_('تاریخ تایید کاربر'), null=True, blank=True)
-    user_confirm_status = models.CharField(_('وضعیت تایید کاربر'), max_length=20,
-                        choices=UserConfirmStatuses.choices, null=True, blank=True)
-    user_confirm_comment = models.TextField(_('توضیحات تایید کاربر'), null=True, blank=True)
-    barcode = models.CharField(_('کد بارکد'), max_length=100, null=True, blank=True)
-    
+    shop_confirmed_datetime = models.DateTimeField(
+        _('تاریخ تایید فروشگاه'), null=True, blank=True)
+    post_type = models.CharField(
+        _('نوع پست'),
+        max_length=20,
+        choices=PostType.choices,
+        null=True,
+        blank=True)
+    post_tracking_code = models.CharField(
+        _('کد رهگیری پستی'),
+        max_length=100, null=True, blank=True)
+    user_confirm_datetime = models.DateTimeField(
+        _('تاریخ تایید کاربر'), null=True, blank=True)
+    user_confirm_status = models.CharField(
+        _('وضعیت تایید کاربر'),
+        max_length=20,
+        choices=UserConfirmStatuses.choices,
+        null=True,
+        blank=True)
+    user_confirm_comment = models.TextField(
+        _('توضیحات تایید کاربر'), null=True, blank=True)
+    barcode = models.CharField(
+        _('کد بارکد'),
+        max_length=100,
+        null=True,
+        blank=True)
+
     objects = InvoiceItemManager()
-       
