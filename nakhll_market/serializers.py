@@ -498,7 +498,9 @@ class ProductOwnerWriteSerializer(serializers.ModelSerializer):
             return
         tags_list: list = [x['tag'] for x in validated_data.pop('product_tags')]
         if tags_list:
-            all_tags = Tag.objects.filter(shop=instance.shop).values_list('name', flat=True)
+            all_tags = Tag.objects.filter(
+                shop=instance.shop).values_list(
+                'name', flat=True)
             new_tag = []
             product_tags_id_list = ProductTag.objects.filter(
                 product=instance).values_list('tag', flat=True)
@@ -587,7 +589,9 @@ class ProductOwnerReadSerializer(serializers.ModelSerializer):
 
     def get_all_tags(self, obj):
         tags = Tag.objects.filter(shop=obj.shop)
+        tags = TagOwnerListSerializer(tags, many=True).data
         return tags
+
 
 class ProductCategorySerializer(serializers.Serializer):
     product = serializers.UUIDField()
