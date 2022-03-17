@@ -180,7 +180,7 @@ class ShopInformation(View):
                 ShopProduct__invoice_items__invoice__payment_datetime__gte=start_date)
         except ValueError:
             pass
-        queryset = Shop.objects.annotate(
+        queryset = queryset.annotate(
             available_product=Case(
                 When(ShopProduct__Available=True, then=Value(1))),
             available_product_count=Count('available_product'),

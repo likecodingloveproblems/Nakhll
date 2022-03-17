@@ -1,5 +1,7 @@
+from django.http import HttpResponseRedirect
 import jdatetime
 import json
+from django.db.models import F
 from django.contrib import admin
 from django.utils.timezone import localtime
 from invoice.models import Invoice, InvoiceItem
@@ -41,11 +43,10 @@ class InvoiceAdmin(admin.ModelAdmin):
         'id',
         'user',
         'status',
-        'payment_status',
+        'is_payed',
         'final_price',
         'post_price',
         'coupons_total_price',
-        'receiver_mobile_number',
         'receiver_full_name',
         'created_datetime_jalali',
         'post_tracking_code',
@@ -57,12 +58,12 @@ class InvoiceAdmin(admin.ModelAdmin):
         'post_price',
         'coupons_total_price',
         'display_address',
-        'receiver_mobile_number',
         'receiver_full_name',
         'created_datetime_jalali',
         'post_tracking_code',
+        'status',
         'shop_iban',
-        'payment_status',
+        'is_payed',
     )
     ordering = ['-created_datetime', ]
     search_fields = ('id', 'FactorNumber')
@@ -83,19 +84,12 @@ class InvoiceAdmin(admin.ModelAdmin):
         'total_weight_gram',
         'final_price',
         'shop_iban',
-        'payment_status',
+        'is_payed',
         'created_datetime_jalali',
         'coupons_total_price')
 
     inlines = [InvoiceItemInline, CouponUsageInline]
-
-    def receiver_mobile_number(self, obj):
-        user_mobile_number = obj.user.User_Profile.MobileNumber
-        if obj.address_json:
-            address = json.loads(obj.address_json)
-            return address.get('receiver_mobile_number', user_mobile_number)
-        return user_mobile_number
-    receiver_mobile_number.short_description = 'شماره همراه'
+    change_form_template = "admin/custom/invoice_changeform.html"
 
     def receiver_full_name(self, obj):
         if obj.address_json:
@@ -117,11 +111,10 @@ class InvoiceAdmin(admin.ModelAdmin):
         return text
     shop_iban.short_description = 'شماره حساب'
 
-    def payment_status(self, obj: Invoice):
-        if obj.status == obj.Statuses.AWAIT_PAYMENT:
-            return 'پرداخت نشده'
-        return 'پرداخت شده'
-    payment_status.short_description = 'وضعیت پرداخت'
+    def is_payed(self, obj: Invoice):
+        return not obj.status == obj.Statuses.AWAIT_PAYMENT
+    is_payed.short_description = 'پرداخت شده؟'
+    is_payed.boolean = True
 
     def final_price(self, obj):
         return f'{obj.final_price:,} ریال'
@@ -153,7 +146,21 @@ class InvoiceAdmin(admin.ModelAdmin):
             zip_code = address.get('zip_code', '')
             reveiver_name = address.get('receiver_full_name', '')
             reveiver_mobile_number = address.get('receiver_mobile_number', '')
-            return f'{state}, {big_city}, {city}, {address_text}\n\
-                    کد پستی: {zip_code} - گیرنده:{reveiver_name} - شماره تماس:{reveiver_mobile_number}'
+            return (f'{state}, {big_city}, {city}, {address_text}\n'
+                    'کد پستی: {zip_code} - گیرنده:{reveiver_name}'
+                    '- شماره تماس:{reveiver_mobile_number}')
         return ''
     display_address.short_description = 'آدرس'
+
+    def response_change(self, request, obj: Invoice):
+        if "checkout_invoice" in request.POST:
+            if request.user.has_perm('invoice.checkout_invoice'):
+                obj.status = obj.Statuses.COMPLETED
+                obj.save()
+                self.message_user(request, "وضعیت فاکتور با موفقیت تغییر کرد")
+                return HttpResponseRedirect(".")
+            else:
+                self.message_user(
+                    request, "شما دسترسی لازم برای این کار را ندارید")
+                return HttpResponseRedirect(".")
+        return super().response_change(request, obj)
