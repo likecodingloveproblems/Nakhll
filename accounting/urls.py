@@ -8,8 +8,8 @@ from accounting.views import (
     ProductStats,
     UserStats,
     InvoiceStats,
-    SaleData,
-    ItemData)
+    BuyersInfo,
+    InvoicesInfo)
 
 app_name = 'accounting'
 
@@ -47,10 +47,11 @@ urlpatterns = [
         ShopLogisticUnitView.as_view(),
         name='shop-logistic-stats'),
     path(
-        'sale-data/',
-        SaleData.as_view(),
-        name='sale-data'),
+        'buyers-info/',
+        BuyersInfo.as_view(),
+        name='buyers_information'),
     path(
-        'item-data/',
-        ItemData.as_view(),
-        name='item-data')]
+        'invoices-info/',
+        InvoicesInfo.as_view(),
+        name='invoices_information'),
+]

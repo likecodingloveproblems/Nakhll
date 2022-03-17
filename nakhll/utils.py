@@ -21,6 +21,13 @@ def queryset_to_csv(queryset, filename):
             writer.writerow(obj)
 
 
+
+def get_dict(objects, key):
+    dic = {}
+    for item in objects:
+        dic[getattr(item, key)] = item.id
+    return dic
+
 def construct_change_message(request, form, formsets, add):
     """Construct a change message from a form and formsets.
 

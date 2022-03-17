@@ -12,11 +12,13 @@ from braces.views import GroupRequiredMixin
 from excel_response import ExcelResponse
 from django.db.models import Count, Sum, Q
 from django.db.models.functions import Coalesce
+from django.db.models.functions import Cast
+from django.db.models import DateField
 
 from nakhll_market.interface import DiscordAlertInterface
 from nakhll_market.models import Profile, Shop, Product
 from logistic.models import ShopLogisticUnit
-from invoice.models import Invoice
+from invoice.models import Invoice, InvoiceItem
 
 
 class ShopManagersInformation(GroupRequiredMixin, View):
@@ -131,28 +133,30 @@ class ProductStats(GroupRequiredMixin, View):
     group_required = u"factor-stats"
 
     def get(self, request):
-        queryset = Product.objects.annotate(
-            sell_count=Count('invoice_items')).annotate(
-            sell_product_count=Sum('invoice_items__count')).values(
-            'Title', 'Slug', 'new_category__name', 'FK_Shop__Title',
-            'FK_Shop__Slug', 'FK_Shop__State', 'FK_Shop__BigCity',
-            'FK_Shop__City', 'FK_Shop__Location', 'FK_Shop__Available',
-            'FK_Shop__Publish', 'FK_Shop__FK_ShopManager__username',
-            'sell_count', 'sell_product_count', 'Price', 'OldPrice',
-            'DateCreate', 'DateUpdate', 'Inventory', 'Net_Weight',
-            'Weight_With_Packing',)
-
+        queryset = Product.objects\
+            .annotate(sell_count = Count('invoice_items'),
+            sell_product_count=Sum('invoice_items__count'))\
+            .values(
+                'Title', 'Slug', 'new_category__name', 'FK_Shop__Title', 
+                'FK_Shop__Slug', 'FK_Shop__State', 'FK_Shop__BigCity', 'FK_Shop__City',
+                'FK_Shop__Location', 'FK_Shop__Available', 'FK_Shop__Publish', 
+                'FK_Shop__FK_ShopManager__username', 'sell_count',
+                'sell_product_count', 'Price', 'OldPrice', 'DateCreate', 'DateUpdate',
+                'Inventory', 'Net_Weight', 'Weight_With_Packing',
+                )
+        
         return ExcelResponse(
             data=queryset
         )
 
 
 class UserStats(View):
-    def get(self, request):
-        queryset = Profile.objects.annotate(
-            shop_count=Count('FK_User__ShopManager')).values(
-            'MobileNumber', 'NationalCode', 'FK_User__first_name',
-            'FK_User__last_name', 'shop_count')
+    def get (self , request):
+        queryset =  Profile.objects\
+            .annotate(shop_count=Count('FK_User__ShopManager')).values(
+                'MobileNumber', 'NationalCode', 'FK_User__first_name', 'FK_User__last_name', 'shop_count'
+                )
+
 
         return ExcelResponse(
             data=queryset
@@ -222,128 +226,84 @@ class ShopInformation(View):
         )
 
 
-class SaleData(GroupRequiredMixin, View):
-    """Sale Data as excel file requested by accounting"""
+class BuyersInfo(GroupRequiredMixin, View):
     group_required = u"factor-stats"
 
     def get(self, request):
-        """pylint: disable=unused-argument, missing-docstring"""
-        queryset = Invoice.objects.annotate(
-            coupons_total_price=Coalesce(
-                Sum(
-                    'coupon_usages__price_applied',
-                    output_field=FloatField()),
-                0),
-            total_price=ExpressionWrapper(
-                F('invoice_price_with_discount') +
-                F('logistic_price') -
-                F('coupons_total_price'),
-                output_field=FloatField())).order_by('-created_datetime')
-        queryset = queryset.values(
-            'id',
-            'user__username',
-            'user__first_name',
-            'user__last_name',
-            'created_datetime',
-            'payment_datetime',
-            'total_price',
-            'invoice_price_with_discount',
-            'invoice_price_without_discount',
-            'logistic_price',
-            'address_json',
-            'status')
+        queryset = InvoiceItem.objects.exclude(status='awaiting_paying').annotate(
+            coupons_total_price=Coalesce(Sum('invoice__coupon_usages__price_applied', output_field=FloatField()), 0),
+            ردیف=Value(' ', output_field=CharField()),
+            شماره_فاکتور=F('invoice__id'),
+            تاریخ_خرید=Cast(F('invoice__payment_datetime'), output_field=DateField()),
+            نام_کالا=StringAgg('product__Title', delimiter=', '),
+            تعداد_کالا=StringAgg(Cast('count', output_field=CharField()), delimiter=', '),
+            مبلغ_هرکالا_باتخفیف=StringAgg(Cast('price_with_discount', output_field=CharField()), delimiter=', '),
+            نام_حجره=StringAgg('product__FK_Shop__Title', delimiter=', ', distinct=True),
+            کدملی_حجره_دار=StringAgg('product__FK_Shop__FK_ShopManager__User_Profile__NationalCode', delimiter=', ', distinct=True),
+            مبلغ_تراکنش=ExpressionWrapper(F('invoice__invoice_price_with_discount') + F('invoice__logistic_price') 
+                        - F('coupons_total_price'), output_field=FloatField()),
+            مبلغ_فاکتور=F('invoice__invoice_price_with_discount'),
+            مبلغ_حمل=F('invoice__logistic_price'),
+            مجموع_کوپن_ها=F('coupons_total_price'),
+            وضعیت_فاکتور=F('invoice__status'),
+            شماره_شبا=StringAgg('product__FK_Shop__bank_account__iban', delimiter=', '),
+            کارمزدنخل=Value(0, output_field=CharField()),
+            مبلغ_پرداختی_کالا=Value(0, output_field=CharField()),
+            طلب_حجره_دار=Value(' ', output_field=CharField()),
+            تاریخ_پرداخت=Value(' ', output_field=CharField()),
+            شماره_شبا_خریدار_جهت_لغو=Value(' ', output_field=CharField()),
+            address_json=F('invoice__address_json'),
+        ).order_by('-invoice__created_datetime')
 
+        queryset = queryset.values(
+            'ردیف', 'شماره_فاکتور', 'address_json', 'تاریخ_خرید', 'نام_کالا', 'تعداد_کالا', 'نام_حجره', 'مبلغ_هرکالا_باتخفیف',
+            'مبلغ_تراکنش', 'مبلغ_فاکتور', 'مبلغ_حمل', 'مجموع_کوپن_ها', 'وضعیت_فاکتور', 'نام_حجره', 'کدملی_حجره_دار',
+            'شماره_شبا', 'کارمزدنخل', 'کارمزدنخل', 'مبلغ_پرداختی_کالا', 'طلب_حجره_دار', 'تاریخ_پرداخت', 'شماره_شبا_خریدار_جهت_لغو'
+        )
+        
         for q in queryset:
-            address = json.loads(
-                q['address_json']) if q['address_json'] else None
-            q['city'] = address['city'] if address else ''
-            q['big_city'] = address['big_city'] if address else ''
-            q['state'] = address['state'] if address else ''
-            q['address'] = address['address'] if address else ''
-            q['zip_code'] = address['zip_code'] if address else ''
-            q['phone_number'] = address['phone_number'] if address else ''
-            q['receiver_full_name'] = address['receiver_full_name'] if address else ''
-            q['receiver_mobile_number'] = address['receiver_mobile_number'] if address else ''
+            address = json.loads(q['address_json']) if q['address_json'] else None
+            q['خریدار'] = address['receiver_full_name'] if address else ''
+            q['شهر_خریدار'] = address['big_city'] if address else ''
+            q['آدرس_خریدار'] = address['address'] if address else ''
             del q['address_json']
 
         return ExcelResponse(data=queryset)
 
 
-class ItemData(GroupRequiredMixin, View):
-    """Item Data as excel file requested by accounting"""
+class InvoicesInfo(GroupRequiredMixin, View):
     group_required = u"factor-stats"
 
     def get(self, request):
-        """pylint: disable=unused-argument, missing-docstring"""
-        queryset = Invoice.objects.annotate(
-            products_list=StringAgg(
-                'items__product__Title', delimiter=', '),
-            products_price_list=StringAgg(
-                Cast('items__product__Price', output_field=CharField()),
-                delimiter=', '),
-            products_count_list=StringAgg(
-                Cast('items__count', output_field=CharField()),
-                delimiter=', '),
-            shops_list=StringAgg(
-                'items__product__FK_Shop__Title', delimiter=', ',
-                distinct=True),
-            shopManagers_list=StringAgg(
-                'items__product__FK_Shop__FK_ShopManager__username',
-                delimiter=', '),
-            shopManagers_first_name_list=StringAgg(
-                'items__product__FK_Shop__FK_ShopManager__first_name',
-                delimiter=', '),
-            shopManagers_last_name_list=StringAgg(
-                'items__product__FK_Shop__FK_ShopManager__last_name',
-                delimiter=', '),
-            coupons_total_price=Coalesce(
-                Sum(
-                    'coupon_usages__price_applied', output_field=FloatField()),
-                0),
-            total_price=ExpressionWrapper(
-                F('invoice_price_with_discount') + F('logistic_price') -
-                F('coupons_total_price'),
-                output_field=FloatField())).order_by('-created_datetime')
+        queryset = Invoice.objects.exclude(status='awaiting_paying').annotate(
+            coupons_total_price=Coalesce(Sum('coupon_usages__price_applied', output_field=FloatField()), 0),
+            ردیف=Value(' ', output_field=CharField()),
+            شماره_فاکتور=F('id'),
+            تاریخ_خرید=Cast(F('payment_datetime'), output_field=DateField()),
+            مبلغ_تراکنش=ExpressionWrapper(F('invoice_price_with_discount') + F('logistic_price') 
+                        - F('coupons_total_price'), output_field=FloatField()),
+            مبلغ_فاکتور=F('invoice_price_with_discount'),
+            مبلغ_حمل=F('logistic_price'),
+            نوع_فاکتور=F('status'),
+            شماره_شبا=StringAgg('items__product__FK_Shop__bank_account__iban', delimiter=', '),
+            کارمزدنخل=Value(0, output_field=CharField()),
+            مبلغ_پرداختی_کالا=Value(0, output_field=CharField()),
+            طلب_حجره_دار=Value(' ', output_field=CharField()),
+            تاریخ_پرداخت=Value(' ', output_field=CharField()),
+        ).order_by('-created_datetime')
+
         queryset = queryset.values(
-            'user__username',
-            'user__first_name',
-            'user__last_name',
-            'created_datetime',
-            'payment_datetime',
-            'total_price',
-            'invoice_price_with_discount',
-            'invoice_price_without_discount',
-            'logistic_price',
-            'address_json',
-            'status',
-            'id',
-            'products_list',
-            'products_price_list',
-            'products_count_list',
-            'shops_list',
-            'shopManagers_list',
-            'shopManagers_first_name_list',
-            'shopManagers_last_name_list')
-
-        # queryset = queryset.values(
-        #     'user__username', 'user__first_name', 'user__last_name', 'created_datetime', 'payment_datetime',
-        #     'total_price', 'invoice_price_with_discount','invoice_price_without_discount', 'logistic_price',
-        #     'address_json', 'status', 'FactorNumber','products_list', 'prodeucts_price_list',
-        #     'products_count_list', 'shops_list', 'shopManagers_list','shopManagers_first_name_list',
-        #     'shopManagers_last_name_list'
-        # )
-
+            'ردیف', 'شماره_فاکتور', 'address_json', 'تاریخ_خرید', 'مبلغ_تراکنش', 'مبلغ_فاکتور', 'مبلغ_حمل', 'نوع_فاکتور', 'شماره_شبا',
+             'کارمزدنخل', 'مبلغ_پرداختی_کالا', 'طلب_حجره_دار', 'تاریخ_پرداخت', 
+        )
+        
         for q in queryset:
-            address = json.loads(
-                q['address_json']) if q['address_json'] else None
-            q['city'] = address['city'] if address else ''
-            q['big_city'] = address['big_city'] if address else ''
-            q['state'] = address['state'] if address else ''
-            q['address'] = address['address'] if address else ''
-            q['zip_code'] = address['zip_code'] if address else ''
-            q['phone_number'] = address['phone_number'] if address else ''
-            q['receiver_full_name'] = address['receiver_full_name'] if address else ''
-            q['receiver_mobile_number'] = address['receiver_mobile_number'] if address else ''
+            address = json.loads(q['address_json']) if q['address_json'] else None
+            q['خریدار'] = address['receiver_full_name'] if address else ''
+            q['شهر_خریدار'] = address['big_city'] if address else ''
+            q['آدرس_خریدار'] = address['address'] if address else ''
+            q['بارکدپستی'] = address['zip_code'] if address else ''
+            q['خریدار'] = address['receiver_full_name'] if address else ''
             del q['address_json']
 
         return ExcelResponse(data=queryset)
@@ -419,25 +379,10 @@ class ShopLogisticUnitView(View):
         DiscordAlertInterface.send_alert(
             'TEST IN SHOP LOGISTIC UNIT STATS: Someone get Shop Logistic Unit Stats')
         queryset = ShopLogisticUnit.objects.values(
-            'shop__Title',
-            'name',
-            'logo',
-            'logo_type',
-            'is_active',
-            'is_publish',
-            'description', 'created_at',
-            'updated_at',
-            'constraint__categories',
-            'constraint__cities',
-            'constraint__max_weight',
-            'constraint__min_weight',
-            'constraint__max_cart_price',
-            'constraint__min_cart_price',
-            'constraint__max_cart_count',
-            'constraint__min_cart_count',
-            'calculation_metric__price_per_kilogram',
-            'calculation_metric__price_per_extra_kilogram',
-            'calculation_metric__pay_time',
-            'calculation_metric__payer',
-        )
-        return ExcelResponse(data=queryset)
+            'shop__Title', 'name', 'logo', 'logo_type', 'is_active', 'is_publish', 'description','created_at',
+            'updated_at', 'constraint__categories', 'constraint__cities', 'constraint__max_weight',
+            'constraint__min_weight', 'constraint__max_cart_price', 'constraint__min_cart_price',
+            'constraint__max_cart_count', 'constraint__min_cart_count', 'calculation_metric__price_per_kilogram',
+            'calculation_metric__price_per_extra_kilogram', 'calculation_metric__pay_time', 'calculation_metric__payer'
+            )
+        return ExcelResponse(data = queryset)
