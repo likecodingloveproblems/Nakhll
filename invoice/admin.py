@@ -147,9 +147,9 @@ class InvoiceAdmin(admin.ModelAdmin):
             reveiver_name = address.get('receiver_full_name', '')
             reveiver_mobile_number = address.get('receiver_mobile_number', '')
             return (f'{state}, {big_city}, {city}, {address_text}\n'
-                    'کد پستی: {zip_code} - گیرنده:{reveiver_name}'
-                    '- شماره تماس:{reveiver_mobile_number}')
-        return ''
+                    f'کد پستی: {zip_code} - گیرنده:{reveiver_name}'
+                    f'- شماره تماس:{reveiver_mobile_number}')
+        return '-'
     display_address.short_description = 'آدرس'
 
     def response_change(self, request, obj: Invoice):
