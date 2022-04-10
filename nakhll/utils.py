@@ -21,12 +21,12 @@ def queryset_to_csv(queryset, filename):
             writer.writerow(obj)
 
 
-
 def get_dict(objects, key):
     dic = {}
     for item in objects:
         dic[getattr(item, key)] = item.id
     return dic
+
 
 def construct_change_message(request, form, formsets, add):
     """Construct a change message from a form and formsets.
@@ -45,6 +45,7 @@ def construct_change_message(request, form, formsets, add):
         str: A string which represents the change message.
     """
     change_message = ""
+    data = ""
     if add:
         data = dict_to_table(form.cleaned_data)
         change_message += 'آیتم جدید با مشخصات زیر ایجاد شد:<br>{data}'
