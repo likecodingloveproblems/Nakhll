@@ -212,7 +212,7 @@ class ShopInformation(View):
                 'ShopProduct__invoice_items__price_with_discount',
                 filter=payment_price_filter),).values(
             'Title', 'DateCreate', 'FK_ShopManager__first_name',
-            'FK_ShopManager__last_name', 'State', 'BigCity', 'City',
+            'FK_ShopManager__last_name','Slug' ,'State', 'BigCity', 'City',
             'available_product_count', 'unavailable_product_count',
             'publish_product_count', 'unpublish_product_count',
             'exist_product_count', 'production_after_order_count',
