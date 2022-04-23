@@ -218,8 +218,8 @@ class Invoice(models.Model):
         cart = CartManager.user_active_cart(self.user)
         for item in self.items.all():
             cart.add_product(item.product)
-        # cart.reset_coupons()
-        # cart.reset_address()
+        cart.reset_coupons()
+        cart.reset_address()
 
 
 class InvoiceItem(models.Model):

@@ -137,28 +137,28 @@ class UserCartItemViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
         cart_serializer = CartSerializer(cart)
         headers = self.get_success_headers(serializer.data)
         response = Response(cart_serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-        # cart.reset_address()
-        # cart.reset_coupons()
+        cart.reset_address()
+        cart.reset_coupons()
         return self.append_cookie(response, cart)
 
     @action(detail=True, methods=['DELETE'], name='Remove item from active cart', url_path='reduce')
     def reduce_item(self, request, pk):
-        # cart = self.get_cart()
+        cart = self.get_cart()
         cart_item = self.get_object()
         cart_item.reduce_count()
         cart_serializer = CartSerializer(cart_item.cart)
-        # cart.reset_address()
-        # cart.reset_coupons()
+        cart.reset_address()
+        cart.reset_coupons()
         return Response(cart_serializer.data, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['DELETE'], name='Delete whole cart item', url_path='delete')
     def delete_item(self, request, pk):
-        # cart = self.get_cart()
+        cart = self.get_cart()
         cart_item = self.get_object()
         cart_item.delete()
         cart_serializer = CartSerializer(cart_item.cart)
-        # cart.reset_address()
-        # cart.reset_coupons()
+        cart.reset_address()
+        cart.reset_coupons()
         return Response(cart_serializer.data, status=status.HTTP_200_OK)
 
     def append_cookie(self, response, cart):
