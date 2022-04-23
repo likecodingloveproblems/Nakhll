@@ -220,7 +220,15 @@ class Cart(models.Model):
     def _validate_coupons(self):
         errors = self.get_coupon_errors()
         if errors:
-            raise errors    
+            raise errors
+
+    def reset_coupons(self):
+        self.coupons.clear()
+
+    def reset_address(self):
+        self.address = None
+        self.logistic_details= None
+        self.save()
         
 
 class CartItem(models.Model):
