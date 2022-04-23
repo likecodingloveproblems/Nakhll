@@ -227,6 +227,7 @@ class Cart(models.Model):
 
     def reset_address(self):
         self.address = None
+        self.logistic_details= None
         self.save()
         
 
