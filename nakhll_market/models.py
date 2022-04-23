@@ -671,7 +671,8 @@ class ProductManager(models.Manager):
 
     def get_available_products(self):
         return self.get_queryset() \
-            .filter(Publish=True, Available=True, Status__in=['1', '2', '3'], Inventory=True)
+            .filter(Publish=True, Available=True, Status__in=['1', '2', '3'], Inventory=True,
+                    FK_Shop__Available=True, FK_Shop__Publish=True)
 
     def get_most_sold_product(self):
         return self.get_available_products() \
