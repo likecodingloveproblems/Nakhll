@@ -9,6 +9,9 @@ from django.db.models.functions import Cast
 from django.core.serializers.json import DjangoJSONEncoder
 from rest_framework.exceptions import ValidationError
 from coupon.serializers import CouponSerializer
+from coupon.validators import DateTimeValidator, MaxUserCountValidator, MaxCountValidator, PriceValidator, \
+    MinPriceValidator, MaxPriceValidator, ProductValidator, AvailableValidator, UserValidator, ShopValidator, \
+    BudgetValidator, CityValidator
 from invoice.models import Invoice, InvoiceItem
 from cart.managers import CartItemManager, CartManager
 from cart.utils import get_user_or_guest
@@ -114,9 +117,23 @@ class Cart(models.Model):
             logistic_unit_details=lud.as_dict(),
             address_json=self.address.as_json(),
         )
-
+        validators_list = [
+            DateTimeValidator(),
+            MaxUserCountValidator(self.user),
+            MaxCountValidator(),
+            PriceValidator(self),
+            MinPriceValidator(self),
+            MaxPriceValidator(self),
+            ProductValidator(self),
+            AvailableValidator(),
+            UserValidator(self.user),
+            ShopValidator(self),
+            BudgetValidator(),
+            CityValidator(self),
+        ]
         for coupon in self.coupons.all():
-            coupon.apply(invoice)
+            if coupon.is_valid(self, validators_list):
+                coupon.apply(invoice)
 
         cart_items = self.items.all()
         for item in cart_items:
@@ -164,8 +181,22 @@ class Cart(models.Model):
 
     def get_coupon_errors(self):
         errors = []
+        validators_list = [
+            DateTimeValidator(),
+            MaxUserCountValidator(self.user),
+            MaxCountValidator(),
+            PriceValidator(self),
+            MinPriceValidator(self),
+            MaxPriceValidator(self),
+            ProductValidator(self),
+            AvailableValidator(),
+            UserValidator(self.user),
+            ShopValidator(self),
+            BudgetValidator(),
+            CityValidator(self),
+        ]
         for coupon in self.coupons.all():
-            if coupon.is_valid(self):
+            if coupon.is_valid(self,validators_list):
                 continue
             errors.extend(coupon.errors)
         return errors
