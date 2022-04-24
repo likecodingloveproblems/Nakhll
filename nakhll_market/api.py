@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.http import response
 from django.http.response import Http404
 from django.db.models import Q, F, Count, Value, BooleanField
-from django.db.models.aggregates import Sum
+from django.db.models.aggregates import Sum, Max, Min
 from django.db.models.expressions import Case, When
 from django.db.models.functions import Cast
 from django.contrib.auth.models import User
@@ -334,7 +334,7 @@ class ProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     ordering_fields = ('Title', 'Price', 'DiscountPrecentage', 'DateCreate',)
 
     def get_queryset(self):
-        return Product.objects.select_related('FK_Shop').annotate(
+        res = Product.objects.select_related('FK_Shop').annotate(
             is_available=Cast(Case(
                 When(Q(FK_Shop__Publish=True) & Q(FK_Shop__Available=True) &
                      Q(Publish=True) & Q(Available=True) & Q(Inventory__gt=0),
@@ -345,6 +345,15 @@ class ProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             When(OldPrice__gt=0, then=(
                     (F('OldPrice') - F('Price')) * 100 / F('OldPrice'))
                  ), default=0)).order_by('-is_available', '-category_id')
+        self.Max_price = res.aggregate(Max('Price'))['Price__max']
+        self.Min_price = res.aggregate(Min('Price'))['Price__min']
+        return res
+
+    def get_paginated_response(self, data):
+        res = super().get_paginated_response(data)
+        res.data['max_price'] = self.Max_price
+        res.data['min_price'] = self.Min_price
+        return res
 
 
 class ProductDetailsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
