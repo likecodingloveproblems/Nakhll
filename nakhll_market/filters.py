@@ -33,7 +33,8 @@ class ProductFilter(filters.FilterSet):
     def filter_available(self, queryset, name, value):
         if value:
             AVAILABLE_IDS = ['1', '2', '3', ]
-            return queryset.filter(Status__in=AVAILABLE_IDS, Inventory__gt=0)
+            return queryset.filter(Status__in=AVAILABLE_IDS, Inventory__gt=0, FK_Shop__IsActive=True,
+                                   FK_Shop__Publish=True)
         return queryset
 
     def filter_category(self, queryset, name, value):
