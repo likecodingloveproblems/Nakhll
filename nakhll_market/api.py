@@ -345,14 +345,22 @@ class ProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             When(OldPrice__gt=0, then=(
                     (F('OldPrice') - F('Price')) * 100 / F('OldPrice'))
                  ), default=0)).order_by('-is_available', '-category_id')
+        search_query = self.request.query_params.get('search', None)
+        q_query = self.request.query_params.get('q', None)
+        if search_query:
+            query = res.filter(Title__icontains=search_query)
+        elif q_query:
+            query = res.filter(Title__icontains=q_query)
+        else:
+            query = res
+        self.max_price = query.aggregate(Max('Price'))['Price__max']
+        self.min_price = query.aggregate(Min('Price'))['Price__min']
         return res
 
     def get_paginated_response(self, data):
         res = super().get_paginated_response(data)
-        query = res.data['results'].copy()
-        sorted_query = sorted(query, key=lambda x: x['Price'])
-        res.data['max_price'] = sorted_query[-1]['Price']
-        res.data['min_price'] = sorted_query[0]['Price']
+        res.data['max_price'] = self.max_price
+        res.data['min_price'] = self.min_price
         return res
 
 
