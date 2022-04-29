@@ -1,20 +1,17 @@
+import json
 from datetime import datetime
 from io import BytesIO
-import json
-from django.db.models.expressions import F, Case, ExpressionWrapper, Value, When
-from django.contrib.postgres.aggregates.general import StringAgg
-from django.db.models.fields import CharField, FloatField
-from django.db.models.functions.comparison import Cast
-from django.http import HttpResponse
-from xlsxwriter.workbook import Workbook
-from django.views import View
 from braces.views import GroupRequiredMixin
+from django.contrib.postgres.aggregates.general import StringAgg
+from django.db.models import Count, Sum, Q, DateField
+from django.db.models.expressions import (F, Case, ExpressionWrapper,
+                                          Value, When)
+from django.db.models.fields import CharField, FloatField
+from django.db.models.functions import Coalesce, Cast
+from django.http import HttpResponse
+from django.views import View
 from excel_response import ExcelResponse
-from django.db.models import Count, Sum, Q
-from django.db.models.functions import Coalesce
-from django.db.models.functions import Cast
-from django.db.models import DateField
-
+from xlsxwriter.workbook import Workbook
 from nakhll_market.interface import DiscordAlertInterface
 from nakhll_market.models import Profile, Shop, Product
 from logistic.models import ShopLogisticUnit
@@ -22,17 +19,26 @@ from invoice.models import Invoice, InvoiceItem
 
 
 class ShopManagersInformation(GroupRequiredMixin, View):
-    """Shop Managers Information"""
+    """Excel file for shop managers information
+
+    Args:
+        GroupRequiredMixin: require 'accounting' group
+        View: Django View class
+
+    Returns:
+        ExcelResponse: Final Excel file
+    """
     group_required = u"accounting"
 
     def get(self, request):
-        """pylint: disable=unused-argument, missing-docstring"""
         filename = 'shop_managers_info.xlsx'
+        content_type = (
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
         shops = Shop.objects.all()
         with BytesIO() as output:
             workbook = Workbook(output, {'in_memory': True})
             worksheet = workbook.add_worksheet(filename)
-            # set factor filed
             worksheet.write_row(0, 0,
                                 ['نام حجره دار',
                                  'نام خانوادگی حجره دار',
@@ -83,22 +89,29 @@ class ShopManagersInformation(GroupRequiredMixin, View):
                                         shop.City,
                                         shop.Location,
                                     ])
-
             workbook.close()
-
             output.seek(0)
-
             response = HttpResponse(
                 output.read(),
-                content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-            response['Content-Disposition'] = "attachment; filename = " + filename
-
+                content_type=content_type
+            )
+            response['Content-Disposition'] = (
+                "attachment; filename = " + filename
+            )
             output.close()
-
         return response
 
 
 class ShopManagersInformationV2(GroupRequiredMixin, View):
+    """Excel file for shop managers information V2
+
+    Args:
+        GroupRequiredMixin: require 'accounting' group
+        View: Django View class
+
+    Returns:
+        ExcelResponse: Final Excel file
+    """
     group_required = u"accounting"
 
     def get(self, request, *args, **kwargs):
@@ -120,7 +133,14 @@ class ShopManagersInformationV2(GroupRequiredMixin, View):
 
 
 class UserMobile(View):
-    # group_required = u"marketing"
+    """Excel file of shop owner mobile numbers for marketing
+
+    Args:
+        View: Django View class
+
+    Returns:
+        ExcelResponse: Final Excel file
+    """
 
     def get(self, request, *args, **kwargs):
         queryset = Shop.objects.shop_managers_info_marketing()
@@ -130,33 +150,50 @@ class UserMobile(View):
 
 
 class ProductStats(GroupRequiredMixin, View):
+    """Excel file of products with their information
+
+    Args:
+        GroupRequiredMixin: require 'factor-stats' group
+        View: Django View class
+
+    Returns:
+        ExcelResponse: Final Excel file
+    """
+
     group_required = u"factor-stats"
 
     def get(self, request):
-        queryset = Product.objects\
-            .annotate(sell_count = Count('invoice_items'),
-            sell_product_count=Sum('invoice_items__count'))\
-            .values(
-                'Title', 'Slug', 'new_category__name', 'FK_Shop__Title', 
-                'FK_Shop__Slug', 'FK_Shop__State', 'FK_Shop__BigCity', 'FK_Shop__City',
-                'FK_Shop__Location', 'FK_Shop__Available', 'FK_Shop__Publish', 
-                'FK_Shop__FK_ShopManager__username', 'sell_count',
-                'sell_product_count', 'Price', 'OldPrice', 'DateCreate', 'DateUpdate',
-                'Inventory', 'Net_Weight', 'Weight_With_Packing',
-                )
-        
+        queryset = Product.objects.annotate(
+            sell_count=Count('invoice_items'),
+            sell_product_count=Sum('invoice_items__count')).values(
+            'Title', 'Slug', 'new_category__name', 'FK_Shop__Title',
+            'FK_Shop__Slug', 'FK_Shop__State', 'FK_Shop__BigCity',
+            'FK_Shop__City', 'FK_Shop__Location', 'FK_Shop__Available',
+            'FK_Shop__Publish', 'FK_Shop__FK_ShopManager__username',
+            'sell_count', 'sell_product_count', 'Price', 'OldPrice',
+            'DateCreate', 'DateUpdate', 'Inventory', 'Net_Weight',
+            'Weight_With_Packing',)
+
         return ExcelResponse(
             data=queryset
         )
 
 
 class UserStats(View):
-    def get (self , request):
-        queryset =  Profile.objects\
-            .annotate(shop_count=Count('FK_User__ShopManager')).values(
-                'MobileNumber', 'NationalCode', 'FK_User__first_name', 'FK_User__last_name', 'shop_count'
-                )
+    """Excel file of all users with their information
 
+    Args:
+        View: Django View class
+
+    Returns:
+        ExcelResponse: Final Excel file
+    """
+
+    def get(self, request):
+        queryset = Profile.objects.annotate(
+            shop_count=Count('FK_User__ShopManager')).values(
+            'MobileNumber', 'NationalCode', 'FK_User__first_name',
+            'FK_User__last_name', 'shop_count')
 
         return ExcelResponse(
             data=queryset
@@ -164,9 +201,16 @@ class UserStats(View):
 
 
 class ShopInformation(View):
-    """Shop Information as excel file"""
+    """Excel file of shops with their information
+
+    Args:
+        View: Django View class
+
+    Returns:
+        ExcelResponse: Final Excel file
+    """
+
     def get(self, request):
-        """pylint: disable=unused-argument, missing-docstring"""
         queryset = Shop.objects.all()
         payment_price_filter = Q(
             ShopProduct__invoice_items__invoice__status__in=[
@@ -175,9 +219,9 @@ class ShopInformation(View):
         )
         try:
             start_date_text = request.GET.get('invoice_payment_from', '')
-            start_date = datetime.strptime(start_date_text, '%Y/%m/%d')
+            sd = datetime.strptime(start_date_text, '%Y/%m/%d')
             payment_price_filter &= Q(
-                ShopProduct__invoice_items__invoice__payment_datetime__gte=start_date)
+                ShopProduct__invoice_items__invoice__payment_datetime__gte=sd)
         except ValueError:
             pass
         queryset = queryset.annotate(
@@ -201,7 +245,8 @@ class ShopInformation(View):
             production_after_order_count=Count('production_after_order'),
             sale_customization_product=Case(
                 When(ShopProduct__Status='3', then=Value(7))),
-            sale_customization_product_count=Count('sale_customization_product'),
+            sale_customization_product_count=Count(
+                'sale_customization_product'),
             not_exist_product=Case(
                 When(ShopProduct__Status='4', then=Value(8))),
             not_exist_product_count=Count('not_exist_product'),
@@ -212,7 +257,7 @@ class ShopInformation(View):
                 'ShopProduct__invoice_items__price_with_discount',
                 filter=payment_price_filter),).values(
             'Title', 'DateCreate', 'FK_ShopManager__first_name',
-            'FK_ShopManager__last_name','Slug' ,'State', 'BigCity', 'City',
+            'FK_ShopManager__last_name', 'Slug', 'State', 'BigCity', 'City',
             'available_product_count', 'unavailable_product_count',
             'publish_product_count', 'unpublish_product_count',
             'exist_product_count', 'production_after_order_count',
@@ -227,42 +272,88 @@ class ShopInformation(View):
 
 
 class BuyersInfo(GroupRequiredMixin, View):
+    """Excel file of users which bought products with their information
+
+    Args:
+        GroupRequiredMixin: require 'factor-stats' group
+        View: Django View class
+
+    Returns:
+        ExcelResponse: Final Excel file
+    """
+
     group_required = u"factor-stats"
 
     def get(self, request):
-        queryset = InvoiceItem.objects.exclude(status='awaiting_paying').annotate(
-            coupons_total_price=Coalesce(Sum('invoice__coupon_usages__price_applied', output_field=FloatField()), 0),
+        queryset = InvoiceItem.objects.exclude(
+            status='awaiting_paying').annotate(
+            coupons_total_price=Coalesce(
+                Sum(
+                    'invoice__coupon_usages__price_applied',
+                    output_field=FloatField()),
+                0),
             ردیف=Value(' ', output_field=CharField()),
             شماره_فاکتور=F('invoice__id'),
-            تاریخ_خرید=Cast(F('invoice__payment_datetime'), output_field=DateField()),
+            تاریخ_خرید=Cast(
+                F('invoice__payment_datetime'),
+                output_field=DateField()),
             نام_کالا=StringAgg('product__Title', delimiter=', '),
-            تعداد_کالا=StringAgg(Cast('count', output_field=CharField()), delimiter=', '),
-            مبلغ_هرکالا_باتخفیف=StringAgg(Cast('price_with_discount', output_field=CharField()), delimiter=', '),
-            نام_حجره=StringAgg('product__FK_Shop__Title', delimiter=', ', distinct=True),
-            کدملی_حجره_دار=StringAgg('product__FK_Shop__FK_ShopManager__User_Profile__NationalCode', delimiter=', ', distinct=True),
-            مبلغ_تراکنش=ExpressionWrapper(F('invoice__invoice_price_with_discount') + F('invoice__logistic_price') 
-                        - F('coupons_total_price'), output_field=FloatField()),
+            تعداد_کالا=StringAgg(
+                Cast('count', output_field=CharField()),
+                delimiter=', '),
+            مبلغ_هرکالا_باتخفیف=StringAgg(
+                Cast('price_with_discount', output_field=CharField()),
+                delimiter=', '),
+            نام_حجره=StringAgg(
+                'product__FK_Shop__Title', delimiter=', ', distinct=True),
+            کدملی_حجره_دار=StringAgg(
+                'product__FK_Shop__FK_ShopManager__User_Profile__NationalCode',
+                delimiter=', ', distinct=True),
+            مبلغ_تراکنش=ExpressionWrapper(
+                F('invoice__invoice_price_with_discount') +
+                F('invoice__logistic_price') - F('coupons_total_price'),
+                output_field=FloatField()),
             مبلغ_فاکتور=F('invoice__invoice_price_with_discount'),
             مبلغ_حمل=F('invoice__logistic_price'),
             مجموع_کوپن_ها=F('coupons_total_price'),
             وضعیت_فاکتور=F('invoice__status'),
-            شماره_شبا=StringAgg('product__FK_Shop__bank_account__iban', delimiter=', '),
+            شماره_شبا=StringAgg(
+                'product__FK_Shop__bank_account__iban', delimiter=', '),
             کارمزدنخل=Value(0, output_field=CharField()),
             مبلغ_پرداختی_کالا=Value(0, output_field=CharField()),
             طلب_حجره_دار=Value(' ', output_field=CharField()),
             تاریخ_پرداخت=Value(' ', output_field=CharField()),
             شماره_شبا_خریدار_جهت_لغو=Value(' ', output_field=CharField()),
-            address_json=F('invoice__address_json'),
-        ).order_by('-invoice__created_datetime')
+            address_json=F('invoice__address_json'),).order_by(
+            '-invoice__created_datetime')
 
         queryset = queryset.values(
-            'ردیف', 'شماره_فاکتور', 'address_json', 'تاریخ_خرید', 'نام_کالا', 'تعداد_کالا', 'نام_حجره', 'مبلغ_هرکالا_باتخفیف',
-            'مبلغ_تراکنش', 'مبلغ_فاکتور', 'مبلغ_حمل', 'مجموع_کوپن_ها', 'وضعیت_فاکتور', 'نام_حجره', 'کدملی_حجره_دار',
-            'شماره_شبا', 'کارمزدنخل', 'کارمزدنخل', 'مبلغ_پرداختی_کالا', 'طلب_حجره_دار', 'تاریخ_پرداخت', 'شماره_شبا_خریدار_جهت_لغو'
-        )
-        
+            'ردیف',
+            'شماره_فاکتور',
+            'address_json',
+            'تاریخ_خرید',
+            'نام_کالا',
+            'تعداد_کالا',
+            'نام_حجره',
+            'مبلغ_هرکالا_باتخفیف',
+            'مبلغ_تراکنش',
+            'مبلغ_فاکتور',
+            'مبلغ_حمل',
+            'مجموع_کوپن_ها',
+            'وضعیت_فاکتور',
+            'نام_حجره',
+            'کدملی_حجره_دار',
+            'شماره_شبا',
+            'کارمزدنخل',
+            'کارمزدنخل',
+            'مبلغ_پرداختی_کالا',
+            'طلب_حجره_دار',
+            'تاریخ_پرداخت',
+            'شماره_شبا_خریدار_جهت_لغو')
+
         for q in queryset:
-            address = json.loads(q['address_json']) if q['address_json'] else None
+            address = json.loads(
+                q['address_json']) if q['address_json'] else None
             q['خریدار'] = address['receiver_full_name'] if address else ''
             q['شهر_خریدار'] = address['big_city'] if address else ''
             q['آدرس_خریدار'] = address['address'] if address else ''
@@ -272,33 +363,64 @@ class BuyersInfo(GroupRequiredMixin, View):
 
 
 class InvoicesInfo(GroupRequiredMixin, View):
+    """Excel file of all paid invoices with their information
+
+    Args:
+        GroupRequiredMixin: require 'factor-stats' group
+        View: Django View class
+
+    Returns:
+        ExcelResponse: Final Excel file
+    """
+
     group_required = u"factor-stats"
 
     def get(self, request):
-        queryset = Invoice.objects.exclude(status='awaiting_paying').annotate(
-            coupons_total_price=Coalesce(Sum('coupon_usages__price_applied', output_field=FloatField()), 0),
+        queryset = Invoice.objects.exclude(
+            status='awaiting_paying').annotate(
+            coupons_total_price=Coalesce(
+                Sum(
+                    'coupon_usages__price_applied', output_field=FloatField()),
+                0),
             ردیف=Value(' ', output_field=CharField()),
             شماره_فاکتور=F('id'),
-            تاریخ_خرید=Cast(F('payment_datetime'), output_field=DateField()),
-            مبلغ_تراکنش=ExpressionWrapper(F('invoice_price_with_discount') + F('logistic_price') 
-                        - F('coupons_total_price'), output_field=FloatField()),
+            تاریخ_خرید=Cast(
+                F('payment_datetime'),
+                output_field=DateField()),
+            مبلغ_تراکنش=ExpressionWrapper(
+                F('invoice_price_with_discount') + F('logistic_price') -
+                F('coupons_total_price'),
+                output_field=FloatField()),
             مبلغ_فاکتور=F('invoice_price_with_discount'),
             مبلغ_حمل=F('logistic_price'),
             نوع_فاکتور=F('status'),
-            شماره_شبا=StringAgg('items__product__FK_Shop__bank_account__iban', delimiter=', '),
+            شماره_شبا=StringAgg(
+                'items__product__FK_Shop__bank_account__iban', delimiter=', '),
             کارمزدنخل=Value(0, output_field=CharField()),
             مبلغ_پرداختی_کالا=Value(0, output_field=CharField()),
             طلب_حجره_دار=Value(' ', output_field=CharField()),
-            تاریخ_پرداخت=Value(' ', output_field=CharField()),
-        ).order_by('-created_datetime')
+            تاریخ_پرداخت=Value(' ', output_field=CharField()),).order_by(
+            '-created_datetime')
 
         queryset = queryset.values(
-            'ردیف', 'شماره_فاکتور', 'address_json', 'تاریخ_خرید', 'مبلغ_تراکنش', 'مبلغ_فاکتور', 'مبلغ_حمل', 'نوع_فاکتور', 'شماره_شبا',
-             'کارمزدنخل', 'مبلغ_پرداختی_کالا', 'طلب_حجره_دار', 'تاریخ_پرداخت', 
+            'ردیف',
+            'شماره_فاکتور',
+            'address_json',
+            'تاریخ_خرید',
+            'مبلغ_تراکنش',
+            'مبلغ_فاکتور',
+            'مبلغ_حمل',
+            'نوع_فاکتور',
+            'شماره_شبا',
+            'کارمزدنخل',
+            'مبلغ_پرداختی_کالا',
+            'طلب_حجره_دار',
+            'تاریخ_پرداخت',
         )
-        
+
         for q in queryset:
-            address = json.loads(q['address_json']) if q['address_json'] else None
+            address = json.loads(
+                q['address_json']) if q['address_json'] else None
             q['خریدار'] = address['receiver_full_name'] if address else ''
             q['شهر_خریدار'] = address['big_city'] if address else ''
             q['آدرس_خریدار'] = address['address'] if address else ''
@@ -310,11 +432,19 @@ class InvoicesInfo(GroupRequiredMixin, View):
 
 
 class InvoiceStats(GroupRequiredMixin, View):
+    """Excel file of all invoices in new DB system with their information
+
+    Args:
+        GroupRequiredMixin: require 'factor-stats' group
+        View: Django View class
+
+    Returns:
+        ExcelResponse: Final Excel file
+    """
+
     group_required = u"factor-stats"
 
     def get(self, request):
-        DiscordAlertInterface.send_alert(
-            'TEST IN INVOICE STATS: Someone get Invoice Stats')
         queryset = Invoice.objects.filter(
             FactorNumber=None).annotate(
             products_list=StringAgg(
@@ -366,23 +496,36 @@ class InvoiceStats(GroupRequiredMixin, View):
             q['address'] = address['address'] if address else ''
             q['zip_code'] = address['zip_code'] if address else ''
             q['phone_number'] = address['phone_number'] if address else ''
-            q['receiver_full_name'] = address['receiver_full_name'] if address else ''
-            q['receiver_mobile_number'] = address['receiver_mobile_number'] if address else ''
+            q['receiver_full_name'] = (
+                address['receiver_full_name'] if address else ''
+            )
+            q['receiver_mobile_number'] = (
+                address['receiver_mobile_number'] if address else ''
+            )
             del q['address_json']
 
         return ExcelResponse(data=queryset)
 
 
 class ShopLogisticUnitView(View):
+    """Excel file of all shops logistic units
+
+    Args:
+        View: Django View class
+
+    Returns:
+        ExcelResponse: Final Excel file
+    """
 
     def get(self, request):
-        DiscordAlertInterface.send_alert(
-            'TEST IN SHOP LOGISTIC UNIT STATS: Someone get Shop Logistic Unit Stats')
         queryset = ShopLogisticUnit.objects.values(
-            'shop__Title', 'name', 'logo', 'logo_type', 'is_active', 'is_publish', 'description','created_at',
-            'updated_at', 'constraint__categories', 'constraint__cities', 'constraint__max_weight',
-            'constraint__min_weight', 'constraint__max_cart_price', 'constraint__min_cart_price',
-            'constraint__max_cart_count', 'constraint__min_cart_count', 'calculation_metric__price_per_kilogram',
-            'calculation_metric__price_per_extra_kilogram', 'calculation_metric__pay_time', 'calculation_metric__payer'
-            )
-        return ExcelResponse(data = queryset)
+            'shop__Title', 'name', 'logo', 'logo_type', 'is_active',
+            'is_publish', 'description', 'created_at', 'updated_at',
+            'constraint__categories', 'constraint__cities',
+            'constraint__max_weight', 'constraint__min_weight',
+            'constraint__max_cart_price', 'constraint__min_cart_price',
+            'constraint__max_cart_count', 'constraint__min_cart_count',
+            'calculation_metric__price_per_kilogram',
+            'calculation_metric__price_per_extra_kilogram',
+            'calculation_metric__pay_time', 'calculation_metric__payer')
+        return ExcelResponse(data=queryset)
