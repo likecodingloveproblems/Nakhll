@@ -31,7 +31,6 @@ sms.models module
 
 .. automodule:: sms.models
    :members:
-   :undoc-members:
    :show-inheritance:
 
 sms.services module
