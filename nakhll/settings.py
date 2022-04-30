@@ -76,6 +76,7 @@ THIRD_PARTY_APPS = [
     'django_extensions',
     'colorfield',
     'django_rename_app',
+    'import_export',
 ]
 
 NAKHLL_APPS = [
