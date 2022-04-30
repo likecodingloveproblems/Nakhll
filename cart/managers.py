@@ -64,4 +64,4 @@ class CartManager(models.Manager):
 
 
 class CartItemManager(models.Manager):
-    ''' Cart Item Manager '''
+    """Cart Item Manager"""
