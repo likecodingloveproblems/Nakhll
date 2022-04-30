@@ -4,7 +4,7 @@ from django.contrib.admin import AdminSite
 class ReportsAdminSite(AdminSite):
     site_header = "Panel for get reports"
     site_title = "Nakhll reports panel"
-    index_title = "Welcome to Nagll reports panel"
+    index_title = "Welcome to Nakhll reports panel"
 
     def has_permission(self, request):
         """
