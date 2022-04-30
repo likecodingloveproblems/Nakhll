@@ -36,19 +36,19 @@ class Cart(models.Model):
             previous DB version. This value is None for new carts. This value
             is kept for only reference. This value is not used in any process
             anymore.
-        user: user who owns this cart
-        address: address of user who owns this cart, this address is None at
-            first, but user must set this address before buying
+        user (User): user who owns this cart
+        address (Address): address of user who owns this cart, this address is
+            None at first, but user must set this address before buying
         logistic_details: JSON string which contains logistic details of this
             cart. This value is None at first, but after user set address,
             calculated details of logistic unit will be set in this value.
             change in :attr:`address` should replace this value.
-        coupons: list of coupons that user used in this cart. These coupons
-            is not considered as applied coupons for user. So other users
-            can use these coupons without affecting coupon total usage.
+        coupons (Coupon): list of coupons that user used in this cart. These
+            coupons is not considered as applied coupons for user. So other
+            users can use these coupons without affecting coupon total usage.
             these coupons will be applied in invoice, after success buying.
-        items: list of items that user want to buy. Each item is a class of
-            :class:`cart.models.CartItem`
+        items (CartItem): list of items that user want to buy. Each item is a
+            class of :class:`cart.models.CartItem`
     """
     class Meta:
         verbose_name = _('سبد خرید')
@@ -425,7 +425,18 @@ class Cart(models.Model):
 
 
 class CartItem(models.Model):
-    """Each Item in Cart"""
+    """Each Item in Cart
+
+    Attributes:
+        cart (Cart): cart that this item belongs to
+        product (Product): product that this item belongs to
+        count (int): count of this item
+        added_datetime: datetime when this item was added to cart
+        product_last_state: used previously to store product last state
+            to compare any change in product, but now it is not used
+            anymore.
+        extra_data: same as :attr:`cart.models.Cart.extra_data`.
+    """
     class Meta:
         verbose_name = 'کالای سبد خرید'
         verbose_name_plural = 'کالاهای سبد خرید'

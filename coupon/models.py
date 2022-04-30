@@ -34,7 +34,7 @@ class Coupon(models.Model, CouponValidation):
         presentage: Coupon percentage to deduct from invoice. This attribute
             only applied if :attr:`amount` is zero. otherwise it will be
             ignored. This value must be between 0 and 100.
-        creator: User who created this coupon.
+        creator (User): User who created this coupon.
         available: Coupon availability. If this attribute is set to False,
             coupon will not be available for usage.
         created_at: DateTime when coupon was created.
@@ -82,15 +82,15 @@ class CouponConstraint(models.Model):
         one constraint object.
 
     Attributes:
-        coupon: Coupon object which this constraint belongs to.
-        shops: List of shops which this coupon is available for.
+        coupon (Coupon): Coupon object which this constraint belongs to.
+        shops (Shop): List of shops which this coupon is available for.
             None means all shops are available.
-        users: List of users which this coupon is available for.
+        users (User): List of users which this coupon is available for.
             None means all users are available.
-        products: List of products which this coupon is available for.
-            None means all products are available.
-        cities: List of citys which this coupon is available for.
-            None means all cities are available.
+        products (Product): List of products which this coupon is available
+            for. None means all products are available.
+        cities (nakhll_market.models.City): List of citys which this coupon is
+            available for. None means all cities are available.
         valid_from: DateTime when this coupon is available for usage.
             None means this coupon is available from now.
         valid_to: DateTime when this coupon is not available for usage.
