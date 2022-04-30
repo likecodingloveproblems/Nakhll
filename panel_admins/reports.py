@@ -13,7 +13,7 @@ class ReportsAdminSite(AdminSite):
         """
         groups = request.user.groups.all()
         if request.user.is_active and request.user.is_staff:
-        # if request.user.is_active and request.user.is_staff and 'reports' in [group.name for group in groups]:
+            # if request.user.is_active and request.user.is_staff and 'reports' in [group.name for group in groups]:
             return True
         return False
 
