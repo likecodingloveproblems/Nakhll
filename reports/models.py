@@ -1,8 +1,12 @@
 from django.db import models
 
 # Create your models here.
-from invoice.models import InvoiceItem
+from invoice.models import InvoiceItem, Invoice
 
+
+class InoviceProxy(Invoice):
+    class Meta:
+        proxy = True
 
 class InvoiceItemReport(InvoiceItem):
     """
