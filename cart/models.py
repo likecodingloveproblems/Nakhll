@@ -26,7 +26,30 @@ User = get_user_model()
 
 
 class Cart(models.Model):
-    """Cart model which store each user's item that wants to buy"""
+    """Cart model which store each user's item that wants to buy
+
+    Attributes:
+        old_id: UUID of cart in previous DB version. This value is None if
+            cart is new. This value is kept for only reference. This value is
+            not used in any process anymore.
+        extra_data: JSON string which contains extra data that migrated from
+            previous DB version. This value is None for new carts. This value
+            is kept for only reference. This value is not used in any process
+            anymore.
+        user: user who owns this cart
+        address: address of user who owns this cart, this address is None at
+            first, but user must set this address before buying
+        logistic_details: JSON string which contains logistic details of this
+            cart. This value is None at first, but after user set address,
+            calculated details of logistic unit will be set in this value.
+            change in :attr:`address` should replace this value.
+        coupons: list of coupons that user used in this cart. These coupons
+            is not considered as applied coupons for user. So other users
+            can use these coupons without affecting coupon total usage.
+            these coupons will be applied in invoice, after success buying.
+        items: list of items that user want to buy. Each item is a class of
+            :class:`cart.models.CartItem`
+    """
     class Meta:
         verbose_name = _('سبد خرید')
         verbose_name_plural = _('سبدهای خرید')
@@ -347,7 +370,7 @@ class Cart(models.Model):
         """Get price of all coupons in cart
 
         Returns:
-            list: _description_
+            list: list of coupons details with applied price.
             example:
 
             .. code-block:: python
