@@ -1,13 +1,10 @@
-from django.http import HttpResponseRedirect
 import jdatetime
 import json
-from django.db.models import F
 from django.contrib import admin
+from django.http import HttpResponseRedirect
 from django.utils.timezone import localtime
-from invoice.models import Invoice, InvoiceItem
 from coupon.models import CouponUsage
-
-# Register your models here.
+from .models import Invoice, InvoiceItem
 
 
 class InvoiceItemInline(admin.TabularInline):
@@ -23,7 +20,6 @@ class InvoiceItemInline(admin.TabularInline):
         'barcode')
     readonly_fields = ('preperation',)
     extra = 0
-    # readonly_fields = fields
 
     def preperation(self, obj):
         return obj.product.PreparationDays
@@ -34,7 +30,6 @@ class CouponUsageInline(admin.TabularInline):
     model = CouponUsage
     extra = 0
     fields = ('coupon', 'price_applied', )
-    # readonly_fields = ('coupon', 'used_count', 'used_at', )
 
 
 @admin.register(Invoice)
@@ -92,6 +87,11 @@ class InvoiceAdmin(admin.ModelAdmin):
     change_form_template = "admin/custom/invoice_changeform.html"
 
     def receiver_full_name(self, obj):
+        """Return the receiver full name
+
+        receiver_full_name is an attribute of address_json, so it needs to be
+        parsed from address_json.
+        """
         if obj.address_json:
             address = json.loads(obj.address_json)
             return address.get('receiver_full_name', '')
@@ -99,12 +99,14 @@ class InvoiceAdmin(admin.ModelAdmin):
     receiver_full_name.short_description = 'نام گیرنده'
 
     def created_datetime_jalali(self, obj):
+        """Return created datetime in jalali format"""
         localtime_time = localtime(obj.created_datetime)
         return jdatetime.datetime.fromgregorian(
             datetime=localtime_time).strftime('%Y/%m/%d %H:%M:%S')
     created_datetime_jalali.short_description = 'تاریخ ثبت'
 
     def shop_iban(self, obj):
+        """All Shop owner's IBAN (International Bank Account Number)"""
         text = ''
         for shop in obj.shops.all():
             text += f'{shop.Title}: {shop.bank_account.iban}\n'
@@ -112,19 +114,23 @@ class InvoiceAdmin(admin.ModelAdmin):
     shop_iban.short_description = 'شماره حساب'
 
     def is_payed(self, obj: Invoice):
+        """Whether the invoice is payed or not"""
         return not obj.status == obj.Statuses.AWAIT_PAYMENT
     is_payed.short_description = 'پرداخت شده؟'
     is_payed.boolean = True
 
     def final_price(self, obj):
+        """Return final price of the invoice in formatted string"""
         return f'{obj.final_price:,} ریال'
     final_price.short_description = 'قیمت نهایی'
 
     def post_price(self, obj):
+        """Return post price of the invoice in formatted string"""
         return f'{obj.logistic_price:,} ریال'
     post_price.short_description = 'هزینه ارسال'
 
     def post_tracking_code(self, obj):
+        """Return all post tracking codes of the invoice, comma separated"""
         barcodes_set = set()
         for item in obj.items.all():
             if item.barcode:
@@ -133,10 +139,12 @@ class InvoiceAdmin(admin.ModelAdmin):
     post_tracking_code.short_description = 'بارکد رهگیری پستی'
 
     def coupons_total_price(self, obj):
+        """Return total price of the invoice coupons in formatted string"""
         return f'{obj.coupons_total_price:,} ریال'
     coupons_total_price.short_description = 'هزینه کوپن'
 
     def display_address(self, obj):
+        """Return address of the invoice in formatted string"""
         if obj.address_json:
             address = json.loads(obj.address_json)
             state = address.get('state', '')
@@ -153,6 +161,12 @@ class InvoiceAdmin(admin.ModelAdmin):
     display_address.short_description = 'آدرس'
 
     def response_change(self, request, obj: Invoice):
+        """Change invoice status to completed if user clicks on checkout button
+
+        This is an override of django's response_change method to make the
+        invoice status change to completed by clicking on checkout button.
+        This function should be only available to users in accounting group.
+        """
         if "checkout_invoice" in request.POST:
             if request.user.has_perm('invoice.checkout_invoice'):
                 obj.status = obj.Statuses.COMPLETED
