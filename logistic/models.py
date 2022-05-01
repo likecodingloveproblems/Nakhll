@@ -14,6 +14,7 @@ class Address(models.Model):
     """User addresses model
 
     Each user can have multiple addresses to choose from, in purchase process
+
     Attributes:
         old_id (UUID): same as :attr:`cart.models.Cart.old_id`
         user (User): user who owns this address
@@ -85,6 +86,7 @@ class ShopLogisticUnit(models.Model):
     :attr:`ShopLogisticUnitCalculationMetric.PayTimes` or
     :attr:`ShopLogisticUnitCalculationMetric.PayerTypes` which user can set to
     indicates what kind of unit is this.
+
     Attributes:
         shop (Shop): Shop object related to this logistic unit
         name (str): Acctual name for this unit defined by user. This name will
@@ -114,6 +116,12 @@ class ShopLogisticUnit(models.Model):
         ordering = ['-id']
 
     class LogoType(models.IntegerChoices):
+        """Each default logistic unit has it's own logo.
+
+        All logo types are related to one of default logistic units except
+        custom type which is :attr:`LogoType.CUSTOM`. This logo type along
+        with :attr:`logo` field, indicates user custom logo for this unit.
+        """
         CUSTOM = 0, _('لوگوی شخصی')
         PPOST = 1, _('پست پیشتاز')
         SPOST = 2, _('پست سفارشی')
@@ -154,11 +162,12 @@ class ShopLogisticUnit(models.Model):
     def __str__(self):
         return f'{self.shop}: {self.name}'
 
-    def save(self, **kwargs):
+    def save(self, *args, **kwargs):
         self.save_logo()
         return super().save(**kwargs)
 
     def save_logo(self):
+        """Save logo if logo_type is CUSTOM, else just ignore"""
         if self.logo_type != self.LogoType.CUSTOM:
             self.logo = File(
                 open(
@@ -171,6 +180,7 @@ class ShopLogisticUnitConstraint(models.Model):
 
     Constraints of a unit indicates the limitations for that unit like cities,
     products, categories, etc. This limitations is defined by shop owner.
+
     Attributes:
         - shop_logistic_unit (ShopLogisticUnit): logistic unit related to this
             constraint object
@@ -273,10 +283,12 @@ class ShopLogisticUnitCalculationMetric(models.Model):
         ordering = ['-id']
 
     class PayTimes(models.TextChoices):
+        """Payment time for shipping"""
         WHEN_BUYING = 'when_buying', _('هنگام خرید')
         AT_DELIVERY = 'at_delivery', _('هنگام تحویل')
 
     class PayerTypes(models.TextChoices):
+        """Payer, which can be user or shop owner"""
         SHOP = 'shop', _('فروشگاه')
         CUSTOMER = 'cust', _('مشتری')
 
