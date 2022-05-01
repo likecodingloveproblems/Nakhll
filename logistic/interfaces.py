@@ -148,7 +148,7 @@ class ShopLogisticUnitInterface:
         for product in self.all_products:
             all_lus = self.get_product_available_logistic_units(product)
             pad_lus = self.get_pad_lus()
-            if set(all_lus) == set(pad_lus):
+            if set(all_lus) == set(pad_lus) and len(all_lus) != 0:
                 only_pad_ids.append(product.ID)
         only_pad_products = Product.objects.filter(ID__in=only_pad_ids)
         self.all_products = self.all_products.difference(only_pad_products)
