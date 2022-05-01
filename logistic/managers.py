@@ -1,14 +1,12 @@
-from django.db import models
-from logistic import models
+from django.db import models as django_models
 from nakhll_market.models import City
 
 
-class AddressManager(models.Manager):
+class AddressManager(django_models.Manager):
     """Manager class for :attr:`logistic.models.Address` model"""
-    pass
 
 
-class ShopLogisticUnitManager(models.Manager):
+class ShopLogisticUnitManager(django_models.Manager):
     """Manager class for :attr:`logistic.models.ShopLogisticUnit` model"""
 
     def generate_shop_logistic_units(self, shop):
@@ -75,3 +73,6 @@ class ShopLogisticUnitManager(models.Manager):
         slum = models.ShopLogisticUnitCalculationMetric.objects.create(
             shop_logistic_unit=slu, price_per_kilogram=140000,
             price_per_extra_kilogram=20000)
+
+
+from logistic import models
