@@ -1,5 +1,8 @@
 from rest_framework.permissions import BasePermission
-from logistic.models import ShopLogisticUnit, ShopLogisticUnitConstraint, ShopLogisticUnitCalculationMetric
+from logistic.models import (
+    ShopLogisticUnit, ShopLogisticUnitConstraint,
+    ShopLogisticUnitCalculationMetric
+)
 
 
 class IsAddressOwner(BasePermission):
@@ -14,7 +17,7 @@ class IsShopOwner(BasePermission):
         if isinstance(obj, ShopLogisticUnit):
             shop = obj.shop
         elif isinstance(obj, ShopLogisticUnitConstraint) or\
-             isinstance(obj, ShopLogisticUnitCalculationMetric):
+                isinstance(obj, ShopLogisticUnitCalculationMetric):
             shop = obj.shop_logistic_unit.shop
         else:
             return False

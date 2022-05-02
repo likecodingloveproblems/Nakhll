@@ -47,7 +47,6 @@ nakhll\_auth.models module
 
 .. automodule:: nakhll_auth.models
    :members:
-   :undoc-members:
    :show-inheritance:
 
 nakhll\_auth.profile\_urls module
