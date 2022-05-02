@@ -3,12 +3,13 @@ from django.contrib import admin
 from django.urls import path, include
 from nakhll import settings
 from . import setup as nakhll_setup
-
+from reports.admin import reports_admin_site
 nakhll_setup.seutp()
 
 
 view_urls = [
     path('logintowebsite/', admin.site.urls),
+    path('reportspanel/', reports_admin_site.urls),
     path('accounting/', include('accounting.urls', namespace='accounting')),
     path('torob/', include('torob_api.urls', namespace='torob')),
     path('goto/', include('url_redirector.urls', namespace='url_redirector')),

@@ -7,6 +7,7 @@ class ProductFilter(filters.FilterSet):
     max_price = filters.NumberFilter(field_name="Price", lookup_expr='lte')
     ready = filters.BooleanFilter(method='filter_ready')
     search = filters.CharFilter(method='filter_search')
+    q = filters.CharFilter(method='filter_q')
     available = filters.BooleanFilter(method='filter_available')
     category = filters.CharFilter(method='filter_category')
     city = filters.CharFilter(method='filter_city')
@@ -30,10 +31,14 @@ class ProductFilter(filters.FilterSet):
     def filter_search(self, queryset, name, value):
         return queryset.filter(Title__icontains=value)
 
+    def filter_q(self, queryset, name, value):
+        return queryset.filter(Title__icontains=value)
+
     def filter_available(self, queryset, name, value):
         if value:
             AVAILABLE_IDS = ['1', '2', '3', ]
-            return queryset.filter(Status__in=AVAILABLE_IDS, Inventory__gt=0)
+            return queryset.filter(Status__in=AVAILABLE_IDS, Inventory__gt=0, FK_Shop__IsActive=True,
+                                   FK_Shop__Publish=True)
         return queryset
 
     def filter_category(self, queryset, name, value):
