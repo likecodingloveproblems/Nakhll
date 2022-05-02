@@ -1,15 +1,21 @@
-from django.utils.translation import ugettext as _
 from rest_framework import permissions, viewsets, mixins
-from logistic.models import Address, ShopLogisticUnit, ShopLogisticUnitConstraint, ShopLogisticUnitCalculationMetric
-from logistic.serializers import (AddressSerializer, ShopLogisticUnitCalculationMetricSerializer,
-                                  ShopLogisticUnitConstraintReadSerializer,
-                                  ShopLogisticUnitConstraintWriteSerializer, ShopLogisticUnitFullSerializer)
+from logistic.models import (
+    Address, ShopLogisticUnit, ShopLogisticUnitConstraint,
+    ShopLogisticUnitCalculationMetric
+)
+from logistic.serializers import (
+    AddressSerializer, ShopLogisticUnitCalculationMetricSerializer,
+    ShopLogisticUnitConstraintReadSerializer, ShopLogisticUnitFullSerializer,
+    ShopLogisticUnitConstraintWriteSerializer
+)
 from logistic.permissions import IsAddressOwner, IsShopOwner
 from nakhll_market.models import Shop
 
+
 class AddressViewSet(viewsets.ModelViewSet):
+    """Viewset for :attr:`logistic.models.Address` model"""
     serializer_class = AddressSerializer
-    permission_classes = [IsAddressOwner, permissions.IsAuthenticated ]
+    permission_classes = [IsAddressOwner, permissions.IsAuthenticated]
     lookup_field = 'id'
 
     def get_queryset(self):
@@ -18,12 +24,15 @@ class AddressViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+
 class ShopLogisticUnitViewSet(viewsets.ModelViewSet):
+    """Model viewset for shop logistic unit"""
     serializer_class = ShopLogisticUnitFullSerializer
     permission_classes = [permissions.IsAuthenticated, IsShopOwner]
     lookup_field = 'id'
 
     def get_shop(self):
+        """Get shop from url"""
         shop_slug = self.request.GET.get('shop')
         try:
             return Shop.objects.get(Slug=shop_slug)
@@ -31,7 +40,8 @@ class ShopLogisticUnitViewSet(viewsets.ModelViewSet):
             return None
 
     def get_queryset(self):
-        queryset = ShopLogisticUnit.objects.filter(shop__FK_ShopManager=self.request.user)
+        queryset = ShopLogisticUnit.objects.filter(
+            shop__FK_ShopManager=self.request.user)
         shop = self.get_shop()
         if shop:
             queryset = queryset.filter(shop=shop)
@@ -40,10 +50,17 @@ class ShopLogisticUnitViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         slu = serializer.save()
         ShopLogisticUnitConstraint.objects.create(shop_logistic_unit=slu)
-        ShopLogisticUnitCalculationMetric.objects.create(shop_logistic_unit=slu)
-    
+        ShopLogisticUnitCalculationMetric.objects.create(
+            shop_logistic_unit=slu
+        )
 
-class ShopLogisticUnitConstraintViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.UpdateModelMixin):
+
+class ShopLogisticUnitConstraintViewSet(
+    viewsets.GenericViewSet,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin
+):
+    """Shop Logistic unit constraint viewset"""
     permission_classes = [permissions.IsAuthenticated, IsShopOwner]
     lookup_field = 'id'
 
@@ -54,16 +71,21 @@ class ShopLogisticUnitConstraintViewSet(viewsets.GenericViewSet, mixins.Retrieve
 
     def get_queryset(self):
         shop_logistic_unit_id = self.request.GET.get('id')
-        queryset = ShopLogisticUnitConstraint.objects.filter(shop_logistic_unit__shop__FK_ShopManager=self.request.user)
+        queryset = ShopLogisticUnitConstraint.objects.filter(
+            shop_logistic_unit__shop__FK_ShopManager=self.request.user)
         if shop_logistic_unit_id:
-            return queryset.filter(shop_logistic_unit__id=shop_logistic_unit_id)
-        return queryset             
-        
+            return queryset.filter(
+                shop_logistic_unit__id=shop_logistic_unit_id
+            )
+        return queryset
 
 
-class ShopLogisticUnitCalculationMetricViewSet(viewsets.GenericViewSet,
-                                             mixins.UpdateModelMixin,
-                                             mixins.RetrieveModelMixin):
+class ShopLogisticUnitCalculationMetricViewSet(
+    viewsets.GenericViewSet,
+    mixins.UpdateModelMixin,
+    mixins.RetrieveModelMixin
+):
+    """Shop logistic unit constraint metric viewset"""
     serializer_class = ShopLogisticUnitCalculationMetricSerializer
     permission_classses = [permissions.IsAuthenticated, IsShopOwner]
     lookup_field = 'id'
@@ -72,4 +94,3 @@ class ShopLogisticUnitCalculationMetricViewSet(viewsets.GenericViewSet,
         return ShopLogisticUnitCalculationMetric.objects.filter(
             shop_logistic_unit__shop__FK_ShopManager=self.request.user
         )
-  

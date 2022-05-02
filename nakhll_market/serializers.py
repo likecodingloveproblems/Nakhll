@@ -432,7 +432,8 @@ class ProductBannerWriteSerializer(serializers.ModelSerializer):
 class ProductOwnerWriteSerializer(serializers.ModelSerializer):
     category = serializers.PrimaryKeyRelatedField(
         read_only=False, many=False, queryset=Category.objects.all())
-    product_tags = ProductTagWriteSerializer(many=True, read_only=False)
+    product_tags = ProductTagWriteSerializer(
+        many=True, read_only=False, required=False)
     Image = Base64ImageField(max_length=None, use_url=True)
     Product_Banner = ProductBannerWriteSerializer(many=True, read_only=False)
     post_range = serializers.PrimaryKeyRelatedField(
@@ -476,41 +477,62 @@ class ProductOwnerWriteSerializer(serializers.ModelSerializer):
     @staticmethod
     def __tag_create(instance, tags_list):
         if tags_list:
-            all_tags = Tag.objects.filter(shop=instance.shop).values_list('name', flat=True)
+            all_tags = Tag.objects.filter(
+                shop=instance.shop).values_list(
+                'name', flat=True)
             new_tag = []
             for item in tags_list:
                 if item not in all_tags:
                     new_tag.append(item)
-            Tag.objects.bulk_create([Tag(name=tag, shop=instance.shop) for tag in new_tag])
+            Tag.objects.bulk_create(
+                [Tag(name=tag, shop=instance.shop) for tag in new_tag])
             tags = Tag.objects.filter(name__in=tags_list, shop=instance.shop)
-            ProductTag.objects.bulk_create([ProductTag(product=instance, tag=tag) for tag in tags])
+            ProductTag.objects.bulk_create([
+                ProductTag(
+                    product=instance, tag=tag)
+                for tag in tags])
 
     @staticmethod
-    def update_tags(instance, validated_data):
+    def __update_tags(instance, validated_data):
         if 'product_tags' not in validated_data:
             return
         tags_list: list = [x['tag'] for x in validated_data.pop('product_tags')]
         if tags_list:
-            all_tags = Tag.objects.filter(shop=instance.shop).values_list('text', flat=True)
+            all_tags = Tag.objects.filter(
+                shop=instance.shop).values_list(
+                'name', flat=True)
             new_tag = []
-            product_tags_id_list = ProductTag.objects.filter(product=instance).values_list('tag', flat=True)
+            product_tags_id_list = ProductTag.objects.filter(
+                product=instance).values_list('tag', flat=True)
             if product_tags_id_list:
-                product_tags_list = get_dict(Tag.objects.filter(id__in=product_tags_id_list), 'name')
+                product_tags_list = get_dict(
+                    Tag.objects.filter(
+                        id__in=product_tags_id_list), 'name')
             else:
                 product_tags_list = None
+
+            tags_lst_b = tags_list.copy()
             for item in tags_list:
                 if item not in all_tags:
                     new_tag.append(item)
                 if product_tags_list and item in product_tags_list:
-                    tags_list.pop(item)
+                    tags_lst_b.remove(item)
+            tags_list = tags_lst_b
             if new_tag:
-                Tag.objects.bulk_create([Tag(name=tag, shop=instance.shop) for tag in new_tag])
+                Tag.objects.bulk_create([Tag(
+                    name=tag, shop=instance.shop)
+                    for tag in new_tag])
             if tags_list:
-                tags = Tag.objects.filter(name__in=tags_list, shop=instance.shop)
-                ProductTag.objects.bulk_create([ProductTag(product=instance, tag=tag) for tag in tags])
+                tags = Tag.objects.filter(
+                    name__in=tags_list, shop=instance.shop)
+                ProductTag.objects.bulk_create([
+                    ProductTag(
+                        product=instance, tag=tag)
+                    for tag in tags])
 
     def update(self, instance, validated_data):
         self.__update_banners(instance, validated_data)
+        self.__update_tags(instance, validated_data)
         self.__update_post_range(instance, validated_data)
         for prop, value in validated_data.items():
             setattr(instance, prop, value)
@@ -540,6 +562,8 @@ class ProductOwnerReadSerializer(serializers.ModelSerializer):
     Product_Banner = ProductBannerWriteSerializer(many=True, read_only=True)
     post_range = serializers.PrimaryKeyRelatedField(
         source='post_range_cities', read_only=True, many=True)
+    product_tags = ProductTagWriteSerializer(many=True, read_only=False)
+    all_tags = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -558,8 +582,15 @@ class ProductOwnerReadSerializer(serializers.ModelSerializer):
             'PostRangeType',
             'PreparationDays',
             'category',
-            'post_range'
+            'post_range',
+            'product_tags',
+            'all_tags',
         ]
+
+    def get_all_tags(self, obj):
+        tags = Tag.objects.filter(shop=obj.shop)
+        tags = TagOwnerListSerializer(tags, many=True).data
+        return tags
 
 
 class ProductCategorySerializer(serializers.Serializer):

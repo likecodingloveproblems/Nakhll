@@ -39,7 +39,6 @@ torob\_api.models module
 
 .. automodule:: torob_api.models
    :members:
-   :undoc-members:
    :show-inheritance:
 
 torob\_api.serializers module

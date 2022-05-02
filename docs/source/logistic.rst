@@ -42,14 +42,6 @@ logistic.exceptions module
    :undoc-members:
    :show-inheritance:
 
-logistic.interfaces module
---------------------------
-
-.. automodule:: logistic.interfaces
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 logistic.managers module
 ------------------------
 
@@ -63,7 +55,6 @@ logistic.models module
 
 .. automodule:: logistic.models
    :members:
-   :undoc-members:
    :show-inheritance:
 
 logistic.permissions module

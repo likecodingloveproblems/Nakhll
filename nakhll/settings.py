@@ -76,6 +76,7 @@ THIRD_PARTY_APPS = [
     'django_extensions',
     'colorfield',
     'django_rename_app',
+    'import_export',
 ]
 
 NAKHLL_APPS = [
@@ -93,6 +94,7 @@ NAKHLL_APPS = [
     'custom_list',
     'shop',
     'sms',
+    'reports',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + NAKHLL_APPS
@@ -169,6 +171,9 @@ ADMIN_REORDER = (
     {'app': 'auth', 'label': 'کاربران و دسترسی ها'},
     {'app': 'sites', 'label': 'دسترسی SiteMap'},
     {'app': 'url_redirector', 'label': 'تغییر دهنده Url'},
+
+    # repost panel
+    {'app': 'reports', 'label': 'گزارشات'},
 
 )
 

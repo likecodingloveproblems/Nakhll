@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.http import response
 from django.http.response import Http404
 from django.db.models import Q, F, Count, Value, BooleanField
-from django.db.models.aggregates import Sum
+from django.db.models.aggregates import Sum, Max, Min
 from django.db.models.expressions import Case, When
 from django.db.models.functions import Cast
 from django.contrib.auth.models import User
@@ -250,10 +250,6 @@ class ShopOwnerProductViewSet(
         # Convert price and old price from Toman to Rial to store in DB
         old_price = data.get('OldPrice', 0) * 10
         price = data.get('Price', 0) * 10
-        if "product_tags" in data:
-            tag_lst = data.pop("product_tags")
-        else:
-            tag_lst = None
 
         if old_price:
             product = serializer.save(
@@ -261,8 +257,6 @@ class ShopOwnerProductViewSet(
         else:
             product = serializer.save(
                 OldPrice=old_price, Price=price, FK_Shop=shop)
-        if tag_lst:
-            self.update_tags(product, tag_lst)
         # product.post_range_cities.add(*post_range)
 
         # TODO: Check if product created successfully and published and alerts
@@ -275,27 +269,6 @@ class ShopOwnerProductViewSet(
             DiscordAlertInterface.product_alert(
                 product, change_type=ProductChangeTypes.UPDATE,
                 without_image=True)
-
-    @staticmethod
-    def update_tags(product, tags_list):
-        tags_list: list = [x['tag'] for x in tags_list]
-        all_tags_lst = Tag.objects.filter(shop=product.shop).values_list('name', flat=True)
-        new_tag = []
-        product_tags_id_list = ProductTag.objects.filter(product=product).values_list('tag', flat=True)
-        if product_tags_id_list:
-            product_tags_list = get_dict(Tag.objects.filter(id__in=product_tags_id_list), 'name')
-        else:
-            product_tags_list = None
-        for item in tags_list:
-            if item not in all_tags_lst:
-                new_tag.append(item)
-            if product_tags_list and item in product_tags_list:
-                tags_list.remove(item)
-        if new_tag:
-            Tag.objects.bulk_create([Tag(name=tag, shop=product.shop) for tag in new_tag])
-        if tags_list:
-            tags = Tag.objects.filter(name__in=tags_list, shop=product.shop)
-            ProductTag.objects.bulk_create([ProductTag(product=product, tag=tag) for tag in tags])
 
     def __check_shop_owner(self, shop):
         if shop.FK_ShopManager != self.request.user:
@@ -361,7 +334,7 @@ class ProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     ordering_fields = ('Title', 'Price', 'DiscountPrecentage', 'DateCreate',)
 
     def get_queryset(self):
-        return Product.objects.select_related('FK_Shop').annotate(
+        res = Product.objects.select_related('FK_Shop').annotate(
             is_available=Cast(Case(
                 When(Q(FK_Shop__Publish=True) & Q(FK_Shop__Available=True) &
                      Q(Publish=True) & Q(Available=True) & Q(Inventory__gt=0),
@@ -372,6 +345,23 @@ class ProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             When(OldPrice__gt=0, then=(
                     (F('OldPrice') - F('Price')) * 100 / F('OldPrice'))
                  ), default=0)).order_by('-is_available', '-category_id')
+        search_query = self.request.query_params.get('search', None)
+        q_query = self.request.query_params.get('q', None)
+        if search_query:
+            query = res.filter(Title__icontains=search_query)
+        elif q_query:
+            query = res.filter(Title__icontains=q_query)
+        else:
+            query = res
+        self.max_price = query.aggregate(Max('Price'))['Price__max']
+        self.min_price = query.aggregate(Min('Price'))['Price__min']
+        return res
+
+    def get_paginated_response(self, data):
+        res = super().get_paginated_response(data)
+        res.data['max_price'] = self.max_price
+        res.data['min_price'] = self.min_price
+        return res
 
 
 class ProductDetailsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):

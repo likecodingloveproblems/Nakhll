@@ -151,7 +151,7 @@ class ShopFeatureInvoice(models.Model):
 class ShopLanding(models.Model):
     class Meta:
         verbose_name = _('صفحه فرود فروشگاه')
-        verbose_name = _('صفحات فرود فروشگاه')
+        verbose_name_plural = _('صفحات فرود فروشگاه')
     class Statuses(models.TextChoices):
         ACTIVE = 'active', _('فعال')
         INACTIVE = 'inactive', _('غیرفعال')
