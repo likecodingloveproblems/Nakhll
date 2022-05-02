@@ -121,7 +121,6 @@ nakhll\_market.models module
 
 .. automodule:: nakhll_market.models
    :members:
-   :undoc-members:
    :show-inheritance:
 
 nakhll\_market.paginators module
