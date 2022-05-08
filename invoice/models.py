@@ -113,10 +113,9 @@ class Invoice(models.Model):
         verbose_name = _('فاکتور')
         verbose_name_plural = _('فاکتورها')
         ordering = ('-id',)
-
     user = models.ForeignKey(
         User,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         verbose_name=_('کاربر'))
     old_id = models.UUIDField(null=True, blank=True)
     FactorNumber = models.CharField(
@@ -409,10 +408,10 @@ class InvoiceItem(models.Model):
 
     invoice = models.ForeignKey(
         Invoice,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name='items',
         verbose_name=_('فاکتور'))
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True,
+    product = models.ForeignKey(Product, on_delete=models.PROTECT,
                                 related_name='invoice_items')
     count = models.IntegerField(_('تعداد'), default=1)
     status = models.CharField(

@@ -253,9 +253,9 @@ class ShopManager(models.Manager):
 class Shop(models.Model):
     objects = ShopManager()
     ID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
-    FK_ShopManager = models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='حجره دار',
-                                       related_name='ShopManager', null=True)
-    Title = models.CharField(max_length=100, verbose_name='عنوان حجره', db_index=True)
+    FK_ShopManager = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name='حجره دار',
+                                       related_name='ShopManager')
+    Title = models.CharField(max_length=100, verbose_name='عنوان حجره', db_index=True, unique=True)
     Slug = models.SlugField(verbose_name='شناسه حجره', unique=True, db_index=True, allow_unicode=True)
     Description = models.TextField(verbose_name='درباره حجره', blank=True)
     Image = models.ImageField(verbose_name='عکس حجره',
@@ -739,7 +739,7 @@ class Product(models.Model):
     Catalog = models.FileField(verbose_name='کاتالوگ محصول',
                                upload_to=PathAndRename('media/Catalogs/Markets/SubMarkets/Shops/Products/'),
                                help_text='کاتالوگ محصول خود را اینجا وارد کنید', null=True, blank=True)
-    FK_Shop = models.ForeignKey(Shop, null=True, on_delete=models.SET_NULL, verbose_name='حجره',
+    FK_Shop = models.ForeignKey(Shop, on_delete=models.PROTECT, verbose_name='حجره',
                                 related_name='ShopProduct')
     category = models.ForeignKey(Category, verbose_name='دسته بندی جدید', related_name='products', null=True,
                                  on_delete=models.PROTECT, db_column='category_id')
