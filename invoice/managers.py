@@ -136,6 +136,6 @@ class InvoiceItemManager(models.Manager):
             product__FK_Shop__Slug=shop_slug,
             invoice__created_datetime__gt=str(
                 last_month_start_date.togregorian()),
-            invoice_created_datetime__lt=str(
+            invoice__created_datetime__lt=str(
                 current_month_start_date.togregorian())
         ).aggregate(amont=Sum('product__Price'))
