@@ -64,7 +64,7 @@ class AccountingManager(models.Manager):
         return self.annotate(
             coupon_price=Coalesce(
                 Sum('coupon_usages__price_applied',
-                    output_field=DecimalField()), Value(0)),
+                    output_field=DecimalField()), Value(0.0)),
             price=F('invoice_price_with_discount') +
             F('logistic_price') -
             F('coupon_price'),
