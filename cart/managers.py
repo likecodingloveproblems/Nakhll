@@ -63,7 +63,7 @@ class CartManager(models.Manager):
         return uuid.uuid4().hex
 
     @staticmethod
-    def get_user_cart(user, guid=None):
+    def _get_user_cart(user, guid=None):
         cart, created = \
             cart_models.Cart.objects.get_or_create(user=user) if user else \
             cart_models.Cart.objects.get_or_create(guest_unique_id=guid or CartManager.generate_guid())
