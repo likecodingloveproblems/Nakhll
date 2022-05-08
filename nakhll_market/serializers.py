@@ -463,10 +463,7 @@ class ProductOwnerWriteSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         banners = validated_data.pop('Product_Banner')
-        if "product_tags" in validated_data:
-            tags_list: list = [x['tag'] for x in validated_data.pop('product_tags')]
-        else:
-            tags_list = []
+tags_list: list = [x['tag'] for x in validated_data.pop('product_tags', [])]
         post_range_cities = validated_data.pop('post_range_cities')
         instance = Product.objects.create(**validated_data)
         self.__tag_create(instance, tags_list)
