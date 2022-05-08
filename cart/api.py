@@ -34,7 +34,7 @@ class UserCartViewSet(viewsets.GenericViewSet):
     def get_object(self):
         user, guid = get_user_or_guest(self.request)
         if user or guid:
-            return CartManager.get_user_cart(user, guid)
+            return CartManager._get_user_cart(user, guid)
         return None
 
     @action(detail=False, name='View current user active cart', url_path='me')
