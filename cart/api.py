@@ -241,5 +241,5 @@ class UserCartItemViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
         """Get user cart from request. It may be guest or user cart"""
         user, guid = get_user_or_guest(self.request)
         if user or guid:
-            return CartManager.get_user_cart(user, guid)
+            return CartManager._get_user_cart(user, guid)
         return None
