@@ -1,4 +1,5 @@
 """Nakhll project-wide utility functions."""
+from rest_framework.views import exception_handler
 import csv
 
 
@@ -105,3 +106,22 @@ def dict_to_table(dictionary):
     for key, value in dictionary.items():
         table += f'{key}: {value}<br>'
     return table
+
+
+
+def custom_exception_handler(exc, context):
+    # Call REST framework's default exception handler first,
+    # to get the standard error response.
+    response = exception_handler(exc, context)
+
+    # Now add the HTTP status code to the response.
+    error_message = {}
+    if response is not None:
+        error_message = {}
+        if response.data:
+            for key, value in response.data.items():
+                error_message[key] = f"{key}: {str(value[0])}"
+        error_message['status_code'] = response.status_code
+
+    response.data = error_message
+    return response
