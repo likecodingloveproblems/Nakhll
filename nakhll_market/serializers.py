@@ -698,7 +698,7 @@ class ShopAllSettingsSerializer(serializers.ModelSerializer):
                     FK_User=self.context.get('user'))
             if duplicated.exists():
                 raise serializers.ValidationError(
-                    {'errors': 'کد ملی وارد شده از قبل در سایت وجود دارد.'})
+                    {'NationalCode_error': 'کد ملی وارد شده از قبل در سایت وجود دارد.'})
         return data
 
     def update(self, instance, validated_data):
