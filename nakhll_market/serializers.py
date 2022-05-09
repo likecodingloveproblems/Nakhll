@@ -493,10 +493,9 @@ class ProductOwnerWriteSerializer(serializers.ModelSerializer):
                 for tag in tags])
 
     @staticmethod
-    def __update_tags(instance, validated_data):
-        if 'product_tags' not in validated_data:
-            return
-        tags_list: list = [x['tag'] for x in validated_data.pop('product_tags')]
+    def __update_tags(instance : Product, validated_data):
+        instance.product_tags.all().delete()
+        tags_list = [x['tag'] for x in validated_data.pop('product_tags', [])]
         if tags_list:
             all_tags = Tag.objects.filter(
                 shop=instance.shop).values_list(
