@@ -76,7 +76,7 @@ THIRD_PARTY_APPS = [
     'django_extensions',
     'colorfield',
     'django_rename_app',
-    'import_export',
+    # 'import_export', # has conflict with django-excel-response in dependencies (openpyxl)
 ]
 
 NAKHLL_APPS = [
