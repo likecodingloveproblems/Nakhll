@@ -347,33 +347,6 @@ class ProductOwnerListSerializer(serializers.ModelSerializer):
         ]
 
 
-class ProductOwnerListSerializer(serializers.ModelSerializer):
-    FK_Shop = FilterPageShopSerializer(read_only=True)
-    post_range_cities = serializers.SlugRelatedField(
-        slug_field='name', read_only=True, many=True)
-
-    class Meta:
-        model = Product
-        fields = [
-            'ID',
-            'Title',
-            'Slug',
-            'Inventory',
-            'Image_medium_url',
-            'image_thumbnail_url',
-            'FK_Shop',
-            'Price',
-            'OldPrice',
-            'discount',
-            'is_advertisement',
-            'status',
-            'PreparationDays',
-            'Available',
-            'Publish',
-            'category_id',
-            'post_range_cities'
-        ]
-
 
 class ProductSubMarketSerializer(serializers.Serializer):
     product = serializers.UUIDField()
