@@ -290,14 +290,6 @@ class ShopOwnerProductViewSet(
             counter += 1
         return new_slug
 
-    def partial_update(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        if not serializer.is_valid():
-            errors_messages = {}
-            for key, value in serializer.errors.items():
-                errors_messages[key] = f"{key}: {value[0]}"
-            return Response(errors_messages, status=status.HTTP_400_BAD_REQUEST)
-        return super().partial_update(request, *args, **kwargs)
 
 class TagsOwnerViewSet(
     viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.ListModelMixin, ):
@@ -682,10 +674,7 @@ class AllShopSettings(views.APIView):
         if serializer.is_valid():
             serializer.save()
         else:
-            error_messages = {}
-            for key, value in serializer.errors.items():
-                error_messages[key] = f'{key}: {value[0]}'
-            return Response(error_messages,  status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors,  status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.data)
 
 
