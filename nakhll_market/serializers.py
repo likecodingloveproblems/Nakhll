@@ -347,7 +347,6 @@ class ProductOwnerListSerializer(serializers.ModelSerializer):
         ]
 
 
-
 class ProductSubMarketSerializer(serializers.Serializer):
     product = serializers.UUIDField()
     submarkets = serializers.ListField(
@@ -466,7 +465,7 @@ class ProductOwnerWriteSerializer(serializers.ModelSerializer):
                 for tag in tags])
 
     @staticmethod
-    def __update_tags(instance : Product, validated_data):
+    def __update_tags(instance: Product, validated_data):
         instance.product_tags.all().delete()
         tags_list = [x['tag'] for x in validated_data.pop('product_tags', [])]
         if tags_list:
