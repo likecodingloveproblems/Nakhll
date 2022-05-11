@@ -122,6 +122,6 @@ def custom_exception_handler(exc, context):
             for key, value in response.data.items():
                 error_message[key] = f"{str(value[0])}"
         error_message['status_code'] = response.status_code
+        response.data = error_message
 
-    response.data = error_message
     return response
