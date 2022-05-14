@@ -684,7 +684,8 @@ class ShopAllSettingsSerializer(serializers.ModelSerializer):
         model = Shop
         fields = [
             'Title', 'Slug', 'Image', 'image_thumbnail_url',
-            'bank_account', 'social_media', 'Description', 'FK_ShopManager',
+            'bank_account', 'social_media', 'Description', 'FK_ShopManager',"state","BigCity",
+            "City","Location"
         ]
         read_only_fields = ['Title', 'Slug', 'image_thumbnail_url']
 
