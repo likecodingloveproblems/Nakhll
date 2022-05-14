@@ -493,6 +493,16 @@ class Shop(models.Model):
             return self.advertisement
         return None
 
+
+    def delete_image(self) -> None:
+        """ Delete image
+
+        This method delete image from storage and set image to Default image
+        """
+        if self.Image:
+            self.Image.delete()
+        self.save()
+
     class Meta:
         ordering = ('DateCreate', 'Title',)
         verbose_name = "حجره"
@@ -1178,7 +1188,7 @@ class Product(models.Model):
 
     def _check_product_title_uniqueness_in_shop(self):
         # Check Product Title must be unique in shop
-        if Product.objects.filter(Title = self.Title, FK_Shop_id = self.FK_Shop_id).exist():
+        if Product.objects.filter(Title=self.Title, FK_Shop_id=self.FK_Shop_id).exist():
             raise ValidationError({
                 'message': _('محصولی با این عنوان قبلا در فروشگاه شما ثبت شده است')
             })
