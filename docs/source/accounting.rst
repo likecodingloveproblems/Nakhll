@@ -31,6 +31,7 @@ accounting.models module
 
 .. automodule:: accounting.models
    :members:
+   :undoc-members:
    :show-inheritance:
 
 accounting.tests module

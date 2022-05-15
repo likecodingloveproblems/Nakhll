@@ -3,10 +3,7 @@ import logistic
 from django.db.models import fields
 from django.utils.translation import ugettext as _
 from rest_framework import serializers
-from logistic.models import (
-    Address, ShopLogisticUnit, ShopLogisticUnitCalculationMetric,
-    ShopLogisticUnitConstraint
-)
+from logistic.models import Address, ShopLogisticUnit, ShopLogisticUnitConstraint, ShopLogisticUnitCalculationMetric
 from nakhll_market.models import Product, Shop, State, BigCity, City
 from nakhll_market.serializer_fields import Base64ImageField
 
@@ -22,9 +19,8 @@ class AddressSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Address
-        fields = ('id', 'user', 'state', 'big_city', 'city', 'zip_code',
-                  'address', 'phone_number', 'receiver_full_name',
-                  'receiver_mobile_number',)
+        fields = ('id', 'user', 'state', 'big_city', 'city', 'zip_code', 'address',
+                  'phone_number', 'receiver_full_name', 'receiver_mobile_number',)
         read_only_fields = ('id', 'user')
 
     def get_user(self, obj):
@@ -41,7 +37,6 @@ class ShopOwnerAddressSerializer(AddressSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     is_checked = serializers.SerializerMethodField()
-
     class Meta:
         model = Product
         fields = ('ID', 'Title', 'is_checked')
@@ -50,42 +45,25 @@ class ProductSerializer(serializers.ModelSerializer):
         return obj.is_checked
 
 
+
 class ShopLogisticUnitSerializer(serializers.ModelSerializer):
-    shop = serializers.SlugRelatedField(
-        slug_field='Slug', queryset=Shop.objects.all())
+    shop = serializers.SlugRelatedField(slug_field='Slug', queryset=Shop.objects.all())
     constraint_id = serializers.SerializerMethodField()
     metric_id = serializers.SerializerMethodField()
     cities_count = serializers.SerializerMethodField()
     products_count = serializers.SerializerMethodField()
-    logo = Base64ImageField(
-        max_length=None,
-        use_url=True,
-        allow_empty_file=False,
-        required=False)
-
+    logo = Base64ImageField(max_length=None, use_url=True, allow_empty_file=False, required=False)
     class Meta:
         model = ShopLogisticUnit
-        fields = (
-            'id',
-            'shop',
-            'name',
-            'description',
-            'logo',
-            'is_active',
-            'is_publish',
-            'constraint_id',
-            'metric_id',
-            'cities_count',
-            'products_count',
-        )
+        fields = ('id', 'shop', 'name', 'description', 'logo', 'is_active', 'is_publish',
+                  'constraint_id', 'metric_id', 'cities_count', 'products_count', )
         read_only_fields = ('id', 'is_publish', )
 
     def get_constraint_id(self, obj):
         return obj.constraint.id if hasattr(obj, 'constraint') else None
-
+    
     def get_metric_id(self, obj):
-        return obj.calculation_metric.id if hasattr(
-            obj, 'calculation_metric') else None
+        return obj.calculation_metric.id if hasattr(obj, 'calculation_metric') else None
 
     def get_cities_count(self, obj):
         if not obj.constraint or not obj.constraint.cities:
@@ -97,28 +75,17 @@ class ShopLogisticUnitSerializer(serializers.ModelSerializer):
             return 0
         return obj.constraint.products.count()
 
+        
 
 class ShopLogisticUnitConstraintReadSerializer(serializers.ModelSerializer):
     shop_logistic_unit = serializers.PrimaryKeyRelatedField(read_only=True)
     products = serializers.SerializerMethodField()
-
     class Meta:
         model = ShopLogisticUnitConstraint
-        fields = (
-            'id',
-            'shop_logistic_unit',
-            'cities',
-            'products',
-            'categories',
-            'max_weight',
-            'min_weight',
-            'max_cart_price',
-            'min_cart_price',
-            'max_cart_count',
-            'min_cart_count',
-        )
+        fields = ('id', 'shop_logistic_unit', 'cities', 'products', 'categories', 'max_weight', 'min_weight', 
+                  'max_cart_price', 'min_cart_price', 'max_cart_count', 'min_cart_count', )
         read_only_fields = ('id', 'shop_logistic_unit', )
-
+    
     def get_products(self, obj):
         shop = obj.shop_logistic_unit.shop
         products = Product.objects.filter(
@@ -128,29 +95,18 @@ class ShopLogisticUnitConstraintReadSerializer(serializers.ModelSerializer):
                 output_field=fields.BooleanField()
             )).order_by('-is_checked')
         return ProductSerializer(products, many=True).data
-
+        
 
 class ShopLogisticUnitConstraintWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShopLogisticUnitConstraint
-        fields = (
-            'id',
-            'cities',
-            'products',
-            'categories',
-            'max_weight',
-            'min_weight',
-            'max_cart_price',
-            'min_cart_price',
-            'max_cart_count',
-            'min_cart_count',
-        )
+        fields = ('id', 'cities', 'products', 'categories', 'max_weight', 'min_weight', 
+                  'max_cart_price', 'min_cart_price', 'max_cart_count', 'min_cart_count', )
         read_only_fields = ('id', )
 
     def validate_products(self, products):
         if not self._are_products_belong_to_shop(products):
-            raise serializers.ValidationError(
-                _('این محصولات متعلق به فروشگاه شما نیستند.'))
+            raise serializers.ValidationError(_('این محصولات متعلق به فروشگاه شما نیستند.'))
         return products
 
     def _are_products_belong_to_shop(self, products):
@@ -162,7 +118,6 @@ class ShopLogisticUnitConstraintWriteSerializer(serializers.ModelSerializer):
 
 class ShopLogisticUnitCalculationMetricSerializer(serializers.ModelSerializer):
     shop_logistic_unit = serializers.PrimaryKeyRelatedField(read_only=True)
-
     class Meta:
         model = ShopLogisticUnitCalculationMetric
         fields = ('id', 'shop_logistic_unit', 'price_per_kilogram',
@@ -170,8 +125,7 @@ class ShopLogisticUnitCalculationMetricSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'shop_logistic_unit', )
 
 
-class ShopLogisticUnitConstraintWithoutM2MSerializer(
-        serializers.ModelSerializer):
+class ShopLogisticUnitConstraintWithoutM2MSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShopLogisticUnitConstraint
         fields = ('id', 'max_weight', 'min_weight', 'max_cart_price',
@@ -179,46 +133,25 @@ class ShopLogisticUnitConstraintWithoutM2MSerializer(
         read_only_fields = ('id', )
 
 
+
 class ShopLogisticUnitFullSerializer(serializers.ModelSerializer):
-    shop = serializers.SlugRelatedField(
-        slug_field='Slug', queryset=Shop.objects.all())
-    constraint = ShopLogisticUnitConstraintWithoutM2MSerializer(
-        read_only=False, required=False)
-    calculation_metric = ShopLogisticUnitCalculationMetricSerializer(
-        read_only=False,
-        required=False)
+    shop = serializers.SlugRelatedField(slug_field='Slug', queryset=Shop.objects.all())
+    constraint = ShopLogisticUnitConstraintWithoutM2MSerializer(read_only=False, required=False)
+    calculation_metric = ShopLogisticUnitCalculationMetricSerializer(read_only=False, required=False)
     cities_count = serializers.SerializerMethodField()
     products_count = serializers.SerializerMethodField()
-    logo = Base64ImageField(
-        max_length=None,
-        use_url=True,
-        allow_empty_file=False,
-        required=False)
-
+    logo = Base64ImageField(max_length=None, use_url=True, allow_empty_file=False, required=False)
     class Meta:
         model = ShopLogisticUnit
-        fields = (
-            'id',
-            'shop',
-            'name',
-            'description',
-            'logo',
-            'logo_type',
-            'is_active',
-            'is_publish',
-            'constraint',
-            'calculation_metric',
-            'cities_count',
-            'products_count',
-        )
+        fields = ('id', 'shop', 'name', 'description', 'logo', 'logo_type', 'is_active', 'is_publish',
+                  'constraint', 'calculation_metric', 'cities_count', 'products_count', )
         read_only_fields = ('id', 'is_publish', )
 
     def get_constraint_id(self, obj):
         return obj.constraint.id if hasattr(obj, 'constraint') else None
-
+    
     def get_metric_id(self, obj):
-        return obj.calculation_metric.id if hasattr(
-            obj, 'calculation_metric') else None
+        return obj.calculation_metric.id if hasattr(obj, 'calculation_metric') else None
 
     def get_cities_count(self, obj):
         if not obj.constraint or not obj.constraint.cities:
@@ -230,6 +163,7 @@ class ShopLogisticUnitFullSerializer(serializers.ModelSerializer):
             return 0
         return obj.constraint.products.count()
 
+ 
     def update(self, instance, validated_data):
         constraint_dict = validated_data.pop('constraint', {})
         metric_dict = validated_data.pop('calculation_metric', {})
@@ -246,3 +180,5 @@ class ShopLogisticUnitFullSerializer(serializers.ModelSerializer):
         metric.save()
 
         return instance
+
+

@@ -47,6 +47,7 @@ cart.models module
 
 .. automodule:: cart.models
    :members:
+   :undoc-members:
    :show-inheritance:
 
 cart.permissions module

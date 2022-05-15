@@ -28,11 +28,6 @@ nakhll.settings module
    :undoc-members:
    :show-inheritance:
 
-.. py:attribute:: INVOICE_EXPIRING_HOURS
-
-   Indicates maximum hours before an invoice expires. Default is 4.
-
-
 nakhll.urls module
 ------------------
 

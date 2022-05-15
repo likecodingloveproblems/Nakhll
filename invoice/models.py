@@ -1,104 +1,35 @@
 import logging
+from uuid import uuid4
 from datetime import datetime, timedelta
-from django.conf import settings
-from django.contrib.auth import get_user_model
-from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
-from django.utils import timezone
+from django.conf import settings
+from django.db.models.query_utils import Q
 from django.utils.translation import ugettext_lazy as _
+from django.utils import timezone
+from django.core.serializers.json import DjangoJSONEncoder
+from django.contrib.auth.models import User
 from cart.managers import CartManager
-from invoice.managers import AccountingManager, InvoiceItemManager
 from nakhll_market.interface import AlertInterface
 from nakhll_market.models import Category, Product, Shop
-from payoff.exceptions import (
-    InvalidInvoiceStatusException, InvoiceExpiredException,
-    NoAddressException, NoItemException
-)
-from payoff.interfaces import PaymentInterface
 from payoff.models import Transaction
+from payoff.interfaces import PaymentInterface
+from payoff.exceptions import (
+    NoAddressException, InvoiceExpiredException,
+    InvalidInvoiceStatusException, NoItemException,
+    OutOfPostRangeProductsException
+)
+from invoice.interfaces import AccountingInterface
+from invoice.managers import AccountingManager, InvoiceItemManager
+from logistic.models import Address, ShopLogisticUnit
 from sms.services import Kavenegar
-from .managers import AccountingManager, InvoiceItemManager
-
 
 logger = logging.getLogger(__name__)
-User = get_user_model()
+
+# Create your models here.
 
 
 class Invoice(models.Model):
-    """Invoice model for each user purchase from shop
-
-    Just before reaching IPG, invoice will create from user's cart. user have
-    6 hours (configured from settings.INVOICE_EXPIRING_HOURS) to pay invoice,
-    after that, invoice will expire and cannot payed anymore.
-
-    Attributes:
-        user (User): global user model
-        old_id: the UUID field in previous design system. This field is not
-            using anymore, it is just for reference to old database
-        FactorNumber: this is also just for reference to old database and
-            not used anymore
-        status: indicate invoice status, options can be found at
-            :class:`Statuses`
-        address_json: while creating invoice from cart, value of
-            :attr:`cart.models.Cart.address` is converted to json using
-            :func:`logistic.models.Address.as_json`
-            and then saved in this field
-        invoice_price_with_discount: this is the price of invoice with
-            shop's own discount
-        invoice_price_without_discount: this is the price of invoice without
-            shop's own discount
-        logistic_price: this is the price of logistic unit
-        created_datetime: this is the datetime of invoice creation
-        payment_request_datetime: this is the last datetime when invoice is
-            sent to payment gateway by user.
-        payment_datetime: datetime of payment success
-        payment_unique_id: unique id that will generated when user
-            send invoice to payment gateway. This id will be sent to payment
-            gateway as it's unique id. Also we can use this field to connect
-            :attr:`payoff.models.Transaction` to invoice after successful
-            payment.
-        extra_data: same as :attr:`cart.models.Cart.extra_data`
-        total_weight_gram: total weight of all items in invoice
-        logistic_unit_details: JSON representation of logistic unit details,
-            including all types of logistic unit that are going to be used to
-            send invoice items to user, which their price.
-    """
     class Statuses(models.TextChoices):
-        """Status values for field status of invoice
-
-        Statuses are designed to change in process of purchase
-        in this order:
-
-            1. awaiting_paying
-            2. wait_store_approv
-            3. preparing_product
-            4. wait_customer_approv
-            5. wait_store_checkout
-            6. completed
-
-        There are 2 drawback with this statuses
-
-        1. In order to check if invoice is accepted by store, it should be one
-        of this statuses:
-
-            a. preparing_product
-            b. wait_customer_approv
-            c. wait_store_checkout
-            d. completed
-
-        or it should NOT be one of these statuses:
-
-            a. awaiting_paying
-            b. wait_store_approv
-
-        this means you should check multiple statuses to find out what is the
-        current status of invoice maybe it's better to change statuses from
-        text to integer
-
-        2. Invoice can be canceled at any time, in any status, so we cannot
-        findout in which status invoice canceled. Maybe it's better to separate
-        canceled status in another column with it's datetime and reason
-        """
         AWAIT_PAYMENT = 'awaiting_paying', _('در انتظار پرداخت')
         AWAIT_SHOP_APPROVAL = 'wait_store_approv', _('در انتظار تأیید فروشگاه')
         PREPATING_PRODUCT = 'preparing_product', _('در حال آماده سازی')
@@ -165,33 +96,35 @@ class Invoice(models.Model):
 
     @property
     def shops(self):
-        """All shops in this invoice"""
         shop_ids = self.items.values_list(
             'product__FK_Shop__ID', flat=True).distinct()
         return Shop.objects.filter(ID__in=shop_ids)
 
     @property
     def products(self):
-        """All products in this invoice"""
         product_ids = self.items.values_list(
             'product__ID', flat=True).distinct()
         return Product.objects.filter(ID__in=product_ids)
 
     @property
     def categories(self):
-        """All categories in this invoice"""
         category_ids = self.items.values_list(
             'product__category__id', flat=True).distinct()
         return Category.objects.filter(id__in=category_ids)
 
     @property
     def barcodes(self):
-        """All barcodes in this invoice"""
         return [item.barcode for item in self.items.all()]
 
     @property
+    def logistic_errors(self):
+        return ""
+        # post_setting, is_created = PostPriceSetting.objects.get_or_create()
+        # out_of_range = post_setting.get_out_of_range_products(self)
+        # return out_of_range
+
+    @property
     def coupons_total_price(self):
-        """Coupons total price that is applied in this invoice"""
         final_price = 0
         usages = self.coupon_usages.all()
         for usage in usages:
@@ -200,24 +133,13 @@ class Invoice(models.Model):
 
     @property
     def final_price(self):
-        """ Total amount of cart_price + logistic - coupon """
+        ''' Total amount of cart_price + logistic - coupon '''
         total_price = self.invoice_price_with_discount
         logistic_price = self.logistic_price
         coupon_price = self.coupons_total_price
         return total_price + logistic_price - coupon_price
 
     def send_to_payment(self, bank_port=Transaction.IPGTypes.PEC):
-        """Send this invoice to payment
-
-        Args:
-            bank_port (Transaction.IPGTypes, optional): Internet Payment
-            Gateway which should handle the payment. Defaults to
-            :attr:`payoff.models.Transaction.IPGTypes.PEC`.
-
-        Returns:
-            A link to payment page that user should be redirected to, in order
-            to pay for this invoice.
-        """
         self.__validate_items()
         self.__validate_address()
         self.__validate_invoice_status()
@@ -228,46 +150,25 @@ class Invoice(models.Model):
         return PaymentInterface.from_invoice(self, bank_port)
 
     def __validate_items(self):
-        """Check if there are any items in this invoice"""
         if not self.items.count():
             raise NoItemException()
 
     def __validate_address(self):
-        """Check if there is an address in this invoice"""
         if not self.address_json:
             raise NoAddressException()
 
     def __validate_invoice_expiring_date(self):
-        """Check if invoice is not expired
-
-        Invoices will expire after a certain time, which is defined in
-        :attr:`nakhll.settings.INVOICE_EXPIRING_HOURS`.
-        """
         expire_datetime = self.created_datetime + \
             timedelta(hours=settings.INVOICE_EXPIRING_HOURS)
         if expire_datetime < timezone.now():
             raise InvoiceExpiredException()
 
     def __validate_invoice_status(self):
-        """Check if invoice status in :attr:`Statuses.AWAIT_PAYMENT`"""
         if self.status != self.Statuses.AWAIT_PAYMENT:
             raise InvalidInvoiceStatusException()
 
     def complete_payment(self):
-        """Operations that should be done after payment is completed
-
-        This function is called by
-        :func:`payoff.payment.PaymentMethod.callback()`, after successful
-        payment by user. So here is the best place to do any operations that
-        should be done after payment is completed.
-
-        Currently, this function does the following:
-          - Reduce stock of products in this invoice
-          - Send SMS notifications to user and shops
-          - Send Discord Alert to Staff members
-          - Set invoice status to :attr:`Statuses.AWAIT_SHOP_APPROVAL`
-          - Set :attr:`payment_datetime` to current time
-        """
+        ''' Payment is succeeded '''
         self._reduce_inventory()
         self._send_notifications()
         self.status = self.Statuses.AWAIT_SHOP_APPROVAL
@@ -275,48 +176,45 @@ class Invoice(models.Model):
         self.save()
 
     def _reduce_inventory(self):
-        """Reduce bought items from shops stock"""
+        ''' Reduce bought items from shops stock '''
         items = self.items.all()
         for item in items:
             item.product.reduce_stock(item.count)
 
     def _send_notifications(self):
-        """Send SMS to user and shop_owner and create alert for staff"""
+        ''' Send SMS to user and shop_owner and create alert for staff'''
         shop_owner_mobiles = self.items.all().values_list(
             'product__FK_Shop__FK_ShopManager__User_Profile__MobileNumber',
             flat=True).distinct()
-        logger.debug('Shop owner mobiles: %s', shop_owner_mobiles)
+        logger.debug(f'Shop owner mobiles: {shop_owner_mobiles}')
         for mobile_number in shop_owner_mobiles:
             Kavenegar.shop_new_order(mobile_number, self.id)
         AlertInterface.new_order(self)
 
     def revert_payment(self):
-        """Operations that should be done after payment is failed
-
-        This function is called by
-        :func:`payoff.payment.PaymentMethod.callback()`, after failed payment
-        by user. So here is the best place to do any operations that should
-        be done after payment is failed.
-
-        Currently, this function does the following:
-            - Unset all coupons that are applied in this invoice
-            - Fill user's cart with items that are in this invoice
-            - Set invoice status to :attr:`Statuses.AWAIT_PAYMENT`
-        """
+        ''' Payment is failed'''
         self.unset_coupons()
         self.fill_cart()
         self.status = self.Statuses.AWAIT_PAYMENT
         self.save()
 
     def unset_coupons(self):
-        """Delete all coupon usages from invoice"""
+        ''' Delete all coupon usages from invoice '''
         coupon_usages = self.coupon_usages.all()
         for coupon_usage in coupon_usages:
             coupon_usage.delete()
 
+    def available_logistic_units(self):
+        ''' Return available logistic units for this invoice '''
+        ShopLogisticUnit.objects.filter(
+            # Q(shop__ShopProduct=p),
+            ~Q(logistic_unit__logistic_unit_constraints__constraint__products__in=self.products),
+            ~Q(logistic_unit__logistic_unit_constraints__constraint__categories__in=self.categories),
+            ~Q(logistic_unit__logistic_unit_constraints__constraint__cities=self.address.city),
+        ).distinct()
+
     def fill_cart(self):
-        """Fill user's cart with items that are in this invoice"""
-        cart = CartManager.user_cart(self.user)
+        cart = CartManager.user_active_cart(self.user)
         for item in self.items.all():
             cart.add_product(item.product)
         cart.reset_coupons()
@@ -324,58 +222,11 @@ class Invoice(models.Model):
 
 
 class InvoiceItem(models.Model):
-    """Invoice items model
-
-    This model is used to store items that are in an invoice. Each invoice can
-    have multiple items.
-
-    This model has a relationship to :class:`nakhll_market.models.Product`,
-    which means it has access to all the fields of that class, but we still
-    need to store some of its fields in this model too. The reason is,
-    attributes in this model must be immutable, and should not be changed if
-    chagnes happen in the related :class:`nakhll_market.models.Product`.
-
-    Note that, user confirmation which has 3 fields in this model, is not yet
-    implemented in front-end.
-
-    Attributes:
-        invoice (Invoice): Invoice that this item is in
-        product (Product): Product that is in this item
-        count (int): Count of this item
-        status (InvoiceItem.Statuses): Status of this item
-        created_datetime (datetime): Datetime when this item was created
-        slug: Product slug which is hardcoded in this model
-        name: Product name which is hardcoded in this model
-        barcode: Product barcode which is hardcoded in this model
-        price_with_discount: Product price_with_discount which is hardcoded in
-            this model
-        price_without_discount: Product price_without_discount which is
-            hardcoded in this model
-        weight: single Product weight which is hardcoded in this model
-        image: Product image which is hardcoded in this model
-        image_thumbnail: Product image_thumbnail which is hardcoded in this
-            model
-        shop_name: Shop name which is hardcoded in this model
-        added_datetime: Datetime when this item was added to this invoice
-        shop_confirmed_datetime: Datetime when this item was confirmed by shop
-            owner
-        post_type: This field is deprecated and should be removed in future
-        post_tracking_code: Tracking code for this item which shop owner will
-            fill in, after sending this item to user
-        user_confirmed_datetime: Datetime when this item was recieved to user
-            and confirmed by user
-        user_confirm_status: Status of this item after user confirmed it
-        user_confirm_comment: Comment that user gave to this item for
-            confirmation.
-
-    """
     class Meta:
         verbose_name = _('آیتم فاکتور')
         verbose_name_plural = _('آیتم های فاکتور')
 
     class ItemStatuses(models.TextChoices):
-        """statuses for each item are the same as in :class:`Invoice`"""
-
         AWAIT_PAYMENT = 'awaiting_paying', _('در انتظار پرداخت')
         AWAIT_SHOP_APPROVAL = 'wait_store_approv', _('در انتظار تأیید فروشگاه')
         PREPATING_PRODUCT = 'preparing_product', _('در حال آماده سازی')
@@ -387,22 +238,11 @@ class InvoiceItem(models.Model):
         CANCELED = 'canceled', _('لغو شده')
 
     class UserConfirmStatuses(models.TextChoices):
-        """Status of this item after user confirmed it
-
-            Attributes:
-                AWAIT_CONFIRM: waiting for user to confirm it
-                CONFIRMED: user confirmed
-                REJECTED: user rejected
-        """
         AWAIT_CONFIRM = 'awaiting_confirm', _('در انتظار تایید')
         CONFIRMED = 'confirmed', _('تایید شده')
         REJECTED = 'rejected', _('رد شده')
 
     class PostType(models.TextChoices):
-        """Previously used to indicates that this item is going to be sent
-            using national post, or it'll send by in-city delivery services
-            This field is deprecated and should be removed in future
-        """
         IRPOST = 'irpost', _('شرکت پست')
         INCITY = 'incity', _('درون شهری')
 

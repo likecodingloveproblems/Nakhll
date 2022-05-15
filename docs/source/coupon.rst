@@ -63,6 +63,7 @@ coupon.models module
 
 .. automodule:: coupon.models
    :members:
+   :undoc-members:
    :show-inheritance:
 
 coupon.permissions module
