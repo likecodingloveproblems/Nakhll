@@ -26,11 +26,8 @@ class UserCartViewSet(viewsets.GenericViewSet):
     def get_object(self):
         user, guid = get_user_or_guest(self.request)
         if user or guid:
-<<<<<<< HEAD
-            return CartManager._get_user_cart(user, guid)
-=======
+            'TODO: return CartManager._get_user_cart(user, guid)'
             return CartManager.user_active_cart(user, guid)
->>>>>>> parent of 179e547... Merge pull request #36 from nakhll-company/cleanup
         return None
         
     @action(detail=False, methods=['GET'], name='View current user active cart')
@@ -172,13 +169,13 @@ class UserCartItemViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
 
 
     def get_cart(self):
-        """
+        '''
         TODO: is it necessary after revert
             """Get user cart from request. It may be guest or user cart"""
             user, guid = get_user_or_guest(self.request)
             if user or guid:
                 return CartManager._get_user_cart(user, guid)
             return None
-        """     
+        '''   
 
         return Cart.get_user_cart(self.request)
