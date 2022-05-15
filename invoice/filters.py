@@ -46,9 +46,9 @@ class InvoiceFilter(filters.FilterSet):
         )
 
     def filter_completed(self, queryset, name, is_completed):
-        if is_completed is True:
+        if is_completed == True:
             return queryset.filter(status=Invoice.Statuses.COMPLETED)
-        if is_completed is False:
+        if is_completed == False:
             return queryset.exclude(status__in=[Invoice.Statuses.COMPLETED,
                                                 Invoice.Statuses.AWAIT_PAYMENT,
                                                 Invoice.Statuses.CANCELED])

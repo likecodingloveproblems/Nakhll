@@ -31,6 +31,7 @@ url\_redirector.models module
 
 .. automodule:: url_redirector.models
    :members:
+   :undoc-members:
    :show-inheritance:
 
 url\_redirector.tests module
