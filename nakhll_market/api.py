@@ -690,11 +690,7 @@ class DeleteShopImage(views.APIView):
         shop: Shop = self.get_object(shop_slug, user)
         self.check_object_permissions(request, shop)
         shop.delete_image()
-        serializer = ShopAllSettingsSerializer(data=request.data, instance=shop, context={'user': user})
-        if serializer.is_valid():
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors,
-                        status=status.HTTP_400_BAD_REQUEST)
+        return Response({'status': 'عکس با موفقیت حذف شد'}, status=status.HTTP_200_OK)
 
 
 # class BankAccountShopSettings(views.APIView):
