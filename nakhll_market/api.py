@@ -678,6 +678,13 @@ class AllShopSettings(views.APIView):
                             status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.data)
 
+
+class DeleteShopImage(views.APIView):
+    permission_classes = [permissions.IsAuthenticated, IsShopOwner]
+
+    def get_object(self, shop_slug, user):
+        return get_object_or_404(Shop, Slug=shop_slug)
+
     def delete(self, request, shop_slug, format=None):
         user = request.user
         shop: Shop = self.get_object(shop_slug, user)
@@ -687,7 +694,7 @@ class AllShopSettings(views.APIView):
         if serializer.is_valid():
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors,
-                                status=status.HTTP_400_BAD_REQUEST)
+                        status=status.HTTP_400_BAD_REQUEST)
 
 
 # class BankAccountShopSettings(views.APIView):
