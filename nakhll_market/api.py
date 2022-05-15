@@ -690,7 +690,7 @@ class DeleteShopImage(views.APIView):
         shop: Shop = self.get_object(shop_slug, user)
         self.check_object_permissions(request, shop)
         shop.delete_image()
-        return Response({'status': 'عکس با موفقیت حذف شد'}, status=status.HTTP_200_OK)
+        return Response({'status': 'عکس با موفقیت حذف شد'}, status=status.HTTP_204_NO_CONTENT)
 
 
 # class BankAccountShopSettings(views.APIView):
