@@ -170,12 +170,11 @@ class UserCartItemViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
 
     def get_cart(self):
         '''
-        TODO: is it necessary after revert
+       TODO: is it necessary after revert
             """Get user cart from request. It may be guest or user cart"""
             user, guid = get_user_or_guest(self.request)
             if user or guid:
                 return CartManager._get_user_cart(user, guid)
             return None
         '''   
-
         return Cart.get_user_cart(self.request)
