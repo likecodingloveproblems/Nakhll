@@ -19,10 +19,11 @@ Index
    custom_list
    invoice
    logistic
-   nakhll
    nakhll_auth
    nakhll_market
+   nakhll
    payoff
+   restapi
    shop
    sms
    torob_api
@@ -30,6 +31,7 @@ Index
 
 Indices and tables
 ------------------
-.. toctree::
-   :caption: Indices and tables:
 
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

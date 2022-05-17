@@ -8,3 +8,4 @@ invoice_router.register('', InvoiceViewSet, basename='invoice')
 urlpatterns = [
     path('', include(invoice_router.urls)),
 ]
+

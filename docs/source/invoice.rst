@@ -42,6 +42,14 @@ invoice.exceptions module
    :undoc-members:
    :show-inheritance:
 
+invoice.interfaces module
+-------------------------
+
+.. automodule:: invoice.interfaces
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 invoice.managers module
 -----------------------
 
@@ -55,6 +63,7 @@ invoice.models module
 
 .. automodule:: invoice.models
    :members:
+   :undoc-members:
    :show-inheritance:
 
 invoice.permissions module

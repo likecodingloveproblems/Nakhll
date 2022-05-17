@@ -39,6 +39,7 @@ custom\_list.models module
 
 .. automodule:: custom_list.models
    :members:
+   :undoc-members:
    :show-inheritance:
 
 custom\_list.serializers module

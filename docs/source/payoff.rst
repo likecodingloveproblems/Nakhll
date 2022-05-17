@@ -63,6 +63,7 @@ payoff.models module
 
 .. automodule:: payoff.models
    :members:
+   :undoc-members:
    :show-inheritance:
 
 payoff.payment module
