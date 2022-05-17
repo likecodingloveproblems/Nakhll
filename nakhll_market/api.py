@@ -678,6 +678,20 @@ class AllShopSettings(views.APIView):
         return Response(serializer.data)
 
 
+class DeleteShopImage(views.APIView):
+    permission_classes = [permissions.IsAuthenticated, IsShopOwner]
+
+    def get_object(self, shop_slug, user):
+        return get_object_or_404(Shop, Slug=shop_slug)
+
+    def delete(self, request, shop_slug, format=None):
+        user = request.user
+        shop: Shop = self.get_object(shop_slug, user)
+        self.check_object_permissions(request, shop)
+        shop.delete_image()
+        return Response({'status': 'عکس با موفقیت حذف شد'}, status=status.HTTP_204_NO_CONTENT)
+
+
 # class BankAccountShopSettings(views.APIView):
 #     # TODO: Check this class entirely
 #     permission_classes = [permissions.IsAuthenticated, ]

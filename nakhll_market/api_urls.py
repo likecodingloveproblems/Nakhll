@@ -11,7 +11,7 @@ from nakhll_market.api import (
     CreateShop, GetShopWithSlug, CheckShopSlug, CheckProductSlug,
     ShopProductsViewSet, ProductCommentsViewSet, ProductRelatedItemsViewSet,
     ProductBannerViewSet, AddImagesToProduct, ProductDetailsViewSet,
-    LandingPageSchemaViewSet, ShopPageSchemaViewSet, ShopsStatisticViewSet, TagsOwnerViewSet
+    LandingPageSchemaViewSet, ShopPageSchemaViewSet, ShopsStatisticViewSet, TagsOwnerViewSet, DeleteShopImage
 )
 from rest_framework import routers
 
@@ -72,6 +72,7 @@ urlpatterns = [
 
     path('shop/', GetShopWithSlug.as_view()),
     path('shops/', GetShopList.as_view({'get': 'list'})),
+    path('shop/<shop_slug>/settings/image/', DeleteShopImage.as_view()),
     path('shop/<shop_slug>/settings/', AllShopSettings.as_view()),
     # path('shop/<shop_slug>/settings/bank_account/', BankAccountShopSettings.as_view()),
     # path('shop/<shop_slug>/settings/social_media/', SocialMediaShopSettings.as_view()),
