@@ -299,6 +299,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    # 'EXCEPTION_HANDLER': 'nakhll.utils.custom_exception_handler'
 }
 ACCESS_TOKEN_EXPIRE_MINUTES = int(
     os.environ.get(

@@ -347,34 +347,6 @@ class ProductOwnerListSerializer(serializers.ModelSerializer):
         ]
 
 
-class ProductOwnerListSerializer(serializers.ModelSerializer):
-    FK_Shop = FilterPageShopSerializer(read_only=True)
-    post_range_cities = serializers.SlugRelatedField(
-        slug_field='name', read_only=True, many=True)
-
-    class Meta:
-        model = Product
-        fields = [
-            'ID',
-            'Title',
-            'Slug',
-            'Inventory',
-            'Image_medium_url',
-            'image_thumbnail_url',
-            'FK_Shop',
-            'Price',
-            'OldPrice',
-            'discount',
-            'is_advertisement',
-            'status',
-            'PreparationDays',
-            'Available',
-            'Publish',
-            'category_id',
-            'post_range_cities'
-        ]
-
-
 class ProductSubMarketSerializer(serializers.Serializer):
     product = serializers.UUIDField()
     submarkets = serializers.ListField(
@@ -431,10 +403,13 @@ class ProductBannerWriteSerializer(serializers.ModelSerializer):
 
 class ProductOwnerWriteSerializer(serializers.ModelSerializer):
     category = serializers.PrimaryKeyRelatedField(
-        read_only=False, many=False, queryset=Category.objects.all())
-    product_tags = ProductTagWriteSerializer(
-        many=True, read_only=False, required=False)
-    Image = Base64ImageField(max_length=None, use_url=True)
+        read_only=False, many=False, queryset=Category.objects.all(),required=True,
+        error_messages={'required': ' کتگوری را انتخاب کنید','null':'کتگوری را انتخاب کنید'})
+    product_tags = ProductTagWriteSerializer(many=True, read_only=False, required=False)
+    Image = Base64ImageField(max_length=None, use_url=True,error_messages={
+        'null': 'لطفا تصویر را انتخاب کنید',
+        'required': 'لطفا تصویر را انتخاب کنید'
+    })
     Product_Banner = ProductBannerWriteSerializer(many=True, read_only=False)
     post_range = serializers.PrimaryKeyRelatedField(
         source='post_range_cities', read_only=False, many=True,
@@ -493,10 +468,9 @@ class ProductOwnerWriteSerializer(serializers.ModelSerializer):
                 for tag in tags])
 
     @staticmethod
-    def __update_tags(instance, validated_data):
-        if 'product_tags' not in validated_data:
-            return
-        tags_list: list = [x['tag'] for x in validated_data.pop('product_tags')]
+    def __update_tags(instance: Product, validated_data):
+        instance.product_tags.all().delete()
+        tags_list = [x['tag'] for x in validated_data.pop('product_tags', [])]
         if tags_list:
             all_tags = Tag.objects.filter(
                 shop=instance.shop).values_list(
