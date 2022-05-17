@@ -105,4 +105,3 @@ def dict_to_table(dictionary):
     for key, value in dictionary.items():
         table += f'{key}: {value}<br>'
     return table
-
