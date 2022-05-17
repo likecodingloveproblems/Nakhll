@@ -674,10 +674,8 @@ class AllShopSettings(views.APIView):
         if serializer.is_valid():
             serializer.save()
         else:
-            error_messages = {}
-            for key, value in serializer.errors.items():
-                error_messages[key] = f'{key}: {value[0]}'
-            return Response(error_messages,  status=status.HTTP_400_BAD_REQUEST)
+             return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.data)
 
 
