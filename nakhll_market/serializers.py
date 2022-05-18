@@ -652,7 +652,7 @@ class ShopAllSettingsSerializer(serializers.ModelSerializer):
         max_length=None,
         use_url=True,
         allow_empty_file=False,
-        required=False)
+        required=False,allow_null=True,)
 
     class Meta:
         model = Shop
