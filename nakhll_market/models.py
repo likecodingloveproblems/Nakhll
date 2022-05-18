@@ -751,7 +751,7 @@ class Product(models.Model):
                                help_text='کاتالوگ محصول خود را اینجا وارد کنید', null=True, blank=True)
     FK_Shop = models.ForeignKey(Shop, on_delete=models.PROTECT, verbose_name='حجره',
                                 related_name='ShopProduct')
-    category = models.ForeignKey(Category, verbose_name='دسته بندی جدید', related_name='products', null=True,
+    category = models.ForeignKey(Category, verbose_name='دسته بندی جدید', related_name='products',
                                  on_delete=models.PROTECT, db_column='category_id')
     Price = models.BigIntegerField(verbose_name='قیمت محصول')
     OldPrice = models.BigIntegerField(verbose_name='قیمت حذف محصول', default=0)
