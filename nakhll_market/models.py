@@ -272,9 +272,32 @@ class Shop(models.Model):
     ColorCode = models.CharField(max_length=9, verbose_name='کد رنگ', help_text='رنگ حجره را اینجا وارد کنید',
                                  blank=True)
     Bio = models.TextField(verbose_name='معرفی حجره دار', blank=True)
-    State = models.CharField(verbose_name='استان', max_length=50, blank=True)
-    BigCity = models.CharField(verbose_name='شهرستان', max_length=50, blank=True)
-    City = models.CharField(max_length=50, verbose_name='شهر', blank=True)
+    #these are only for backup purposes
+    state_old = models.CharField(
+        max_length=50,
+        blank=True)
+    big_city_old = models.CharField(
+        max_length=50,
+        blank=True)
+    city_old = models.CharField(max_length=50, blank=True)
+    State = models.ForeignKey(
+        'State',
+        on_delete=models.PROTECT,
+        verbose_name='استان',
+        blank=True,
+        null=True)
+    BigCity = models.ForeignKey(
+        'BigCity',
+        on_delete=models.PROTECT,
+        verbose_name='شهرستان',
+        blank=True,
+        null=True)
+    City = models.ForeignKey(
+        'City',
+        on_delete=models.PROTECT,
+        verbose_name='شهر',
+        blank=True,
+        null=True)
     Location = models.CharField(verbose_name='موقعیت مکانی', max_length=150, blank=True,
                                 help_text='طول و عرض جغرافیایی')
     Point = models.PositiveIntegerField(verbose_name='امتیاز حجره', default=0)
