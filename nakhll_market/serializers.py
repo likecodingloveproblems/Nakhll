@@ -2,6 +2,7 @@ from invoice.models import Invoice
 from logistic.serializers import AddressSerializer
 from nakhll.utils import get_dict
 from nakhll_market.serializer_fields import Base64ImageField
+from nakhll_market.validators import validate_iran_national_code
 from restapi.serializers import (BigCitySerializer, CitySerializer,
                                  ProfileImageSerializer, ProfileSerializer)
 from django.contrib.auth.models import User
@@ -668,6 +669,7 @@ class ShopAllSettingsSerializer(serializers.ModelSerializer):
         if 'FK_ShopManager' in data:
             national_code = data['FK_ShopManager']['User_Profile'][
                 'NationalCode']
+            validate_iran_national_code(national_code)
             duplicated = Profile.objects.filter(NationalCode=national_code)
             if self.context.get('user'):
                 duplicated = duplicated.exclude(
