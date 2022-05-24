@@ -160,8 +160,6 @@ class ShopManager(models.Manager):
             'FK_ShopManager__first_name',
             'FK_ShopManager__last_name',
             'FK_ShopManager__User_Profile__MobileNumber',
-            'FK_SubMarket__Title',
-            'FK_SubMarket__FK_Market__Title',
             'State',
             'BigCity',
             'City',
@@ -390,10 +388,6 @@ class Shop(models.Model):
         return self.Image_thumbnail_url
 
     @property
-    def sub_market(self):
-        return self.FK_SubMarket.all()
-
-    @property
     def profile(self):
         if self.FK_ShopManager:
             return self.FK_ShopManager.User_Profile
@@ -412,7 +406,7 @@ class Shop(models.Model):
             i = self.Image_thumbnail.url
             url = self.Image_thumbnail.url
             return attach_domain(url)
-        except:
+        except BaseException:
             url = "https://nakhll.com/media/Pictures/default.jpg"
             return url
 
@@ -427,7 +421,8 @@ class Shop(models.Model):
     def get_products_category(self):
         category = []
         for item in self.get_products():
-            for category_item in item.FK_Category.filter(FK_SubCategory=None, Publish=True):
+            for category_item in item.FK_Category.filter(
+                    FK_SubCategory=None, Publish=True):
                 category.append(category_item)
         category = list(dict.fromkeys(category))
         return category
@@ -460,7 +455,7 @@ class Shop(models.Model):
             i = self.Image_thumbnail.url
             url = self.Image_thumbnail.url
             return attach_domain(url)
-        except:
+        except BaseException:
             url = "https://nakhll.com/media/Pictures/default.jpg"
             return url
 
@@ -475,36 +470,51 @@ class Shop(models.Model):
     def get_products_category(self):
         category = []
         for item in self.get_products():
-            for category_item in item.FK_Category.filter(FK_SubCategory=None, Publish=True):
+            for category_item in item.FK_Category.filter(
+                    FK_SubCategory=None, Publish=True):
                 category.append(category_item)
         category = list(dict.fromkeys(category))
         return category
 
     def get_products(self):
-        return Product.objects.filter(Available=True, Publish=True, FK_Shop=self)
+        return Product.objects.filter(
+            Available=True, Publish=True, FK_Shop=self)
 
     def get_all_products(self):
         return Product.objects.filter(FK_Shop=self)
 
     def get_all_products_for_view(self):
         this_shop_product = list(
-            Product.objects.filter(FK_Shop=self, Available=True, Publish=True, Status__in=['1', '2', '3']).order_by(
-                '-DateCreate'))
+            Product.objects.filter(
+                FK_Shop=self,
+                Available=True,
+                Publish=True,
+                Status__in=[
+                    '1',
+                    '2',
+                    '3']).order_by('-DateCreate'))
         this_shop_product += list(
-            Product.objects.filter(FK_Shop=self, Available=True, Publish=True, Status='4').order_by('-DateCreate'))
+            Product.objects.filter(
+                FK_Shop=self,
+                Available=True,
+                Publish=True,
+                Status='4').order_by('-DateCreate'))
         return this_shop_product
 
     def get_comments(self):
         raise NotImplementedError()
 
     def get_managment_image(self):
-        return Profile.objects.get(FK_User=self.FK_ShopManager).Image_thumbnail_url()
+        return Profile.objects.get(
+            FK_User=self.FK_ShopManager).Image_thumbnail_url()
 
     def get_shop_manager_full_name(self):
-        return '{} {}'.format(self.FK_ShopManager.first_name, self.FK_ShopManager.last_name)
+        return '{} {}'.format(self.FK_ShopManager.first_name,
+                              self.FK_ShopManager.last_name)
 
     def get_active_landing(self):
-        return self.landings.filter(status=shop_models.ShopLanding.Statuses.ACTIVE).first()
+        return self.landings.filter(
+            status=shop_models.ShopLanding.Statuses.ACTIVE).first()
 
     def has_advertisement(self):
         if hasattr(self, 'advertisement'):
@@ -515,7 +525,6 @@ class Shop(models.Model):
         if self.has_advertisement():
             return self.advertisement
         return None
-
 
     def delete_image(self) -> None:
         """ Delete image
@@ -542,10 +551,23 @@ class ShopSocialMedia(models.Model):
             return self.shop.Slug
         return self.id
 
-    shop = models.OneToOneField(Shop, verbose_name='حجره', on_delete=models.CASCADE, related_name='social_media')
-    telegram = models.CharField('تلگرام', max_length=100, help_text='آی‌دی تلگرام بدون نام سایت', null=True, blank=True)
-    instagram = models.CharField('اینستاگرام', max_length=100, help_text='آی‌دی اینستاگرام بدون نام سایت', null=True,
-                                 blank=True)
+    shop = models.OneToOneField(
+        Shop,
+        verbose_name='حجره',
+        on_delete=models.CASCADE,
+        related_name='social_media')
+    telegram = models.CharField(
+        'تلگرام',
+        max_length=100,
+        help_text='آی‌دی تلگرام بدون نام سایت',
+        null=True,
+        blank=True)
+    instagram = models.CharField(
+        'اینستاگرام',
+        max_length=100,
+        help_text='آی‌دی اینستاگرام بدون نام سایت',
+        null=True,
+        blank=True)
 
 
 # ----------------------------------------------------------------------------------------------------------------------------------
@@ -568,24 +590,39 @@ class ShopBankAccount(models.Model):
             return self.shop.Slug
         return self.id
 
-    shop = models.OneToOneField(Shop, verbose_name='حجره', on_delete=models.CASCADE, related_name='bank_account')
-    iban = models.CharField('شماره شبا', max_length=24, help_text='شماره شبا بدون IR', null=True, blank=True,
-                            validators=[iban_validator])
+    shop = models.OneToOneField(
+        Shop,
+        verbose_name='حجره',
+        on_delete=models.CASCADE,
+        related_name='bank_account')
+    iban = models.CharField(
+        'شماره شبا',
+        max_length=24,
+        help_text='شماره شبا بدون IR',
+        null=True,
+        blank=True,
+        validators=[iban_validator])
     owner = models.CharField('صاحب حساب', max_length=100, null=True, blank=True)
 
 
 class ProductManager(models.Manager):
-    FEW_HOURS_AGO = timezone.make_aware(datetime.datetime.now() - datetime.timedelta(hours=15))
+    FEW_HOURS_AGO = timezone.make_aware(
+        datetime.datetime.now() -
+        datetime.timedelta(
+            hours=15))
 
     def get_most_discount_precentage_available_product(self):
         queryset = self.get_queryset()
-        return queryset \
-            .filter(Publish=True, Available=True, Status__in=['1', '2', '3'], DateCreate__lt=self.FEW_HOURS_AGO) \
-            .exclude(OldPrice=0) \
-            .annotate(OldPrice_float=Cast(F('OldPrice'), FloatField())) \
-            .annotate(Price_float=Cast(F('Price'), FloatField())) \
-            .annotate(discount_ratio=(F('OldPrice_float') - F('Price_float')) / F('OldPrice_float')) \
-            .order_by('-discount_ratio')
+        return queryset.filter(
+            Publish=True, Available=True, Status__in=['1', '2', '3'],
+            DateCreate__lt=self.FEW_HOURS_AGO).exclude(
+            OldPrice=0).annotate(
+            OldPrice_float=Cast(F('OldPrice'),
+                                FloatField())).annotate(
+            Price_float=Cast(F('Price'),
+                             FloatField())).annotate(
+            discount_ratio=(F('OldPrice_float') - F('Price_float')) /
+            F('OldPrice_float')).order_by('-discount_ratio')
 
     def get_one_most_discount_precenetage_available_product_random(self):
         result = self.get_most_discount_precentage_available_product()
@@ -594,15 +631,16 @@ class ProductManager(models.Manager):
 
     def get_last_created_products(self):
         return Product.objects \
-                   .filter(Publish=True, Available=True, OldPrice=0, Status__in=['1', '2', '3'],
-                           DateCreate__lt=self.FEW_HOURS_AGO) \
-                   .order_by('-DateCreate')[:12]
+            .filter(Publish=True, Available=True, OldPrice=0, Status__in=['1', '2', '3'],
+                    DateCreate__lt=self.FEW_HOURS_AGO) \
+            .order_by('-DateCreate')[:12]
 
     def get_last_created_discounted_products(self):
-        return Product.objects \
-                   .filter(Publish=True, Available=True, Status__in=['1', '2', '3'], DateCreate__lt=self.FEW_HOURS_AGO) \
-                   .exclude(OldPrice=0) \
-                   .order_by('-DateCreate')[:16]
+        return Product.objects.filter(
+            Publish=True, Available=True, Status__in=['1', '2', '3'],
+            DateCreate__lt=self.FEW_HOURS_AGO).exclude(
+            OldPrice=0).order_by('-DateCreate')[
+            : 16]
 
     def available_products(self):
         return self.filter(
@@ -620,46 +658,56 @@ class ProductManager(models.Manager):
 
     def get_most_discount_precentage_products(self):
         return self \
-                   .get_most_discount_precentage_available_product() \
-                   .order_by('?')[:15]
+            .get_most_discount_precentage_available_product() \
+            .order_by('?')[:15]
 
     def get_products_in_same_factor(self, id):
         queryset = self.get_queryset()
         try:
             product = Product.objects.get(ID=id)
-            return Product.objects \
-                .filter(Factor_Product__Factor_Products__FK_FactorPost__FK_Product=product,
-                        DateCreated__lt=self.FEW_HOURS_AGO) \
-                .exclude(ID=product.ID) \
-                .distinct()
-        except:
+            return Product.objects.filter(
+                Factor_Product__Factor_Products__FK_FactorPost__FK_Product=product,
+                DateCreated__lt=self.FEW_HOURS_AGO).exclude(
+                ID=product.ID).distinct()
+        except BaseException:
             return None
 
     def get_user_shop_products(self, user, shop, order=None):
         queryset = self.get_queryset()
         if order and order in ['total_sell', 'title']:
             try:
-                products = self.filter(FK_Shop=shop, FK_Shop__FK_ShopManager=user, Publish=True)
+                products = self.filter(
+                    FK_Shop=shop,
+                    FK_Shop__FK_ShopManager=user,
+                    Publish=True)
                 if order == 'total_sell':
-                    return products.annotate(num=Count('Factor_Product')).order_by('-num')
+                    return products.annotate(
+                        num=Count('Factor_Product')).order_by('-num')
                 elif order == 'title':
                     return products.order_by('Title')
-            except:
+            except BaseException:
                 pass
         return self.filter(FK_Shop=shop, FK_Shop__FK_ShopManager=user)
 
     def user_shop_active_products(self, user, shop_slug):
-        return self.filter(FK_Shop__FK_ShopManager=user, FK_Shop__Slug=shop_slug, Available=True, Publish=True)
+        return self.filter(
+            FK_Shop__FK_ShopManager=user, FK_Shop__Slug=shop_slug,
+            Available=True, Publish=True)
 
     def user_shop_inactive_products(self, user, shop_slug):
-        return self.filter(FK_Shop__FK_ShopManager=user, FK_Shop__Slug=shop_slug, Available=False, Publish=True)
+        return self.filter(
+            FK_Shop__FK_ShopManager=user, FK_Shop__Slug=shop_slug,
+            Available=False, Publish=True)
 
     def nearly_outofstock_products(self, user, shop_slug):
-        return self.filter(FK_Shop__FK_ShopManager=user, FK_Shop__Slug=shop_slug, Publish=True,
+        return self.filter(FK_Shop__FK_ShopManager=user,
+                           FK_Shop__Slug=shop_slug, Publish=True,
                            Inventory__lt=OUTOFSTOCK_LIMIT_NUM)
 
     def outofstock_products(self, user, shop_slug):
-        return self.filter(FK_Shop__FK_ShopManager=user, FK_Shop__Slug=shop_slug, Publish=True, Inventory__lt=1)
+        return self.filter(FK_Shop__FK_ShopManager=user,
+                           FK_Shop__Slug=shop_slug, Publish=True,
+                           Inventory__lt=1)
 
     @staticmethod
     def is_product_available(product, count):
@@ -670,7 +718,7 @@ class ProductManager(models.Manager):
     def has_enough_items_in_stock(product, count):
         ''' Check if product have enough items in stock '''
         return (product.Status == '1' and product.inventory >= count) \
-               or (product.Status in ['2', '3'])
+            or (product.Status in ['2', '3'])
 
     def is_product_list_valid(self, product_list):
         ''' Check if products in product_list is available, published and have enough in stock
@@ -678,13 +726,13 @@ class ProductManager(models.Manager):
             being published all in one query; so if a product is not avaiable or published, it
             rejects the product_list and return False. However if this step is passed, it will
             check every product count one by one.
-            Maybe it could be better if I check for product availability and being published 
+            Maybe it could be better if I check for product availability and being published
             and product count one by one. I don't know...
         '''
         product_ids = [x.get('product').id for x in product_list]
         if self.filter(
                 Q(ID__in=product_ids) and (
-                        Q(Available=False) or Q(Publish=False)
+                    Q(Available=False) or Q(Publish=False)
                 )).exists():
             return False
         for item in product_list:
@@ -703,9 +751,9 @@ class ProductManager(models.Manager):
         return self.filter(Publish=True, Available=True).order_by('-DateUpdate')
 
     def get_available_products(self):
-        return self.get_queryset() \
-            .filter(Publish=True, Available=True, Status__in=['1', '2', '3'], Inventory=True,
-                    FK_Shop__Available=True, FK_Shop__Publish=True)
+        return self.get_queryset().filter(
+            Publish=True, Available=True, Status__in=['1', '2', '3'],
+            Inventory=True, FK_Shop__Available=True, FK_Shop__Publish=True)
 
     def get_most_sold_product(self):
         return self.get_available_products() \
@@ -716,7 +764,7 @@ class ProductManager(models.Manager):
     def get_product(id, raise_exception=True):
         try:
             return Product.objects.get(ID=id)
-        except:
+        except BaseException:
             if raise_exception:
                 raise Http404
             return None
@@ -749,15 +797,29 @@ class Product(models.Model):
         (False, 'تغییری اعمال شده است'),
     )
     objects = ProductManager()
-    ID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
-    Title = models.CharField(max_length=200, verbose_name='نام محصول', db_index=True)
-    Slug = models.SlugField(max_length=200, verbose_name='شناسه محصول', unique=True, db_index=True, allow_unicode=True)
+    ID = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+        unique=True)
+    Title = models.CharField(
+        max_length=200,
+        verbose_name='نام محصول',
+        db_index=True)
+    Slug = models.SlugField(
+        max_length=200,
+        verbose_name='شناسه محصول',
+        unique=True,
+        db_index=True,
+        allow_unicode=True)
     Story = models.TextField(verbose_name='داستان محصول', blank=True)
     Description = models.TextField(verbose_name='درباره محصول', blank=True)
     Bio = models.TextField(verbose_name='معرفی محصول', blank=True)
-    Image = models.ImageField(verbose_name='عکس محصول',
-                              upload_to=PathAndRename('media/Pictures/Markets/SubMarkets/Shops/Products/'),
-                              help_text='عکس محصول خود را اینجا بارگذاری کنید')
+    Image = models.ImageField(
+        verbose_name='عکس محصول',
+        upload_to=PathAndRename(
+            'media/Pictures/Markets/SubMarkets/Shops/Products/'),
+        help_text='عکس محصول خود را اینجا بارگذاری کنید')
     Image_thumbnail = ImageSpecField(source='Image',
                                      processors=[ResizeToFill(180, 180)],
                                      format='JPEG',
@@ -766,48 +828,98 @@ class Product(models.Model):
                                   processors=[ResizeToFill(450, 450)],
                                   format='JPEG',
                                   options={'quality': 60})
-    NewImage = models.ImageField(verbose_name='عکس جدید حجره',
-                                 upload_to=PathAndRename('media/Pictures/Markets/SubMarkets/Shops/Products/'),
-                                 null=True, blank=True)
-    Catalog = models.FileField(verbose_name='کاتالوگ محصول',
-                               upload_to=PathAndRename('media/Catalogs/Markets/SubMarkets/Shops/Products/'),
-                               help_text='کاتالوگ محصول خود را اینجا وارد کنید', null=True, blank=True)
-    FK_Shop = models.ForeignKey(Shop, on_delete=models.PROTECT, verbose_name='حجره',
-                                related_name='ShopProduct')
-    category = models.ForeignKey(Category, verbose_name='دسته بندی جدید', related_name='products', null=True,
-                                 on_delete=models.PROTECT, db_column='category_id')
+    NewImage = models.ImageField(
+        verbose_name='عکس جدید حجره',
+        upload_to=PathAndRename(
+            'media/Pictures/Markets/SubMarkets/Shops/Products/'),
+        null=True, blank=True)
+    Catalog = models.FileField(
+        verbose_name='کاتالوگ محصول',
+        upload_to=PathAndRename(
+            'media/Catalogs/Markets/SubMarkets/Shops/Products/'),
+        help_text='کاتالوگ محصول خود را اینجا وارد کنید', null=True, blank=True)
+    FK_Shop = models.ForeignKey(
+        Shop,
+        on_delete=models.PROTECT,
+        verbose_name='حجره',
+        related_name='ShopProduct')
+    category = models.ForeignKey(
+        Category,
+        verbose_name='دسته بندی جدید',
+        related_name='products',
+        null=True,
+        on_delete=models.PROTECT,
+        db_column='category_id')
     Price = models.BigIntegerField(verbose_name='قیمت محصول')
     OldPrice = models.BigIntegerField(verbose_name='قیمت حذف محصول', default=0)
     # Product Weight Info
-    Net_Weight = models.CharField(verbose_name='وزن خالص محصول (گرم)', max_length=6, default='0')
-    Weight_With_Packing = models.CharField(verbose_name='وزن محصول با بسته بندی (گرم)', max_length=6, default='0')
+    Net_Weight = models.CharField(
+        verbose_name='وزن خالص محصول (گرم)',
+        max_length=6,
+        default='0')
+    Weight_With_Packing = models.CharField(
+        verbose_name='وزن محصول با بسته بندی (گرم)',
+        max_length=6,
+        default='0')
     # Product Dimensions Info
-    Length_With_Packaging = models.CharField(verbose_name='طول محصول با بسته بندی (سانتی متر(', max_length=4,
-                                             default='0')
-    Width_With_Packaging = models.CharField(verbose_name='عرض محصول با بسته بندی (سانتی متر(', max_length=4,
-                                            default='0')
-    Height_With_Packaging = models.CharField(verbose_name='ارتفاع محصول با بسته بندی (سانتی متر(', max_length=4,
-                                             default='0')
+    Length_With_Packaging = models.CharField(
+        verbose_name='طول محصول با بسته بندی (سانتی متر(', max_length=4, default='0')
+    Width_With_Packaging = models.CharField(
+        verbose_name='عرض محصول با بسته بندی (سانتی متر(', max_length=4, default='0')
+    Height_With_Packaging = models.CharField(
+        verbose_name='ارتفاع محصول با بسته بندی (سانتی متر(', max_length=4, default='0')
     # Product Inventory
-    Inventory = models.PositiveIntegerField(verbose_name='میزان موجودی از این کالا در انبار', default=5)
+    Inventory = models.PositiveIntegerField(
+        verbose_name='میزان موجودی از این کالا در انبار', default=5)
 
-    PostRangeType = models.CharField(verbose_name='محدوده ارسال محصولات', max_length=1, choices=POSTRANGE_TYPE,
-                                     default='1', help_text='محدوده ارسال را بر اساس تایپ های مشخص شده، تعیین کنید.')
+    PostRangeType = models.CharField(
+        verbose_name='محدوده ارسال محصولات', max_length=1,
+        choices=POSTRANGE_TYPE, default='1',
+        help_text='محدوده ارسال را بر اساس تایپ های مشخص شده، تعیین کنید.')
 
-    Status = models.CharField(verbose_name='وضعیت فروش', max_length=1, choices=PRODUCT_STATUS)
-    DateCreate = models.DateTimeField(verbose_name='تاریخ بارگذاری محصول', auto_now_add=True)
-    DateUpdate = models.DateTimeField(verbose_name='تاریخ بروزرسانی محصول', auto_now=True)
+    Status = models.CharField(
+        verbose_name='وضعیت فروش',
+        max_length=1,
+        choices=PRODUCT_STATUS)
+    DateCreate = models.DateTimeField(
+        verbose_name='تاریخ بارگذاری محصول',
+        auto_now_add=True)
+    DateUpdate = models.DateTimeField(
+        verbose_name='تاریخ بروزرسانی محصول', auto_now=True)
 
-    Edite = models.BooleanField(verbose_name='وضعیت ویرایش محصول', choices=EDITE_STATUS, default=False)
-    Available = models.BooleanField(verbose_name='وضعیت بارگذاری محصول', choices=AVAILABLE_STATUS, default=True)
-    Publish = models.BooleanField(verbose_name='وضعیت انتشار محصول', choices=PUBLISH_STATUS, default=False)
-    FK_User = models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='تایید کننده',
-                                related_name='Product_Accept', blank=True, null=True)
-    PreparationDays = models.PositiveSmallIntegerField(verbose_name='زمان آماده‌سازی', null=True)
-    post_range_cities = models.ManyToManyField('City', related_name='products', verbose_name=_('شهرهای قابل ارسال'),
-                                               blank=True)
-    is_advertisement = models.BooleanField(verbose_name=_('آگهی'), default=False, null=True)
-    barcode = models.CharField(verbose_name='بارکد', max_length=13, null=True, blank=True)
+    Edite = models.BooleanField(
+        verbose_name='وضعیت ویرایش محصول',
+        choices=EDITE_STATUS,
+        default=False)
+    Available = models.BooleanField(
+        verbose_name='وضعیت بارگذاری محصول',
+        choices=AVAILABLE_STATUS,
+        default=True)
+    Publish = models.BooleanField(
+        verbose_name='وضعیت انتشار محصول',
+        choices=PUBLISH_STATUS,
+        default=False)
+    FK_User = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        verbose_name='تایید کننده',
+        related_name='Product_Accept',
+        blank=True,
+        null=True)
+    PreparationDays = models.PositiveSmallIntegerField(
+        verbose_name='زمان آماده‌سازی', null=True)
+    post_range_cities = models.ManyToManyField(
+        'City',
+        related_name='products',
+        verbose_name=_('شهرهای قابل ارسال'),
+        blank=True)
+    is_advertisement = models.BooleanField(
+        verbose_name=_('آگهی'), default=False, null=True)
+    barcode = models.CharField(
+        verbose_name='بارکد',
+        max_length=13,
+        null=True,
+        blank=True)
     history = HistoricalRecords()
 
     @property
@@ -817,10 +929,6 @@ class Product(models.Model):
     @property
     def user(self):
         return self.FK_User
-
-    @property
-    def sub_market(self):
-        return self.FK_SubMarket
 
     @property
     def image(self):
@@ -1005,9 +1113,7 @@ class Product(models.Model):
 
     @property
     def category_name(self):
-        # TODO: this must be changed to category name in future
-        # return self.FK_Category.all()[0].Name
-        return self.FK_SubMarket.Title
+        return self.category.name
 
     @property
     def image_link(self):

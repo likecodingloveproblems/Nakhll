@@ -41,7 +41,8 @@ class ProductFilter(filters.FilterSet):
         return queryset
 
     def filter_category(self, queryset, name, value):
-        return queryset.filter(FK_SubMarket__in=value.split(',')) if value else queryset
+        return queryset.filter(
+            category__in=value.split(',')) if value else queryset
 
     def filter_category(self, queryset, name, value):
         category_ids = value.split(',')
