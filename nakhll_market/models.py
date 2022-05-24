@@ -6,7 +6,7 @@ from django.db.models.query import QuerySet
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.http import Http404
 from django.db import models
-from django.db.models import F, Q, Count
+from django.db.models import F, Q, Count, UniqueConstraint
 from django.db.models.fields import FloatField
 from django.db.models.functions import Cast
 from django.db.models.aggregates import Avg, Sum
@@ -1220,6 +1220,12 @@ class Product(models.Model):
         ordering = ('DateCreate', 'Title',)
         verbose_name = "محصول"
         verbose_name_plural = "محصولات"
+        constraints = [
+            UniqueConstraint(
+                fields=[
+                    'Title',
+                    'FK_Shop_id'],
+                name='unique_shop_product_title')]
 
 
 class Tag(models.Model):
