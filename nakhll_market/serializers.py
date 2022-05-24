@@ -205,6 +205,7 @@ class CreateShopSerializer(serializers.ModelSerializer):
 
 
 class FilterPageShopSerializer(serializers.ModelSerializer):
+    state = StateSerializer()
     class Meta:
         model = Shop
         fields = ['ID', 'slug', 'title', 'state']
@@ -659,6 +660,9 @@ class ShopAllSettingsSerializer(serializers.ModelSerializer):
         allow_empty_file=False,
         required=False,
         allow_null=True)
+    state = StateSerializer(many=False, read_only=False)
+    BigCity = BigCitySerializer(many=False, read_only=False)
+    City = CitySerializer(many=False, read_only=False)
 
     class Meta:
         model = Shop
