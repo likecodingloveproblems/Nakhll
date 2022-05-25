@@ -1311,17 +1311,6 @@ class Product(models.Model):
         self.Inventory -= count
         self.save()
 
-    def clean(self):
-        'Check Product Title must be unique in shop'
-        self._check_product_title_uniqueness_in_shop()
-
-    def _check_product_title_uniqueness_in_shop(self):
-        # Check Product Title must be unique in shop
-        if Product.objects.filter(Title=self.Title, FK_Shop_id=self.FK_Shop_id).exist():
-            raise ValidationError({
-                'message': _('محصولی با این عنوان قبلا در فروشگاه شما ثبت شده است')
-            })
-
     class Meta:
         ordering = ('DateCreate', 'Title',)
         verbose_name = "محصول"
