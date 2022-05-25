@@ -142,7 +142,10 @@ class ShopSerializer(serializers.ModelSerializer):
             'profile',
             'landing_data',
             'yektanet_advertisement',
-            'in_campaign']
+            'in_campaign',
+            'state',
+            'big_city',
+            'city']
 
     def get_registered_months(self, obj):
         ''' Calculate months from DateCreate till now '''
