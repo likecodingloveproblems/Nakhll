@@ -2,8 +2,13 @@ from invoice.models import Invoice
 from logistic.serializers import AddressSerializer
 from nakhll.utils import get_dict
 from nakhll_market.serializer_fields import Base64ImageField
-from restapi.serializers import (BigCitySerializer, CitySerializer,
-                                 ProfileImageSerializer, ProfileSerializer)
+from nakhll_market.validators import validate_iran_national_code
+from restapi.serializers import (
+    BigCitySerializer,
+    CitySerializer,
+    ProfileImageSerializer,
+    ProfileSerializer,
+    StateSerializer)
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.db.models import fields, query
@@ -117,6 +122,9 @@ class ShopSerializer(serializers.ModelSerializer):
     landing_data = serializers.SerializerMethodField()
     is_landing = serializers.SerializerMethodField()
     yektanet_advertisement = serializers.SerializerMethodField()
+    state = StateSerializer(read_only=True)
+    big_city = BigCitySerializer(read_only=True)
+    city = CitySerializer(read_only=True)
 
     class Meta:
         model = Shop
@@ -127,9 +135,6 @@ class ShopSerializer(serializers.ModelSerializer):
             'image_thumbnail_url',
             'total_products',
             'Description',
-            'state',
-            'big_city',
-            'city',
             'registered_months',
             'FK_ShopManager',
             'is_landing',
@@ -173,15 +178,15 @@ class CreateShopSerializer(serializers.ModelSerializer):
         required=True, source='FK_ShopManager.first_name')
     last_name = serializers.CharField(
         required=True, source='FK_ShopManager.last_name')
+    State = StateSerializer()
+    BigCity = BigCitySerializer()
+    City = CitySerializer()
 
     class Meta:
         model = Shop
         fields = [
             'Slug',
             'Title',
-            'State',
-            'BigCity',
-            'City',
             'show_contact_info',
             'last_name',
             'first_name']
@@ -200,6 +205,7 @@ class CreateShopSerializer(serializers.ModelSerializer):
 
 
 class FilterPageShopSerializer(serializers.ModelSerializer):
+    state = StateSerializer()
     class Meta:
         model = Shop
         fields = ['ID', 'slug', 'title', 'state']
@@ -652,7 +658,11 @@ class ShopAllSettingsSerializer(serializers.ModelSerializer):
         max_length=None,
         use_url=True,
         allow_empty_file=False,
-        required=False)
+        required=False,
+        allow_null=True)
+    state = StateSerializer(many=False, read_only=False)
+    BigCity = BigCitySerializer(many=False, read_only=False)
+    City = CitySerializer(many=False, read_only=False)
 
     class Meta:
         model = Shop
@@ -667,6 +677,7 @@ class ShopAllSettingsSerializer(serializers.ModelSerializer):
         if 'FK_ShopManager' in data:
             national_code = data['FK_ShopManager']['User_Profile'][
                 'NationalCode']
+            validate_iran_national_code(national_code)
             duplicated = Profile.objects.filter(NationalCode=national_code)
             if self.context.get('user'):
                 duplicated = duplicated.exclude(

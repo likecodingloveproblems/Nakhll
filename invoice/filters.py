@@ -56,24 +56,3 @@ class InvoiceFilter(filters.FilterSet):
 
     def filter_address(self, queryset, name, value):
         return queryset.filter(address_json__icontains=value)
-
-    def filter_min_price(self, queryset, name, value):
-        return queryset.filter(Price__gte=value)
-
-    def filter_ready(self, queryset, name, value):
-        READY_IN_STOCK = '1'
-        filter_queryset = {'Status': READY_IN_STOCK, 'Inventory__gt': 0}
-        return queryset.filter(**filter_queryset) if value else queryset
-
-    def filter_search(self, queryset, name, value):
-        return queryset.filter(Title__icontains=value)
-
-    def filter_available(self, queryset, name, value):
-        if value:
-            AVAILABLE_IDS = ['1', '2', '3', ]
-            return queryset.filter(Status__in=AVAILABLE_IDS, Inventory__gt=0)
-        return queryset
-
-    def filter_category(self, queryset, name, value):
-        return queryset.filter(
-            FK_SubMarket__in=value.split(',')) if value else queryset

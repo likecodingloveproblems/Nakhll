@@ -37,12 +37,12 @@ class ProductFilter(filters.FilterSet):
     def filter_available(self, queryset, name, value):
         if value:
             AVAILABLE_IDS = ['1', '2', '3', ]
-            return queryset.filter(Status__in=AVAILABLE_IDS, Inventory__gt=0, FK_Shop__IsActive=True,
-                                   FK_Shop__Publish=True)
+            return queryset.filter(Status__in=AVAILABLE_IDS, Inventory__gt=0, FK_Shop__Publish=True)
         return queryset
 
     def filter_category(self, queryset, name, value):
-        return queryset.filter(FK_SubMarket__in=value.split(',')) if value else queryset
+        return queryset.filter(
+            category__in=value.split(',')) if value else queryset
 
     def filter_category(self, queryset, name, value):
         category_ids = value.split(',')
