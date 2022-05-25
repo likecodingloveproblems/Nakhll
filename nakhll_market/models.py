@@ -828,28 +828,16 @@ class Product(models.Model):
                                   processors=[ResizeToFill(450, 450)],
                                   format='JPEG',
                                   options={'quality': 60})
-    NewImage = models.ImageField(
-        verbose_name='عکس جدید حجره',
-        upload_to=PathAndRename(
-            'media/Pictures/Markets/SubMarkets/Shops/Products/'),
-        null=True, blank=True)
-    Catalog = models.FileField(
-        verbose_name='کاتالوگ محصول',
-        upload_to=PathAndRename(
-            'media/Catalogs/Markets/SubMarkets/Shops/Products/'),
-        help_text='کاتالوگ محصول خود را اینجا وارد کنید', null=True, blank=True)
-    FK_Shop = models.ForeignKey(
-        Shop,
-        on_delete=models.PROTECT,
-        verbose_name='حجره',
-        related_name='ShopProduct')
-    category = models.ForeignKey(
-        Category,
-        verbose_name='دسته بندی جدید',
-        related_name='products',
-        null=True,
-        on_delete=models.PROTECT,
-        db_column='category_id')
+    NewImage = models.ImageField(verbose_name='عکس جدید حجره',
+                                 upload_to=PathAndRename('media/Pictures/Markets/SubMarkets/Shops/Products/'),
+                                 null=True, blank=True)
+    Catalog = models.FileField(verbose_name='کاتالوگ محصول',
+                               upload_to=PathAndRename('media/Catalogs/Markets/SubMarkets/Shops/Products/'),
+                               help_text='کاتالوگ محصول خود را اینجا وارد کنید', null=True, blank=True)
+    FK_Shop = models.ForeignKey(Shop, on_delete=models.PROTECT, verbose_name='حجره',
+                                related_name='ShopProduct')
+    category = models.ForeignKey(Category, verbose_name='دسته بندی جدید', related_name='products',
+                                 on_delete=models.PROTECT, db_column='category_id')
     Price = models.BigIntegerField(verbose_name='قیمت محصول')
     OldPrice = models.BigIntegerField(verbose_name='قیمت حذف محصول', default=0)
     # Product Weight Info
