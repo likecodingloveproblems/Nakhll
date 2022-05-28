@@ -5,6 +5,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
+from rest_framework.exceptions import ValidationError
 
 from nakhll_market.models import  BigCity, City, Product, Shop, Alert, State, DashboardBanner
 from nakhll_market.permissions import IsInvoiceProvider
@@ -178,8 +179,11 @@ class CityList(ListAPIView):
     serializer_class = CitySerializer
     def get_queryset(self):
         bigcity_id = self.request.GET.get('bigcity_id')
-        bigcity = get_object_or_404(BigCity, id=bigcity_id)
-        return City.objects.filter(big_city=bigcity).order_by('name')
+        try:
+            bigcity = get_object_or_404(BigCity, id=bigcity_id)
+            return City.objects.filter(big_city=bigcity).order_by('name')
+        except ValueError as exc:
+            raise ValidationError({'error': ['BigCity id must be number!']})
 
 
 class FactorDetails(APIView):
