@@ -70,6 +70,10 @@ def upload_path(instance, filename):
 
 
 class CategoryManager(models.Manager):
+    def available_category(self):
+        queryset = self.get_queryset()
+        return queryset.filter(available=True)
+
     def all_childs(self, category):
         childs = []
         for child in category.get_sub_category():
@@ -84,7 +88,7 @@ class CategoryManager(models.Manager):
             return self.parents_to_root(category.parent) + [category]
 
     def get_root_categories(self):
-        return self.filter(parent=None).order_by('order')
+        return self.available_category().filter(parent=None).order_by('order')
 
     def categories_with_product_count(self, query=None, shop=None):
         filter_query = Q()
@@ -106,7 +110,7 @@ class CategoryManager(models.Manager):
         return subcategories
 
     def all_ordered(self):
-        return self.all().order_by('order')
+        return self.available_category().order_by('order')
 
 
 class Category(models.Model):
