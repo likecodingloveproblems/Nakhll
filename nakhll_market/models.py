@@ -1299,8 +1299,6 @@ class Product(models.Model):
         self.Inventory -= count
         self.save()
 
-
-
     class Meta:
         ordering = ('DateCreate', 'Title',)
         verbose_name = "محصول"
