@@ -15,6 +15,10 @@ class ShopLandingAdmin(admin.ModelAdmin):
     list_filter = ['status', 'created_at', 'updated_at']
     ordering = ['-created_at']
 
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
 
 @admin.register(ShopFeature)
 class ShopFeatureAdmin(admin.ModelAdmin):
