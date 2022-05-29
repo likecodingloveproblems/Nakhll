@@ -9,16 +9,24 @@ from .models import ShopLanding
 # Register your models here.
 @admin.register(ShopLanding)
 class ShopLandingAdmin(admin.ModelAdmin):
-    list_display = ['id', 'shop', 'name', 'status', 'created_at', 'updated_at']
+    list_display = ['id', 'shop', 'name', 'status', 'shop_is_landing', 'created_at', 'updated_at']
+    list_display_links = ['id', 'shop', 'name']
     search_fields = ['name', 'shop__Title']
     autocomplete_fields = ['shop', ]
     list_filter = ['status', 'created_at', 'updated_at']
-    ordering = ['-created_at']
+    ordering = ['-updated_at', '-created_at', '-id']
+
+    def shop_is_landing(self, obj):
+        return obj.shop.is_landing
+    shop_is_landing.boolean = True
+    shop_is_landing.short_description = 'صفحه فروشگاهی'
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request).filter(shop__Available=True, shop__Publish=True)
+        return qs
 
     def has_delete_permission(self, request, obj=None):
         return False
-
-
 
 @admin.register(ShopFeature)
 class ShopFeatureAdmin(admin.ModelAdmin):
