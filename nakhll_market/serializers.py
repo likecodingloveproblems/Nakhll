@@ -192,7 +192,10 @@ class CreateShopSerializer(serializers.ModelSerializer):
             'Title',
             'show_contact_info',
             'last_name',
-            'first_name']
+            'first_name',
+            'State',
+            'BigCity',
+            'City']
         extra_kwargs = {
             'Slug': {'validators': [], 'allow_null': True, 'required': False}
         }
