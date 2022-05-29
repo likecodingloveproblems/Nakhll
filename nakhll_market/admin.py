@@ -4,6 +4,7 @@ from django.http import HttpRequest, HttpResponse
 from django.utils.timezone import localtime
 
 from nakhll import utils
+from shop.models import ShopLanding
 from .models import (LandingPageSchema, Category, ShopPageSchema,
                      LandingImage, LandingPage,
                      Shop,
@@ -231,4 +232,14 @@ class ProductTagAdmin(admin.ModelAdmin):
     list_display = ['id', 'tag', 'product']
     search_fields = ['tag__name']
     autocomplete_fields = ['product', 'tag']
+
+
+@admin.register(ShopLanding)
+class ShopLandingAdmin(admin.ModelAdmin):
+    list_display = ['id', 'shop','name', 'status', 'created_at', 'updated_at']
+    search_fields = ['name', 'shop__Title']
+    autocomplete_fields = ['shop', ]
+    list_filter = ['status', 'created_at', 'updated_at']
+    ordering = ['-created_at']
+
 
