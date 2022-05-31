@@ -212,6 +212,7 @@ class CreateShopSerializer(serializers.ModelSerializer):
 
 class FilterPageShopSerializer(serializers.ModelSerializer):
     state = StateSerializer()
+
     class Meta:
         model = Shop
         fields = ['ID', 'slug', 'title', 'state']
@@ -415,10 +416,16 @@ class ProductBannerWriteSerializer(serializers.ModelSerializer):
 
 class ProductOwnerWriteSerializer(serializers.ModelSerializer):
     category = serializers.PrimaryKeyRelatedField(
-        read_only=False, many=False, queryset=Category.objects.all(),required=True,
-        error_messages={'required': ' کتگوری را انتخاب کنید','null':'کتگوری را انتخاب کنید'})
-    product_tags = ProductTagWriteSerializer(many=True, read_only=False, required=False)
-    Image = Base64ImageField(max_length=None, use_url=True,error_messages={
+        read_only=False,
+        many=False,
+        queryset=Category.objects.all(),
+        required=True,
+        error_messages={
+            'required': ' کتگوری را انتخاب کنید',
+            'null': 'کتگوری را انتخاب کنید'})
+    product_tags = ProductTagWriteSerializer(
+        many=True, read_only=False, required=False)
+    Image = Base64ImageField(max_length=None, use_url=True, error_messages={
         'null': 'لطفا تصویر را انتخاب کنید',
         'required': 'لطفا تصویر را انتخاب کنید'
     })
@@ -450,7 +457,8 @@ class ProductOwnerWriteSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         banners = validated_data.pop('Product_Banner')
-        tags_list: list = [x['tag'] for x in validated_data.pop('product_tags', [])]
+        tags_list: list = [x['tag']
+                           for x in validated_data.pop('product_tags', [])]
         post_range_cities = validated_data.pop('post_range_cities')
         instance = Product.objects.create(**validated_data)
         self.__tag_create(instance, tags_list)
@@ -666,17 +674,25 @@ class ShopAllSettingsSerializer(serializers.ModelSerializer):
         allow_empty_file=False,
         required=False,
         allow_null=True)
-    state = StateSerializer(many=False, read_only=False)
+    State = StateSerializer(many=False, read_only=False)
     BigCity = BigCitySerializer(many=False, read_only=False)
     City = CitySerializer(many=False, read_only=False)
 
     class Meta:
         model = Shop
         fields = [
-            'Title', 'Slug', 'Image', 'image_thumbnail_url',
-            'bank_account', 'social_media', 'Description', 'FK_ShopManager', 'state', 'BigCity',
-            'City', 'Location'
-        ]
+            'Title',
+            'Slug',
+            'Image',
+            'image_thumbnail_url',
+            'bank_account',
+            'social_media',
+            'Description',
+            'FK_ShopManager',
+            'State',
+            'BigCity',
+            'City',
+            'Location']
         read_only_fields = ['Title', 'Slug', 'image_thumbnail_url']
 
     def validate(self, data):
@@ -691,6 +707,27 @@ class ShopAllSettingsSerializer(serializers.ModelSerializer):
             if duplicated.exists():
                 raise serializers.ValidationError(
                     {'NationalCode_error': 'کد ملی وارد شده از قبل در سایت وجود دارد.'})
+        state_name = data.pop(
+            'State')['name'] if 'State' in data else None
+        big_city_name = data.pop(
+            'BigCity')['name'] if 'BigCity' in data else None
+        city_name = data.pop(
+            'City')['name'] if 'City' in data else None
+        try:
+            state = State.objects.get(name=state_name)
+            big_city = BigCity.objects.get(name=big_city_name, state=state)
+            city = City.objects.get(name=city_name, big_city=big_city)
+            data['State'] = state
+            data['BigCity'] = big_city
+            data['City'] = city
+        except State.DoesNotExist:
+            raise serializers.ValidationError(
+                {'error': 'استان انتخاب شده معتبر نمی باشد.'})
+        except BigCity.DoesNotExist:
+            raise serializers.ValidationError(
+                {'error': 'شهرستان انتخاب شده معتبر نمی باشد.'})
+        except City.DoesNotExist:
+            raise serializers.ValidationError({'error': 'شهر انتخاب شده معتبر نمی باشد.'})
         return data
 
     def update(self, instance, validated_data):
