@@ -707,6 +707,27 @@ class ShopAllSettingsSerializer(serializers.ModelSerializer):
             if duplicated.exists():
                 raise serializers.ValidationError(
                     {'NationalCode_error': 'کد ملی وارد شده از قبل در سایت وجود دارد.'})
+        state_name = data.pop(
+            'State')['name'] if 'State' in data else None
+        big_city_name = data.pop(
+            'BigCity')['name'] if 'BigCity' in data else None
+        city_name = data.pop(
+            'City')['name'] if 'City' in data else None
+        try:
+            state = State.objects.get(name=state_name)
+            big_city = BigCity.objects.get(name=big_city_name, state=state)
+            city = City.objects.get(name=city_name, big_city=big_city)
+            data['State'] = state
+            data['BigCity'] = big_city
+            data['City'] = city
+        except State.DoesNotExist:
+            raise serializers.ValidationError(
+                {'error': 'استان انتخاب شده معتبر نمی باشد.'})
+        except BigCity.DoesNotExist:
+            raise serializers.ValidationError(
+                {'error': 'شهرستان انتخاب شده معتبر نمی باشد.'})
+        except City.DoesNotExist:
+            raise serializers.ValidationError({'error': 'شهر انتخاب شده معتبر نمی باشد.'})
         return data
 
     def update(self, instance, validated_data):
@@ -730,28 +751,6 @@ class ShopAllSettingsSerializer(serializers.ModelSerializer):
 
         image = validated_data.pop(
             'Image') if 'Image' in validated_data else None
-
-        state_name = validated_data.pop(
-            'State')['name'] if 'State' in validated_data else None
-        big_city_name = validated_data.pop(
-            'BigCity')['name'] if 'BigCity' in validated_data else None
-        city_name = validated_data.pop(
-            'City')['name'] if 'City' in validated_data else None
-        try:
-            state = State.objects.get(name=state_name)
-            instance.State = state
-        except State.DoesNotExist:
-            pass
-        try:
-            big_city = BigCity.objects.get(name=big_city_name, state=state)
-            instance.BigCity = big_city
-        except BigCity.DoesNotExist:
-            pass
-        try:
-            city = City.objects.get(name=city_name, big_city=big_city)
-            instance.City = city
-        except City.DoesNotExist:
-            pass
 
         for prop in validated_data:
             setattr(instance, prop, validated_data[prop])
