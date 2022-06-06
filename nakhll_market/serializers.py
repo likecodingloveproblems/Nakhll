@@ -22,6 +22,7 @@ from nakhll_market.models import (
 )
 from shop.models import ShopFeature
 from shop.serializers import ShopLandingDetailsSerializer
+import jdatetime
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -876,8 +877,9 @@ class NewProfileSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         if 'Image' in validated_data:
             instance.Image = validated_data.pop('Image')
-
         user = validated_data.pop('FK_User')
+        birthday = validated_data.pop('BrithDay')
+        instance.BrithDay = jdatetime.date(birthday.year, birthday.month, birthday.day)
         instance.user.first_name = user.get('first_name')
         instance.user.last_name = user.get('last_name')
         for prop in validated_data:
