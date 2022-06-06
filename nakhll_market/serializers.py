@@ -210,6 +210,30 @@ class CreateShopSerializer(serializers.ModelSerializer):
                               'last_name': user.last_name})
             self.initial_data = init_data
 
+    def validate(self, data):
+        state_name = data.pop(
+            'State')['name'] if 'State' in data else None
+        big_city_name = data.pop(
+            'BigCity')['name'] if 'BigCity' in data else None
+        city_name = data.pop(
+            'City')['name'] if 'City' in data else None
+        try:
+            state = State.objects.get(name=state_name)
+            big_city = BigCity.objects.get(name=big_city_name, state=state)
+            city = City.objects.get(name=city_name, big_city=big_city)
+            data['State'] = state
+            data['BigCity'] = big_city
+            data['City'] = city
+        except State.DoesNotExist:
+            raise serializers.ValidationError(
+                {'error': 'استان انتخاب شده معتبر نمی باشد.'})
+        except BigCity.DoesNotExist:
+            raise serializers.ValidationError(
+                {'error': 'شهرستان انتخاب شده معتبر نمی باشد.'})
+        except City.DoesNotExist:
+            raise serializers.ValidationError({'error': 'شهر انتخاب شده معتبر نمی باشد.'})
+        return data
+
 
 class FilterPageShopSerializer(serializers.ModelSerializer):
     state = StateSerializer()
