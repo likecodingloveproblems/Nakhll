@@ -19,7 +19,6 @@ admin.site.site_header = 'مدیریت بازار نخل '
 # enable django permission setting in admin panel to define custom permissions
 admin.site.register(Permission)
 
-
 ModelAdmin.construct_change_message = (
     lambda self, request, form, formsets, add:
     utils.construct_change_message(request, form, formsets, add)
@@ -54,10 +53,20 @@ class ShopAdmin(admin.ModelAdmin):
     def DateUpdate(self, obj):
         return localtime(obj.DateUpdate).strftime('%Y-%m-%d %H:%M:%S')
 
-      
+
 class ProductBannerInline(admin.StackedInline):
     model = ProductBanner
     extra = 1
+
+
+@admin.action(description='از حالت انتشار خارج کن',)
+def un_publish_product(modeladmin, request, queryset):
+    queryset.update(Publish=False)
+
+
+@admin.action(description='منتشر کن',)
+def publish_product(modeladmin, request, queryset):
+    queryset.update(Publish=True)
 
 
 @admin.register(Product)
@@ -67,6 +76,8 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ('Title', 'Slug', 'Description', 'Bio', 'Story')
     ordering = ['ID', 'DateCreate', 'DateUpdate']
     inlines = [ProductBannerInline, ]
+    actions = [un_publish_product, publish_product]
+
 
     def DateCreate(self, obj):
         return localtime(obj.DateCreate).strftime('%Y-%m-%d %H:%M:%S')
@@ -90,7 +101,6 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'order', 'slug', 'description', 'parent', 'available')
     list_filter = ('parent', 'available')
     ordering = ('-parent', 'id',)
-
 
 
 # -------------------------------------------------
@@ -184,7 +194,7 @@ class ShopPageSchemaAdmin(ModelAdmin):
 @admin.register(LandingPage)
 class LandingPageAdmin(ModelAdmin):
     list_display = ('slug', 'status', 'staff', 'created_at', 'updated_at')
-    list_filter = ('status', )
+    list_filter = ('status',)
     search_fields = ('slug', 'page_data')
     ordering = ['created_at']
 
@@ -200,7 +210,7 @@ class LandingImageAdmin(ModelAdmin):
         'created_at',
         'updated_at',
         'landing_page')
-    list_filter = ('landing_page', )
+    list_filter = ('landing_page',)
     ordering = ['created_at']
 
     def created_datetime(self, obj):
@@ -232,8 +242,3 @@ class ProductTagAdmin(admin.ModelAdmin):
     list_display = ['id', 'tag', 'product']
     search_fields = ['tag__name']
     autocomplete_fields = ['product', 'tag']
-
-
-
-
-
