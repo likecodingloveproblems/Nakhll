@@ -2,7 +2,8 @@ from typing import Dict, Optional
 from django.contrib import admin
 from django.http import HttpRequest, HttpResponse
 from django.utils.timezone import localtime
-
+from django.contrib import messages
+from django.utils.translation import ngettext
 from nakhll import utils
 from shop.models import ShopLanding
 from .models import (LandingPageSchema, Category, ShopPageSchema,
@@ -59,14 +60,7 @@ class ProductBannerInline(admin.StackedInline):
     extra = 1
 
 
-@admin.action(description='از حالت انتشار خارج کن',)
-def un_publish_product(modeladmin, request, queryset):
-    queryset.update(Publish=False)
 
-
-@admin.action(description='منتشر کن',)
-def publish_product(modeladmin, request, queryset):
-    queryset.update(Publish=True)
 
 
 @admin.register(Product)
@@ -76,7 +70,26 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ('Title', 'Slug', 'Description', 'Bio', 'Story')
     ordering = ['ID', 'DateCreate', 'DateUpdate']
     inlines = [ProductBannerInline, ]
-    actions = [un_publish_product, publish_product]
+    actions = ["un_publish_product", "publish_product"]
+
+    @admin.action(description='از حالت انتشار خارج کن', )
+    def un_publish_product(self, request, queryset):
+        updated = queryset.update(Publish=False)
+        self.message_user(request, ngettext(
+            '%d محصول از انتشار خارج شد',
+            '%d  محصول از انتشار خارج شد',
+            updated,
+        ) % updated, messages.SUCCESS)
+
+
+    @admin.action(description='منتشر کن', )
+    def publish_product(self, request, queryset):
+        updated = queryset.update(Publish=True)
+        self.message_user(request, ngettext(
+            '%d محصول منتشر شد',
+            '%d محصول منتشر شد',
+            updated,
+        ) % updated, messages.SUCCESS)
 
 
     def DateCreate(self, obj):
