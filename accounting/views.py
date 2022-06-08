@@ -331,7 +331,7 @@ class InvoiceStats(GroupRequiredMixin, View):
                 Sum(
                     'coupon_usages__price_applied',
                     output_field=FloatField()),
-                0),
+                0.0),
             total_price=ExpressionWrapper(
                 F('invoice_price_with_discount') +
                 F('logistic_price') -
