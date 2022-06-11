@@ -1,5 +1,4 @@
 from django_filters import rest_framework as filters
-from pyparsing import delimited_list
 from nakhll_market.models import BigCity, City, Category, Product, State, Tag, ProductTag
 from nakhll_market.utils import split_args
 
