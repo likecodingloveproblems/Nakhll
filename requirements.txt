@@ -99,7 +99,7 @@ rcssmin==1.0.6
 requests==2.28.0
 requests-toolbelt==0.9.1
 rjsmin==1.1.0
-sentry-sdk==0.19.4
+sentry-sdk==1.5.12
 six==1.16.0
 smmap==5.0.0
 snowballstemmer==2.2.0
