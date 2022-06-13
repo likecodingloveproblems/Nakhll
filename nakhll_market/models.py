@@ -443,10 +443,6 @@ class Shop(models.Model):
     def __str__(self):
         return "{}".format(self.Title)
 
-    # def get_absolute_url(self):
-    #     return reverse("nakhll_market:ShopsDetail", kwargs={
-    #         'shop_slug': self.Slug
-    #     })
 
     def Image_thumbnail_url(self):
         try:
