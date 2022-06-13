@@ -1,3 +1,4 @@
+from email import message
 from invoice.models import Invoice
 from logistic.serializers import AddressSerializer
 from nakhll.utils import get_dict
@@ -422,6 +423,12 @@ class ProductTagWriteSerializer(serializers.ModelSerializer):
         model = ProductTag
         fields = ['id', 'text', ]
 
+    def validate_text(self, data):
+        if len(data) > 127:
+            raise serializers.ValidationError(
+                {'error': 'تعداد کاراکترهای تگ انتخاب شده بیش از حد مجاز است.'})
+        return data
+
 
 class TagOwnerListSerializer(serializers.ModelSerializer):
     text = serializers.CharField(source="name")
@@ -548,6 +555,7 @@ class ProductOwnerWriteSerializer(serializers.ModelSerializer):
                     ProductTag(
                         product=instance, tag=tag)
                     for tag in tags])
+
 
     def update(self, instance, validated_data):
         self.__update_banners(instance, validated_data)
