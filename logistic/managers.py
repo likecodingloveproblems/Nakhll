@@ -43,24 +43,50 @@ class ShopLogisticUnitManager(models.Manager):
         slum = models.ShopLogisticUnitCalculationMetric.objects.create(
             shop_logistic_unit=slu, price_per_kilogram=0, price_per_extra_kilogram=0
         )
+        try:
+            default_post_metrics = self.get_default_post_metrics()
+            slu = self.create(
+                shop=shop,
+                name=default_post_metrics['PPOST'].get_name_display(),
+                is_active=True,
+                logo_type=models.ShopLogisticUnit.LogoType.PPOST)
+            sluc = models.ShopLogisticUnitConstraint.objects.create(
+                shop_logistic_unit=slu, max_weight=40
+            )
+            slum = models.ShopLogisticUnitCalculationMetric.objects.create(
+                shop_logistic_unit=slu,
+                price_per_kilogram=default_post_metrics['PPOST'].default_price_per_kilogram,
+                price_per_extra_kilogram=default_post_metrics['PPOST'].default_price_per_extra_kilogram)
 
-        slu = self.create(shop=shop, name='پست پیشتاز', is_active=True,
-                          logo_type=models.ShopLogisticUnit.LogoType.PPOST)
-        sluc = models.ShopLogisticUnitConstraint.objects.create(
-            shop_logistic_unit=slu, max_weight=40
-        )
-        slum = models.ShopLogisticUnitCalculationMetric.objects.create(
-            shop_logistic_unit=slu, price_per_kilogram=150000, price_per_extra_kilogram=25000
-        )
-        
-        slu = self.create(shop=shop, name='پست سفارشی', is_active=True,
-                          logo_type=models.ShopLogisticUnit.LogoType.SPOST)
-        sluc = models.ShopLogisticUnitConstraint.objects.create(
-            shop_logistic_unit=slu, max_weight=40
-        )
-        slum = models.ShopLogisticUnitCalculationMetric.objects.create(
-            shop_logistic_unit=slu, price_per_kilogram=140000, price_per_extra_kilogram=20000
-        )
+            slu = self.create(
+                shop=shop,
+                name=default_post_metrics['SPOST'].get_name_display(),
+                is_active=True,
+                logo_type=models.ShopLogisticUnit.LogoType.SPOST)
+            sluc = models.ShopLogisticUnitConstraint.objects.create(
+                shop_logistic_unit=slu, max_weight=40
+            )
+            slum = models.ShopLogisticUnitCalculationMetric.objects.create(
+                shop_logistic_unit=slu,
+                price_per_kilogram=default_post_metrics['SPOST'].default_price_per_kilogram,
+                price_per_extra_kilogram=default_post_metrics['SPOST'].default_price_per_extra_kilogram)
+        except (
+            models.LogisticUnitGeneralSetting.DoesNotExist, 
+            models.LogisticUnitGeneralSetting.MultipleObjectsReturned
+            ):
+            '''If we don't have post pishtaz and sefareshi in LogisticUnitGeneralSetting,
+            then we don't have to create post pishtaz and sefareshi in ShopLogisticUnit 
+            as default shop logistic units, but logistic team must be aware of this!'''
+
+    def get_default_post_metrics(self):
+        return {
+            'PPOST': models.LogisticUnitGeneralSetting.objects.get(
+                name=models.LogisticUnitGeneralSetting.Name.PISHTAZ),
+            'SPOST': models.LogisticUnitGeneralSetting.objects.get(
+                name=models.LogisticUnitGeneralSetting.Name.SEFARESHI)
+        }
+
+
 
         
 

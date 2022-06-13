@@ -207,6 +207,7 @@ class LogisticUnitGeneralSetting(models.Model):
     name = models.IntegerField(
         verbose_name=_('نوع ارسال پستی'),
         choices=Name.choices,
+        unique=True,
         default=Name.PISHTAZ)
     default_price_per_kilogram = models.PositiveIntegerField(
         verbose_name=_('قیمت به ازای هر کیلو (ریال)'), default=0)
