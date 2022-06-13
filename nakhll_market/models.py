@@ -412,13 +412,6 @@ class Shop(models.Model):
             url = "https://nakhll.com/media/Pictures/default.jpg"
             return url
 
-    # def get_url(self):
-    #     return attach_domain(f'/shop/{self.FK_Shop.Slug}/')
-
-    # def get_url(self):
-    #     return reverse("nakhll_market:ShopsDetail", kwargs={
-    #         'shop_slug': self.Slug,
-    #     })
 
     def get_holidays(self):
         return self.Holidays.split('-')
@@ -464,10 +457,6 @@ class Shop(models.Model):
             url = "https://nakhll.com/media/Pictures/default.jpg"
             return url
 
-    # def get_url(self):
-    #     return reverse("nakhll_market:ShopsDetail", kwargs={
-    #         'shop_slug': self.Slug,
-    #     })
 
     def get_holidays(self):
         return self.Holidays.split('-')
