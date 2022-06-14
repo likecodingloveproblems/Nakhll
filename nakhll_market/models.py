@@ -1302,7 +1302,10 @@ class Tag(models.Model):
     """
     #TODO: Document
     """
-    name = models.CharField(max_length=50, verbose_name=_('نام تگ'))
+    name = models.CharField(max_length=127, verbose_name=_('نام تگ'),
+    error_messages={
+        'max_length': _('نام تگ باید کمتر از 127 کاراکتر باشد.'),}
+    )
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE, verbose_name=_('حجره'), related_name="tags")
 
     class Meta:
