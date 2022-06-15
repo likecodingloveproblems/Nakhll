@@ -76,6 +76,7 @@ THIRD_PARTY_APPS = [
     'django_extensions',
     'colorfield',
     'django_rename_app',
+    'drf_yasg',
     # 'import_export', # has conflict with django-excel-response in dependencies (openpyxl)
 ]
 
