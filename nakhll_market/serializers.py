@@ -910,8 +910,10 @@ class NewProfileSerializer(serializers.ModelSerializer):
         if 'Image' in validated_data:
             instance.Image = validated_data.pop('Image')
         user = validated_data.pop('FK_User')
-        birthday = validated_data.pop('BrithDay')
-        instance.BrithDay = jdatetime.date(birthday.year, birthday.month, birthday.day)
+        # TODO: I done as image for check birthday
+        if 'BrithDay' in validated_data:
+            birthday = validated_data.pop('BrithDay')
+            instance.BrithDay = jdatetime.date(birthday.year, birthday.month, birthday.day)
         instance.user.first_name = user.get('first_name')
         instance.user.last_name = user.get('last_name')
         for prop in validated_data:
