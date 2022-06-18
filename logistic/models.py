@@ -201,14 +201,18 @@ class LogisticUnitGeneralSetting(models.Model):
         verbose_name_plural = _('تنظیمات واحد ارسال')
 
     class Name(models.IntegerChoices):
-        PISHTAZ = 0, _('پست پیشتاز')
-        SEFARESHI = 1, _('پست سفارشی')
+        '''it's used as logo_type in generate_logistic_units'''
+        PPOST = 1, _('پست پیشتاز')
+        SPOST = 2, _('پست سفارشی')
+        DELIVERY = 3, _('پیک')
+        PAD = 4, _('پسکرایه')
+        FREE = 5, _('ارسال رایگان')
 
     name = models.IntegerField(
         verbose_name=_('نوع ارسال پستی'),
         choices=Name.choices,
         unique=True,
-        default=Name.PISHTAZ)
+        default=Name.PPOST)
     default_price_per_kilogram = models.PositiveIntegerField(
         verbose_name=_('قیمت به ازای هر کیلو (ریال)'), default=0)
     default_price_per_extra_kilogram = models.PositiveIntegerField(
@@ -217,6 +221,9 @@ class LogisticUnitGeneralSetting(models.Model):
         verbose_name=_('حداکثر قیمت به ازای هر کیلو (ریال)'), default=0)
     maximum_price_per_extra_kilogram = models.PositiveIntegerField(
         verbose_name=_('حداکثر قیمت به ازای هر کیلو اضافه (ریال)'), default=0)
+    is_active = models.BooleanField('فعال', default=True)
+    is_only_for_shop_city = models.BooleanField(
+        'فقط برای شهر حجره فعال می باشد', default=False)
     created_at = models.DateTimeField(
         verbose_name=_('تاریخ ایجاد'),
         auto_now_add=True)
