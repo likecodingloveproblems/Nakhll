@@ -1,3 +1,4 @@
+from email import message
 from invoice.models import Invoice
 from logistic.serializers import AddressSerializer
 from nakhll.utils import get_dict
@@ -22,6 +23,7 @@ from nakhll_market.models import (
 )
 from shop.models import ShopFeature
 from shop.serializers import ShopLandingDetailsSerializer
+import jdatetime
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -208,6 +210,30 @@ class CreateShopSerializer(serializers.ModelSerializer):
             init_data.update({'first_name': user.first_name,
                               'last_name': user.last_name})
             self.initial_data = init_data
+
+    def validate(self, data):
+        state_name = data.pop(
+            'State')['name'] if 'State' in data else None
+        big_city_name = data.pop(
+            'BigCity')['name'] if 'BigCity' in data else None
+        city_name = data.pop(
+            'City')['name'] if 'City' in data else None
+        try:
+            state = State.objects.get(name=state_name)
+            big_city = BigCity.objects.get(name=big_city_name, state=state)
+            city = City.objects.get(name=city_name, big_city=big_city)
+            data['State'] = state
+            data['BigCity'] = big_city
+            data['City'] = city
+        except State.DoesNotExist:
+            raise serializers.ValidationError(
+                {'error': 'استان انتخاب شده معتبر نمی باشد.'})
+        except BigCity.DoesNotExist:
+            raise serializers.ValidationError(
+                {'error': 'شهرستان انتخاب شده معتبر نمی باشد.'})
+        except City.DoesNotExist:
+            raise serializers.ValidationError({'error': 'شهر انتخاب شده معتبر نمی باشد.'})
+        return data
 
 
 class FilterPageShopSerializer(serializers.ModelSerializer):
@@ -397,6 +423,12 @@ class ProductTagWriteSerializer(serializers.ModelSerializer):
         model = ProductTag
         fields = ['id', 'text', ]
 
+    def validate_text(self, data):
+        if len(data) > 127:
+            raise serializers.ValidationError(
+                {'error': 'تعداد کاراکترهای تگ انتخاب شده بیش از حد مجاز است.'})
+        return data
+
 
 class TagOwnerListSerializer(serializers.ModelSerializer):
     text = serializers.CharField(source="name")
@@ -523,6 +555,7 @@ class ProductOwnerWriteSerializer(serializers.ModelSerializer):
                     ProductTag(
                         product=instance, tag=tag)
                     for tag in tags])
+
 
     def update(self, instance, validated_data):
         self.__update_banners(instance, validated_data)
@@ -876,8 +909,11 @@ class NewProfileSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         if 'Image' in validated_data:
             instance.Image = validated_data.pop('Image')
-
         user = validated_data.pop('FK_User')
+        # TODO: I done as image for check birthday
+        if 'BrithDay' in validated_data:
+            birthday = validated_data.pop('BrithDay')
+            instance.BrithDay = jdatetime.date(birthday.year, birthday.month, birthday.day)
         instance.user.first_name = user.get('first_name')
         instance.user.last_name = user.get('last_name')
         for prop in validated_data:
@@ -949,9 +985,9 @@ class UserOrderSerializer(serializers.ModelSerializer):
             'address_json',
             'address',
             'created_datetime',
-            'final_invoice_price',
-            'final_coupon_price',
-            'final_logistic_price',
+            # 'final_invoice_price', # TODO : Field name `final_invoice_price` is not valid for model `Invoice`
+            # 'final_coupon_price',  # TODO : Field name `final_coupon_price` is not valid for model `Invoice`
+            # 'final_logistic_price', # TODO : Field name `final_logistic_price` is not valid for model `Invoice`
             'status',
             'receiver_name',
             'receiver_mobile')

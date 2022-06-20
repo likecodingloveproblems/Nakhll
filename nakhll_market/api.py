@@ -483,9 +483,9 @@ class CreateShop(generics.CreateAPIView):
         self.request.user.first_name = fname
         self.request.user.last_name = lname
         self.request.user.save()
-        state_id = serializer.validated_data.get('State')
-        bigcity_id = serializer.validated_data.get('BigCity')
-        city_id = serializer.validated_data.get('City')
+        state = serializer.validated_data.get('State')
+        bigcity = serializer.validated_data.get('BigCity')
+        city = serializer.validated_data.get('City')
         title = serializer.validated_data.get('Title')
         slug = serializer.validated_data.get('Slug')
         if not slug:
@@ -493,16 +493,12 @@ class CreateShop(generics.CreateAPIView):
         elif Shop.objects.filter(Slug=slug).exists():
             raise ValidationError({'details': 'شناسه حجره از قبل موجود است'})
 
-        state = get_object_or_404(State, id=state_id)
-        bigcity = get_object_or_404(BigCity, id=bigcity_id)
-        city = get_object_or_404(City, id=city_id)
-
         new_shop = serializer.save(
             FK_ShopManager=self.request.user,
             Publish=True,
-            State=state.name,
-            BigCity=bigcity.name,
-            City=city.name,
+            State=state,
+            BigCity=bigcity,
+            City=city,
             Slug=slug)
         ShopLogisticUnit.objects.generate_shop_logistic_units(new_shop)
         Alert.objects.create(

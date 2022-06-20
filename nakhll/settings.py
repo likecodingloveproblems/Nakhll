@@ -76,6 +76,7 @@ THIRD_PARTY_APPS = [
     'django_extensions',
     'colorfield',
     'django_rename_app',
+    'drf_yasg',
     # 'import_export', # has conflict with django-excel-response in dependencies (openpyxl)
 ]
 
@@ -424,3 +425,11 @@ LOGGING = {
         }
     },
 }
+
+# django-debug-toolbar settings
+if DEBUG:
+    INSTALLED_APPS.append('debug_toolbar')
+    MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
+    DEBUG_TOOLBAR_CONFIG = {
+        "SHOW_TOOLBAR_CALLBACK": lambda request: True,
+    }

@@ -274,7 +274,7 @@ class Shop(models.Model):
     ColorCode = models.CharField(max_length=9, verbose_name='کد رنگ', help_text='رنگ حجره را اینجا وارد کنید',
                                  blank=True)
     Bio = models.TextField(verbose_name='معرفی حجره دار', blank=True)
-    #these are only for backup purposes
+    # these are only for backup purposes
     state_old = models.CharField(
         max_length=50,
         blank=True)
@@ -401,9 +401,7 @@ class Shop(models.Model):
         return "{}".format(self.Title)
 
     def get_absolute_url(self):
-        return reverse("nakhll_market:ShopsDetail", kwargs={
-            'shop_slug': self.Slug
-        })
+        return attach_domain(f'/shop/{self.Slug}/')
 
     def Image_thumbnail_url(self):
         try:
@@ -413,11 +411,6 @@ class Shop(models.Model):
         except BaseException:
             url = "https://nakhll.com/media/Pictures/default.jpg"
             return url
-
-    def get_url(self):
-        return reverse("nakhll_market:ShopsDetail", kwargs={
-            'shop_slug': self.Slug,
-        })
 
     def get_holidays(self):
         return self.Holidays.split('-')
@@ -449,11 +442,6 @@ class Shop(models.Model):
     def __str__(self):
         return "{}".format(self.Title)
 
-    def get_absolute_url(self):
-        return reverse("nakhll_market:ShopsDetail", kwargs={
-            'shop_slug': self.Slug
-        })
-
     def Image_thumbnail_url(self):
         try:
             i = self.Image_thumbnail.url
@@ -462,11 +450,6 @@ class Shop(models.Model):
         except BaseException:
             url = "https://nakhll.com/media/Pictures/default.jpg"
             return url
-
-    def get_url(self):
-        return reverse("nakhll_market:ShopsDetail", kwargs={
-            'shop_slug': self.Slug,
-        })
 
     def get_holidays(self):
         return self.Holidays.split('-')
@@ -626,7 +609,7 @@ class ProductManager(models.Manager):
             Price_float=Cast(F('Price'),
                              FloatField())).annotate(
             discount_ratio=(F('OldPrice_float') - F('Price_float')) /
-            F('OldPrice_float')).order_by('-discount_ratio')
+                           F('OldPrice_float')).order_by('-discount_ratio')
 
     def get_one_most_discount_precenetage_available_product_random(self):
         result = self.get_most_discount_precentage_available_product()
@@ -635,16 +618,16 @@ class ProductManager(models.Manager):
 
     def get_last_created_products(self):
         return Product.objects \
-            .filter(Publish=True, Available=True, OldPrice=0, Status__in=['1', '2', '3'],
-                    DateCreate__lt=self.FEW_HOURS_AGO) \
-            .order_by('-DateCreate')[:12]
+                   .filter(Publish=True, Available=True, OldPrice=0, Status__in=['1', '2', '3'],
+                           DateCreate__lt=self.FEW_HOURS_AGO) \
+                   .order_by('-DateCreate')[:12]
 
     def get_last_created_discounted_products(self):
         return Product.objects.filter(
             Publish=True, Available=True, Status__in=['1', '2', '3'],
             DateCreate__lt=self.FEW_HOURS_AGO).exclude(
             OldPrice=0).order_by('-DateCreate')[
-            : 16]
+               : 16]
 
     def available_products(self):
         return self.filter(
@@ -662,8 +645,8 @@ class ProductManager(models.Manager):
 
     def get_most_discount_precentage_products(self):
         return self \
-            .get_most_discount_precentage_available_product() \
-            .order_by('?')[:15]
+                   .get_most_discount_precentage_available_product() \
+                   .order_by('?')[:15]
 
     def get_products_in_same_factor(self, id):
         queryset = self.get_queryset()
@@ -722,7 +705,7 @@ class ProductManager(models.Manager):
     def has_enough_items_in_stock(product, count):
         ''' Check if product have enough items in stock '''
         return (product.Status == '1' and product.inventory >= count) \
-            or (product.Status in ['2', '3'])
+               or (product.Status in ['2', '3'])
 
     def is_product_list_valid(self, product_list):
         ''' Check if products in product_list is available, published and have enough in stock
@@ -736,7 +719,7 @@ class ProductManager(models.Manager):
         product_ids = [x.get('product').id for x in product_list]
         if self.filter(
                 Q(ID__in=product_ids) and (
-                    Q(Available=False) or Q(Publish=False)
+                        Q(Available=False) or Q(Publish=False)
                 )).exists():
             return False
         for item in product_list:
@@ -1319,7 +1302,10 @@ class Tag(models.Model):
     """
     #TODO: Document
     """
-    name = models.CharField(max_length=50, verbose_name=_('نام تگ'))
+    name = models.CharField(max_length=127, verbose_name=_('نام تگ'),
+    error_messages={
+        'max_length': _('نام تگ باید کمتر از 127 کاراکتر باشد.'),}
+    )
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE, verbose_name=_('حجره'), related_name="tags")
 
     class Meta:

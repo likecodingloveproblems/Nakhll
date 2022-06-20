@@ -53,10 +53,10 @@ class ShopFeatureInvoiceAdmin(admin.ModelAdmin):
     list_filter = ('status', 'is_demo', 'payment_datetime', 'start_datetime', 'expire_datetime', 'feature')
     readonly_fields = ('id', 'shop_owner', 'start_datetime_jalali', 'expire_datetime_jalali', 'payment_datetime_jalali')
     ordering = ['-id', ]
-    # search_fields = ('id', 'shop', 'payment_unique_id', )
+    search_fields = ('id', 'shop__Title', 'payment_unique_id', )
     fields = ('id', 'feature', 'shop', 'status', 'bought_price_per_unit', 'bought_unit', 'unit_count', 'shop_owner',
               'start_datetime_jalali', 'expire_datetime_jalali', 'payment_datetime_jalali', 'payment_unique_id',
-              'is_demo')
+              'is_demo','expire_datetime',)
 
     def shop_owner(self, obj):
         return obj.shop.FK_ShopManager.get_full_name()
