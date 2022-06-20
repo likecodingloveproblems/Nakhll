@@ -7,7 +7,6 @@ from logistic.models import (LogisticUnitGeneralSetting, ShopLogisticUnit,
 
 # Register your models here.
 
-admin.site.register(LogisticUnitGeneralSetting)
 admin.site.register(ShopLogisticUnit)
 admin.site.register(ShopLogisticUnitConstraint)
 
@@ -55,3 +54,21 @@ class ShopLogisticUnitCalculationMetricAdmin(admin.ModelAdmin):
             request,
             _(generate_message(counts)),
             messages.SUCCESS)
+
+
+@admin.register(LogisticUnitGeneralSetting)
+class LogisticUnitGeneralSettingAdmin(admin.ModelAdmin):
+    list_display = [
+        'name',
+        'is_active',
+        'default_price_per_kilogram',
+        'default_price_per_extra_kilogram']
+    readonly_fields = ('updated_by',)
+    exclude = (
+        'maximum_price_per_kilogram',
+        'maximum_price_per_extra_kilogram',
+    )
+
+    def save_model(self, request, obj, form, change) -> None:
+        obj.updated_by = request.user
+        return super().save_model(request, obj, form, change)
