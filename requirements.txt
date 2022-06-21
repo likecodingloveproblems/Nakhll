@@ -20,7 +20,6 @@ diff-match-patch==20200713
 discord-webhook==0.14.0
 Django==3.2.12
 django-analytical==3.0.0
-django-appconf==1.0.5
 django-braces==1.14.0
 django-colorfield==0.4.3
 django-compressor==2.4
@@ -30,7 +29,6 @@ django-excel-response==2.0.5
 django-extensions==3.1.5
 django-filter==2.4.0
 django-imagekit==4.0.2
-django-ipware==2.1.0
 django-jalali==4.1.2
 django-mathfilters==1.0.0
 django-modeladmin-reorder==0.3.1
