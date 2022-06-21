@@ -55,9 +55,6 @@ class LogisticUnitInterface:
 
         if self.errors:
             self.cart.items.filter(product__in=self.errors).delete()
-            raise ValidationError(_('این محصولات هیچ روش ارسالی ندارند و از سبد خرید شما حذف خواهند شد<br>{}').format(
-                '<br>'.join([product.Title for product in self.errors])
-            ))
 
         # TODO: after fixing purchase process
         # if no_item:
