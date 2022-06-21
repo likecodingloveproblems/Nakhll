@@ -71,7 +71,6 @@ THIRD_PARTY_APPS = [
     'imagekit',
     'compressor',
     'mathfilters',
-    'captcha',
     'django_prometheus',
     'django_extensions',
     'colorfield',
@@ -367,12 +366,6 @@ GOOGLE_ANALYTICS_JS_PROPERTY_ID = 'UA-189302977-1'
 
 def IDENTITY_FUNCTION(user): return user.id
 
-
-RECAPTCHA_PUBLIC_KEY = os.environ.get('RECAPTCHA_PUBLIC_KEY', '')
-RECAPTCHA_PRIVATE_KEY = os.environ.get('RECAPTCHA_PRIVATE_KEY', '')
-RECAPTCHA_REQUIRED_SCORE = 0.85
-if DEBUG:
-    SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
 
 SENDSMS_BACKEND = 'sms.backend.SmsBackend'
 HOTJAR_SITE_ID = '2447146'
