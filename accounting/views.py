@@ -154,7 +154,8 @@ class UserStats(View):
     def get (self , request):
         queryset =  Profile.objects\
             .annotate(shop_count=Count('FK_User__ShopManager')).values(
-                'MobileNumber', 'NationalCode', 'FK_User__first_name', 'FK_User__last_name', 'shop_count'
+                'MobileNumber', 'NationalCode', 'FK_User__first_name',
+                'FK_User__last_name', 'shop_count', 'FK_User__date_joined'
                 )
 
 
