@@ -1,15 +1,11 @@
-import json
 from datetime import datetime
-from re import I
 from django.conf import settings
-from django.http.response import HttpResponse
-from django.shortcuts import redirect, render
-from payoff.payment import Payment, Pec
-from payoff.interfaces import PaymentInterface
-from payoff.models import Transaction
+from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
+from .base_payment import SUCCESS_STATUS
+from .interfaces import Payment
+from .models import Transaction
 
-# Create your views here.
 
 def test_pec(request):
     amount = request.GET.get('amount', '10000')
@@ -26,12 +22,13 @@ def test_pec(request):
     }
     return Payment.initiate_payment(data)
 
+
 @csrf_exempt
 def test_pec_callback(request):
     # TODO
     # if not request.META['HTTP_ORIGIN'].startswith('https://pec.shaparak.ir')\
-        # or not request.META['HTTP_REFERER'].startswith('https://pec.shaparak.ir'):
-        # raise Exception('Invalid origin or referer')
+    # or not request.META['HTTP_REFERER'].startswith('https://pec.shaparak.ir'):
+    # raise Exception('Invalid origin or referer')
     domain = settings.DOMAIN_NAME
 
     # FAKE DATA FOR TESTING
@@ -48,9 +45,38 @@ def test_pec_callback(request):
     # result_dict['_state'] = None
     # result_dict['created_datetime'] = None
 
-    result = Payment.payment_callback(request.POST, ipg_type=Transaction.IPGTypes.PEC)
+    result = Payment.payment_callback(
+        request.POST, ipg_type=Transaction.IPGTypes.PEC)
 
     code = result.get('code')
-    if result.get('status') == Pec.SUCCESS_STATUS:
+    if result.get('status') == SUCCESS_STATUS:
+        return redirect(f'{domain}/cart/payment/success/data?code={code}')
+    return redirect(f'{domain}/cart/payment/failure/data?code={code}')
+
+
+@csrf_exempt
+def sep_callback(request):
+    # TODO
+    # test for domain and referer to prevent malicious requests
+    domain = settings.DOMAIN_NAME
+    data = request.POST
+    # data = {
+    #     "MID": 2001,
+    #     "State": "OK",
+    #     "Status": 2,
+    #     "RRN": 12234972,
+    #     "RefNum": "12234972",
+    #     "ResNum": "1656922841933520",
+    #     "TerminalId": 2001,
+    #     "TraceNo": "12234972",
+    #     "Amount": 2180000,
+    #     "Wage": "0",
+    #     "SecurePan": "932234***4234",
+    #     "HashedCardNumber": "b96a14400c3a59249e87c300ecc06e5920327e70220213b5bbb7d7b2410f7e0d",
+    # }
+    result = Payment.payment_callback(data, ipg_type=Transaction.IPGTypes.SEP)
+    code = result.get('code')
+    payment_is_succeed = result.get('status') == SUCCESS_STATUS
+    if payment_is_succeed:
         return redirect(f'{domain}/cart/payment/success/data?code={code}')
     return redirect(f'{domain}/cart/payment/failure/data?code={code}')
