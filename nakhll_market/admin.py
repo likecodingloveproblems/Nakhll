@@ -30,17 +30,8 @@ from nakhll_market.models import (
     ProductTag)
 from nakhll_market.resources import ProfileResource, ShopAdminResource
 
-
-admin.site.site_header = 'مدیریت بازار نخل'
-
 # enable django permission setting in admin panel to define custom permissions
 admin.site.register(Permission)
-
-ModelAdmin.construct_change_message = (
-    lambda self, request, form, formsets, add:
-    utils.construct_change_message(request, form, formsets, add)
-)
-
 
 class ProfileHasShopFilter(admin.SimpleListFilter):
     title = 'حجره'
