@@ -2,6 +2,8 @@ from django.utils.timezone import localtime
 import jdatetime
 import json
 from rest_framework import serializers
+
+from payoff.models import Transaction
 from .models import Invoice, InvoiceItem
 from cart.models import Cart
 from cart.serializers import CartSerializer
@@ -231,3 +233,13 @@ class BarcodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = InvoiceItem
         fields = ('barcode', )
+
+
+class IPGTypeSerializer(serializers.Serializer):
+    ipg = serializers.CharField(max_length=32, required=False)
+
+    def validate_ipg(self, value):
+        valid_ipgs = [x[0] for x in Transaction.IPGTypes.choices]
+        if value not in valid_ipgs:
+            raise serializers.ValidationError('درگاه پرداخت وارد شده نامعتبر است')
+        return value

@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin
-from .utils import construct_change_message
 
 
 def seutp():
@@ -8,16 +7,7 @@ def seutp():
 
     This function is called by nakhll/urls.py
     """
-    override_entrylog_message_constructor()
     override_admin_panel_defaults()
-
-
-def override_entrylog_message_constructor():
-    """Replace django's message constructor with our own."""
-    ModelAdmin.construct_change_message = (
-        lambda self, request, form, formsets, add:
-        construct_change_message(request, form, formsets, add)
-    )
 
 
 def override_admin_panel_defaults():
