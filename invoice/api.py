@@ -2,10 +2,11 @@ from rest_framework import status, mixins, permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from cart.managers import CartManager
+from payoff.models import Transaction
 from .exceptions import EmptyCartException
 from .models import Invoice
 from .permissions import IsInvoiceOwner
-from .serializers import InvoiceWriteSerializer, InvoiceRetrieveSerializer
+from .serializers import IPGTypeSerializer, InvoiceWriteSerializer, InvoiceRetrieveSerializer
 
 
 class InvoiceViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin,
@@ -60,8 +61,11 @@ class InvoiceViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin,
         Request for invoice should came from owner.
         Invoice should sent to payment to initiate payment
         """
+        ipg_serializer = IPGTypeSerializer(data=request.data)
+        ipg_serializer.is_valid(raise_exception=True)
+        ipg = ipg_serializer.validated_data.get('ipg') or Transaction.IPGTypes.PEC
         invoice = self.get_object()
-        return invoice.send_to_payment()
+        return invoice.send_to_payment(ipg)
 
     @action(methods=['POST'], detail=True)
     def fill_cart(self, request, pk):
