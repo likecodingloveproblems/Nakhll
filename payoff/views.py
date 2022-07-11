@@ -64,7 +64,7 @@ def sep_callback(request):
     #     "MID": 2001,
     #     "State": "OK",
     #     "Status": 2,
-    #     "RRN": 12234972,
+    #     "Rrn": 12234972,
     #     "RefNum": "12234972",
     #     "ResNum": "1656922841933520",
     #     "TerminalId": 2001,
