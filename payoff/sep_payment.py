@@ -176,7 +176,7 @@ class SepResponse:
         self.mid = data['MID']
         self.state = data['State']
         self.status = data['Status']
-        self.rrn = data['RRN']
+        self.rrn = data['Rrn']
         self.ref_num = data['RefNum']
         self.res_num = data['ResNum']
         self.terminal_id = data['TerminalId']
