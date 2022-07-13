@@ -18,7 +18,8 @@ from rest_framework.exceptions import ValidationError, PermissionDenied, Authent
 from rest_framework.decorators import action
 from django_filters import rest_framework as restframework_filters
 from logistic.models import ShopLogisticUnit
-from nakhll.utils import get_dict
+from nakhll.utils import excel_response, get_dict
+from nakhll_market.exceptions import UnPublishedProductException, UnPublishedShopException
 from nakhll_market.interface import DiscordAlertInterface, ProductChangeTypes
 from nakhll_market.models import (
     Alert,
@@ -35,6 +36,7 @@ from nakhll_market.models import (
     ShopPageSchema,
     UserImage, Tag, ProductTag,
 )
+from nakhll_market.resources import ShopStatisticResource
 from nakhll_market.serializers import (
     Base64ImageSerializer,
     CategoryProductCountSerializer,
@@ -51,14 +53,13 @@ from nakhll_market.serializers import (
     ShopSerializer,
     ShopSimpleSerializer,
     ShopSlugSerializer,
-    ShopStatisticSerializer,
     CreateShopSerializer,
     ProductInventoryWriteSerializer,
     ProductListSerializer,
-    ShopAllSettingsSerializer,
+    ShopAllSettingsReadSerializer,
+    ShopAllSettingsWriteSerializer,
     SliderSerializer,
     UserOrderSerializer,
-    ProductSubMarketSerializer,
     StateFullSeraializer,
     ShopPageSchemaSerializer,
     UserImageSerializer,
@@ -77,7 +78,7 @@ from shop.serializers import ShopLandingDetailsSerializer, ShopLandingSerializer
 
 
 class LastCreatedProductsViewSet(
-    mixins.ListModelMixin, viewsets.GenericViewSet):
+        mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductSerializer
     permission_classes = [permissions.AllowAny, ]
 
@@ -86,7 +87,7 @@ class LastCreatedProductsViewSet(
 
 
 class LastCreatedDiscountedProductsViewSet(
-    mixins.ListModelMixin, viewsets.GenericViewSet):
+        mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductSerializer
     permission_classes = [permissions.AllowAny, ]
 
@@ -111,7 +112,7 @@ class RandomProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 
 class MostDiscountPrecentageProductsViewSet(
-    mixins.ListModelMixin, viewsets.GenericViewSet):
+        mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductSerializer
     permission_classes = [permissions.AllowAny, ]
 
@@ -160,8 +161,8 @@ class ShopProductsViewSet(viewsets.GenericViewSet,
 
 
 class ShopOwnerProductViewSet(
-    viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.CreateModelMixin,
-    mixins.ListModelMixin, mixins.UpdateModelMixin):
+        viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.CreateModelMixin,
+        mixins.ListModelMixin, mixins.UpdateModelMixin):
     permission_classes = [permissions.IsAuthenticated, IsProductOwner]
     pagination_class = StandardPagination
     filter_class = ProductFilter
@@ -291,8 +292,8 @@ class ShopOwnerProductViewSet(
         return new_slug
 
 
-class TagsOwnerViewSet(
-    viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.ListModelMixin, ):
+class TagsOwnerViewSet(viewsets.GenericViewSet,
+                       mixins.RetrieveModelMixin, mixins.ListModelMixin, ):
     permission_classes = [permissions.IsAuthenticated, IsTagOwner]
     serializer_class = TagOwnerListSerializer
 
@@ -334,17 +335,22 @@ class ProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     ordering_fields = ('Title', 'Price', 'DiscountPrecentage', 'DateCreate',)
 
     def get_queryset(self):
-        res = Product.objects.select_related('FK_Shop').annotate(
-            is_available=Cast(Case(
-                When(Q(FK_Shop__Publish=True) & Q(FK_Shop__Available=True) &
-                     Q(Publish=True) & Q(Available=True) & Q(Inventory__gt=0),
-                     then=Value(True)),
-                default=Value(False)), output_field=BooleanField())
-        ).filter(
-            Q(Publish=True), ~Q(FK_Shop=None)).annotate(DiscountPrecentage=Case(
-            When(OldPrice__gt=0, then=(
-                    (F('OldPrice') - F('Price')) * 100 / F('OldPrice'))
-                 ), default=0)).order_by('-is_available', '-category_id')
+        res = Product.objects.filter(Publish=True, FK_Shop__Publish=True).\
+            select_related('FK_Shop').annotate(
+            is_available=Cast(
+                Case(
+                    When(
+                        Q(Status__in=(1, 2, 3)) &
+                        Q(Inventory__gt=0),
+                        then=Value(True)),
+                    default=Value(False)),
+                output_field=BooleanField())).annotate(
+            DiscountPrecentage=Case(
+                When(
+                    OldPrice__gt=0,
+                    then=((F('OldPrice') - F('Price')) * 100 / F('OldPrice'))),
+                default=0)).order_by(
+            '-is_available', '-category_id')
         search_query = self.request.query_params.get('search', None)
         q_query = self.request.query_params.get('q', None)
         if search_query:
@@ -368,11 +374,17 @@ class ProductDetailsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductDetailSerializer
     permission_classes = [permissions.AllowAny, ]
     lookup_field = 'Slug'
-    queryset = Product.objects.select_related('FK_Shop').filter(Publish=True)
+    queryset = Product.objects.select_related('FK_Shop')
+
+    def get_object(self):
+        product = super().get_object()
+        if not product.FK_Shop.Publish or not product.Publish:
+            raise UnPublishedProductException()
+        return product
 
 
 class ProductCommentsViewSet(
-    mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+        mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductCommentSerializer
     permission_classes = [permissions.AllowAny, ]
     lookup_field = 'FK_Product__Slug'
@@ -394,7 +406,7 @@ class ProductCommentsViewSet(
 
 
 class ProductRelatedItemsViewSet(
-    mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+        mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     pagination_class = StandardPagination
     serializer_class = ProductSerializer
     permission_classes = [permissions.AllowAny, ]
@@ -442,8 +454,14 @@ class GetShopWithSlug(views.APIView):
 class GetShop(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, ]
     serializer_class = ShopSerializer
-    queryset = Shop.objects.filter(Available=True, Publish=True)
+    queryset = Shop.objects.all()
     lookup_field = 'Slug'
+
+    def get_object(self):
+        shop = super().get_object()
+        if not shop.Publish:
+            raise UnPublishedShopException()
+        return shop
 
 
 class GetShopList(viewsets.GenericViewSet, mixins.ListModelMixin):
@@ -650,6 +668,7 @@ class ShopMultipleUpdateInventory(views.APIView):
 
 class AllShopSettings(views.APIView):
     # TODO: Check this class entirely
+    serializer_class = ShopAllSettingsReadSerializer
     permission_classes = [permissions.IsAuthenticated, IsShopOwner]
 
     def get_object(self, shop_slug, user):
@@ -659,18 +678,20 @@ class AllShopSettings(views.APIView):
         user = request.user
         shop = self.get_object(shop_slug, user)
         self.check_object_permissions(request, shop)
-        serializer = ShopAllSettingsSerializer(shop)
+        serializer = ShopAllSettingsReadSerializer(shop)
         return Response(serializer.data)
 
     def patch(self, request, shop_slug, format=None):
         user = request.user
         shop = self.get_object(shop_slug, user)
         self.check_object_permissions(request, shop)
-        serializer = ShopAllSettingsSerializer(data=request.data, instance=shop, context={'user': user})
+        serializer = ShopAllSettingsWriteSerializer(
+            data=request.data, instance=shop, context={'user': user})
         if serializer.is_valid():
             serializer.save()
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.data)
 
 
@@ -685,7 +706,8 @@ class DeleteShopImage(views.APIView):
         shop: Shop = self.get_object(shop_slug, user)
         self.check_object_permissions(request, shop)
         shop.delete_image()
-        return Response({'status': 'عکس با موفقیت حذف شد'}, status=status.HTTP_204_NO_CONTENT)
+        return Response({'status': 'عکس با موفقیت حذف شد'},
+                        status=status.HTTP_204_NO_CONTENT)
 
 
 # class BankAccountShopSettings(views.APIView):
@@ -946,7 +968,7 @@ class PublicShopsViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
 
     def get_queryset(self):
         return Shop.objects.public_shops().annotate(
-            products=ArrayAgg('ShopProduct__Slug'))
+            products_slug=ArrayAgg('ShopProduct__Slug'))
 
     def list(self, request, *args, **kwargs):
         shops = self.get_queryset()
@@ -954,27 +976,9 @@ class PublicShopsViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
         return Response(serializer.data)
 
 
-class ShopsStatisticViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+class ShopsStatisticView(views.APIView):
     permission_classes = [permissions.IsAdminUser, ]
-    serializer_class = ShopStatisticSerializer
 
-    def get_queryset(self):
-        return Shop.objects.select_related('FK_ShopManager').annotate(
-            products_count=Count('ShopProduct'),
-            total_sell=Count('ShopProduct__invoice_items',
-                             filter=Q(
-                                 Q(ShopProduct__invoice_items__invoice__status='wait_store_approv') |
-                                 Q(ShopProduct__invoice_items__invoice__status='preparing_product') |
-                                 Q(ShopProduct__invoice_items__invoice__status='wait_customer_approv') |
-                                 Q(ShopProduct__invoice_items__invoice__status='wait_store_checkout') |
-                                 Q(ShopProduct__invoice_items__invoice__status='completed')
-                             )
-                             )
-        )
-
-    def list(self, request, *args, **kwargs):
-        shops = self.get_queryset()
-        serializer = ShopStatisticSerializer(shops, many=True)
-        from excel_response import ExcelResponse
-        return ExcelResponse(data=serializer.data)
-        # return Response(serializer.data)
+    def get(self, request):
+        return excel_response(ShopStatisticResource,
+                              filename='shop-statistics')
