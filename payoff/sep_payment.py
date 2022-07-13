@@ -246,7 +246,7 @@ class SepResponse:
         After each success payment, we should send confirmation to sep, otherwise sep will revert payment.
         Our payment is confirmed after sep confirmation is send and saved to db and the result is valid too.
         """
-        confirmation = SepResponseConfirmation(self.ref_num, self.mid)
+        confirmation = SepResponseConfirmation(self.ref_num, self.terminal_id)
         confirmation.send_request()
         confirmation.save_to_db()
         confirmation.validate_response()
@@ -257,7 +257,7 @@ class SepResponse:
         This is called when payment confirmation is not valid. so we should revert payment to sep and
         cancel our user purchase process in our system.
         """
-        revertation = SepResponseRevertation(self.ref_num, self.mid)
+        revertation = SepResponseRevertation(self.ref_num, self.terminal_id)
         revertation.send_request()
         revertation.save_to_db()
         revertation.validate_response()
