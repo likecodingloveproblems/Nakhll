@@ -141,12 +141,11 @@ class Invoice(models.Model):
         coupon_price = self.coupons_total_price
         return total_price + logistic_price - coupon_price
 
-
     @property
     def jpayment_datetime(self):
         return datetime2jalali(self.payment_datetime)
 
-    def send_to_payment(self, bank_port=Transaction.IPGTypes.SEP):
+    def send_to_payment(self, bank_port=Transaction.IPGTypes.PEC):
         self.__validate_items()
         self.__validate_address()
         self.__validate_invoice_status()

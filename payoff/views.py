@@ -60,6 +60,13 @@ def sep_callback(request):
     # test for domain and referer to prevent malicious requests
     domain = settings.DOMAIN_NAME
     data = request.POST
+    import json
+    import datetime
+    x = datetime.datetime.now().microsecond
+    with open(f'sep_callback-{x}.json', 'w') as f:
+        json.dump(data, f)
+
+    raise Exception('Invalid origin or referer')
     # data = {
     #     "MID": 0,
     #     "State": "OK",
