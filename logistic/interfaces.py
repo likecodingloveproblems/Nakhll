@@ -294,7 +294,7 @@ class ShopLogisticUnitInterface:
         return 'ارسال رایگان'
 
     def shop_active_logistic_units(self, shop):
-        return models.ShopLogisticUnit.filter(
+        return models.ShopLogisticUnit.objects.filter(
             shop=shop, is_active=True)
 
     def get_available_logistic_units(self, shop):

@@ -157,7 +157,7 @@ class InvoiceAdmin(admin.ModelAdmin):
             if request.user.has_perm('invoice.checkout_invoice'):
                 obj.status = obj.Statuses.COMPLETED
                 obj.save()
-                self.message_user(request, "وضعیت فاکتور با موفقیت تغییر کرد")
+                self.message_user(request, "فاکتور با موفقیت تسویه شد.")
                 return HttpResponseRedirect(".")
             else:
                 self.message_user(

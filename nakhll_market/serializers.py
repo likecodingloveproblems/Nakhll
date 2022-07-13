@@ -135,7 +135,7 @@ class ShopSerializer(serializers.ModelSerializer):
             'slug',
             'title',
             'image_thumbnail_url',
-            'total_products',
+            'products_count',
             'Description',
             'registered_months',
             'FK_ShopManager',
@@ -232,7 +232,8 @@ class CreateShopSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {'error': 'شهرستان انتخاب شده معتبر نمی باشد.'})
         except City.DoesNotExist:
-            raise serializers.ValidationError({'error': 'شهر انتخاب شده معتبر نمی باشد.'})
+            raise serializers.ValidationError(
+                {'error': 'شهر انتخاب شده معتبر نمی باشد.'})
         return data
 
 
@@ -556,7 +557,6 @@ class ProductOwnerWriteSerializer(serializers.ModelSerializer):
                         product=instance, tag=tag)
                     for tag in tags])
 
-
     def update(self, instance, validated_data):
         self.__update_banners(instance, validated_data)
         self.__update_tags(instance, validated_data)
@@ -694,7 +694,7 @@ class ShopSettingsSerializer(serializers.ModelSerializer):
         }
 
 
-class ShopAllSettingsSerializer(serializers.ModelSerializer):
+class ShopAllSettingsReadSerializer(serializers.ModelSerializer):
     FK_ShopManager = UserProfileSerializer(
         many=False, read_only=False, required=False)
     bank_account = ShopBankAccountSerializer(
@@ -726,6 +726,38 @@ class ShopAllSettingsSerializer(serializers.ModelSerializer):
             'BigCity',
             'City',
             'Location']
+        read_only_fields = fields
+
+
+class ShopAllSettingsWriteSerializer(serializers.ModelSerializer):
+    FK_ShopManager = UserProfileSerializer(
+        many=False, read_only=False, required=False)
+    bank_account = ShopBankAccountSerializer(
+        many=False, read_only=False, required=False)
+    social_media = ShopSocialMediaSerializer(
+        many=False, read_only=False, required=False)
+    Image = Base64ImageField(
+        max_length=None,
+        use_url=True,
+        allow_empty_file=False,
+        required=False,
+        allow_null=True)
+
+    class Meta:
+        model = Shop
+        fields = [
+            'Title',
+            'Slug',
+            'Image',
+            'image_thumbnail_url',
+            'bank_account',
+            'social_media',
+            'Description',
+            'FK_ShopManager',
+            'State',
+            'BigCity',
+            'City',
+            'Location']
         read_only_fields = ['Title', 'Slug', 'image_thumbnail_url']
 
     def validate(self, data):
@@ -740,27 +772,6 @@ class ShopAllSettingsSerializer(serializers.ModelSerializer):
             if duplicated.exists():
                 raise serializers.ValidationError(
                     {'NationalCode_error': 'کد ملی وارد شده از قبل در سایت وجود دارد.'})
-        state_name = data.pop(
-            'State')['name'] if 'State' in data else None
-        big_city_name = data.pop(
-            'BigCity')['name'] if 'BigCity' in data else None
-        city_name = data.pop(
-            'City')['name'] if 'City' in data else None
-        try:
-            state = State.objects.get(name=state_name)
-            big_city = BigCity.objects.get(name=big_city_name, state=state)
-            city = City.objects.get(name=city_name, big_city=big_city)
-            data['State'] = state
-            data['BigCity'] = big_city
-            data['City'] = city
-        except State.DoesNotExist:
-            raise serializers.ValidationError(
-                {'error': 'استان انتخاب شده معتبر نمی باشد.'})
-        except BigCity.DoesNotExist:
-            raise serializers.ValidationError(
-                {'error': 'شهرستان انتخاب شده معتبر نمی باشد.'})
-        except City.DoesNotExist:
-            raise serializers.ValidationError({'error': 'شهر انتخاب شده معتبر نمی باشد.'})
         return data
 
     def update(self, instance, validated_data):
@@ -913,7 +924,8 @@ class NewProfileSerializer(serializers.ModelSerializer):
         # TODO: I done as image for check birthday
         if 'BrithDay' in validated_data:
             birthday = validated_data.pop('BrithDay')
-            instance.BrithDay = jdatetime.date(birthday.year, birthday.month, birthday.day)
+            instance.BrithDay = jdatetime.date(
+                birthday.year, birthday.month, birthday.day)
         instance.user.first_name = user.get('first_name')
         instance.user.last_name = user.get('last_name')
         for prop in validated_data:
@@ -1006,14 +1018,11 @@ class ProductLastStateSerializer(serializers.ModelSerializer):
 
 
 class ShopSlugSerializer(serializers.ModelSerializer):
-    products = serializers.SerializerMethodField()
+    products_slug = serializers.ListField()
 
     class Meta:
         model = Shop
-        fields = ('Slug', 'products')
-
-    def get_products(self, obj):
-        return obj.products
+        fields = ('Slug', 'products_slug')
 
 
 class UserImageSerializer(serializers.ModelSerializer):
@@ -1022,32 +1031,6 @@ class UserImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserImage
         fields = ('id', 'image', 'title', 'description')
-
-
-class ShopStatisticSerializer(serializers.ModelSerializer):
-    products_count = serializers.SerializerMethodField()
-    register_datetime = serializers.SerializerMethodField()
-    total_sell = serializers.SerializerMethodField()
-    mobile_number = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Shop
-        fields = ['ID', 'Title', 'Slug', 'products_count',
-                  'register_datetime', 'total_sell', 'mobile_number']
-
-    def get_products_count(self, obj):
-        return obj.products_count
-
-    def get_register_datetime(self, obj):
-        return obj.DateCreate.strftime('%Y-%m-%d')
-
-    def get_total_sell(self, obj):
-        return obj.total_sell
-
-    def get_mobile_number(self, obj):
-        if obj.FK_ShopManager and hasattr(obj.FK_ShopManager, 'User_Profile'):
-            return obj.FK_ShopManager.User_Profile.MobileNumber
-        return None
 
 
 class CampaignShopSerializer(serializers.ModelSerializer):
