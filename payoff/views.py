@@ -61,18 +61,20 @@ def sep_callback(request):
     domain = settings.DOMAIN_NAME
     data = request.POST
     # data = {
-    #     "MID": 2001,
+    #     "MID": 0,
     #     "State": "OK",
     #     "Status": 2,
-    #     "Rrn": 12234972,
-    #     "RefNum": "12234972",
-    #     "ResNum": "1656922841933520",
-    #     "TerminalId": 2001,
-    #     "TraceNo": "12234972",
-    #     "Amount": 2180000,
-    #     "Wage": "0",
-    #     "SecurePan": "932234***4234",
-    #     "HashedCardNumber": "b96a14400c3a59249e87c300ecc06e5920327e70220213b5bbb7d7b2410f7e0d",
+    #     "Rrn": "20403692290",
+    #     "RefNum": "GmshtyjwKSsl2nL3Y8NwgR95nIloT0pmWXTiAC%2Fbj9",
+    #     "ResNum": 1657655845646725,
+    #     "TerminalId": 21457185,
+    #     "TraceNo": 403975,
+    #     "Amount": 10000,
+    #     "Wage": None,
+    #     "SecurePan": "585983******9490",
+    #     "HashedCardNumber": "AC61BF88CBFFABC9A25B4D5F1116B396D98F5FCE3DC103D94609983DD0E972D4",
+    #     "AffectiveAmount": 10000,
+    #     "Token": "5cad73340932416d919b2bb57d0d8984",
     # }
     result = Payment.payment_callback(data, ipg_type=Transaction.IPGTypes.SEP)
     code = result.get('code')
