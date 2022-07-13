@@ -335,10 +335,10 @@ class SepResponseConfirmation:
             self.result_code != self.ResponseStatusCodes.DUPLICAT_REQUEST.value
         ):
             raise self.EXCEPTION_CLASS()
-        initial_payment_amount = self.transaction_result.amount
+        initial_payment_amount = str(self.transaction_result.amount)
         if (
-            initial_payment_amount != self.effective_amount or
-            initial_payment_amount != self.orginal_amount
+            initial_payment_amount != str(self.effective_amount) or
+            initial_payment_amount != str(self.orginal_amount)
         ):
             raise self.EXCEPTION_CLASS()
         if not self.success:
