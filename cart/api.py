@@ -11,6 +11,8 @@ from .models import Cart, CartItem
 from .permissions import IsCartItemOwner, IsCartOwner
 from .serializers import (CartItemSerializer, CartSerializer,
                           CartWriteSerializer)
+from invoice.serializers import IPGTypeSerializer
+from payoff.models import Transaction
 from .utils import get_user_or_guest
 
 
@@ -149,9 +151,12 @@ class UserCartViewSet(viewsets.GenericViewSet):
                 any other status will raise this exception.
         """
         cart = self.get_object()
+        ipg_serializer = IPGTypeSerializer(data=request.data)
+        ipg_serializer.is_valid(raise_exception=True)
+        ipg = ipg_serializer.validated_data.get('ipg') or Transaction.IPGTypes.PEC
         try:
             invoice = cart.convert_to_invoice()
-            return invoice.send_to_payment()
+            return invoice.send_to_payment(bank_port=ipg)
         except NoItemException:
             return Response({
                 'error':
