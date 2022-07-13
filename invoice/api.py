@@ -63,9 +63,9 @@ class InvoiceViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin,
         """
         ipg_serializer = IPGTypeSerializer(data=request.data)
         ipg_serializer.is_valid(raise_exception=True)
-        ipg = ipg_serializer.validated_data.get('ipg') or Transaction.IPGTypes.SEP
+        ipg = ipg_serializer.validated_data.get('ipg') or Transaction.IPGTypes.PEC
         invoice = self.get_object()
-        return invoice.send_to_payment(ipg)
+        return invoice.send_to_payment(Transaction.IPGTypes.SEP)
 
     @action(methods=['POST'], detail=True)
     def fill_cart(self, request, pk):
