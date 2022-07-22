@@ -286,11 +286,9 @@ class SepResponseConfirmation:
     def __init__(self, ref_num, terminal_number):
         self.ref_num = ref_num
         self.terminal_number = terminal_number
-        self.ref_num = None
         self.rrn = None
         self.masked_pan = None
         self.hashed_pan = None
-        self.terminal_number = None
         self.orginal_amount = None
         self.effective_amount = None
         self.strace_date = None
