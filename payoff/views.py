@@ -60,28 +60,22 @@ def sep_callback(request):
     # test for domain and referer to prevent malicious requests
     domain = settings.DOMAIN_NAME
     data = request.POST
-    import json
-    import datetime
-    x = datetime.datetime.now().microsecond
-    with open(f'sep_callback-{x}.json', 'w') as f:
-        json.dump(data, f)
-
-    raise Exception('Invalid origin or referer')
+    # raise Exception('Invalid origin or referer')
     # data = {
-    #     "MID": 0,
+    #     "MID": "0",
+    #     "TerminalId": "21457185",
+    #     "RefNum": "GmshtyjwKStjkzkZOSyuW18tgJM4KVvrYJZv5mL9Wi",
+    #     "ResNum": "1658512602386104",
     #     "State": "OK",
-    #     "Status": 2,
-    #     "Rrn": "20403692290",
-    #     "RefNum": "GmshtyjwKSsl2nL3Y8NwgR95nIloT0pmWXTiAC%2Fbj9",
-    #     "ResNum": 1657655845646725,
-    #     "TerminalId": 21457185,
-    #     "TraceNo": 403975,
-    #     "Amount": 10000,
-    #     "Wage": None,
-    #     "SecurePan": "585983******9490",
-    #     "HashedCardNumber": "AC61BF88CBFFABC9A25B4D5F1116B396D98F5FCE3DC103D94609983DD0E972D4",
-    #     "AffectiveAmount": 10000,
-    #     "Token": "5cad73340932416d919b2bb57d0d8984",
+    #     "TraceNo": "101979",
+    #     "Amount": "67900",
+    #     "AffectiveAmount": "67900",
+    #     "Wage": "",
+    #     "Rrn": "20467145294",
+    #     "SecurePan": "621986******5525",
+    #     "Status": "2",
+    #     "Token": "335242a94b64474ab60cd8ee8974e2fc",
+    #     "HashedCardNumber": "082169094A395EAE49DDACBFDE27396FB503821DAA5A93ACF49FE2E958F146FE",
     # }
     result = Payment.payment_callback(data, ipg_type=Transaction.IPGTypes.SEP)
     code = result.get('code')
