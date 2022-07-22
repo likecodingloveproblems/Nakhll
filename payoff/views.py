@@ -66,7 +66,7 @@ def sep_callback(request):
     with open(f'sep_callback-{x}.json', 'w') as f:
         json.dump(data, f)
 
-    # raise Exception('Invalid origin or referer')
+    raise Exception('Invalid origin or referer')
     # data = {
     #     "MID": 0,
     #     "State": "OK",
