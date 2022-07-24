@@ -173,15 +173,15 @@ class SepResponse:
         TERMINAL_NOT_FOUND = "شماره ترمینال ارسال شده یافت نشد."
 
     def __init__(self, data):
-        self.mid = data['MID']
+        self.mid = int(data['MID'])
         self.state = data['State']
-        self.status = data['Status']
-        self.rrn = data['Rrn']
+        self.status = int(data['Status'])
+        self.rrn = int(data['Rrn'])
         self.ref_num = data['RefNum']
-        self.res_num = data['ResNum']
-        self.terminal_id = data['TerminalId']
-        self.trance_no = data['TraceNo']
-        self.amount = data['Amount']
+        self.res_num = int(data['ResNum'])
+        self.terminal_id = int(data['TerminalId'])
+        self.trance_no = int(data['TraceNo'])
+        self.amount = int(data['Amount'])
         self.wage = data['Wage']
         self.secure_pan = data['SecurePan']
         self.hashed_card_number = data['HashedCardNumber']
@@ -286,11 +286,9 @@ class SepResponseConfirmation:
     def __init__(self, ref_num, terminal_number):
         self.ref_num = ref_num
         self.terminal_number = terminal_number
-        self.ref_num = None
         self.rrn = None
         self.masked_pan = None
         self.hashed_pan = None
-        self.terminal_number = None
         self.orginal_amount = None
         self.effective_amount = None
         self.strace_date = None

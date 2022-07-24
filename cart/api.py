@@ -153,7 +153,7 @@ class UserCartViewSet(viewsets.GenericViewSet):
         cart = self.get_object()
         ipg_serializer = IPGTypeSerializer(data=request.data)
         ipg_serializer.is_valid(raise_exception=True)
-        ipg = ipg_serializer.validated_data.get('ipg') or Transaction.IPGTypes.PEC
+        ipg = ipg_serializer.validated_data.get('ipg') or Transaction.IPGTypes.SEP
         try:
             invoice = cart.convert_to_invoice()
             return invoice.send_to_payment(bank_port=ipg)
