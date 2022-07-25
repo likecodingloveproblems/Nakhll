@@ -5,9 +5,11 @@ from custom_list.models import Favorite
 
 
 class UserFavoriteProductSerializer(serializers.ModelSerializer):
+    """Serializer for the user's favorite list"""
     product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all(), write_only=True)
     products = ProductSerializer(many=True, read_only=True)
     user = UserSerializer(many=False, read_only=True)
+
     class Meta:
         model = Favorite
         fields = ['product', 'products', 'user']
