@@ -10,7 +10,25 @@ from logistic.managers import AddressManager, ShopLogisticUnitManager
 # Create your models here.
 
 class Address(models.Model):
-    ''' Addresses across all project '''
+    """User addresses model
+
+    Each user can have multiple addresses to choose from, in purchase process
+
+    Attributes:
+        old_id (UUID): same as :attr:`cart.models.Cart.old_id`
+        user (User): user who owns this address
+        state (State): Province for the address
+        big_city (BigCity): Big City for this address
+        city (City): City for this address
+        address (str): actual address to user's location
+        zip_code (str): postal code for user's address
+        phone_number (str): phone number related to user's address
+        receiver_full_name: Full name for user who is going to receive product
+            This can be different from user who registerd in Nakhll
+        receiver_mobile_number: Mobile number for user who is going to receive
+            product. This can be different from user who registerd in Nakhll
+    """
+
     class Meta:
         verbose_name = _('آدرس')
         verbose_name_plural = _('آدرس‌ها')
@@ -38,6 +56,7 @@ class Address(models.Model):
         return f'{self.user}: {self.address}'
 
     def as_json(self):
+        """Return user address as json with all address details"""
         address_data = {
             'state': self.state.name,
             'big_city': self.big_city.name,
@@ -52,12 +71,58 @@ class Address(models.Model):
 
 
 class ShopLogisticUnit(models.Model):
+    """Logistic units for a shop
+
+    Each shop has 5 logistic unit by default after creation. These units are:
+        - Free
+        - Delivery
+        - PAD(Pay at delivery)
+        - Express Mail Service
+        - Mail Service
+    Shop owner can change these units or create a new ones. There is no
+    explicit option in this class that indicates type of logistic unit,
+    instead there are parameters like
+    :attr:`ShopLogisticUnitCalculationMetric.PayTimes` or
+    :attr:`ShopLogisticUnitCalculationMetric.PayerTypes` which user can set to
+    indicates what kind of unit is this.
+
+    Attributes:
+        shop (Shop): Shop object related to this logistic unit
+        name (str): Acctual name for this unit defined by user. This name will
+            be displayed in both shop portal and user invoice page.
+        logo (Image): Small logo for this unit. Logo will be ignored if value
+            of :attr:`logo_type` is not :attr:`LogoType.CUSTOM`
+        logo_type (LogoType): Each default logistic unit has it's own logo,
+            this logo is identified by :attr:`LogoType`. All logo types are
+            related to one of default logistic units except custom type
+            which is :attr:`LogoType.CUSTOM`. This logo type along with
+            :attr:`logo` field, indicates user custom logo for this unit.
+        is_active (bool): user can deactivate this unit.
+        is_publish (bool): staff memebers can deactivate this unit.
+        description (str): description which shop owner can set for this unit.
+        created_at (datetime): created datetime.
+        updated_at (datetime): updated datetime.
+        constraint (ShopLogisticUnitConstraint): Each unit has constraints,
+            which contains some parameters to indicates limitations for this
+            unit. This parameters are defined by shop owner.
+        calculation_metric (ShopLogisticUnitCalculationMetric): Each unit has
+            calculation metrics which contains some parameters to calculate
+            price for this unit. This parameters are defined by shop owner.
+    """
+
     class Meta:
         verbose_name = _('واحد ارسال فروشگاه')
         verbose_name_plural = _('واحد ارسال فروشگاه')
         ordering = ['-id']
 
     class LogoType(models.IntegerChoices):
+        """Each default logistic unit has it's own logo.
+
+        All logo types are related to one of default logistic units except
+        custom type which is :attr:`LogoType.CUSTOM`. This logo type along
+        with :attr:`logo` field, indicates user custom logo for this unit.
+        """
+
         CUSTOM = 0, _('لوگوی شخصی')
         PPOST = 1, _('پست پیشتاز')
         SPOST = 2, _('پست سفارشی')
@@ -109,6 +174,36 @@ class ShopLogisticUnit(models.Model):
 
 
 class ShopLogisticUnitConstraint(models.Model):
+    """Constraints for a single :attr:`ShopLogisticUnit`
+
+    Constraints of a unit indicates the limitations for that unit like cities,
+    products, categories, etc. This limitations is defined by shop owner.
+
+    Attributes:
+        - shop_logistic_unit (ShopLogisticUnit): logistic unit related to this
+            constraint object
+        - cities (City): Cities that this unit can be sent to. None means all
+            cities are allowed.
+        - products (Product): Products that can be sent with this unit. None
+            means all products are allowed.
+        - categories (Category): Categories that can be sent with this unit.
+            None means all categories.
+        - max_weight: Maximum weight for invoice that can be sent using this
+            unit. Zero means there is no limitation for that.
+        - min_weight: Minimum weight for invoice that can be sent using this
+            unit. Zero means there is no limitation for that.
+        - max_cart_price: Maximum invoice price that can be sent using this
+            unit. Zero means there is no limitation for that.
+        - min_cart_price: Minimum invoice price that can be sent using this
+            unit. Zero means there is no limitation for that.
+        - max_cart_count: Maximum invoice items count that can be sent using
+            this unit. Zero means there is no limitation for that.
+        - min_cart_count: Minimum invoice items count that can be sent using
+            this unit. Zero means there is no limitation for that.
+        - created_at: created datetime
+        - updated_at: updated datetime
+    """
+
     class Meta:
         verbose_name = _('محدودیت واحد ارسال فروشگاه')
         verbose_name_plural = _('محدودیت واحد ارسال فروشگاه')
@@ -155,6 +250,30 @@ class ShopLogisticUnitConstraint(models.Model):
 
 
 class ShopLogisticUnitCalculationMetric(models.Model):
+    """Logistic Unit parameters for calculate prices
+
+    Each unit has calculation metrics which contains some parameters to
+    calculate price for this unit like price per each kilogram of product. This
+    parameters are defined by shop owner.
+    Attributes:
+        shop_logistic_unit: Logistic unit related to this parameters
+        price_per_kilogram: Price for each Kilogram of product (Toman)
+        price_per_extra_kilogram: Price for each extra Kilogram of product
+            (Toman)
+        pay_time (PayTimes): This parameter indicates time for user or shop
+            owner to pay for shipping. This value can be:
+                - WHEN_BUYING: At payment time in IPG
+                - AT_DELIVERY: At delivery time
+        payer (PayerTypes): This parameter indicates who is going to pay for
+            shipping. This value can be:
+                - SHOP: Shipping cost is payed by shop owner, means this is a
+                    free unit and user should not pay for shipping
+                - CUSTOMER: Shipping cost must pay by customer, either in IPG
+                    or delivery time.
+        created_at: created datetime
+        updated_at: updated datetime
+    """
+
     class Meta:
         verbose_name = _('پارامتر‌ محاسبه واحد ارسال فروشگاه')
         verbose_name_plural = _('پارامتر‌ محاسبه واحد ارسال فروشگاه')

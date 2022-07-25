@@ -13,7 +13,7 @@ admin.site.register(ShopLogisticUnitConstraint)
 
 @admin.register(ShopLogisticUnitCalculationMetric)
 class ShopLogisticUnitCalculationMetricAdmin(admin.ModelAdmin):
-    '''ShopLogisticUnitCalculationMetricAdmin'''
+    """ShopLogisticUnitCalculationMetricAdmin"""
     actions = ['update_metrics_to_default']
     list_display = [
         'shop_logistic_unit',
@@ -36,7 +36,7 @@ class ShopLogisticUnitCalculationMetricAdmin(admin.ModelAdmin):
 
     @admin.action(description='هزینه ارسال واحد های ارسال انتخاب شده را به مقدار پیشفرض بروز رسانی کن.')
     def update_metrics_to_default(self, request, queryset):
-        ''' update shop logistic units metrics to default'''
+        """update shop logistic units metrics to default"""
         default_logistic_unit_metrics = LogisticUnitGeneralSetting.objects.all()
         counts = {}
         for metric in default_logistic_unit_metrics:

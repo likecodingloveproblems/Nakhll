@@ -3,10 +3,11 @@ from functools import lru_cache
 
 
 class AddressManager(models.Manager):
-    pass
+    """Manager class for :attr:`logistic.models.Address` model"""
 
 
 class ShopLogisticUnitManager(models.Manager):
+    """Manager class for :attr:`logistic.models.ShopLogisticUnit` model"""
 
     @lru_cache
     def __get_models(self):
@@ -22,18 +23,26 @@ class ShopLogisticUnitManager(models.Manager):
         )
 
     def generate_shop_logistic_units(self, shop):
-        '''generate shop default logistic units'''
+        """For each shop, create 5 default logistic units
+
+        Default logistic units for each shop are:
+            - Free
+            - Delivery
+            - PAD(Pay at delivery)
+            - Express Mail Service
+            - Mail Service
+        """
         default_logistic_units = self.get_default_logistic_units()
         for logistic_unit in default_logistic_units:
             self.generate_shop_logistic_unit(shop, logistic_unit)
 
     def get_default_logistic_units(self):
-        '''get default logistic units defined by logistic team'''
+        """get default logistic units defined by logistic team"""
         LogisticUnitGeneralSetting, _, _ = self.__get_models()
         return LogisticUnitGeneralSetting.objects.all()
 
     def generate_shop_logistic_unit(self, shop, logistic_unit):
-        '''generate shop one logistic unit for shop'''
+        """generate shop one logistic unit for shop"""
         _, ShopLogisticUnitConstraint, ShopLogisticUnitCalculationMetric = self.__get_models()
         shop_logistic_unit = self.create(
             shop=shop,
