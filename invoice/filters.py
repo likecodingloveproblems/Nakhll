@@ -4,6 +4,7 @@ from .models import Invoice
 
 
 class InvoiceFilter(filters.FilterSet):
+    """Filter class for Invoice model"""
     min_price = filters.NumberFilter(field_name="price", lookup_expr='gte')
     max_price = filters.NumberFilter(field_name="price", lookup_expr='lte')
     min_weight = filters.NumberFilter(field_name="weight", lookup_expr='gte')
@@ -32,6 +33,7 @@ class InvoiceFilter(filters.FilterSet):
         ]
 
     def filter_search(self, queryset, name, value):
+        """Filter by search query"""
         return queryset.filter(
             Q(
                 Q(id=value) |
@@ -46,6 +48,7 @@ class InvoiceFilter(filters.FilterSet):
         )
 
     def filter_completed(self, queryset, name, is_completed):
+        """Filter by status of invoice"""
         if is_completed == True:
             return queryset.filter(status=Invoice.Statuses.COMPLETED)
         if is_completed == False:
@@ -55,4 +58,5 @@ class InvoiceFilter(filters.FilterSet):
         return queryset
 
     def filter_address(self, queryset, name, value):
+        """Filter by address"""
         return queryset.filter(address_json__icontains=value)
