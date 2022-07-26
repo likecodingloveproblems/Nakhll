@@ -19,12 +19,20 @@ from .models import AuthRequest, generate_uuid_code
 
 
 class BeginAuthViewSet(viewsets.GenericViewSet):
+    """First step of authentication process
+
+    Each authentication type has its own endpoint. So we don't get authentication type from request.
+    we just get mobile number and based on the endpoint which user came from, we get authentication type.
+    In each endpoint, we simply create AuthRequest object and return its auth_key. There might be other
+    actions like sending SMS code or registering user (if user is new).
+    """
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
     serializer_class = BeginAuthSerializer
 
     @action(methods=['post'], detail=False, url_path="")
     def login_register(self, request):
+        """Create AuthRequest object for login or register type requests"""
         serializer = BeginAuthSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         mobile = serializer.validated_data.get('mobile')
@@ -39,6 +47,8 @@ class BeginAuthViewSet(viewsets.GenericViewSet):
 
     @action(methods=['post'], detail=False)
     def forgot_password(self, request):
+        """Create AuthRequest object for forgot_password type requests"""
+        serializer = BeginAuthSerializer(data=request.data)
         serializer = BeginAuthSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         mobile = serializer.validated_data.get('mobile')
@@ -57,6 +67,12 @@ class BeginAuthViewSet(viewsets.GenericViewSet):
         return code
 
     def _get_mobile_status(self, mobile):
+        """Get mobile status
+
+        Note: This function also updates username to mobile for old users
+        which have a username other than their mobile and their mobile 
+        number was saved in their profile only. 
+        """
         user = self._get_user(mobile)
         if not user:
             user = self._get_user_from_profile(mobile)
@@ -96,6 +112,7 @@ class BeginAuthViewSet(viewsets.GenericViewSet):
 
     @action(methods=["patch"], detail=False)
     def resend_sms_code(self, request):
+        """This endpoint is used to resend sms code to user after 1 minute"""
         serializer = BeginAuthSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         mobile = serializer.validated_data['mobile']
@@ -118,6 +135,7 @@ class BeginAuthViewSet(viewsets.GenericViewSet):
 
 
 class CompeleteAuthViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
+    """This viewset is the second step of authentication system, the complete authentication process"""
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
     serializer_class = CompleteAuthSerializer
@@ -130,11 +148,13 @@ class CompeleteAuthViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
 
 
 class ProfileViewSet(viewsets.GenericViewSet):
+    """Profile viewset"""
     serializer_class = PasswordSerializer
     permission_classes = [permissions.AllowAny, ]
 
     @action(methods=['post'], detail=False, url_path='set_password')
     def set_password(self, request, *args, **kwargs):
+        """Create AuthRequest object for setting password type requests"""
         serializer = PasswordSerializer(
             data=request.data, partial=True,
             request_type=AuthRequest.RequestTypes.FORGOT_PASSWORD)
