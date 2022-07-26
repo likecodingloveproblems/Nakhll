@@ -1,9 +1,11 @@
 from django.http import HttpResponseRedirect
+from django.urls import reverse
+from django.utils.safestring import mark_safe
 import jdatetime
 import json
-from django.db.models import F
 from django.contrib import admin
 from django.utils.timezone import localtime
+from django.utils import timezone
 from invoice.models import Invoice, InvoiceItem
 from coupon.models import CouponUsage
 
@@ -13,22 +15,32 @@ from coupon.models import CouponUsage
 class InvoiceItemInline(admin.TabularInline):
     model = InvoiceItem
     fields = (
-        'name',
+        'product_name',
         'count',
         'price_with_discount',
         'price_without_discount',
         'weight',
         'shop_name',
-        'preperation',
+        'preparation',
         'barcode')
-    readonly_fields = ('preperation',)
+    readonly_fields = fields
     extra = 0
-    # readonly_fields = fields
 
-    def preperation(self, obj):
+    def product_name(self, obj):
+        return mark_safe(
+            '<a href="{}">{}</a>'.format(
+                reverse(
+                    "admin:nakhll_market_product_change",
+                    args=(obj.product.pk,)),
+                obj.product))
+    product_name.short_description = 'نام محصول'
+
+    def preparation(self, obj):
         return obj.product.PreparationDays
-    preperation.short_description = 'زمان آماده سازی'
+    preparation.short_description = 'زمان آماده سازی'
 
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('product')
 
 class CouponUsageInline(admin.TabularInline):
     model = CouponUsage
@@ -51,23 +63,33 @@ class InvoiceAdmin(admin.ModelAdmin):
         'created_datetime_jalali',
         'post_tracking_code',
     )
-    list_filter = ('status', 'user',)
-    readonly_fields = (
-        'id',
-        'final_price',
-        'post_price',
-        'coupons_total_price',
-        'display_address',
-        'receiver_full_name',
-        'created_datetime_jalali',
-        'post_tracking_code',
-        'status',
-        'shop_iban',
-        'is_payed',
-    )
+    list_filter = ('status',)
     ordering = ['-created_datetime', ]
     search_fields = ('id', 'FactorNumber')
     fields = (
+        'id',
+        'user',
+        'old_id',
+        'FactorNumber',
+        'status',
+        'display_address',
+        'invoice_price_with_discount',
+        'invoice_price_without_discount',
+        'logistic_price',
+        'payment_request_datetime',
+        'payment_datetime',
+        'logistic_unit_details',
+        'payment_unique_id',
+        'total_weight_gram',
+        'final_price',
+        'shop_iban',
+        'is_payed',
+        'created_datetime_jalali',
+        'coupons_total_price',
+        'description',
+        'date_checkout',
+        'date_canceled')
+    readonly_fields = (
         'id',
         'user',
         'old_id',
@@ -136,6 +158,10 @@ class InvoiceAdmin(admin.ModelAdmin):
         return f'{obj.coupons_total_price:,} ریال'
     coupons_total_price.short_description = 'هزینه کوپن'
 
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related(
+            'user').prefetch_related('items').prefetch_related('coupon_usages')
+
     def display_address(self, obj):
         if obj.address_json:
             address = json.loads(obj.address_json)
@@ -156,6 +182,7 @@ class InvoiceAdmin(admin.ModelAdmin):
         if "checkout_invoice" in request.POST:
             if request.user.has_perm('invoice.checkout_invoice'):
                 obj.status = obj.Statuses.COMPLETED
+                obj.date_checkout = timezone.now()
                 obj.save()
                 self.message_user(request, "فاکتور با موفقیت تسویه شد.")
                 return HttpResponseRedirect(".")
@@ -163,4 +190,16 @@ class InvoiceAdmin(admin.ModelAdmin):
                 self.message_user(
                     request, "شما دسترسی لازم برای این کار را ندارید")
                 return HttpResponseRedirect(".")
+        if "cancel_invoice" in request.POST:
+            if request.user.has_perm('invoice.cancel_invoice'):
+                obj.status = obj.Statuses.CANCELED
+                obj.date_canceled = timezone.now()
+                obj.save()
+                self.message_user(request, "فاکتور با موفقیت لغو شد.")
+                return HttpResponseRedirect(".")
+            else:
+                self.message_user(
+                    request, "شما دسترسی لازم برای این کار را ندارید")
+                return HttpResponseRedirect(".")
+
         return super().response_change(request, obj)
