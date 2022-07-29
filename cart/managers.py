@@ -3,13 +3,34 @@ from django.db import models
 
 
 class CartManager(models.Manager):
+    """Manager object for Cart model"""
+
     def user_active_cart(user, guid=None):
+        """Get user active cart
+
+        Each user can have multiple guest carts and just one user cart. Guest
+        cart is for users who are not logged in. User cart is for logged in
+        users.
+
+        Args:
+            user (User): User object which is logged in
+            guid (str): Unique id for guest cart
+        """
         cart, created = \
             cart_models.Cart.objects.get_or_create(user=user) if user else \
             cart_models.Cart.objects.get_or_create(guest_unique_id=guid or CartManager.generate_guid())
         return cart
 
     def user_carts(self, user, guid=None):
+        """Return all user carts
+
+        Args:
+            user (_type_): _description_
+            guid (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         return \
             self.filter(user=user) \
             if user else \
@@ -17,7 +38,16 @@ class CartManager(models.Manager):
 
     @staticmethod
     def convert_guest_to_user_cart(user, guid):
-        '''Check if there is a cart with guid and no user '''
+        """Convert guest cart to user cart after guest login
+
+        For logged out users, we store the cart in a cookie with a unique key
+        called guid, after successful login we convert the cart to a user cart
+        If user already has a cart, we merge the guest cart with the user cart
+
+        Args:
+            user (User): User object
+            guid (str): Unique id for guest cart
+        """
         guest_cart = cart_models.Cart.objects.filter(user=None, guest_unique_id=guid).first()
         user_cart = cart_models.Cart.objects.filter(user=user).first()
         if guest_cart and user_cart:
@@ -28,6 +58,19 @@ class CartManager(models.Manager):
 
     @staticmethod
     def merge_carts(base_cart, guest_cart):
+        """Combine user cart with guest cart
+
+        This merge is needed when we have a user that has a cart with some
+        items in it, but now is logged out and fills his/her cart with items
+        as a guest. so after login, we should combine the two carts.
+
+        Args:
+            base_cart (Cart): user's main cart
+            guets_cart (Cart): user's guest cart
+
+        Returns:
+            None
+        """
         base_cart_product_ids = base_cart.items.all().values_list('product__ID', flat=True)
         for item in guest_cart.items.all():
             if item.product.ID in base_cart_product_ids:
@@ -39,11 +82,25 @@ class CartManager(models.Manager):
 
     @staticmethod
     def generate_guid():
+        """Generate an ID for guest carts
+
+        Returns:
+            str: UUID 4 in HEX
+        """
         return uuid.uuid4().hex
 
     @staticmethod
     def _get_user_cart(user, guid=None):
-        '''TODO it's necessary after revert?'''
+        """Get user active cart
+
+        Each user can have multiple guest carts and just one user cart. Guest
+        cart is for users who are not logged in. User cart is for logged in
+        users.
+
+        Args:
+            user (User): User object which is logged in
+            guid (str): Unique id for guest cart
+        """
         cart, created = \
             cart_models.Cart.objects.get_or_create(user=user) if user else \
             cart_models.Cart.objects.get_or_create(guest_unique_id=guid or CartManager.generate_guid())
@@ -51,8 +108,8 @@ class CartManager(models.Manager):
 
 
 class CartItemManager(models.Manager):
-    ''' Cart Item Manager '''
-    
-    
+    """Cart Item Manager"""
+
+
 # Importing a module in the bottom of file prevents circular import error
 from cart import models as cart_models
