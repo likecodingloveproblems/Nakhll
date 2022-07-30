@@ -4,6 +4,20 @@ from django.core.serializers.json import DjangoJSONEncoder
 
 
 class Transaction(models.Model):
+    """Data that is going to be sent to the IPG.
+
+    This data must be the final processed data that is going to be sent to the IPG.
+    Any change or process between creating this model and sending it to the IPG may 
+    cause data inconsistency issue.
+    Note: referrer_model and referrer_app are use to identify the model that created this transaction.
+    each referrer may want to do some actions when the purchase process is completed, either by success or failure.
+    To handle this situation, referrer model should have two methods that are called when the purchase process is completed:
+     - complete_payment(transaction_result): this method is called when the purchase process is completed successfully.
+     - revert_payment(transaction_result): this method is called when the purchase process is failed.
+    As an example, referrer model can be an invoice model, which has these two methods:
+     - :attr:`invoice.models.Invoice.complete_payment`: responsible for reducing stock, notifying the customer, etc.
+     - :attr:`invoice.models.Invoice.revert_payment`: responsible for filling cart from invoice, unseting coupons, etc.
+    """
     class Meta:
         verbose_name = _('تراکنش')
         verbose_name_plural = _('تراکنش‌ها')
@@ -30,6 +44,17 @@ class Transaction(models.Model):
 
 
 class TransactionResult(models.Model):
+    """Data that is received from the IPG before any processing.
+
+    The fist step after receiving data from the IPG must be saving it to this model in order to use as a reference.
+    This data must be the data that is received from the IPG before any processing. Any changes between receiving 
+    this data and saving it to database may cause data inconsistency issue. So do any changes to need after saving
+    this data to database.
+    Note: The relation between Transaction and TransactionResult is nullable, which means we can have TransactionResult
+    without any transaction. This is because we may have some data that is received from any endpoint to our callback
+    url and we may want to investigate it. So first we need to save this data to database and then we try to link it
+    to Transaction if it's possible using :attr:`Transaction.order_number` and :attr:`TransactionResult.order_id`.
+    """
     class Meta:
         verbose_name = _('نتیجه تراکنش')
         verbose_name_plural = _('نتایج تراکنش')
@@ -49,6 +74,12 @@ class TransactionResult(models.Model):
 
 
 class TransactionConfirmation(models.Model):
+    """Information of confirmation request to IPG after all processing.
+
+    Some IPGs require a confirmation request from our server to insure that our server has received the data
+    or they will revert the payment after some time. This model is used to save the information of the confirmation
+    request.
+    """
     status = models.IntegerField(verbose_name='کد وضعیت')
     card_number_masked = models.CharField(verbose_name='شماره کارت خریدار', max_length=127, blank=True)
     token = models.BigIntegerField(verbose_name='توکن', blank=True, null=True)
@@ -64,6 +95,11 @@ class TransactionConfirmation(models.Model):
 
 
 class TransactionReverse(models.Model):
+    """Information of reverse request to IPG after all processing.
+
+    Sometimes we need to reverse a transaction that has been paid due to some invalidity situations.
+    This model is used to save the information of the reverse request before sending it to IPG.
+    """
     status = models.IntegerField(verbose_name='کد وضعیت')
     token = models.BigIntegerField(verbose_name='توکن', null=True, blank=True)
     message = models.CharField(verbose_name='پیام پارسیان', max_length=127, null=True, blank=True)
