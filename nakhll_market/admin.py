@@ -1,15 +1,14 @@
 from typing import Dict, Optional
 from import_export.admin import ExportActionMixin
 from django.contrib import admin
+from django.db.models import Count
 from django.http import HttpRequest, HttpResponse
 from django.utils.timezone import localtime
 from django.contrib import messages
 from django.utils.translation import ngettext
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin
-from django.contrib.auth.models import Permission, User
-from django.db.models import Count
-from nakhll import utils
+from django.contrib.auth.models import Permission
 from nakhll_market.models import (
     State,
     BigCity,
@@ -32,6 +31,7 @@ from nakhll_market.resources import ProfileResource, ShopAdminResource
 
 # enable django permission setting in admin panel to define custom permissions
 admin.site.register(Permission)
+
 
 class ProfileHasShopFilter(admin.SimpleListFilter):
     title = 'حجره'
@@ -93,8 +93,31 @@ class ProfileAdmin(ExportActionMixin, admin.ModelAdmin):
 # market admin panel
 
 
+class ShopProductCountFilter(admin.SimpleListFilter):
+    title = 'تعداد محصول'
+    parameter_name = 'has_product'
+
+    def lookups(self, request, model_admin):
+        return [
+            ({'annoatate_products_count': 0}, 'بدون محصول'),
+            ({'annoatate_products_count__lt': '10'}, 'کمتر از 10 محصول'),
+            ({'annoatate_products_count__lt': '50'}, 'کمتر از 50 محصول'),
+            ({'annoatate_products_count__lt': '100'}, 'کمتر از 100 محصول'),
+            ({'annoatate_products_count__gte': '100'}, '100 و یا بیشتر از 100 محصول'),
+        ]
+
+    def queryset(self, request, queryset):
+        try:
+            return queryset.annotate(
+                annoatate_products_count=Count('ShopProduct')).filter(
+                **eval(self.value()))
+        except BaseException:
+            pass
+
+
 @admin.register(Shop)
 class ShopAdmin(ExportActionMixin, admin.ModelAdmin):
+    actions = ["unpublish_shop", "publish_shop"]
     autocomplete_fields = (
         'State',
         'BigCity',
@@ -120,7 +143,8 @@ class ShopAdmin(ExportActionMixin, admin.ModelAdmin):
     list_filter = (
         'Publish',
         'DateCreate',
-        'DateUpdate'
+        'DateUpdate',
+        ShopProductCountFilter,
     )
     search_fields = ('Title', 'Slug', 'FK_ShopManager__username')
     search_help_text = 'جستجو براساس عنوان و شناسه حجره یا نام کاربری مدیر'
@@ -128,6 +152,34 @@ class ShopAdmin(ExportActionMixin, admin.ModelAdmin):
     raw_id_fields = ('FK_ShopManager',)
     readonly_fields = ('FK_ShopManager',)
     resource_class = ShopAdminResource
+
+    def get_queryset(self, request: HttpRequest):
+        return super().get_queryset(request)\
+            .select_related('FK_ShopManager')\
+            .select_related('State')\
+            .select_related('BigCity')\
+            .select_related('City')\
+            .select_related('City__big_city')\
+            .select_related('City__big_city__state')\
+
+
+    @admin.action(description='از حالت انتشار خارج کن', )
+    def unpublish_shop(self, request, queryset):
+        updated = queryset.update(Publish=False)
+        self.message_user(request, ngettext(
+            '%d حجره از انتشار خارج شد',
+            '%d  حجره از انتشار خارج شد',
+            updated,
+        ) % updated, messages.SUCCESS)
+
+    @admin.action(description='منتشر کن', )
+    def publish_shop(self, request, queryset):
+        updated = queryset.update(Publish=True)
+        self.message_user(request, ngettext(
+            '%d حجره منتشر شد',
+            '%d حجره منتشر شد',
+            updated,
+        ) % updated, messages.SUCCESS)
 
     @admin.display(ordering='DateCreate', description='تاریخ ایجاد')
     def date_created(self, obj):
@@ -151,24 +203,20 @@ class ShopAdmin(ExportActionMixin, admin.ModelAdmin):
     def manager_last_login(self, obj):
         return obj.manager_last_login
 
-    def get_queryset(self, request: HttpRequest):
-        return super().get_queryset(request)\
-            .select_related('FK_ShopManager')\
-            .select_related('State')\
-            .select_related('BigCity')\
-            .select_related('City')\
-            .select_related('City__big_city')\
-            .select_related('City__big_city__state')\
-
-
 
 class ProductBannerInline(admin.StackedInline):
+    autocomplete_fields = ('FK_User',)
     model = ProductBanner
     extra = 1
 
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
+    autocomplete_fields = [
+        'FK_User',
+        'FK_Shop',
+        'category',
+        'post_range_cities']
     list_display = (
         'Title',
         'Slug',
@@ -182,6 +230,13 @@ class ProductAdmin(admin.ModelAdmin):
     ordering = ['ID', 'DateCreate', 'DateUpdate']
     inlines = [ProductBannerInline, ]
     actions = ["un_publish_product", "publish_product"]
+
+    def get_queryset(self, request: HttpRequest):
+        return super().get_queryset(request)\
+            .select_related('FK_Shop').select_related('category')\
+            .prefetch_related('post_range_cities',
+                              'post_range_cities__big_city',
+                              'post_range_cities__big_city__state',)
 
     @admin.action(description='از حالت انتشار خارج کن', )
     def un_publish_product(self, request, queryset):
@@ -231,6 +286,7 @@ class CategoryAdmin(admin.ModelAdmin):
         'parent',
         'available')
     list_filter = ('parent', 'available')
+    search_fields = ('name', 'slug',)
     ordering = ('-parent', 'id',)
 
 
@@ -251,7 +307,7 @@ class AlertAdmin(ModelAdmin):
 
 
 @admin.register(ProductBanner)
-class ProductBanner(ModelAdmin):
+class ProductBannerAdmin(ModelAdmin):
     list_display = ('FK_Product', 'Title', 'DateCreate', 'DateUpdate')
     list_filter = ('FK_Product', 'Title', 'DateCreate', 'DateUpdate')
     search_fields = ('FK_Product__Title',)
@@ -399,3 +455,7 @@ class CityAdmin(admin.ModelAdmin):
     list_display = ['name', 'big_city']
     search_fields = ['name']
     readonly_fields = ['id', 'name', 'big_city', 'code']
+
+    def get_queryset(self, request: HttpRequest):
+        return super().get_queryset(request).select_related(
+            'big_city').select_related('big_city__state')

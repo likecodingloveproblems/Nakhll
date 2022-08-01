@@ -5,11 +5,6 @@ from logistic.models import (LogisticUnitGeneralSetting, ShopLogisticUnit,
                              ShopLogisticUnitCalculationMetric,
                              ShopLogisticUnitConstraint)
 
-# Register your models here.
-
-admin.site.register(ShopLogisticUnit)
-admin.site.register(ShopLogisticUnitConstraint)
-
 
 @admin.register(ShopLogisticUnitCalculationMetric)
 class ShopLogisticUnitCalculationMetricAdmin(admin.ModelAdmin):
@@ -55,6 +50,16 @@ class ShopLogisticUnitCalculationMetricAdmin(admin.ModelAdmin):
             request,
             _(generate_message(counts)),
             messages.SUCCESS)
+
+
+@admin.register(ShopLogisticUnit)
+class ShopLogisticUnitAdmin(admin.ModelAdmin):
+    search_fields = ['shop__Title', ]
+
+
+@admin.register(ShopLogisticUnitConstraint)
+class ShopLogisticUnitConstraintAdmin(admin.ModelAdmin):
+    search_fields = ['shop_logistic_unit__shop__Title', ]
 
 
 @admin.register(LogisticUnitGeneralSetting)
