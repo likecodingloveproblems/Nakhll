@@ -77,6 +77,7 @@ THIRD_PARTY_APPS = [
     'django_rename_app',
     'drf_yasg',
     'import_export',
+    'pgtrigger',
     'dbbackup',
 ]
 
@@ -96,6 +97,7 @@ NAKHLL_APPS = [
     'shop',
     'sms',
     'reports',
+    'bank',
     'refer',
 ]
 
@@ -167,6 +169,7 @@ ADMIN_REORDER = (
         'shop.ShopFeatureInvoice',
         'shop.ShopLanding',
     )},
+    {'app': 'bank', 'label': 'بانک'},
     {'app': 'Ticketing', 'label': 'بخش پشتیبانی و گزارشات', 'models': (
         'Ticketing.Ticketing',
     )},
