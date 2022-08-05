@@ -1,20 +1,25 @@
 import random
-import datetime
 from django.utils import timezone
 from django.contrib.auth.models import User
-from django.http.response import Http404
 from django.utils.translation import ugettext as _
 from django.utils import timezone
-from rest_framework import serializers, viewsets, mixins, status, permissions
+from django.db import transaction
+from rest_framework import viewsets, mixins, status, permissions
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenViewBase
-from rest_framework.decorators import action, permission_classes
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.validators import ValidationError
 from nakhll_market.models import Profile
+from refer.models import ReferrerSignupEvent
 
 from sms.services import Kavenegar
-from .serializers import BeginAuthSerializer, CompleteAuthSerializer, PasswordSerializer, GetTokenSerializer
+from .serializers import (
+    BeginAuthSerializer,
+    CompleteAuthSerializer,
+    PasswordSerializer,
+    GetTokenSerializer
+)
 from .models import AuthRequest, generate_uuid_code
 
 
@@ -36,9 +41,10 @@ class BeginAuthViewSet(viewsets.GenericViewSet):
         serializer = BeginAuthSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         mobile = serializer.validated_data.get('mobile')
+        referral_code = serializer.validated_data.get('referral_code', None)
         mobile_status = self._get_mobile_status(mobile)
         if mobile_status == AuthRequest.MobileStatuses.NOT_REGISTERED:
-            self._create_user(mobile)
+            self._create_user(request, mobile, referral_code)
         sms_code = None if mobile_status == AuthRequest.MobileStatuses.LOGIN_WITH_PASSWORD\
             else self._generate_and_send_sms_code(mobile)
         serializer.save(request_type=AuthRequest.RequestTypes.LOGIN_REGISTER,
@@ -99,10 +105,28 @@ class BeginAuthViewSet(viewsets.GenericViewSet):
         except Profile.DoesNotExist:
             return None
 
-    def _create_user(self, mobile):
-        user = User.objects.create_user(username=mobile)
-        Profile.objects.create(FK_User=user, MobileNumber=mobile)
-        user.save()
+    def _create_user(self, request, mobile, referral_code):
+        referrer = self._get_referrer(referral_code)
+        with transaction.atomic():
+            user = User.objects.create_user(username=mobile)
+            Profile.objects.create(
+                FK_User=user,
+                MobileNumber=mobile,
+                referrer=referrer)
+            ReferrerSignupEvent.objects.create(
+                referrer=referrer,
+                referred=user,
+                user_agent=request.META.get('HTTP_USER_AGENT'),
+                ip_address=request.META.get('REMOTE_ADDR'),
+                platform=request.META.get('HTTP_SEC_CH_UA_PLATFORM'),
+            )
+
+    def _get_referrer(self, referral_code):
+        try:
+            referrer_profile = Profile.objects.get(refer_code=referral_code)
+            return referrer_profile.FK_User
+        except BaseException:
+            None
 
     def _update_username_to_mobile(self, user, mobile):
         if not user:

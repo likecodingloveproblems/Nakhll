@@ -59,11 +59,13 @@ class PathAndRename():
 
 # Random Referense Code
 @deconstructible
-class BuildReferenceCode():
+class build_refer_code():
     def __init__(self, Code_Size):
         self.size = Code_Size
 
     def __call__(self):
+        # it's possible generated code is already in db
+        # we can check it by querying db
         random_str = ''.join(
             random.choice(string.ascii_lowercase + string.digits)
             for i in range(self.size))
@@ -1854,19 +1856,18 @@ class Profile(models.Model):
         verbose_name="عکس کارت ملی تایید نشده",
         upload_to=PathAndRename('media/Pictures/NationalCard/'),
         null=True, blank=True)
-    UserReferenceCode = models.CharField(
+    refer_code = models.CharField(
         verbose_name='کد شما', max_length=6, unique=True,
-        default=BuildReferenceCode(6))
+        default=build_refer_code(6))
     Point = models.PositiveIntegerField(verbose_name='امتیاز کاربر', default=0)
     TutorialWebsite = models.CharField(
         verbose_name='نحوه آشنایی با سایت', max_length=1,
         choices=TUTORIALWEB_TYPE, blank=True, default='8')
-    ReferenceCode = models.CharField(
-        verbose_name='کد معرف', max_length=6, blank=True)
     IPAddress = models.CharField(
         verbose_name='آدرس ای پی',
         max_length=15,
         blank=True)
+    referrer = models.ForeignKey(User, verbose_name='دعوت کننده به نخل', null=True, on_delete=models.SET_NULL)
 
     # Output Customization Based On UserName (ID)
     def __str__(self):
@@ -2025,8 +2026,8 @@ class Profile(models.Model):
             self.ImageNationalCard.url) if self.ImageNationalCard else None
 
     @property
-    def user_reference_code(self):
-        return self.UserReferenceCode
+    def referral_link(self):
+        return f'{settings.DOMAIN_NAME}?referral_code={self.refer_code}'
 
     @property
     def point(self):

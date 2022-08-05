@@ -96,6 +96,7 @@ NAKHLL_APPS = [
     'shop',
     'sms',
     'reports',
+    'refer',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + NAKHLL_APPS

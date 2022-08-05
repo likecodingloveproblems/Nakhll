@@ -17,13 +17,14 @@ class BeginAuthSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = AuthRequest
-        fields = ('mobile', 'auth_key', 'mobile_status', )
+        fields = ('mobile', 'auth_key', 'mobile_status', 'referral_code')
         read_only_fields = ('auth_key', 'mobile_status', )
 
     def to_representation(self, obj):
         """Remove mobile number from output of serializer data"""
         ret = super(BeginAuthSerializer, self).to_representation(obj)
         ret.pop('mobile')
+        ret.pop('referral_code')
         return ret
 
 
