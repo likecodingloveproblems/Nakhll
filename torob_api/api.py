@@ -1,3 +1,9 @@
+"""Torob API
+
+Torob is a shopping search engine that lists every product from thousands of online shops. In order to get and update
+products and their prices, Torob needs an endpoint in our system to get all products. This module contains this an API
+called TorobAllProducts which is used to get all available products with their prices from our database.
+"""
 import math
 from django.shortcuts import redirect
 from rest_framework import views, permissions, status
@@ -7,10 +13,12 @@ from rest_framework.generics import GenericAPIView, CreateAPIView
 from nakhll_market.models import Product
 from torob_api.serializers import TorobProductListRequestSerializer, TorobProductListResponseSerializer
 
+
 class TorobCustomPagination(PageNumberPagination):
+    """This pagination class is customized for Torob API system."""
     page_size = 100
 
-    #TODO: This method should be override to get page number from post
+    # TODO: This method should be override to get page number from post
     def get_page_number(self, request, paginator):
         # return super().get_page_number(request, paginator)
         # page_number = request.query_params.get(self.page_query_param, 1)
@@ -19,8 +27,6 @@ class TorobCustomPagination(PageNumberPagination):
             page_number = paginator.num_pages
         return page_number
 
-
-
     def get_paginated_response(self, data):
         return Response({
             'count': self.page.paginator.count,
@@ -28,7 +34,9 @@ class TorobCustomPagination(PageNumberPagination):
             'products': data
         })
 
+
 class TorobAllProducts(GenericAPIView):
+    """Endpoint for Torob API system to update its product database."""
     permission_classes = [permissions.AllowAny, ]
     pagination_class = TorobCustomPagination
     serializer_class = TorobProductListRequestSerializer
@@ -38,7 +46,6 @@ class TorobAllProducts(GenericAPIView):
     def get(self, request, pk, format=None):
         product = self.get_object()
         return redirect(product.get_absolute_url())
-        
 
     def get_queryset(self, page_url=None, page_unique=None):
         if page_url:
@@ -67,4 +74,3 @@ class TorobAllProducts(GenericAPIView):
             return Response(serializer.data)
         else:
             return Response(req_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
