@@ -170,6 +170,7 @@ ADMIN_REORDER = (
         'shop.ShopLanding',
     )},
     {'app': 'bank', 'label': 'بانک'},
+    {'app': 'refer', 'label': 'امتیازات بازاریاب'},
     {'app': 'Ticketing', 'label': 'بخش پشتیبانی و گزارشات', 'models': (
         'Ticketing.Ticketing',
     )},

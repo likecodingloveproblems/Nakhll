@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from rest_framework.views import APIView
 from rest_framework import permissions
-from bank.constants import NAKHLL_ACCOUNT_ID, RequestTypes
+from bank.constants import RequestTypes
 from bank.models import Account, AccountRequest
 
 
@@ -29,11 +29,8 @@ def buy_from_shop(buyer, shop, amount, description):
 
 
 def deposit_user(user, request_type, amount, description):
-    nakhll_account = Account.objects.get(pk=NAKHLL_ACCOUNT_ID)
     user_account = Account.objects.get_or_create(user=user)[0]
-    AccountRequest.objects.create(
-        from_account=nakhll_account,
-        to_account=user_account,
+    user_account.deposit_from_nakhll(
         value=amount,
         request_type=request_type,
         description=description,

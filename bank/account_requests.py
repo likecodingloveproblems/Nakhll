@@ -82,17 +82,14 @@ class ConfirmRequest(BaseAccountRequest):
         self.to_account.save()
 
     def __update_cashable_amount(self):
-        if self.account_request.is_withdraw():
-            self.from_account.cashable_amount -= self.account_request.value
-            self.from_account.blocked_cashable_amount -= self.account_request.value
+        self.from_account.blocked_cashable_amount -= self.account_request.cashable_value
+        self.from_account.cashable_amount -= self.account_request.cashable_value
+        self.to_account.cashable_amount += self.account_request.deposit_cashable_value
 
     def __update_balance(self):
         self.from_account.blocked_balance -= self.account_request.value
         self.from_account.balance -= self.account_request.value
-        if not self.from_account.id == NAKHLL_ACCOUNT_ID:
-            self.from_account.cashable_amount -= self.account_request.cashable_value
         self.to_account.balance += self.account_request.value
-        self.to_account.cashable_amount += self.account_request.deposit_cashable_value
 
     def __generate_transactions(self):
         self.__generate_withdraw_transaction()

@@ -1867,7 +1867,7 @@ class Profile(models.Model):
         verbose_name='آدرس ای پی',
         max_length=15,
         blank=True)
-    referrer = models.ForeignKey(User, verbose_name='دعوت کننده به نخل', null=True, on_delete=models.SET_NULL)
+    referrer = models.ForeignKey(User, verbose_name='دعوت کننده به نخل', null=True, blank=True, on_delete=models.SET_NULL)
     expiration_date_of_referral_link = jmodels.jDateField(null=True, blank=True)
 
     # Output Customization Based On UserName (ID)

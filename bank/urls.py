@@ -5,7 +5,7 @@ app_name = 'bank'
 
 urlpatterns = [
     path(
-        'factor/uncompleted/',
+        'withdraw/',
         Withdraw.as_view(),
         name='bank_withdraw_request'),
          ]

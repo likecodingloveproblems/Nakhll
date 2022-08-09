@@ -12,7 +12,6 @@ from bank.constants import (
     RequestTypes,
     CASHABLE_REQUESTS_TYPES,
 )
-
 from bank.managers import (
     AccountManager,
     AccountRequestManager,
@@ -153,14 +152,6 @@ class Account(models.Model):
     def non_cashable_balance(self):
         return self.balance - self.cashable_amount
 
-    @classmethod
-    def get_nakhll_account(cls):
-        return cls.objects.get(pk=NAKHLL_ACCOUNT_ID)
-
-    @classmethod
-    def get_nakhll_account_blocked(cls):
-        return cls.objects.select_for_update().get(pk=NAKHLL_ACCOUNT_ID)
-
     def withdraw(self, amount=None):
         amount = amount if amount else self.cashable_amount
         AccountRequest.objects.create(
@@ -171,7 +162,7 @@ class Account(models.Model):
             description='withdraw',
         )
 
-    def deposit(self, value, request_type, description):
+    def deposit_from_nakhll(self, value, request_type, description):
         """Deposit to account from nakhll account"""
         AccountRequest.objects.create(
             from_account=Account.objects.nakhll_account,
