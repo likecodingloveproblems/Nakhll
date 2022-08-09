@@ -9,20 +9,20 @@ class RequestStatuses(models.IntegerChoices):
 
 
 class RequestTypes(models.IntegerChoices):
-    REFERRER_VISIT_REWARD = 1
-    REFERRER_SIGNUP_REWARD = 2
-    REFERRER_BUY_REWARD = 3
-    REFERRED_BUY_REWARD = 4
-    BUY_FROM_SHOP = 5
-    WITHDRAW = 6
-    DEPOSIT = 7
+    REFERRER_VISIT_REWARD = 0
+    REFERRER_SIGNUP_REWARD = 1
+    REFERRER_PURCHASE_REWARD = 2
+    PURCHASE_REWARD = 3
+    BUY_FROM_SHOP = 4
+    WITHDRAW = 5
+    DEPOSIT = 6
 
 
 NAKHLL_ACCOUNT_ID = 1
 CASHABLE_REQUESTS_TYPES = [
     RequestTypes.REFERRER_VISIT_REWARD,
     RequestTypes.REFERRER_SIGNUP_REWARD,
-    RequestTypes.REFERRER_BUY_REWARD,
-    RequestTypes.REFERRED_BUY_REWARD,
+    RequestTypes.REFERRER_PURCHASE_REWARD,
+    RequestTypes.PURCHASE_REWARD,
     RequestTypes.BUY_FROM_SHOP,
 ]

@@ -1868,6 +1868,7 @@ class Profile(models.Model):
         max_length=15,
         blank=True)
     referrer = models.ForeignKey(User, verbose_name='دعوت کننده به نخل', null=True, on_delete=models.SET_NULL)
+    expiration_date_of_referral_link = jmodels.jDateField(null=True, blank=True)
 
     # Output Customization Based On UserName (ID)
     def __str__(self):
@@ -1939,6 +1940,13 @@ class Profile(models.Model):
             return City.objects.get(id=self.City).name
         except BaseException:
             return None
+
+    def is_referral_link_active(self):
+        if self.expiration_date_of_referral_link and\
+            self.expiration_date_of_referral_link >= timezone.now():
+            return True
+        return False
+
 
     @property
     def id(self):
@@ -2027,7 +2035,7 @@ class Profile(models.Model):
 
     @property
     def referral_link(self):
-        return f'{settings.DOMAIN_NAME}?referral_code={self.refer_code}'
+        return f'{settings.DOMAIN_NAME}?ref={self.refer_code}'
 
     @property
     def point(self):
@@ -2052,6 +2060,10 @@ class Profile(models.Model):
     @property
     def date_joined(self):
         return datetime2jalali(self.FK_User.date_joined, date_only=True)
+    
+    @property
+    def is_referred(self):
+        return bool(self.referrer)
 
     # Ordering With DateCreate
     class Meta:

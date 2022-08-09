@@ -64,6 +64,7 @@ class ProfileAdmin(ExportActionMixin, admin.ModelAdmin):
         'BrithDay',
         'Image',
         'ImageNationalCard',
+        'expiration_date_of_referral_link',
     )
     search_fields = (
         'MobileNumber',

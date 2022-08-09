@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 from django_jalali.db import models as jmodels
 import pgtrigger
-from bank.account_requests import ConfirmRequest, CreateRequest, RejectRequest
+from bank.account_requests import ConfirmRequest, RejectRequest
 from bank.constants import (
     NAKHLL_ACCOUNT_ID,
     RequestStatuses,
@@ -15,6 +15,7 @@ from bank.constants import (
 
 from bank.managers import (
     AccountManager,
+    AccountRequestManager,
 )
 
 
@@ -166,18 +167,18 @@ class Account(models.Model):
             from_account=self,
             to_account=Account.objects.nakhll_account,
             value=amount,
-            request_type=AccountRequest.RequestType.WITHDRAW,
+            request_type=RequestTypes.WITHDRAW,
             description='withdraw',
         )
 
-    def deposit(self, value):
+    def deposit(self, value, request_type, description):
+        """Deposit to account from nakhll account"""
         AccountRequest.objects.create(
             from_account=Account.objects.nakhll_account,
             to_account=self,
             value=value,
-            cashable_value=value,
-            request_type=AccountRequest.RequestType.DEPOSIT,
-            description='deposit',
+            request_type=request_type,
+            description=description,
         )
 
 
@@ -234,6 +235,7 @@ class AccountRequest(models.Model):
     date_created = jmodels.jDateTimeField(auto_now_add=True)
     date_confirmed = jmodels.jDateTimeField(null=True, blank=True)
     date_rejected = jmodels.jDateTimeField(null=True, blank=True)
+    objects = AccountRequestManager()
 
     class Meta:
         verbose_name = _("AccountRequest")
@@ -274,10 +276,6 @@ class AccountRequest(models.Model):
     def deposit_cashable_value(self):
         return self.value if self.request_type in CASHABLE_REQUESTS_TYPES else 0
 
-    def create(self):
-        with transaction.atomic():
-            CreateRequest(self).create()
-
     def confirm(self, user):
         with transaction.atomic():
             ConfirmRequest(self, user).confirm()
@@ -288,7 +286,7 @@ class AccountRequest(models.Model):
 
     def is_withdraw(self):
         '''we can check it by to account, so I create this method to have flexibility in statuses'''
-        return self.request_type == self.RequestType.WITHDRAW
+        return self.request_type == RequestTypes.WITHDRAW
 
     def generate_withdraw_transaction_description(self):
         return f'{self.from_account} - {self.to_account} - {self.value}'

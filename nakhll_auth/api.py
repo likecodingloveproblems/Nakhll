@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 from django.utils import timezone
-from django.db import transaction
+from django.db import transaction, IntegrityError
 from rest_framework import viewsets, mixins, status, permissions
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenViewBase
@@ -76,8 +76,8 @@ class BeginAuthViewSet(viewsets.GenericViewSet):
         """Get mobile status
 
         Note: This function also updates username to mobile for old users
-        which have a username other than their mobile and their mobile 
-        number was saved in their profile only. 
+        which have a username other than their mobile and their mobile
+        number was saved in their profile only.
         """
         user = self._get_user(mobile)
         if not user:
@@ -113,20 +113,13 @@ class BeginAuthViewSet(viewsets.GenericViewSet):
                 FK_User=user,
                 MobileNumber=mobile,
                 referrer=referrer)
-            ReferrerSignupEvent.objects.create(
-                referrer=referrer,
-                referred=user,
-                user_agent=request.META.get('HTTP_USER_AGENT'),
-                ip_address=request.META.get('REMOTE_ADDR'),
-                platform=request.META.get('HTTP_SEC_CH_UA_PLATFORM'),
-            )
 
     def _get_referrer(self, referral_code):
         try:
             referrer_profile = Profile.objects.get(refer_code=referral_code)
             return referrer_profile.FK_User
-        except BaseException:
-            None
+        except Profile.DoesNotExist:
+            return
 
     def _update_username_to_mobile(self, user, mobile):
         if not user:
@@ -168,7 +161,22 @@ class CompeleteAuthViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
         serializer = CompleteAuthSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(auth_secret=generate_uuid_code())
+        self.create_referrer_signup_event(request, serializer)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def create_referrer_signup_event(self, request, serializer):
+        user = User.objects.get(username=serializer.instance.mobile)
+        referrer = user.User_Profile.referrer
+        try:
+            ReferrerSignupEvent.objects.create(
+                request=request,
+                referrer=referrer,
+                referred=user,
+            )
+        except IntegrityError:
+            '''this user had been referred'''
+        except User.DoesNotExist:
+            '''this user has not referred to nakhll, so does not have any referrer'''
 
 
 class ProfileViewSet(viewsets.GenericViewSet):

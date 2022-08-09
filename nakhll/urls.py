@@ -44,6 +44,7 @@ api_urls = [
     path('logistic/', include('logistic.urls')),
     path('', include('restapi.urls', namespace='restapi')),
     path('', include('nakhll_market.api_urls', namespace='nakhll_market_api')),
+    path('refer/', include('refer.urls', namespace='refer')),
 ]
 
 urlpatterns = [

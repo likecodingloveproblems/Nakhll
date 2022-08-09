@@ -1,4 +1,6 @@
-from django.db import models
+from django.db import models, transaction
+from bank import account_requests
+from bank.account_requests import CreateRequest
 from bank.constants import NAKHLL_ACCOUNT_ID
 
 
@@ -27,3 +29,11 @@ class AccountManager(models.Manager):
     @property
     def nakhll_account_for_update(self):
         return self.get_queryset().select_for_update().get(pk=NAKHLL_ACCOUNT_ID)
+
+
+class AccountRequestManager(models.Manager):
+    def create(self, *args, **kwargs):
+        self._for_write = True
+        with transaction.atomic():
+            account_request = self.model(*args, **kwargs)
+            CreateRequest(account_request).create()

@@ -36,6 +36,8 @@ class CreateRequest(BaseAccountRequest):
     def create(self):
         self.validate()
         self.block_account_balance_and_cashable_amount()
+        self.account_request.save(force_insert=True)
+        return self.account_request
 
     def block_account_balance_and_cashable_amount(self):
         self.from_account.blocked_balance += self.account_request.value
@@ -47,7 +49,6 @@ class CreateRequest(BaseAccountRequest):
         self.from_account.blocked_cashable_amount += self.cashable_value
         self.from_account.save()
         self.account_request.cashable_value = self.cashable_value
-        self.account_request.save()
 
     def validate(self):
         if self.account_request.is_withdraw():

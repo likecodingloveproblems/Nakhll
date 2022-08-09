@@ -112,7 +112,7 @@ class AuthRequest(models.Model):
     objects = AuthRequestManager()
 
     def __str__(self):
-        return self.mobile + ' - ' + self.created_at
+        return self.mobile + ' - ' + str(self.created_at)
 
     def is_expired(self):
         return timezone.now() > self.expire_datetime
