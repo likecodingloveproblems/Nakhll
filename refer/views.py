@@ -20,7 +20,7 @@ class ReferrerAnonymousUniqueVisit(views.APIView):
         #referral_code = request.POST.get('referral_code')
         serializer = ReferrerAnonymousUniqueVisitSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        referral_code = serializer.validated_data.get('referral_code', None)
+        referral_code = serializer.validated_data
         try:
             profile = Profile.objects.select_related(
                 'FK_User').get(refer_code=referral_code)
