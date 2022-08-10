@@ -63,9 +63,18 @@ class CartSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cart
-        fields = ('user', 'cart_price', 'cart_old_price',
-                  'address', 'logistic_details', 'coupon_details',
-                  'ordered_items', 'count', 'total_price')
+        fields = (
+            'user',
+            'cart_price',
+            'cart_old_price',
+            'address',
+            'logistic_details',
+            'coupon_details',
+            'ordered_items',
+            'count',
+            'total_price',
+            'paid_by_coin',
+            'coin_price')
 
     def get_count(self, object):
         """Get total count of items in cart"""
@@ -93,4 +102,5 @@ class CartWriteSerializer(serializers.ModelSerializer):
         fields = (
             'address',
             'coupon',
+            'paid_by_coin',
         )

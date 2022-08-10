@@ -1,4 +1,4 @@
-from django.db.models import Count
+from django.db.models import Count, Q
 from rest_framework import views
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -36,9 +36,12 @@ class ReferrerAnonymousUniqueVisit(views.APIView):
     def report(self, request):
         '''return a report to user about it's referral visitors'''
         report = ReferrerVisitEvent.objects.filter(
-            referrer=request.user).aggregate(
+            referrer=request.user) .aggregate(
             new=Count(
-                'pk', status=ReferrerEventStatuses.NEW), processed=Count(
-                'pk', status=ReferrerEventStatuses.PROCESSED), inactive=Count(
-                'pk', status=ReferrerEventStatuses.INACTIVE), )
+                'pk', filter=Q(
+                    status=ReferrerEventStatuses.NEW)), processed=Count(
+                'pk', filter=Q(
+                    status=ReferrerEventStatuses.PROCESSED)), inactive=Count(
+                'pk', filter=Q(
+                    status=ReferrerEventStatuses.INACTIVE)))
         return Response(report)

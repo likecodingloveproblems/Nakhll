@@ -7,6 +7,7 @@ from django_jalali.db import models as jmodels
 import pgtrigger
 from bank.account_requests import ConfirmRequest, RejectRequest
 from bank.constants import (
+    COIN_RIAL_RATIO,
     NAKHLL_ACCOUNT_ID,
     RequestStatuses,
     RequestTypes,
@@ -152,6 +153,10 @@ class Account(models.Model):
     def non_cashable_balance(self):
         return self.balance - self.cashable_amount
 
+    @property
+    def requests_coin_report(self):
+        return AccountRequest.objects.account_request_coins_report(self)
+
     def withdraw(self, amount=None):
         amount = amount if amount else self.cashable_amount
         AccountRequest.objects.create(
@@ -284,3 +289,30 @@ class AccountRequest(models.Model):
 
     def generate_deposit_transaction_description(self):
         return f'{self.to_account} - {self.from_account} - {self.value}'
+
+
+class CoinPayment(models.Model):
+    invoice = models.ForeignKey(
+        "invoice.Invoice",
+        verbose_name=_("invoice"),
+        on_delete=models.PROTECT)
+    account_request = models.ForeignKey(
+        AccountRequest,
+        verbose_name=_("account request"),
+        on_delete=models.PROTECT,
+        unique=True)
+    price_amount = models.DecimalField(
+        verbose_name=_('Rial amount paid'),
+        max_digits=12, decimal_places=0, default=0)
+    date_created = jmodels.jDateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = _("CoinPayment")
+        verbose_name_plural = _("CoinPayments")
+
+    def __str__(self):
+        return f'cart:{self.cart}, account request:{self.account_request}'
+
+    def save(self, *args, **kwargs):
+        self.price_amount = self.account_request.value * COIN_RIAL_RATIO
+        super().save(*args, **kwargs)

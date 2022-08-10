@@ -24,12 +24,14 @@ from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import reverse, get_object_or_404
 from django_jalali.db import models as jmodels
 from django.dispatch import receiver
+import jdatetime
 from colorfield.fields import ColorField
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 from simple_history.models import HistoricalRecords
 from nakhll_market.interface import AlertInterface
 from nakhll.utils import datetime2jalali
+
 
 OUTOFSTOCK_LIMIT_NUM = 5
 
@@ -1028,7 +1030,7 @@ class Product(models.Model):
         null=True,
         blank=True)
     aparat_video_script = models.CharField(
-        verbose_name='اسکریپت ویدیو آپارات', 
+        verbose_name='اسکریپت ویدیو آپارات',
         max_length=255,
         null=True,
         blank=True,
@@ -1867,7 +1869,12 @@ class Profile(models.Model):
         verbose_name='آدرس ای پی',
         max_length=15,
         blank=True)
-    referrer = models.ForeignKey(User, verbose_name='دعوت کننده به نخل', null=True, blank=True, on_delete=models.SET_NULL)
+    referrer = models.ForeignKey(
+        User,
+        verbose_name='دعوت کننده به نخل',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL)
     expiration_date_of_referral_link = jmodels.jDateField(null=True, blank=True)
 
     # Output Customization Based On UserName (ID)
@@ -1943,10 +1950,17 @@ class Profile(models.Model):
 
     def is_referral_link_active(self):
         if self.expiration_date_of_referral_link and\
-            self.expiration_date_of_referral_link >= timezone.now():
+                self.expiration_date_of_referral_link >= timezone.now():
             return True
         return False
 
+    def extend_referral_link(self):
+        self._extend_referral_link()
+
+    def _extend_referral_link(self):
+        self.expiration_date_of_referral_link = jdatetime.datetime.now(
+        ) + jdatetime.timedelta(days=30)
+        self.save()
 
     @property
     def id(self):
@@ -2060,7 +2074,7 @@ class Profile(models.Model):
     @property
     def date_joined(self):
         return datetime2jalali(self.FK_User.date_joined, date_only=True)
-    
+
     @property
     def is_referred(self):
         return bool(self.referrer)

@@ -8,6 +8,8 @@ from django.contrib.sessions.models import Session
 from django.db.models.functions import Cast
 from django.core.serializers.json import DjangoJSONEncoder
 from rest_framework.exceptions import ValidationError
+from bank.constants import COIN_RIAL_RATIO
+from bank.models import Account
 from coupon.serializers import CouponSerializer
 from coupon.validators import (
     DateTimeValidator, MaxUserCountValidator, MaxCountValidator, PriceValidator, ShopValidator,
@@ -62,6 +64,8 @@ class Cart(models.Model):
     logistic_details = models.JSONField(null=True, blank=True, encoder=DjangoJSONEncoder,
                                         verbose_name=_('جزئیات واحد ارسال'))
     coupons = models.ManyToManyField('coupon.Coupon', verbose_name=_('کوپن ها'), blank=True)
+    paid_by_coin = models.BooleanField(
+        verbose_name='پرداخت سکه دارد؟', default=False)
     objects = CartManager()
 
     @property
@@ -153,18 +157,28 @@ class Cart(models.Model):
 
     @property
     def total_price(self):
-        """Total price of items in cart including shipping price and coupons
+        """Total price of items in cart including shipping price and coupons and coins
 
         Returns:
             int: total price of items in cart
         """
         total_coupon_price = sum([coupon['price'] for coupon in self.get_coupons_price()])
-        return self.cart_price + self.logistic_price - total_coupon_price
+        return self.cart_price + self.logistic_price - total_coupon_price - self.coin_price
 
     @property
     def ordered_items(self):
         """Return all cart items in order by shop"""
         return self.items.order_by('-product__FK_Shop')
+
+    @property
+    def coin_price(self):
+        return self.get_coins_amount() * COIN_RIAL_RATIO
+
+    def get_coins_amount(self):
+        account = Account.objects.get_or_create(user=self.user)[0]
+        total_price = self.cart_price + self.logistic_price
+        payable_coins = total_price // COIN_RIAL_RATIO
+        return payable_coins if account.net_balance >= payable_coins else account.net_balance
 
     def convert_to_invoice(self):
         """Convert cart to invoice
@@ -180,6 +194,7 @@ class Cart(models.Model):
         self._validate_items()
         invoice = self._create_invoice(logistic_details)
         self._clear_cart_items()
+        self._clear_coin_payment()
         return invoice
 
     def _create_invoice(self, lud):
@@ -216,19 +231,28 @@ class Cart(models.Model):
             BudgetValidator(),
             CityValidator(self),
         ]
-        for coupon in self.coupons.all():
-            if coupon.is_valid(self, validators_list):
-                coupon.apply(invoice)
 
         cart_items = self.items.all()
         for item in cart_items:
             item.convert_to_invoice_item(invoice)
+
+        if self.paid_by_coin:
+            invoice.coin_price = self.coin_price
+            invoice.coin_amount = self.get_coins_amount()
+        else:
+            for coupon in self.coupons.all():
+                if coupon.is_valid(self, validators_list):
+                    coupon.apply(invoice)
 
         return invoice
 
     def _clear_cart_items(self):
         """Remove all items in cart"""
         self.items.all().delete()
+
+    def _clear_coin_payment(self):
+        """Reset coin payment setting to default"""
+        self.paid_by_coin = False
 
     def _validate_items(self):
         """Check if there is at least on item in cart"""
@@ -382,6 +406,11 @@ class Cart(models.Model):
         self.address = None
         self.logistic_details = None
         self.save()
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.coupons.exists():
+            self.paid_by_coin = False
 
 
 class CartItem(models.Model):

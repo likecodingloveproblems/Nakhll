@@ -1,7 +1,7 @@
 from django.db import models, transaction
-from bank import account_requests
+from django.db.models import Q, Sum
 from bank.account_requests import CreateRequest
-from bank.constants import NAKHLL_ACCOUNT_ID
+from bank.constants import NAKHLL_ACCOUNT_ID, RequestStatuses, RequestTypes
 
 
 class AppendOnlyMixin:
@@ -31,9 +31,38 @@ class AccountManager(models.Manager):
         return self.get_queryset().select_for_update().get(pk=NAKHLL_ACCOUNT_ID)
 
 
+class AccountRequestQuerySet(models.QuerySet):
+    def filter_account_requests(self, account):
+        return self.filter(Q(from_account=account) | Q(to_account=account))
+
+    def request_coins_report(self):
+        return self.values(
+            'request_type', 'status').annotate(
+            coins=Sum('value'))
+
+
+
 class AccountRequestManager(models.Manager):
+    def get_queryset(self):
+        return AccountRequestQuerySet(self.model, using=self._db)
+
     def create(self, *args, **kwargs):
         self._for_write = True
         with transaction.atomic():
             account_request = self.model(*args, **kwargs)
             CreateRequest(account_request).create()
+
+    def account_request_coins_report(self, account):
+        queryset = self.get_queryset().filter_account_requests(
+            account).request_coins_report()
+        self._update_request_and_status_to_labels(queryset)
+        return queryset
+
+    def _update_request_and_status_to_labels(self, queryset):
+        list(map
+             (lambda row: row.update(
+                 {
+                     'request_type': RequestTypes(row['request_type']).label,
+                     'status': RequestStatuses(row['status']).label
+                 }
+             ), queryset))

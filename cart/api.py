@@ -135,6 +135,24 @@ class UserCartViewSet(viewsets.GenericViewSet):
         serializer.save()
         return Response({'result': 0}, status=status.HTTP_200_OK)
 
+    @action(methods=['PATCH'], detail=False)
+    def paid_by_coin(self, request):
+        """Pay part of cart with coin
+
+        FOR NOW BECAUSE OF MODERATION PROCESS WE HAVE,
+        WE CAN'T GIVE USER IMMEDIATE RESPONSE ABOUT COIN PAYMENT
+        UNTIL REQUEST IS PROCESS, IF REQUEST BECOME REJECTED, FINANCIAL DEPARTMENT
+        MUST CHECKOUT WITH BUYER.
+        So we set paid_by_coin to True to use coins in the cart.
+        """
+        cart = self.get_object()
+        serializer = CartWriteSerializer(
+            instance=cart, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data,
+                        status=status.HTTP_200_OK)
+
     @action(methods=['POST'], detail=False)
     def pay(self, request):
         """Convert cart to invoice and send to payment app
