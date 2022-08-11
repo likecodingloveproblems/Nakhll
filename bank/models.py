@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 from django_jalali.db import models as jmodels
 import pgtrigger
-from bank.account_requests import ConfirmRequest, RejectRequest
+from bank.account_requests import ConfirmRequest, CreateRequest, RejectRequest
 from bank.constants import (
     COIN_RIAL_RATIO,
     NAKHLL_ACCOUNT_ID,
@@ -271,6 +271,10 @@ class AccountRequest(models.Model):
     @property
     def deposit_cashable_value(self):
         return self.value if self.request_type in CASHABLE_REQUESTS_TYPES else 0
+
+    def create(self):
+        with transaction.atomic():
+            CreateRequest(self).create()
 
     def confirm(self, user):
         with transaction.atomic():

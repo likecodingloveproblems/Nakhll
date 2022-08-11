@@ -48,9 +48,7 @@ class AccountRequestManager(models.Manager):
 
     def create(self, *args, **kwargs):
         self._for_write = True
-        with transaction.atomic():
-            account_request = self.model(*args, **kwargs)
-            CreateRequest(account_request).create()
+        self.model(*args, **kwargs).create()
 
     def account_request_coins_report(self, account):
         queryset = self.get_queryset().filter_account_requests(
