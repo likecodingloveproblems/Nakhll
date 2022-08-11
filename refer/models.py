@@ -1,5 +1,5 @@
 from django.utils import timezone
-from django.db import models, transaction
+from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django_jalali.db import models as jmodels
@@ -15,6 +15,7 @@ from refer.constants import (
     REFERRER_VISIT_REWARD,
 )
 from bank.constants import RequestTypes
+from refer.manager import BaseReferrerEventManager
 
 
 class RequestData(models.Model):
@@ -49,6 +50,7 @@ class BaseReferrerEventModel(models.Model):
     referrer = models.ForeignKey(User, on_delete=models.PROTECT)
     date_created = jmodels.jDateTimeField(auto_now_add=True)
     date_updated = jmodels.jDateTimeField(auto_now=True)
+    objects = BaseReferrerEventManager()
 
     class Meta:
         abstract = True
@@ -95,7 +97,6 @@ class BaseReferrerEventModel(models.Model):
     def _update_events_status(cls, events, count):
         cls.objects.filter(pk__in=events[:count].values('pk')).update(
             status=ReferrerEventStatuses.PROCESSED)
-
 
     def _update_status_from_link_status(self):
         """Update event status based on the user referral link status

@@ -1,47 +1,40 @@
-from django.db.models import Count, Q
-from rest_framework import views
+from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
-from .serializer import ReferrerAnonymousUniqueVisitSerializer
+from rest_framework.status import HTTP_201_CREATED
 
-from refer.models import ReferrerEventStatuses, ReferrerVisitEvent
-from nakhll_market.models import Profile
-
-from refer import serializer
+from refer.models import ReferrerSignupEvent, ReferrerVisitEvent
+from refer.serializers import ReferrerEventsReportSerializer, ReferrerVisitEventSerializer
 
 
-class ReferrerAnonymousUniqueVisit(views.APIView):
+class ReferrerAnonymousVisitEventViewSet(viewsets.GenericViewSet):
     permission_classes = [AllowAny, ]
-    serializer_class = ReferrerAnonymousUniqueVisitSerializer
+    serializer_class = ReferrerVisitEventSerializer
 
-    def post(self, request):
-        serializer = ReferrerAnonymousUniqueVisitSerializer(data=request.data)
+    @action(methods=['post'], detail=False)
+    def set(self, request):
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        referral_code = serializer.validated_data['referral_code']
-        try:
-            profile = Profile.objects.select_related(
-                'FK_User').get(refer_code=referral_code)
-        except Profile.DoesNotExist:
-            '''when referrer does not exists, it's not possible to find two profile for one
-            refer_code, because it's unique.'''
-            return Response('', status=HTTP_400_BAD_REQUEST)
         ReferrerVisitEvent.objects.create(
-            referrer=profile.FK_User, request=request)
-        return Response('', status=HTTP_201_CREATED)
+            referrer=serializer.referrer, request=request)
+        return Response(serializer.data)
 
-    @action(detail=False, methods=['GET'],
-            url_path='report', permission_classes=[IsAuthenticated, ])
-    def report(self, request):
+
+class ReferrerEventsReportViewSet(viewsets.GenericViewSet):
+    permission_classes = [IsAuthenticated, ]
+    serializer_class = ReferrerEventsReportSerializer
+
+    def get_object(self):
+        return
+
+    @action(detail=False, methods=['get'])
+    def signup(self, request):
+        data = ReferrerSignupEvent.objects.event_report(referrer=request.user)
+        return Response(data)
+
+    @action(detail=False, methods=['get'])
+    def visit(self, request):
         '''return a report to user about it's referral visitors'''
-        report = ReferrerVisitEvent.objects.filter(
-            referrer=request.user) .aggregate(
-            new=Count(
-                'pk', filter=Q(
-                    status=ReferrerEventStatuses.NEW)), processed=Count(
-                'pk', filter=Q(
-                    status=ReferrerEventStatuses.PROCESSED)), inactive=Count(
-                'pk', filter=Q(
-                    status=ReferrerEventStatuses.INACTIVE)))
-        return Response(report)
+        return Response(
+            ReferrerVisitEvent.objects.event_report(referrer=request.user))

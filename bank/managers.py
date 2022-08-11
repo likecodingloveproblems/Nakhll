@@ -57,10 +57,9 @@ class AccountRequestManager(models.Manager):
         return queryset
 
     def _update_request_and_status_to_labels(self, queryset):
-        list(map
-             (lambda row: row.update(
-                 {
-                     'request_type': RequestTypes(row['request_type']).label,
-                     'status': RequestStatuses(row['status']).label
-                 }
-             ), queryset))
+        list(map(lambda row: row.update(
+            {
+                'request_type': RequestTypes(row['request_type']).label,
+                'status': RequestStatuses(row['status']).label
+            }
+        ), queryset))
