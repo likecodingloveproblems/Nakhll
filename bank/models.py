@@ -35,7 +35,7 @@ class CoinMintBurn(models.Model):
     value = models.PositiveIntegerField(
         verbose_name='مقدار', validators=[
             validators.MinValueValidator(1)])
-    is_mint = models.BooleanField(verbose_name='آیا ضرب سکه است؟')
+    is_mint = models.BooleanField(verbose_name='آیا ضرب سکه است؟', default=True)
     description = models.TextField(verbose_name='توضیحات')
     date_created = jmodels.jDateTimeField(
         auto_now_add=True, verbose_name='تاریخ ایجاد')
