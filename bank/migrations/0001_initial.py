@@ -10,7 +10,7 @@ from bank.constants import NAKHLL_ACCOUNT_ID
 
 def create_nakhll_account(apps, schema_editor):
     Account = apps.get_model("bank", "Account")
-    Account.objects.create()
+    Account.objects.create(id=NAKHLL_ACCOUNT_ID)
 
 
 class Migration(migrations.Migration):

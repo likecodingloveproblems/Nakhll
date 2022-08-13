@@ -2,6 +2,8 @@
 
 from django.db import migrations
 
+from bank.constants import NAKHLL_ACCOUNT_ID
+
 
 class Migration(migrations.Migration):
 
@@ -11,7 +13,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunSQL('''
+        migrations.RunSQL(f'''
             -- FUNCTION: public.check_account_balance_with_transactions()
 
             -- DROP FUNCTION IF EXISTS public.check_account_balance_with_transactions();
@@ -24,20 +26,27 @@ class Migration(migrations.Migration):
             AS $BODY$
             declare
                 account_balance integer;
-                transactions_balance integer;
+                account_transactions_summation integer;
+				mint_coin_amount integer := 0;
+				nakhll_account_id integer := {NAKHLL_ACCOUNT_ID};
             begin
                 account_balance := (
-                    select value
-                    from bank_accounttransaction
-                    where account_id = new.id
+                    select balance
+                    from bank_account
+                    where id = old.id
                 );
-                transactions_balance := (
+                account_transactions_summation := (
                     select sum(value)
                     from bank_accounttransaction
+					where account_id=old.id
                     );
-                if account_balance <> transactions_balance then
-                    raise exception 'account balance must be equal to transactions.';
-                end if;
+				if new.id = nakhll_account_id then
+					mint_coin_amount := bank_total_minted_not_burned_coins();
+				else
+					if account_balance <> account_transactions_summation + mint_coin_amount then
+						raise exception 'account balance must be equal to transactions.';
+					end if;
+				end if;
                 return new;
             end;
             $BODY$;
@@ -46,15 +55,19 @@ class Migration(migrations.Migration):
                 OWNER TO nakhll;
         ''', reverse_sql='DROP FUNCTION IF EXISTS public.check_account_balance_with_transactions();'),
         migrations.RunSQL('''
-            -- Trigger: check_account_balance_with_transactions_insert_update_delete
-
-            -- DROP TRIGGER IF EXISTS check_account_balance_with_transactions_insert_update_delete ON public.bank_accounttransaction;
-
-            CREATE CONSTRAINT TRIGGER check_account_balance_with_transactions_insert_update_delete
-                AFTER INSERT OR DELETE OR UPDATE
+            CREATE CONSTRAINT TRIGGER check_account_balance_on_update_with_transactions
+                AFTER UPDATE
+                ON public.bank_account
+                DEFERRABLE INITIALLY DEFERRED
+                FOR EACH ROW
+                EXECUTE FUNCTION public.check_account_balance_with_transactions();
+        ''', reverse_sql='DROP TRIGGER IF EXISTS check_account_balance_on_update_with_transactions ON public.bank_accounttransaction;')
+        migrations.RunSQL('''
+            CREATE CONSTRAINT TRIGGER check_account_transactions_on_insert_with_account_balance
+                AFTER INSERT
                 ON public.bank_accounttransaction
                 DEFERRABLE INITIALLY DEFERRED
                 FOR EACH ROW
                 EXECUTE FUNCTION public.check_account_balance_with_transactions();
-        ''', reverse_sql='DROP TRIGGER IF EXISTS check_account_balance_with_transactions_insert_update_delete ON public.bank_accounttransaction;')
+        ''', reverse_sql='DROP TRIGGER IF EXISTS check_account_transactions_on_insert_with_account_balance ON public.bank_accounttransaction;')
     ]

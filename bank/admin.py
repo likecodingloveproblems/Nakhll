@@ -1,4 +1,3 @@
-from pydoc import describe
 from django.contrib import admin
 from django.contrib.auth import get_permission_codename
 from bank.models import (

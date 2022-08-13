@@ -18,7 +18,7 @@ class RequestTypes(models.IntegerChoices):
     DEPOSIT = 6
 
 
-NAKHLL_ACCOUNT_ID = 1
+NAKHLL_ACCOUNT_ID = -1
 CASHABLE_REQUESTS_TYPES = [
     RequestTypes.REFERRER_VISIT_REWARD,
     RequestTypes.REFERRER_SIGNUP_REWARD,
