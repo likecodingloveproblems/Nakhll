@@ -12,10 +12,18 @@ from bank.constants import COIN_RIAL_RATIO
 from bank.models import Account
 from coupon.serializers import CouponSerializer
 from coupon.validators import (
-    DateTimeValidator, MaxUserCountValidator, MaxCountValidator, PriceValidator, ShopValidator,
-    MinPriceValidator, MaxPriceValidator, ProductValidator, AvailableValidator, UserValidator,
-    BudgetValidator, CityValidator
-)
+    DateTimeValidator,
+    MaxUserCountValidator,
+    MaxCountValidator,
+    PriceValidator,
+    ShopValidator,
+    MinPriceValidator,
+    MaxPriceValidator,
+    ProductValidator,
+    AvailableValidator,
+    UserValidator,
+    BudgetValidator,
+    CityValidator)
 from invoice.models import Invoice, InvoiceItem
 from cart.managers import CartItemManager, CartManager
 from cart.utils import get_user_or_guest
@@ -56,14 +64,30 @@ class Cart(models.Model):
         verbose_name_plural = _('سبدهای خرید')
 
     old_id = models.UUIDField(null=True, blank=True)
-    user = models.OneToOneField(User, verbose_name=_('کاربر'), on_delete=models.CASCADE, related_name='cart', null=True)
-    guest_unique_id = models.CharField(_('شناسه کاربر مهمان'), max_length=100, null=True, blank=True)
+    user = models.OneToOneField(
+        User,
+        verbose_name=_('کاربر'),
+        on_delete=models.CASCADE,
+        related_name='cart',
+        null=True)
+    guest_unique_id = models.CharField(
+        _('شناسه کاربر مهمان'),
+        max_length=100, null=True, blank=True)
     extra_data = models.JSONField(null=True, encoder=DjangoJSONEncoder)
-    address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True,
-                                blank=True, related_name='invoices', verbose_name=_('آدرس'))
-    logistic_details = models.JSONField(null=True, blank=True, encoder=DjangoJSONEncoder,
-                                        verbose_name=_('جزئیات واحد ارسال'))
-    coupons = models.ManyToManyField('coupon.Coupon', verbose_name=_('کوپن ها'), blank=True)
+    address = models.ForeignKey(
+        Address,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='invoices',
+        verbose_name=_('آدرس'))
+    logistic_details = models.JSONField(
+        null=True, blank=True, encoder=DjangoJSONEncoder,
+        verbose_name=_('جزئیات واحد ارسال'))
+    coupons = models.ManyToManyField(
+        'coupon.Coupon',
+        verbose_name=_('کوپن ها'),
+        blank=True)
     paid_by_coin = models.BooleanField(
         verbose_name='پرداخت سکه دارد؟', default=False)
     objects = CartManager()
@@ -120,7 +144,8 @@ class Cart(models.Model):
             Returns:
                 QuerySet: queryset of shops
         """
-        shop_ids = self.items.values_list('product__FK_Shop__ID', flat=True).distinct()
+        shop_ids = self.items.values_list(
+            'product__FK_Shop__ID', flat=True).distinct()
         return Shop.objects.filter(ID__in=shop_ids)
 
     @property
@@ -130,7 +155,8 @@ class Cart(models.Model):
         Returns:
             QuerySet: queryset of products
         """
-        product_ids = self.items.values_list('product__ID', flat=True).distinct()
+        product_ids = self.items.values_list(
+            'product__ID', flat=True).distinct()
         return Product.objects.filter(ID__in=product_ids)
 
     @property
@@ -142,7 +168,8 @@ class Cart(models.Model):
         Returns:
             int: logistic price
         """
-        return self.logistic_details.get('total_price', 0) if self.logistic_details else 0
+        return self.logistic_details.get(
+            'total_price', 0) if self.logistic_details else 0
 
     @property
     def cart_weight(self):
@@ -162,7 +189,8 @@ class Cart(models.Model):
         Returns:
             int: total price of items in cart
         """
-        total_coupon_price = sum([coupon['price'] for coupon in self.get_coupons_price()])
+        total_coupon_price = sum([coupon['price']
+                                 for coupon in self.get_coupons_price()])
         return self.cart_price + self.logistic_price - total_coupon_price - self.coin_price
 
     @property
@@ -171,14 +199,29 @@ class Cart(models.Model):
         return self.items.order_by('-product__FK_Shop')
 
     @property
+    def payable_coin_price(self):
+        return self.payable_coin_amount * COIN_RIAL_RATIO
+
+    @property
     def coin_price(self):
-        return self.get_coins_amount() * COIN_RIAL_RATIO
+        return self.coin_amount * COIN_RIAL_RATIO
+
+    @property
+    def payable_coin_amount(self):
+        return self.get_coins_amount()
+
+    @property
+    def coin_amount(self):
+        return self.get_coins_amount() if self.paid_by_coin else 0
 
     def get_coins_amount(self):
+        payable_coins = self._get_payable_coins()
         account = Account.objects.get_or_create(user=self.user)[0]
-        total_price = self.cart_price + self.logistic_price
-        payable_coins = total_price // COIN_RIAL_RATIO
         return payable_coins if account.net_balance >= payable_coins else account.net_balance
+
+    def _get_payable_coins(self):
+        total_price = self.cart_price + self.logistic_price
+        return total_price // COIN_RIAL_RATIO
 
     def convert_to_invoice(self):
         """Convert cart to invoice
@@ -216,6 +259,8 @@ class Cart(models.Model):
             logistic_price=lud.total_price,
             logistic_unit_details=lud.as_dict(),
             address_json=self.address.as_json(),
+            coin_price=self.coin_price,
+            coin_amount=self.coin_amount,
         )
         validators_list = [
             DateTimeValidator(),
@@ -236,13 +281,9 @@ class Cart(models.Model):
         for item in cart_items:
             item.convert_to_invoice_item(invoice)
 
-        if self.paid_by_coin:
-            invoice.coin_price = self.coin_price
-            invoice.coin_amount = self.get_coins_amount()
-        else:
-            for coupon in self.coupons.all():
-                if coupon.is_valid(self, validators_list):
-                    coupon.apply(invoice)
+        for coupon in self.coupons.all():
+            if coupon.is_valid(self, validators_list):
+                coupon.apply(invoice)
 
         return invoice
 
@@ -283,7 +324,8 @@ class Cart(models.Model):
             raise ValidationError(_('محصول در دسترس نیست'))
 
         if not ProductManager.has_enough_items_in_stock(product, count):
-            raise ValidationError(_('فروشنده قادر به تامین کالا به میزان درخواستی شما نمی‌باشد'))
+            raise ValidationError(
+                _('فروشنده قادر به تامین کالا به میزان درخواستی شما نمی‌باشد'))
 
         product_jsonify = ProductLastStateSerializer(product).data
         if cart_item:
@@ -411,6 +453,7 @@ class Cart(models.Model):
         super().save(*args, **kwargs)
         if self.coupons.exists():
             self.paid_by_coin = False
+            self.save()
 
 
 class CartItem(models.Model):
@@ -435,7 +478,8 @@ class CartItem(models.Model):
     product = models.ForeignKey(Product, verbose_name=_(
         'محصول'), on_delete=models.CASCADE, related_name='cart_items')
     count = models.PositiveSmallIntegerField(verbose_name=_('تعداد'))
-    added_datetime = models.DateTimeField(_('زمان اضافه شدن'), auto_now_add=True)
+    added_datetime = models.DateTimeField(
+        _('زمان اضافه شدن'), auto_now_add=True)
     product_last_state = models.JSONField(null=True, encoder=DjangoJSONEncoder)
     objects = CartItemManager()
     extra_data = models.JSONField(null=True, encoder=DjangoJSONEncoder)

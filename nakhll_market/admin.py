@@ -65,6 +65,7 @@ class ProfileAdmin(ExportActionMixin, admin.ModelAdmin):
         'Image',
         'ImageNationalCard',
         'expiration_date_of_referral_link',
+        'refer_code',
     )
     search_fields = (
         'MobileNumber',
