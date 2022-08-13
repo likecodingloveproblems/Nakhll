@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from django.utils import timezone
 
-from bank.constants import NAKHLL_ACCOUNT_ID, RequestStatuses
+from bank.constants import AUTOMATIC_CONFIRM_REQUEST_TYPES, NAKHLL_ACCOUNT_ID, RequestStatuses
 
 
 class BaseAccountRequest(ABC):
@@ -18,7 +18,7 @@ class BaseAccountRequest(ABC):
         self.cashable_value = 0
 
     @abstractmethod
-    def validate(self):
+    def _validate(self):
         ''' validate request:
         1. from account balance is greater than or equal to request value
         (now we create this fields as positive integer fields, so django will create
@@ -34,12 +34,13 @@ class BaseAccountRequest(ABC):
 class CreateRequest(BaseAccountRequest):
 
     def create(self):
-        self.validate()
-        self.block_account_balance_and_cashable_amount()
+        self._validate()
+        self._block_account_balance_and_cashable_amount()
         self.account_request.save(force_insert=True)
+        self._automatically_confirm()
         return self.account_request
 
-    def block_account_balance_and_cashable_amount(self):
+    def _block_account_balance_and_cashable_amount(self):
         self.from_account.blocked_balance += self.account_request.value
         if self.account_request.is_withdraw():
             self.cashable_value = self.account_request.value
@@ -50,18 +51,25 @@ class CreateRequest(BaseAccountRequest):
         self.from_account.save()
         self.account_request.cashable_value = self.cashable_value
 
-    def validate(self):
+    def _validate(self):
         if self.account_request.is_withdraw():
             if self.from_account.net_cashable_amount < self.account_request.value:
                 raise Exception('not enough cashable amount')
         if self.from_account.net_balance < self.account_request.value:
             raise Exception('not enough balance')
 
+    def _automatically_confirm(self):
+        if self.is_request_automatic_confirm:
+            self.account_request.confirm()
+
+    @property
+    def is_request_automatic_confirm(self):
+        return self.account_request.request_type in AUTOMATIC_CONFIRM_REQUEST_TYPES
 
 class ConfirmRequest(BaseAccountRequest):
 
     def confirm(self):
-        self.validate()
+        self._validate()
         self.__confirm()
 
     def __confirm(self):
@@ -122,7 +130,7 @@ class ConfirmRequest(BaseAccountRequest):
         self.account_request.status = RequestStatuses.CONFIRMED
         self.account_request.save()
 
-    def validate(self):
+    def _validate(self):
         if self.from_account.blocked_balance < self.account_request.value:
             raise Exception(
                 'Some thing went wrong, not enough blocked balance!')
@@ -158,5 +166,5 @@ class RejectRequest(BaseAccountRequest):
         self.account_request.status = RequestStatuses.REJECTED
         self.account_request.save()
 
-    def validate(self):
+    def _validate(self):
         pass

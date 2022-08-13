@@ -7,11 +7,12 @@ from django_jalali.db import models as jmodels
 import pgtrigger
 from bank.account_requests import ConfirmRequest, CreateRequest, RejectRequest
 from bank.constants import (
+    AUTOMATIC_CONFIRM_REQUEST_TYPES,
     COIN_RIAL_RATIO,
     NAKHLL_ACCOUNT_ID,
     RequestStatuses,
     RequestTypes,
-    CASHABLE_REQUESTS_TYPES,
+    CASHABLE_REQUEST_TYPES,
 )
 from bank.managers import (
     AccountManager,
@@ -243,9 +244,12 @@ class AccountRequest(models.Model):
                         status__in=[
                             RequestStatuses.CONFIRMED,
                             RequestStatuses.REJECTED]) & ~Q(
-                        staff_user=None)) | Q(
-                            staff_user=None,
-                            status=RequestStatuses.PENDING),
+                        staff_user=None)) |
+                Q(
+                    Q(staff_user=None) & Q(Q(status=RequestStatuses.PENDING) |
+                                           Q(request_type__in=AUTOMATIC_CONFIRM_REQUEST_TYPES),
+                                           )
+                ),
                 name='staff_user_check_for_different_statuses'),
         ]
         triggers = [
@@ -270,13 +274,13 @@ class AccountRequest(models.Model):
 
     @property
     def deposit_cashable_value(self):
-        return self.value if self.request_type in CASHABLE_REQUESTS_TYPES else 0
+        return self.value if self.request_type in CASHABLE_REQUEST_TYPES else 0
 
     def create(self):
         with transaction.atomic():
             CreateRequest(self).create()
 
-    def confirm(self, user):
+    def confirm(self, user=None):
         with transaction.atomic():
             ConfirmRequest(self, user).confirm()
 

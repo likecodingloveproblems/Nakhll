@@ -12,7 +12,7 @@ from nakhll.admin_utils import AppendOnlyModelAdmin, ReadOnlyModelAdmin
 @admin.register(CoinMintBurn)
 class CoinMinBurnAdmin(AppendOnlyModelAdmin):
     fields = ['user', 'value', 'description', 'date_created']
-    readonly_fields = ['user']
+    readonly_fields = ['user', 'date_created']
     list_display = ['user', 'value', 'description', 'date_created']
 
     def save_model(self, request, obj, form, change):
@@ -26,6 +26,12 @@ class AccountAdmin(AppendOnlyModelAdmin):
     list_display = ['user', 'balance', 'date_created']
     search_fields = ['user__username']
     list_filter = ['date_created']
+    readonly_fields = [
+        'balance',
+        'blocked_balance',
+        'cashable_amount',
+        'blocked_cashable_amount',
+        'date_created', ]
 
 
 @admin.register(AccountRequest)
