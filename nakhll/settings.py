@@ -79,6 +79,7 @@ THIRD_PARTY_APPS = [
     'import_export',
     'pgtrigger',
     'dbbackup',
+    'admin_auto_filters',
 ]
 
 NAKHLL_APPS = [
