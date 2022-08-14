@@ -28,6 +28,7 @@ from nakhll_market.models import (
     Tag,
     ProductTag)
 from nakhll_market.resources import ProfileResource, ShopAdminResource
+from shop.resources import ProductResource
 
 # enable django permission setting in admin panel to define custom permissions
 admin.site.register(Permission)
@@ -213,7 +214,7 @@ class ProductBannerInline(admin.StackedInline):
 
 
 @admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
+class ProductAdmin(ExportActionMixin, admin.ModelAdmin):
     autocomplete_fields = [
         'FK_User',
         'FK_Shop',
@@ -232,6 +233,7 @@ class ProductAdmin(admin.ModelAdmin):
     ordering = ['ID', 'DateCreate', 'DateUpdate']
     inlines = [ProductBannerInline, ]
     actions = ["un_publish_product", "publish_product"]
+    resource_class = ProductResource
 
     def get_queryset(self, request: HttpRequest):
         return super().get_queryset(request)\

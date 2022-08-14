@@ -20,3 +20,11 @@ class AccountReadOnlySerializer(serializers.ModelSerializer):
 
     def save(self, **kwargs):
         return ValidationError('Cannot save an account')
+
+
+class AccountRequestReportSerializer(serializers.Serializer):
+    request_type = serializers.IntegerField()
+    status = serializers.IntegerField()
+    request_type_label = serializers.CharField()
+    status_label = serializers.CharField()
+    coins = serializers.IntegerField()

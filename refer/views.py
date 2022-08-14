@@ -1,11 +1,16 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.status import HTTP_201_CREATED
+from django_filters import rest_framework as filters
+from .filters import ReferrerEventFilter
 
 from refer.models import ReferrerSignupEvent, ReferrerVisitEvent
-from refer.serializers import ReferrerEventsReportSerializer, ReferrerVisitEventSerializer
+from refer.serializers import (
+    ReferrerSignupEventsReportSerializer,
+    ReferrerVisitEventSerializer,
+    ReferrerVisitEventsReportSerializer,
+)
 
 
 class ReferrerAnonymousVisitEventViewSet(viewsets.GenericViewSet):
@@ -21,20 +26,34 @@ class ReferrerAnonymousVisitEventViewSet(viewsets.GenericViewSet):
         return Response(serializer.data)
 
 
-class ReferrerEventsReportViewSet(viewsets.GenericViewSet):
+class ReferrerEventsViewSet(viewsets.GenericViewSet):
+    """abstract referrer events view set"""
     permission_classes = [IsAuthenticated, ]
-    serializer_class = ReferrerEventsReportSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_class = ReferrerEventFilter
 
-    def get_object(self):
-        return
+    def get_queryset(self):
+        queryset = self.model.objects.filter(
+            referrer=self.request.user)
+        return queryset
 
-    @action(detail=False, methods=['get'])
-    def signup(self, request):
-        data = ReferrerSignupEvent.objects.event_report(referrer=request.user)
-        return Response(data)
+    def get_report(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        return {'report': queryset.event_report()}
 
-    @action(detail=False, methods=['get'])
-    def visit(self, request):
-        '''return a report to user about it's referral visitors'''
-        return Response(
-            ReferrerVisitEvent.objects.event_report(referrer=request.user))
+    @action(detail=False, methods=['get'],
+            name='get user referrer visit report')
+    def report(self, request):
+        report = self.get_report()
+        serializer = self.get_serializer(report)
+        return Response(serializer.data)
+
+
+class ReferrerVisitEventsReportViewSet(ReferrerEventsViewSet):
+    serializer_class = ReferrerVisitEventsReportSerializer
+    model = ReferrerVisitEvent
+
+
+class ReferrerSignupEventsReportViewSet(ReferrerEventsViewSet):
+    serializer_class = ReferrerSignupEventsReportSerializer
+    model = ReferrerSignupEvent

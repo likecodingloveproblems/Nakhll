@@ -1,19 +1,23 @@
 from django.urls import path, include
 from rest_framework import routers
-from refer.views import ReferrerAnonymousVisitEventViewSet, ReferrerEventsReportViewSet
+from refer.views import ReferrerAnonymousVisitEventViewSet, ReferrerEventsViewSet, ReferrerSignupEventsReportViewSet, ReferrerVisitEventsReportViewSet
 
 app_name = 'refer'
 
-visit_router = routers.DefaultRouter()
-visit_router.register(
+refer_router = routers.DefaultRouter()
+refer_router.register(
     'visit',
     ReferrerAnonymousVisitEventViewSet,
     basename='visit')
-visit_router.register(
-    'report',
-    ReferrerEventsReportViewSet,
-    basename='report')
+refer_router.register(
+    'visit',
+    ReferrerVisitEventsReportViewSet,
+    basename='visit')
+refer_router.register(
+    'signup',
+    ReferrerSignupEventsReportViewSet,
+    basename='signup')
 
 urlpatterns = [
-    path('referrer/', include(visit_router.urls), name='visit'),
+    path('referrer/', include(refer_router.urls), name='referrer'),
 ]

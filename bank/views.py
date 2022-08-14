@@ -2,22 +2,43 @@ from django.http import HttpResponse
 from rest_framework import permissions, views, viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from django_filters import rest_framework as filters
 from bank.constants import RequestTypes
+from .filters import AccountRequestFilter
 from bank.models import Account, AccountRequest, CoinPayment
-from bank.serializers import AccountReadOnlySerializer
+from bank.serializers import AccountReadOnlySerializer, AccountRequestReportSerializer
 
 
 class AccountViewSet(viewsets.GenericViewSet):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = AccountReadOnlySerializer
 
-    def get_object(self, request):
-        return Account.objects.get(user=request.user)
+    def get_account(self, request):
+        return Account.objects.get(user=self.request.user)
 
     @action(detail=False, methods=['get'], name='get account info')
     def me(self, request):
-        account = self.get_object(request)
+        account = self.get_account(request)
         serializer = self.get_serializer(account)
+        return Response(serializer.data)
+
+
+class AccountRequestViewSet(viewsets.GenericViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = AccountRequestReportSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_class = AccountRequestFilter
+
+    def get_queryset(self):
+        account = Account.objects.get(user=self.request.user)
+        return AccountRequest.objects.all().filter_account_requests(account)
+
+    @action(detail=False, methods=['get'], name='get account request report')
+    def me(self, request):
+        account_request = self.filter_queryset(self.get_queryset())
+        account_request = account_request.request_coins_report(
+        ).update_request_and_status_to_labels()
+        serializer = self.get_serializer(account_request, many=True)
         return Response(serializer.data)
 
 

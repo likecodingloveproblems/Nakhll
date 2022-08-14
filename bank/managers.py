@@ -1,6 +1,5 @@
-from django.db import models, transaction
+from django.db import models
 from django.db.models import Q, Sum
-from bank.account_requests import CreateRequest
 from bank.constants import NAKHLL_ACCOUNT_ID, RequestStatuses, RequestTypes
 
 
@@ -40,6 +39,14 @@ class AccountRequestQuerySet(models.QuerySet):
             'request_type', 'status').annotate(
             coins=Sum('value'))
 
+    def update_request_and_status_to_labels(self):
+        list(map(lambda row: row.update(
+            {
+                'request_type_label': RequestTypes(row['request_type']).label,
+                'status_label': RequestStatuses(row['status']).label
+            }
+        ), self))
+        return self
 
 
 class AccountRequestManager(models.Manager):
@@ -50,16 +57,9 @@ class AccountRequestManager(models.Manager):
         self._for_write = True
         self.model(*args, **kwargs).create()
 
-    def account_request_coins_report(self, account):
-        queryset = self.get_queryset().filter_account_requests(
-            account).request_coins_report()
-        self._update_request_and_status_to_labels(queryset)
+    def account_request_coins_report(
+            self, account):
+        queryset = self.get_queryset().filter(
+            status=RequestStatuses.CONFIRMED).filter_account_requests(
+            account).request_coins_report().update_request_and_status_to_labels()
         return queryset
-
-    def _update_request_and_status_to_labels(self, queryset):
-        list(map(lambda row: row.update(
-            {
-                'request_type': RequestTypes(row['request_type']).label,
-                'status': RequestStatuses(row['status']).label
-            }
-        ), queryset))

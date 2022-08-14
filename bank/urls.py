@@ -1,10 +1,14 @@
 from django.urls import path, include
 from rest_framework import routers
-from bank.views import AccountViewSet, Withdraw
+from bank.views import AccountRequestViewSet, AccountViewSet, Withdraw
 app_name = 'bank'
 
-account_router = routers.DefaultRouter()
-account_router.register('', AccountViewSet, basename='account')
+report_router = routers.DefaultRouter()
+report_router.register('account', AccountViewSet, basename='account')
+report_router.register(
+    'account-request',
+    AccountRequestViewSet,
+    basename='account-request')
 
 
 urlpatterns = [
@@ -12,5 +16,8 @@ urlpatterns = [
         'withdraw/',
         Withdraw.as_view(),
         name='bank_withdraw_request'),
-    path('account/', include(account_router.urls), name='account'),
+    path(
+        'report/',
+        include(report_router.urls),
+        name='report'),
 ]
