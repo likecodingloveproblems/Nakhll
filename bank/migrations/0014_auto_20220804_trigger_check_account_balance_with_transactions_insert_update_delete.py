@@ -36,17 +36,16 @@ class Migration(migrations.Migration):
                     where id = old.id
                 );
                 account_transactions_summation := (
-                    select sum(value)
+                    select COALESCE(sum(value), 0)
                     from bank_accounttransaction
 					where account_id=old.id
                     );
-				if new.id = nakhll_account_id then
+				if old.id = nakhll_account_id then
 					mint_coin_amount := bank_total_minted_not_burned_coins();
-				else
-					if account_balance <> account_transactions_summation + mint_coin_amount then
-						raise exception 'account balance must be equal to transactions.';
-					end if;
-				end if;
+                end if;
+                if account_balance <> account_transactions_summation + mint_coin_amount then
+                    raise exception 'account balance must be equal to transactions.';
+                end if;
                 return new;
             end;
             $BODY$;
@@ -62,12 +61,4 @@ class Migration(migrations.Migration):
                 FOR EACH ROW
                 EXECUTE FUNCTION public.check_account_balance_with_transactions();
         ''', reverse_sql='DROP TRIGGER IF EXISTS check_account_balance_on_update_with_transactions ON public.bank_accounttransaction;')
-        migrations.RunSQL('''
-            CREATE CONSTRAINT TRIGGER check_account_transactions_on_insert_with_account_balance
-                AFTER INSERT
-                ON public.bank_accounttransaction
-                DEFERRABLE INITIALLY DEFERRED
-                FOR EACH ROW
-                EXECUTE FUNCTION public.check_account_balance_with_transactions();
-        ''', reverse_sql='DROP TRIGGER IF EXISTS check_account_transactions_on_insert_with_account_balance ON public.bank_accounttransaction;')
     ]

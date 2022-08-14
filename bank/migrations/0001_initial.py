@@ -104,7 +104,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddConstraint(
             model_name='account',
-            constraint=models.CheckConstraint(check=models.Q(models.Q(models.Q(('pk', 1), _negated=True), models.Q(('user', None), _negated=True)), models.Q(('pk', 1), ('user', None)), _connector='OR'), name='only_nakhll_account_can_have_null_user'),
+            constraint=models.CheckConstraint(check=models.Q(models.Q(models.Q(('pk', -1), _negated=True), models.Q(('user', None), _negated=True)), models.Q(('pk', -1), ('user', None)), _connector='OR'), name='only_nakhll_account_can_have_null_user'),
         ),
         migrations.AddConstraint(
             model_name='account',
