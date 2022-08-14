@@ -792,7 +792,7 @@ class UserProfileViewSet(viewsets.GenericViewSet):
 
     @action(detail=False, methods=['patch'])
     def extend_referral_link_expiration_date(self, request):
-        profile = request.user.profile
+        profile = request.user.User_Profile
         profile.extend_referral_link()
         return Response('')
 

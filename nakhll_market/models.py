@@ -29,8 +29,10 @@ from colorfield.fields import ColorField
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 from simple_history.models import HistoricalRecords
+from nakhll_market.constants import ACTIVE_REFERRAL, EXPIRED_REFERRAL, FIRST_TIME_REFERRAL
 from nakhll_market.interface import AlertInterface
 from nakhll.utils import datetime2jalali
+from refer.constants import REFERRAL_LINK_DURATION
 
 
 OUTOFSTOCK_LIMIT_NUM = 5
@@ -1958,8 +1960,8 @@ class Profile(models.Model):
         self._extend_referral_link()
 
     def _extend_referral_link(self):
-        self.expiration_date_of_referral_link = jdatetime.datetime.now(
-        ) + jdatetime.timedelta(days=30)
+        self.expiration_date_of_referral_link = jdatetime.date.today(
+        ) + REFERRAL_LINK_DURATION
         self.save()
 
     @property
@@ -2078,6 +2080,15 @@ class Profile(models.Model):
     @property
     def is_referred(self):
         return bool(self.referrer)
+
+    @property
+    def link_status(self):
+        if self.expiration_date_of_referral_link is None:
+            return FIRST_TIME_REFERRAL
+        if self.is_referral_link_active():
+            return ACTIVE_REFERRAL
+        else:
+            return EXPIRED_REFERRAL
 
     # Ordering With DateCreate
     class Meta:

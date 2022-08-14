@@ -913,7 +913,9 @@ class NewProfileSerializer(serializers.ModelSerializer):
             'Sex',
             'Bio',
             'image',
-            'referral_link']
+            'referral_link',
+            'link_status',
+            'expiration_date_of_referral_link', ]
         read_only_fields = ['MobileNumber']
         extra_kwargs = {
             'NationalCode': {'validators': []},

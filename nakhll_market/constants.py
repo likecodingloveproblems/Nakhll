@@ -1,0 +1,3 @@
+FIRST_TIME_REFERRAL='first_time'
+ACTIVE_REFERRAL='active'
+EXPIRED_REFERRAL='expired'
