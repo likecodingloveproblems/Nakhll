@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from django.db import transaction
 from rest_framework import permissions, views, viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -70,9 +71,10 @@ def buy_from_nakhll(invoice, coin_amount, description):
 
 
 def deposit_user(user, request_type, amount, description):
-    user_account = Account.objects.get_or_create(user=user)[0]
-    user_account.deposit_from_nakhll(
-        value=amount,
-        request_type=request_type,
-        description=description,
-    )
+    with transaction.atomic():
+        user_account = Account.objects.get_or_create(user=user)[0]
+        user_account.deposit_from_bank(
+            value=amount,
+            request_type=request_type,
+            description=description,
+        )

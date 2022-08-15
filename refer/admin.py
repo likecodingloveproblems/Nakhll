@@ -9,14 +9,28 @@ from refer.models import (
 
 @admin.register(ReferrerVisitEvent)
 class ReferrerVisitEventAdmin(ReadOnlyModelAdmin):
-    pass
+    list_display = [
+        'referrer',
+        'status',
+        'date_created',
+        'date_updated', ]
 
 
 @admin.register(ReferrerSignupEvent)
 class ReferrerSignupEventAdmin(ReadOnlyModelAdmin):
-    pass
+    list_display = [
+        'referrer',
+        'referred',
+        'status',
+        'date_created',
+        'date_updated', ]
 
 
 @admin.register(ReferrerPurchaseEvent)
 class ReferrerPurchaseEventAdmin(ReadOnlyModelAdmin):
-    pass
+    list_display = [
+        'referrer',
+        'invoice',
+        'status',
+        'date_created',
+        'date_updated', ]

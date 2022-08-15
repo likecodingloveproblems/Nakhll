@@ -25,8 +25,8 @@ from bank.managers import (
 class CoinMintBurn(models.Model):
 
     '''Coin Burn Logic
-    on create it will subtract value from balance of nakhll account
-    but we must decide on coin burn we subtract from nakhll balance or net balance
+    on create it will subtract value from balance of bank account
+    but we must decide on coin burn we subtract from bank balance or net balance
     if we let user to subtract from balance some of account request will be blocked
     on the other way if we let user to subtract from net balance, user can't burn coins that are blocked
     delete and update are not allowed
@@ -140,7 +140,7 @@ class Account(models.Model):
         elif self.id == FUND_ACCOUNT_ID:
             return 'صندوق'
         else:
-            return self.user.username
+            return f'{self.user.username}-{self.user.first_name} {self.user.last_name}'
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
@@ -218,27 +218,37 @@ class AccountTransaction(models.Model):
 class AccountRequest(models.Model):
     from_account = models.ForeignKey(
         Account,
+        verbose_name='حساب مبدا',
         on_delete=models.PROTECT,
         related_name='from_account_request')
     to_account = models.ForeignKey(
         Account,
+        verbose_name='حساب مقصد',
         on_delete=models.PROTECT,
         related_name='to_account_request')
     staff_user = models.ForeignKey(
         User,
+        verbose_name='کارمند تایید/رد کننده',
         on_delete=models.PROTECT,
         null=True,
         blank=True)
-    value = models.PositiveIntegerField()
-    request_type = models.IntegerField(choices=RequestTypes.choices)
-    description = models.TextField()
+    value = models.PositiveIntegerField(verbose_name='مقدار سکه')
+    request_type = models.IntegerField(
+        verbose_name='نوع درخواست',
+        choices=RequestTypes.choices)
+    description = models.TextField(verbose_name='توضیحات')
     status = models.IntegerField(
+        verbose_name='وضعیت',
         choices=RequestStatuses.choices,
         default=RequestStatuses.PENDING)
-    cashable_value = models.IntegerField(blank=True)
-    date_created = jmodels.jDateTimeField(auto_now_add=True)
-    date_confirmed = jmodels.jDateTimeField(null=True, blank=True)
-    date_rejected = jmodels.jDateTimeField(null=True, blank=True)
+    cashable_value = models.IntegerField(
+        verbose_name='مقدار قابل تسویه از حساب مبدا', blank=True)
+    date_created = jmodels.jDateTimeField(
+        verbose_name='تاریخ ایجاد', auto_now_add=True)
+    date_confirmed = jmodels.jDateTimeField(
+        verbose_name='تاریخ تایید', null=True, blank=True)
+    date_rejected = jmodels.jDateTimeField(
+        verbose_name='تاریخ رد', null=True, blank=True)
     objects = AccountRequestManager()
 
     class Meta:

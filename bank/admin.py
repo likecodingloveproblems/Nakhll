@@ -1,11 +1,13 @@
 from django.contrib import admin
 from django.contrib.auth import get_permission_codename
+from import_export.admin import ExportActionMixin
 from bank.models import (
     CoinMintBurn,
     Account,
     AccountRequest,
     AccountTransaction
 )
+from bank.resources import AccountRequestResource
 from nakhll.admin_utils import AppendOnlyModelAdmin, ReadOnlyModelAdmin
 from bank.constants import (
     BANK_ACCOUNT_ID,
@@ -49,7 +51,7 @@ class AccountAdmin(AppendOnlyModelAdmin):
             return super().get_search_results(request, queryset, search_term)
 
 @admin.register(AccountRequest)
-class AccountRequestAdmin(AppendOnlyModelAdmin):
+class AccountRequestAdmin(ExportActionMixin, AppendOnlyModelAdmin):
     autocomplete_fields = ['from_account', 'to_account']
     createonly_fields = [
         'request_type',
@@ -71,6 +73,7 @@ class AccountRequestAdmin(AppendOnlyModelAdmin):
     list_filter = ['status', 'request_type']
     change_form_template = "admin/custom/account_request_change_confirm_or_reject.html"
     custom_model_actions = {'create', 'confirm', 'reject'}
+    resource_class = AccountRequestResource
 
     def save_model(self, request, obj, form, change):
         if not change:
