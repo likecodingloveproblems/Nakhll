@@ -8,8 +8,10 @@ import pgtrigger
 from bank.account_requests import ConfirmRequest, CreateRequest, RejectRequest
 from bank.constants import (
     AUTOMATIC_CONFIRM_REQUEST_TYPES,
+    BANK_ACCOUNT_ID,
     COIN_RIAL_RATIO,
-    NAKHLL_ACCOUNT_ID,
+    FUND_ACCOUNT_ID,
+    SYSTEMIC_ACCOUNTS_ID_UPPER_LIMIT,
     RequestStatuses,
     RequestTypes,
     CASHABLE_REQUEST_TYPES,
@@ -62,9 +64,9 @@ class CoinMintBurn(models.Model):
         from bank.models import Account
         with transaction.atomic():
             self.validate()
-            nakhll_account = Account.objects.nakhll_account_for_update
-            nakhll_account.balance += self.get_value()
-            nakhll_account.save()
+            bank_account = Account.objects.bank_account_for_update
+            bank_account.balance += self.get_value()
+            bank_account.save()
             return super().save(force_insert, force_update, using, update_fields)
 
     def get_value(self):
@@ -88,7 +90,7 @@ class CoinMintBurn(models.Model):
                 raise exceptions.ValidationError(
                     'you can\'t burn more coins than minted.')
 
-            if self.value > Account.objects.nakhll_account_for_update.net_balance:
+            if self.value > Account.objects.bank_account_for_update.net_balance:
                 raise exceptions.ValidationError('not enough cashable amount')
 
 
@@ -110,9 +112,9 @@ class Account(models.Model):
         verbose_name_plural = _("Accounts")
         constraints = [
             CheckConstraint(
-                check=Q(~Q(pk=NAKHLL_ACCOUNT_ID) & ~Q(user=None)) |
-                Q(pk=NAKHLL_ACCOUNT_ID, user=None),
-                name='only_nakhll_account_can_have_null_user'),
+                check=Q(~Q(pk__lt=SYSTEMIC_ACCOUNTS_ID_UPPER_LIMIT) & ~Q(user=None)) |
+                Q(pk__lt=SYSTEMIC_ACCOUNTS_ID_UPPER_LIMIT, user=None),
+                name='only_systemic_accounts_can_have_null_user'),
             CheckConstraint(
                 check=Q(balance__gte=F('blocked_balance')),
                 name='balance_is_more_than_or_equal_to_blocked_balance'),
@@ -133,7 +135,12 @@ class Account(models.Model):
         ]
 
     def __str__(self):
-        return f'{self.user} - balance:{self.balance} - cashable amount:{self.cashable_amount}'
+        if self.id == BANK_ACCOUNT_ID:
+            return 'بانک'
+        elif self.id == FUND_ACCOUNT_ID:
+            return 'صندوق'
+        else:
+            return self.user.username
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
@@ -162,16 +169,16 @@ class Account(models.Model):
         amount = amount if amount else self.cashable_amount
         AccountRequest.objects.create(
             from_account=self,
-            to_account=Account.objects.nakhll_account,
+            to_account=Account.objects.fund_account,
             value=amount,
             request_type=RequestTypes.WITHDRAW,
             description='withdraw',
         )
 
-    def deposit_from_nakhll(self, value, request_type, description):
-        """Deposit to account from nakhll account"""
+    def deposit_from_bank(self, value, request_type, description):
+        """Deposit to account from bank account"""
         AccountRequest.objects.create(
-            from_account=Account.objects.nakhll_account,
+            from_account=Account.objects.bank_account,
             to_account=self,
             value=value,
             request_type=request_type,

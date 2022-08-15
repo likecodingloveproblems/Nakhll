@@ -1,6 +1,11 @@
 from django.db import models
 from django.db.models import Q, Sum
-from bank.constants import NAKHLL_ACCOUNT_ID, RequestStatuses, RequestTypes
+from bank.constants import (
+    BANK_ACCOUNT_ID,
+    FUND_ACCOUNT_ID,
+    RequestStatuses,
+    RequestTypes,
+)
 
 
 class AppendOnlyMixin:
@@ -22,12 +27,21 @@ class AppendOnlyMixin:
 
 class AccountManager(models.Manager):
     @property
-    def nakhll_account(self):
-        return self.get_queryset().get(pk=NAKHLL_ACCOUNT_ID)
+    def bank_account(self):
+        return self.get_queryset().get(pk=BANK_ACCOUNT_ID)
 
     @property
-    def nakhll_account_for_update(self):
-        return self.get_queryset().select_for_update().get(pk=NAKHLL_ACCOUNT_ID)
+    def bank_account_for_update(self):
+        return self.get_queryset().select_for_update().get(pk=BANK_ACCOUNT_ID)
+
+    @property
+    def fund_account(self):
+        return self.get_queryset().get(pk=FUND_ACCOUNT_ID)
+
+    @property
+    def fund_account_for_update(self):
+        return self.get_queryset().select_for_update().get(pk=FUND_ACCOUNT_ID)
+
 
 
 class AccountRequestQuerySet(models.QuerySet):

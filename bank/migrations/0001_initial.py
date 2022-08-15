@@ -5,12 +5,13 @@ from django.db import migrations, models
 import django.db.models.deletion
 import django.db.models.expressions
 
-from bank.constants import NAKHLL_ACCOUNT_ID
+from bank.constants import BANK_ACCOUNT_ID, FUND_ACCOUNT_ID
 
 
-def create_nakhll_account(apps, schema_editor):
+def create_systematics_account(apps, schema_editor):
     Account = apps.get_model("bank", "Account")
-    Account.objects.create(id=NAKHLL_ACCOUNT_ID)
+    Account.objects.create(id=BANK_ACCOUNT_ID)
+    Account.objects.create(id=FUND_ACCOUNT_ID)
 
 
 class Migration(migrations.Migration):
@@ -38,7 +39,7 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Accounts',
             },
         ),
-        migrations.RunPython(create_nakhll_account, migrations.RunPython.noop),
+        migrations.RunPython(create_systematics_account, migrations.RunPython.noop),
         migrations.CreateModel(
             name='AccountRequest',
             fields=[
@@ -104,7 +105,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddConstraint(
             model_name='account',
-            constraint=models.CheckConstraint(check=models.Q(models.Q(models.Q(('pk', -1), _negated=True), models.Q(('user', None), _negated=True)), models.Q(('pk', -1), ('user', None)), _connector='OR'), name='only_nakhll_account_can_have_null_user'),
+            constraint=models.CheckConstraint(check=models.Q(models.Q(models.Q(('pk__lt', 0), _negated=True), models.Q(('user', None), _negated=True)), models.Q(('pk__lt', 0), ('user', None)), _connector='OR'), name='only_systemic_accounts_can_have_null_user'),
         ),
         migrations.AddConstraint(
             model_name='account',

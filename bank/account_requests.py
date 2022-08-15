@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from django.utils import timezone
 
-from bank.constants import AUTOMATIC_CONFIRM_REQUEST_TYPES, NAKHLL_ACCOUNT_ID, RequestStatuses
+from bank.constants import AUTOMATIC_CONFIRM_REQUEST_TYPES, RequestStatuses
 
 
 class BaseAccountRequest(ABC):

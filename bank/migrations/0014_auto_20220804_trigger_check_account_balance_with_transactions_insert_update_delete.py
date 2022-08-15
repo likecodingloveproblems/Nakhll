@@ -2,7 +2,7 @@
 
 from django.db import migrations
 
-from bank.constants import NAKHLL_ACCOUNT_ID
+from bank.constants import BANK_ACCOUNT_ID
 
 
 class Migration(migrations.Migration):
@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
                 account_balance integer;
                 account_transactions_summation integer;
 				mint_coin_amount integer := 0;
-				nakhll_account_id integer := {NAKHLL_ACCOUNT_ID};
+				bank_account_id integer := {BANK_ACCOUNT_ID};
             begin
                 account_balance := (
                     select balance
@@ -40,7 +40,7 @@ class Migration(migrations.Migration):
                     from bank_accounttransaction
 					where account_id=old.id
                     );
-				if old.id = nakhll_account_id then
+				if old.id = bank_account_id then
 					mint_coin_amount := bank_total_minted_not_burned_coins();
                 end if;
                 if account_balance <> account_transactions_summation + mint_coin_amount then

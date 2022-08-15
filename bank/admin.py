@@ -7,7 +7,10 @@ from bank.models import (
     AccountTransaction
 )
 from nakhll.admin_utils import AppendOnlyModelAdmin, ReadOnlyModelAdmin
-
+from bank.constants import (
+    BANK_ACCOUNT_ID,
+    FUND_ACCOUNT_ID,
+)
 
 @admin.register(CoinMintBurn)
 class CoinMinBurnAdmin(AppendOnlyModelAdmin):
@@ -23,7 +26,7 @@ class CoinMinBurnAdmin(AppendOnlyModelAdmin):
 @admin.register(Account)
 class AccountAdmin(AppendOnlyModelAdmin):
     autocomplete_fields = ['user']
-    list_display = ['user', 'balance', 'date_created']
+    list_display = ['name', 'balance', 'date_created']
     search_fields = ['user__username']
     list_filter = ['date_created']
     readonly_fields = [
@@ -33,15 +36,26 @@ class AccountAdmin(AppendOnlyModelAdmin):
         'blocked_cashable_amount',
         'date_created', ]
 
+    @admin.display(ordering='user__username', description='حساب')
+    def name(self, obj):
+        return obj
+
+    def get_search_results(self, request, queryset, search_term):
+        if search_term == 'بانک':
+            return queryset.filter(id=BANK_ACCOUNT_ID), False
+        elif search_term == 'صندوق':
+            return queryset.filter(id=FUND_ACCOUNT_ID), False
+        else:
+            return super().get_search_results(request, queryset, search_term)
 
 @admin.register(AccountRequest)
 class AccountRequestAdmin(AppendOnlyModelAdmin):
     autocomplete_fields = ['from_account', 'to_account']
     createonly_fields = [
+        'request_type',
         'from_account',
         'to_account',
         'value',
-        'request_type',
         'description',
         'cashable_value',
     ]
@@ -49,7 +63,8 @@ class AccountRequestAdmin(AppendOnlyModelAdmin):
         'status',
         'date_confirmed',
         'date_rejected',
-        'staff_user', ]
+        'staff_user',
+        'cashable_value', ]
     search_fields = [
         'from_account__user__username',
         'to_account__user__username']
