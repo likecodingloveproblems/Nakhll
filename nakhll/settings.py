@@ -435,5 +435,6 @@ if DEBUG:
         "SHOW_TOOLBAR_CALLBACK": lambda request: True,
     }
 
-SEP_CALLBACK_URL = 'https://nakhll.com/payoff/sep/callback/'
+PEC_CALLBACK_URL = os.environ.get("PEC_CALLBACK_URL")
+SEP_CALLBACK_URL = os.environ.get("SEP_CALLBACK_URL")
 SEP_TERMINAL_ID = os.environ.get("SEP_TERMINAL_ID")
