@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from django_filters import rest_framework as filters
 from bank.constants import RequestTypes
+from bank.permissions import UserHasWithdrawLimitBalance
 from .filters import AccountRequestFilter
 from bank.models import Account, AccountRequest, CoinPayment
 from bank.serializers import AccountReadOnlySerializer, AccountRequestReportSerializer
@@ -15,7 +16,7 @@ class AccountViewSet(viewsets.GenericViewSet):
     serializer_class = AccountReadOnlySerializer
 
     def get_account(self, request):
-        return Account.objects.get(user=self.request.user)
+        return Account.objects.get_or_create(user=self.request.user)[0]
 
     @action(detail=False, methods=['get'], name='get account info')
     def me(self, request):
@@ -31,7 +32,7 @@ class AccountRequestViewSet(viewsets.GenericViewSet):
     filter_class = AccountRequestFilter
 
     def get_queryset(self):
-        account = Account.objects.get(user=self.request.user)
+        account = Account.objects.get_or_create(user=self.request.user)[0]
         return AccountRequest.objects.all().filter_account_requests(account)
 
     @action(detail=False, methods=['get'], name='get account request report')
@@ -44,11 +45,13 @@ class AccountRequestViewSet(viewsets.GenericViewSet):
 
 
 class Withdraw(views.APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [
+        UserHasWithdrawLimitBalance,
+        permissions.IsAuthenticated]
 
     def post(self, request):
         amount = request.POST.get('amount')
-        account = Account.objects.get(user=request.user)
+        account = Account.objects.get_or_create(user=request.user)[0]
         account.withdraw(amount)
         return HttpResponse('درخواست تسویه با موفقیت ثبت شد.', status=201)
 

@@ -19,6 +19,7 @@ from bank.constants import (
 from bank.managers import (
     AccountManager,
     AccountRequestManager,
+    DepositRequestManager,
 )
 
 
@@ -165,6 +166,10 @@ class Account(models.Model):
     def requests_coin_report(self):
         return AccountRequest.objects.account_request_coins_report(self)
 
+    @property
+    def is_systemic(self):
+        return self.pk <= SYSTEMIC_ACCOUNTS_ID_UPPER_LIMIT or self.user is None
+
     def withdraw(self, amount=None):
         amount = amount if amount else self.cashable_amount
         AccountRequest.objects.create(
@@ -186,35 +191,6 @@ class Account(models.Model):
         )
 
 
-class AccountTransaction(models.Model):
-    request = models.ForeignKey(
-        'AccountRequest', on_delete=models.PROTECT)
-    account = models.ForeignKey(
-        Account,
-        on_delete=models.PROTECT,
-        related_name='account_transaction')
-    account_opposite = models.ForeignKey(
-        Account,
-        on_delete=models.PROTECT,
-        related_name='account_opposite_transaction')
-    value = models.IntegerField()
-    cashable_value = models.IntegerField()
-    description = models.CharField(max_length=1023)
-    date_created = jmodels.jDateTimeField(auto_now_add=True)
-
-    class Meta:
-        verbose_name = _("AccountTransaction")
-        verbose_name_plural = _("AccountTransaction")
-        triggers = [
-            pgtrigger.Protect(
-                name='protect_from_updates_and_deleted',
-                operation=(
-                    pgtrigger.Update | pgtrigger.Delete))]
-
-    def __str__(self):
-        return f'{self.account} - {self.account_opposite} - {self.value} - {self.date_created}'
-
-
 class AccountRequest(models.Model):
     from_account = models.ForeignKey(
         Account,
@@ -232,7 +208,8 @@ class AccountRequest(models.Model):
         on_delete=models.PROTECT,
         null=True,
         blank=True)
-    value = models.PositiveIntegerField(verbose_name='مقدار سکه')
+    value = models.PositiveIntegerField(
+        verbose_name='مقدار سکه', validators=[validators.MinValueValidator(1)])
     request_type = models.IntegerField(
         verbose_name='نوع درخواست',
         choices=RequestTypes.choices)
@@ -268,6 +245,10 @@ class AccountRequest(models.Model):
                                            )
                 ),
                 name='staff_user_check_for_different_statuses'),
+            CheckConstraint(
+                check=~Q(from_account=F('to_account')),
+                name='from_account_must_not_be_equal_to_to_account'
+            ),
         ]
         triggers = [
             pgtrigger.Protect(
@@ -316,6 +297,35 @@ class AccountRequest(models.Model):
         return f'{self.to_account} - {self.from_account} - {self.value}'
 
 
+class AccountTransaction(models.Model):
+    request = models.ForeignKey(
+        'AccountRequest', on_delete=models.PROTECT)
+    account = models.ForeignKey(
+        Account,
+        on_delete=models.PROTECT,
+        related_name='account_transaction')
+    account_opposite = models.ForeignKey(
+        Account,
+        on_delete=models.PROTECT,
+        related_name='account_opposite_transaction')
+    value = models.IntegerField()
+    cashable_value = models.IntegerField()
+    description = models.CharField(max_length=1023)
+    date_created = jmodels.jDateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = _("AccountTransaction")
+        verbose_name_plural = _("AccountTransaction")
+        triggers = [
+            pgtrigger.Protect(
+                name='protect_from_updates_and_deleted',
+                operation=(
+                    pgtrigger.Update | pgtrigger.Delete))]
+
+    def __str__(self):
+        return f'{self.account} - {self.account_opposite} - {self.value} - {self.date_created}'
+
+
 class CoinPayment(models.Model):
     invoice = models.ForeignKey(
         "invoice.Invoice",
@@ -341,3 +351,23 @@ class CoinPayment(models.Model):
     def save(self, *args, **kwargs):
         self.price_amount = self.account_request.value * COIN_RIAL_RATIO
         super().save(*args, **kwargs)
+
+
+class DepositRequest(AccountRequest):
+    objects = DepositRequestManager()
+
+    class Meta:
+        proxy = True
+
+    def __str__(self):
+        return f'Deposit to {self.to_account}: {self.value}'
+
+    def create(self, *args, **kwargs):
+        self.from_account = Account.objects.bank_account
+        self.request_type = RequestTypes.DEPOSIT
+        super().create()
+
+    def clean(self) -> None:
+        if self.to_account.is_systemic:
+            raise exceptions.ValidationError(
+                "واریز فقط به حساب کاربران می تواند انجام شود.")

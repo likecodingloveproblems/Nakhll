@@ -77,3 +77,9 @@ class AccountRequestManager(models.Manager):
             status=RequestStatuses.CONFIRMED).filter_account_requests(
             account).request_coins_report().update_request_and_status_to_labels()
         return queryset
+
+
+class DepositRequestManager(models.Manager):
+
+    def get_queryset(self):
+        return super().get_queryset().filter(request_type=RequestTypes.DEPOSIT)
