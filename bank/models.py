@@ -276,15 +276,15 @@ class AccountRequest(models.Model):
 
     def create(self):
         with transaction.atomic():
-            CreateRequest(self).create()
+            return CreateRequest(self).create()
 
     def confirm(self, user=None):
         with transaction.atomic():
-            ConfirmRequest(self, user).confirm()
+            return ConfirmRequest(self, user).confirm()
 
     def reject(self, user):
         with transaction.atomic():
-            RejectRequest(self, user).reject()
+            return RejectRequest(self, user).reject()
 
     def is_withdraw(self):
         '''we can check it by to account, so I create this method to have flexibility in statuses'''
@@ -346,7 +346,7 @@ class CoinPayment(models.Model):
         verbose_name_plural = _("CoinPayments")
 
     def __str__(self):
-        return f'cart:{self.cart}, account request:{self.account_request}'
+        return f'invoice:{self.invoice}, account request:{self.account_request}'
 
     def save(self, *args, **kwargs):
         self.price_amount = self.account_request.value * COIN_RIAL_RATIO

@@ -10,6 +10,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from rest_framework.exceptions import ValidationError
 from bank.constants import COIN_RIAL_RATIO
 from bank.models import Account
+from bank.views import buy_from_nakhll
 from coupon.serializers import CouponSerializer
 from coupon.validators import (
     DateTimeValidator,
@@ -236,8 +237,8 @@ class Cart(models.Model):
         self._validate_coupons()
         self._validate_items()
         invoice = self._create_invoice(logistic_details)
-        self._clear_cart_items()
-        self._clear_coin_payment()
+        self.create_coin_payment_request(invoice)
+        self.clear_cart()
         return invoice
 
     def _create_invoice(self, lud):
@@ -287,6 +288,20 @@ class Cart(models.Model):
 
         return invoice
 
+    def create_coin_payment_request(self, invoice):
+        def get_coin_payment_description():
+            return f'user:{invoice.user} - invoice:{invoice.pk} - coin-rial-ration{COIN_RIAL_RATIO}'
+        buy_from_nakhll(
+            invoice,
+            invoice.coin_amount,
+            get_coin_payment_description())
+
+    def clear_cart(self):
+        """Clear cart items and coin payment configurations"""
+        self._clear_cart_items()
+        self._clear_coin_payment()
+        self.save()
+
     def _clear_cart_items(self):
         """Remove all items in cart"""
         self.items.all().delete()
@@ -294,6 +309,7 @@ class Cart(models.Model):
     def _clear_coin_payment(self):
         """Reset coin payment setting to default"""
         self.paid_by_coin = False
+        self.save()
 
     def _validate_items(self):
         """Check if there is at least on item in cart"""
@@ -449,12 +465,14 @@ class Cart(models.Model):
         self.logistic_details = None
         self.save()
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
+    def _update_coin_payment_if_coupon_used(self):
         if self.coupons.exists():
             self.paid_by_coin = False
             self.save()
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self._update_coin_payment_if_coupon_used()
 
 class CartItem(models.Model):
     """Each Item in Cart

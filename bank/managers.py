@@ -69,7 +69,8 @@ class AccountRequestManager(models.Manager):
 
     def create(self, *args, **kwargs):
         self._for_write = True
-        self.model(*args, **kwargs).create()
+        return self.model(*args, **kwargs).create()
+
 
     def account_request_coins_report(
             self, account):

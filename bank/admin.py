@@ -6,14 +6,14 @@ from bank.models import (
     Account,
     AccountRequest,
     AccountTransaction,
-    DepositRequest
+    DepositRequest,
+    CoinPayment
 )
 from bank.resources import AccountRequestResource
 from nakhll.admin_utils import AppendOnlyModelAdmin, ReadOnlyModelAdmin
 from bank.constants import (
     BANK_ACCOUNT_ID,
     FUND_ACCOUNT_ID,
-    RequestTypes,
 )
 
 
@@ -122,4 +122,9 @@ class DepositRequestAdmin(
 
 @admin.register(AccountTransaction)
 class AccountTransactionAdmin(ReadOnlyModelAdmin):
+    pass
+
+
+@admin.register(CoinPayment)
+class CoinPaymentAdmin(ReadOnlyModelAdmin):
     pass

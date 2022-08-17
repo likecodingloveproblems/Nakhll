@@ -9,8 +9,8 @@ from django.utils import timezone
 from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth.models import User
 from django_jalali.db import models as jmodels
-from bank.constants import COIN_RIAL_RATIO, RequestTypes
-from bank.views import buy_from_nakhll, deposit_user
+from bank.constants import RequestTypes
+from bank.views import deposit_user
 from cart.managers import CartManager
 from invoice.constants import PURCHASE_REWARD, PURCHASE_VOLUME_LIMIT, PURCHASE_VOLUME_REWARD
 from nakhll.utils import datetime2jalali
@@ -154,7 +154,7 @@ class Invoice(models.Model):
     coin_price = models.DecimalField(
         _('مبلغ سکه های پرداخت شده'),
         max_digits=12, decimal_places=0, default=0)
-    coins_amount = models.IntegerField(
+    coin_amount = models.IntegerField(
         _('coins amount'), default=0
     )
     created_datetime = models.DateTimeField(
@@ -258,17 +258,7 @@ class Invoice(models.Model):
         self.payment_unique_id = int(datetime.now().timestamp() * 1000000)
         self.payment_request_datetime = timezone.now()
         self.save()
-        self.coin_payment()
         return PaymentInterface.from_invoice(self, bank_port)
-
-    def coin_payment(self):
-        buy_from_nakhll(
-            self,
-            self.coin_amount,
-            self._get_coin_payment_description())
-
-    def _get_coin_payment_description(self):
-        return f'user:{self.user} - invoice:{self.pk} - coin-rial-ration{COIN_RIAL_RATIO}'
 
     def __validate_items(self):
         """Check if there are any items in this invoice"""
