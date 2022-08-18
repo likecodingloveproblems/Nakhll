@@ -45,6 +45,7 @@ api_urls = [
     path('', include('nakhll_market.api_urls', namespace='nakhll_market_api')),
     path('refer/', include('refer.urls', namespace='refer')),
     path('bank/', include('bank.urls', namespace='bank')),
+    path('coupon/', include('coupon.urls', namespace='coupon')),
 ]
 
 urlpatterns = [
