@@ -71,7 +71,6 @@ THIRD_PARTY_APPS = [
     'imagekit',
     'compressor',
     'mathfilters',
-    'django_prometheus',
     'django_extensions',
     'colorfield',
     'django_rename_app',
@@ -104,7 +103,6 @@ NAKHLL_APPS = [
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + NAKHLL_APPS
 
 MIDDLEWARE = [
-    'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -114,7 +112,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'admin_reorder.middleware.ModelAdminReorder',
-    'django_prometheus.middleware.PrometheusAfterMiddleware',
 ]
 
 ADMIN_REORDER = (

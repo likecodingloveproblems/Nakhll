@@ -6,6 +6,7 @@ import json
 from django.contrib import admin
 from django.utils.timezone import localtime
 from django.utils import timezone
+from bank.models import CoinPayment
 from invoice.models import Invoice, InvoiceItem
 from coupon.models import CouponUsage
 
@@ -49,6 +50,20 @@ class CouponUsageInline(admin.TabularInline):
     # readonly_fields = ('coupon', 'used_count', 'used_at', )
 
 
+class CoinPaymentInlineAdmin(admin.TabularInline):
+    model = CoinPayment
+    extra = 1
+    fields = [
+        'account_request',
+        'status']
+    readonly_fields = ['account_request', 'status']
+    can_delete = False
+    can_add = False
+
+    def status(self, obj):
+        return obj.account_request.get_status_display()
+
+
 @admin.register(Invoice)
 class InvoiceAdmin(admin.ModelAdmin):
     list_display = (
@@ -81,6 +96,8 @@ class InvoiceAdmin(admin.ModelAdmin):
         'logistic_unit_details',
         'payment_unique_id',
         'total_weight_gram',
+        'coin_amount',
+        'coin_price',
         'final_price',
         'shop_iban',
         'is_payed',
@@ -104,13 +121,15 @@ class InvoiceAdmin(admin.ModelAdmin):
         'logistic_unit_details',
         'payment_unique_id',
         'total_weight_gram',
+        'coin_amount',
+        'coin_price',
         'final_price',
         'shop_iban',
         'is_payed',
         'created_datetime_jalali',
         'coupons_total_price')
 
-    inlines = [InvoiceItemInline, CouponUsageInline]
+    inlines = [InvoiceItemInline, CouponUsageInline, CoinPaymentInlineAdmin]
     change_form_template = "admin/custom/invoice_changeform.html"
 
     def receiver_full_name(self, obj):
