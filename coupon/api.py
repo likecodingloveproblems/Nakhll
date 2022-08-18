@@ -1,11 +1,14 @@
+from ast import Pass
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.exceptions import ValidationError
 from rest_framework.decorators import action
 from coupon.models import Coupon
 from sms.services import Kavenegar
+from .serializers import GiftCouponSerializer
 
 
 class CouponViewset(GenericViewSet):
+    serializer_class = GiftCouponSerializer
 
     def get_coupon(self, request):
         code = request.POST.get('code')
