@@ -59,10 +59,10 @@ class Withdraw(views.APIView):
 def buy_from_nakhll(invoice, coin_amount, description):
     buyer = invoice.user
     buyer_account = Account.objects.get_or_create(user=buyer)[0]
-    fund_account = Account.objects.fund_account
+    financial_account = Account.objects.financial_account
     account_request = AccountRequest.objects.create(
         from_account=buyer_account,
-        to_account=fund_account,
+        to_account=financial_account,
         value=coin_amount,
         request_type=RequestTypes.BUY_FROM_NAKHLL,
         description=description,

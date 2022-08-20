@@ -7,13 +7,14 @@ from bank.models import (
     AccountRequest,
     AccountTransaction,
     DepositRequest,
-    CoinPayment
+    CoinPayment,
+    FinancialToFundRequest
 )
 from bank.resources import AccountRequestResource
 from nakhll.admin_utils import AppendOnlyModelAdmin, ReadOnlyModelAdmin
 from bank.constants import (
-    BANK_ACCOUNT_ID,
     FUND_ACCOUNT_ID,
+    FINANCIAL_ACCOUNT_ID,
 )
 
 
@@ -77,10 +78,10 @@ class AccountAdmin(AppendOnlyModelAdmin):
         return obj
 
     def get_search_results(self, request, queryset, search_term):
-        if search_term == 'بانک':
-            return queryset.filter(id=BANK_ACCOUNT_ID), False
-        elif search_term == 'صندوق':
+        if search_term == 'صندوق':
             return queryset.filter(id=FUND_ACCOUNT_ID), False
+        elif search_term == 'حساب مالی':
+            return queryset.filter(id=FINANCIAL_ACCOUNT_ID), False
         else:
             return super().get_search_results(request, queryset, search_term)
 
@@ -88,7 +89,7 @@ class AccountAdmin(AppendOnlyModelAdmin):
 @admin.register(AccountRequest)
 class AccountRequestAdmin(ExportActionMixin,
                           CreateConfirmRejectAccountRequestMixin,
-                          AppendOnlyModelAdmin):
+                          ReadOnlyModelAdmin):
     autocomplete_fields = ['from_account', 'to_account']
     readonly_fields = [
         'status',
@@ -118,6 +119,23 @@ class DepositRequestAdmin(
     search_fields = [
         'to_account__user__username']
     list_filter = ['status']
+
+
+@admin.register(FinancialToFundRequest)
+class FinancialToFundRequestAdmin(
+        CreateConfirmRejectAccountRequestMixin, AppendOnlyModelAdmin):
+    readonly_fields = [
+        'from_account',
+        'to_account',
+        'request_type',
+        'status',
+        'date_confirmed',
+        'date_rejected',
+        'staff_user',
+        'cashable_value', ]
+    search_fields = [
+        'value']
+    list_filter = ['status', 'date_created']
 
 
 @admin.register(AccountTransaction)

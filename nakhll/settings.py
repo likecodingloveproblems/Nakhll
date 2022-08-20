@@ -216,19 +216,6 @@ IMAGEKIT_CACHEFILE_DIR = 'media/CACHE/images'
 PERSISTENT_STORAGE = "/mnt/shared-volume"
 
 DATABASES = {
-    # "mysql": {
-    #     "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.mysql"),
-    #     "NAME": os.environ.get("SQL_DATABASE", os.path.join(BASE_DIR, "db.sqlite3")),
-    #     "USER": os.environ.get("SQL_USER", "user"),
-    #     "PASSWORD": os.environ.get("SQL_PASSWORD", "password"),
-    #     "HOST": os.environ.get("SQL_HOST", "localhost"),
-    #     "PORT": os.environ.get("SQL_PORT", "3306"),
-    #     'OPTIONS': {
-    #         # Tell MySQLdb to connect with 'utf8mb4' character set
-    #         'charset': 'utf8mb4',
-    #     },
-    #     'CONN_MAX_AGE': None,
-    # },
     'default': {
         'ENGINE': os.environ.get('POSTGRES_ENGINE', 'django.db.backends.postgresql'),
         'NAME': os.environ.get('POSTGRES_DB', 'nakhlldb'),
