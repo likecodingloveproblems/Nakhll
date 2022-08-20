@@ -1,4 +1,4 @@
-from ast import Pass
+from django.contrib.auth.models import User
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.exceptions import ValidationError
 from rest_framework.decorators import action
@@ -17,7 +17,7 @@ class CouponViewset(GenericViewSet):
         try:
             return Coupon.objects.get(code=code)
         except Coupon.DoesNotExist:
-            raise ValidationError()
+            raise ValidationError({"code": "Invalid coupon code"})
 
     def get_user(self, request):
         if request.user:
@@ -26,11 +26,11 @@ class CouponViewset(GenericViewSet):
         try:
             return User.objects.get(username=mobile)
         except User.DoesNotExist:
-            raise ValidationError()
+            raise ValidationError({"mobile": "Invalid mobile number"})
 
     @action(methods=['post'], detail=False, description='ارسال کد تخفیف')
     def gift_user(self, request, *args, **kwargs):
         coupon = self.get_coupon(request)
-        user = self.get_user(request)
+        user = self.selfget_user(request)
         coupon.add_user(user)
-        kavenegar.send_gift_coupon(user, coupon)
+        Kavenegar.send_gift_coupon(user, coupon)
