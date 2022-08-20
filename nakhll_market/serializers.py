@@ -122,7 +122,6 @@ class ShopSerializer(serializers.ModelSerializer):
     FK_ShopManager = UserSerializer(read_only=True)
     profile = ProfileImageSerializer(read_only=True)
     landing_data = serializers.SerializerMethodField()
-    is_landing = serializers.SerializerMethodField()
     yektanet_advertisement = serializers.SerializerMethodField()
     state = StateSerializer(read_only=True)
     big_city = BigCitySerializer(read_only=True)
@@ -152,12 +151,6 @@ class ShopSerializer(serializers.ModelSerializer):
     def get_registered_months(self, obj):
         ''' Calculate months from DateCreate till now '''
         return (timezone.now() - obj.DateCreate).days // 30
-
-    def get_is_landing(self, obj):
-        # TODO: Remove this IMMEDIATELY
-        if obj.Slug == 'neil-market-food-store':
-            return True
-        return False
 
     def get_landing_data(self, obj):
         if ShopFeature.has_shop_landing_access(
