@@ -5,13 +5,13 @@ from django.db import migrations, models
 import django.db.models.deletion
 import django.db.models.expressions
 
-from bank.constants import BANK_ACCOUNT_ID, FUND_ACCOUNT_ID
+from bank.constants import FUND_ACCOUNT_ID, FINANCIAL_ACCOUNT_ID
 
 
 def create_systematics_account(apps, schema_editor):
     Account = apps.get_model("bank", "Account")
-    Account.objects.create(id=BANK_ACCOUNT_ID)
     Account.objects.create(id=FUND_ACCOUNT_ID)
+    Account.objects.create(id=FINANCIAL_ACCOUNT_ID)
 
 
 class Migration(migrations.Migration):

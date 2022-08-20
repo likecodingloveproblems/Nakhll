@@ -1,10 +1,8 @@
 from django.db import models
 from django.db.models.aggregates import Sum
-from django.db.models.lookups import EndsWith
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
-from django.contrib.sessions.models import Session
 from django.db.models.functions import Cast
 from django.core.serializers.json import DjangoJSONEncoder
 from rest_framework.exceptions import ValidationError

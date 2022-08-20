@@ -8,9 +8,9 @@ import pgtrigger
 from bank.account_requests import ConfirmRequest, CreateRequest, RejectRequest
 from bank.constants import (
     AUTOMATIC_CONFIRM_REQUEST_TYPES,
-    BANK_ACCOUNT_ID,
-    COIN_RIAL_RATIO,
     FUND_ACCOUNT_ID,
+    COIN_RIAL_RATIO,
+    FINANCIAL_ACCOUNT_ID,
     SYSTEMIC_ACCOUNTS_ID_UPPER_LIMIT,
     RequestStatuses,
     RequestTypes,
@@ -19,7 +19,10 @@ from bank.constants import (
 from bank.managers import (
     AccountManager,
     AccountRequestManager,
+    BuyFromNakhllRequestManager,
     DepositRequestManager,
+    WithdrawRequestManager,
+    FinancialToFundRequestManager,
 )
 
 
@@ -65,9 +68,9 @@ class CoinMintBurn(models.Model):
         from bank.models import Account
         with transaction.atomic():
             self.validate()
-            bank_account = Account.objects.bank_account_for_update
-            bank_account.balance += self.get_value()
-            bank_account.save()
+            fund_account = Account.objects.fund_account_for_update
+            fund_account.balance += self.get_value()
+            fund_account.save()
             return super().save(force_insert, force_update, using, update_fields)
 
     def get_value(self):
@@ -91,7 +94,7 @@ class CoinMintBurn(models.Model):
                 raise exceptions.ValidationError(
                     'you can\'t burn more coins than minted.')
 
-            if self.value > Account.objects.bank_account_for_update.net_balance:
+            if self.value > Account.objects.fund_account_for_update.net_balance:
                 raise exceptions.ValidationError('not enough cashable amount')
 
 
@@ -136,10 +139,10 @@ class Account(models.Model):
         ]
 
     def __str__(self):
-        if self.id == BANK_ACCOUNT_ID:
-            return 'بانک'
-        elif self.id == FUND_ACCOUNT_ID:
+        if self.id == FUND_ACCOUNT_ID:
             return 'صندوق'
+        elif self.id == FINANCIAL_ACCOUNT_ID:
+            return 'حساب مالی'
         else:
             return f'{self.user.username}-{self.user.first_name} {self.user.last_name}'
 
@@ -174,7 +177,7 @@ class Account(models.Model):
         amount = amount if amount else self.cashable_amount
         AccountRequest.objects.create(
             from_account=self,
-            to_account=Account.objects.fund_account,
+            to_account=Account.objects.financial_account,
             value=amount,
             request_type=RequestTypes.WITHDRAW,
             description='withdraw',
@@ -183,7 +186,7 @@ class Account(models.Model):
     def deposit_from_bank(self, value, request_type, description):
         """Deposit to account from bank account"""
         AccountRequest.objects.create(
-            from_account=Account.objects.bank_account,
+            from_account=Account.objects.fund_account,
             to_account=self,
             value=value,
             request_type=request_type,
@@ -249,6 +252,30 @@ class AccountRequest(models.Model):
                 check=~Q(from_account=F('to_account')),
                 name='from_account_must_not_be_equal_to_to_account'
             ),
+            CheckConstraint(
+                check=Q(
+                    Q(
+                        request_type__in=[
+                            RequestTypes.DEPOSIT,
+                            RequestTypes.REFERRER_VISIT_REWARD,
+                            RequestTypes.REFERRER_SIGNUP_REWARD,
+                            RequestTypes.REFERRER_PURCHASE_REWARD,
+                            RequestTypes.PURCHASE_REWARD,
+                        ],
+                        from_account=FUND_ACCOUNT_ID,
+                        to_account__gt=SYSTEMIC_ACCOUNTS_ID_UPPER_LIMIT) |
+                    Q(
+                        request_type__in=[RequestTypes.WITHDRAW, RequestTypes.BUY_FROM_NAKHLL],
+                        from_account__gt=SYSTEMIC_ACCOUNTS_ID_UPPER_LIMIT,
+                        to_account=FINANCIAL_ACCOUNT_ID) |
+                    Q(
+                        request_type=RequestTypes.FINANCIAL_TO_FUND,
+                        from_account=FINANCIAL_ACCOUNT_ID,
+                        to_account=FUND_ACCOUNT_ID
+                    )
+                ),
+                name='check_request_types_requirements'
+            ),
         ]
         triggers = [
             pgtrigger.Protect(
@@ -260,7 +287,15 @@ class AccountRequest(models.Model):
                 condition=pgtrigger.Q(
                     old__status__in=(
                         RequestStatuses.CONFIRMED,
-                        RequestStatuses.REJECTED)))]
+                        RequestStatuses.REJECTED))),
+            pgtrigger.Protect(
+                name='create_official_interface',
+                operation=pgtrigger.Insert
+            ),
+            pgtrigger.Protect(
+                name='confirm_reject_official_interface',
+                operation=pgtrigger.Update
+            )]
         permissions = [
             ('confirm_accountrequest', _('Can confirm account request!')),
             ('reject_accountrequest', _('Can reject account request!')),
@@ -274,14 +309,17 @@ class AccountRequest(models.Model):
     def deposit_cashable_value(self):
         return self.value if self.request_type in CASHABLE_REQUEST_TYPES else 0
 
+    @pgtrigger.ignore("bank.AccountRequest:create_official_interface")
     def create(self):
         with transaction.atomic():
             return CreateRequest(self).create()
 
+    @pgtrigger.ignore("bank.AccountRequest:confirm_reject_official_interface")
     def confirm(self, user=None):
         with transaction.atomic():
             return ConfirmRequest(self, user).confirm()
 
+    @pgtrigger.ignore("bank.AccountRequest:confirm_reject_official_interface")
     def reject(self, user):
         with transaction.atomic():
             return RejectRequest(self, user).reject()
@@ -363,7 +401,7 @@ class DepositRequest(AccountRequest):
         return f'Deposit to {self.to_account}: {self.value}'
 
     def create(self, *args, **kwargs):
-        self.from_account = Account.objects.bank_account
+        self.from_account = Account.objects.fund_account
         self.request_type = RequestTypes.DEPOSIT
         super().create()
 
@@ -371,3 +409,59 @@ class DepositRequest(AccountRequest):
         if self.to_account.is_systemic:
             raise exceptions.ValidationError(
                 "واریز فقط به حساب کاربران می تواند انجام شود.")
+
+
+class WithdrawRequest(AccountRequest):
+    objects = WithdrawRequestManager()
+
+    class Meta:
+        proxy = True
+
+    def __str__(self):
+        return f'درخواست تسویه از {self.from_account}: {self.value}'
+
+    def create(self, *args, **kwargs):
+        self.to_account = Account.objects.financial_account
+        self.request_type = RequestTypes.WITHDRAW
+        super().create()
+
+    def clean(self) -> None:
+        if self.from_account.is_systemic:
+            raise exceptions.ValidationError(
+                "فقط حساب های کاربری می توانند تسویه کنند.")
+
+
+class BuyFromNakhllRequest(AccountRequest):
+    objects = BuyFromNakhllRequestManager()
+
+    class Meta:
+        proxy = True
+
+    def __str__(self):
+        return f'خرید از نخل توسط {self.from_account}: {self.value}'
+
+    def create(self, *args, **kwargs):
+        self.to_account = Account.objects.financial_account
+        self.request_type = RequestTypes.BUY_FROM_NAKHLL
+        super().create()
+
+    def clean(self) -> None:
+        if self.from_account.is_systemic:
+            raise exceptions.ValidationError(
+                "فقط حساب های کاربری می توانند از نخل خرید کنند.")
+
+
+class FinancialToFundRequest(AccountRequest):
+    objects = FinancialToFundRequestManager()
+
+    class Meta:
+        proxy = True
+
+    def __str__(self):
+        return f'انتقال از حساب مالی به حساب نخل: {self.value}'
+
+    def create(self, *args, **kwargs):
+        self.from_account = Account.objects.financial_account
+        self.to_account = Account.objects.fund_account
+        self.request_type = RequestTypes.FINANCIAL_TO_FUND
+        super().create()
