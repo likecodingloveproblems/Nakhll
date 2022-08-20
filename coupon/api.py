@@ -5,10 +5,12 @@ from rest_framework.decorators import action
 from coupon.models import Coupon
 from sms.services import Kavenegar
 from .serializers import GiftCouponSerializer
+from rest_framework.permissions import AllowAny
 
 
 class CouponViewset(GenericViewSet):
     serializer_class = GiftCouponSerializer
+    permission_classes = [AllowAny]
 
     def get_coupon(self, request):
         code = request.POST.get('code')
