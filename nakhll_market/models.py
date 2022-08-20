@@ -24,12 +24,16 @@ from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import reverse, get_object_or_404
 from django_jalali.db import models as jmodels
 from django.dispatch import receiver
+import jdatetime
 from colorfield.fields import ColorField
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 from simple_history.models import HistoricalRecords
+from nakhll_market.constants import ACTIVE_REFERRAL, EXPIRED_REFERRAL, FIRST_TIME_REFERRAL
 from nakhll_market.interface import AlertInterface
 from nakhll.utils import datetime2jalali
+from refer.constants import REFERRAL_LINK_DURATION
+
 
 OUTOFSTOCK_LIMIT_NUM = 5
 
@@ -59,11 +63,13 @@ class PathAndRename():
 
 # Random Referense Code
 @deconstructible
-class BuildReferenceCode():
+class build_refer_code():
     def __init__(self, Code_Size):
         self.size = Code_Size
 
     def __call__(self):
+        # it's possible generated code is already in db
+        # we can check it by querying db
         random_str = ''.join(
             random.choice(string.ascii_lowercase + string.digits)
             for i in range(self.size))
@@ -1026,7 +1032,7 @@ class Product(models.Model):
         null=True,
         blank=True)
     aparat_video_script = models.CharField(
-        verbose_name='اسکریپت ویدیو آپارات', 
+        verbose_name='اسکریپت ویدیو آپارات',
         max_length=255,
         null=True,
         blank=True,
@@ -1854,19 +1860,24 @@ class Profile(models.Model):
         verbose_name="عکس کارت ملی تایید نشده",
         upload_to=PathAndRename('media/Pictures/NationalCard/'),
         null=True, blank=True)
-    UserReferenceCode = models.CharField(
+    refer_code = models.CharField(
         verbose_name='کد شما', max_length=6, unique=True,
-        default=BuildReferenceCode(6))
+        default=build_refer_code(6))
     Point = models.PositiveIntegerField(verbose_name='امتیاز کاربر', default=0)
     TutorialWebsite = models.CharField(
         verbose_name='نحوه آشنایی با سایت', max_length=1,
         choices=TUTORIALWEB_TYPE, blank=True, default='8')
-    ReferenceCode = models.CharField(
-        verbose_name='کد معرف', max_length=6, blank=True)
     IPAddress = models.CharField(
         verbose_name='آدرس ای پی',
         max_length=15,
         blank=True)
+    referrer = models.ForeignKey(
+        User,
+        verbose_name='دعوت کننده به نخل',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL)
+    expiration_date_of_referral_link = jmodels.jDateField(null=True, blank=True)
 
     # Output Customization Based On UserName (ID)
     def __str__(self):
@@ -1938,6 +1949,20 @@ class Profile(models.Model):
             return City.objects.get(id=self.City).name
         except BaseException:
             return None
+
+    def is_referral_link_active(self):
+        if self.expiration_date_of_referral_link and\
+                self.expiration_date_of_referral_link >= timezone.now():
+            return True
+        return False
+
+    def extend_referral_link(self):
+        self._extend_referral_link()
+
+    def _extend_referral_link(self):
+        self.expiration_date_of_referral_link = jdatetime.date.today(
+        ) + REFERRAL_LINK_DURATION
+        self.save()
 
     @property
     def id(self):
@@ -2025,8 +2050,8 @@ class Profile(models.Model):
             self.ImageNationalCard.url) if self.ImageNationalCard else None
 
     @property
-    def user_reference_code(self):
-        return self.UserReferenceCode
+    def referral_link(self):
+        return f'{settings.DOMAIN_NAME}?ref={self.refer_code}'
 
     @property
     def point(self):
@@ -2051,6 +2076,19 @@ class Profile(models.Model):
     @property
     def date_joined(self):
         return datetime2jalali(self.FK_User.date_joined, date_only=True)
+
+    @property
+    def is_referred(self):
+        return bool(self.referrer)
+
+    @property
+    def link_status(self):
+        if self.expiration_date_of_referral_link is None:
+            return FIRST_TIME_REFERRAL
+        if self.is_referral_link_active():
+            return ACTIVE_REFERRAL
+        else:
+            return EXPIRED_REFERRAL
 
     # Ordering With DateCreate
     class Meta:

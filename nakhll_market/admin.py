@@ -1,5 +1,6 @@
 from typing import Dict, Optional
-from import_export.admin import ExportActionMixin
+from import_export.admin import ExportActionMixin, ImportExportMixin
+from admin_auto_filters.filters import AutocompleteFilter
 from django.contrib import admin
 from django.db.models import Count
 from django.http import HttpRequest, HttpResponse
@@ -28,9 +29,10 @@ from nakhll_market.models import (
     Tag,
     ProductTag)
 from nakhll_market.resources import ProfileResource, ShopAdminResource
+from shop.resources import ProductResource
 
 # enable django permission setting in admin panel to define custom permissions
-admin.site.register(Permission)
+admin.site.register(Permission,)
 
 
 class ProfileHasShopFilter(admin.SimpleListFilter):
@@ -64,6 +66,8 @@ class ProfileAdmin(ExportActionMixin, admin.ModelAdmin):
         'BrithDay',
         'Image',
         'ImageNationalCard',
+        'expiration_date_of_referral_link',
+        'refer_code',
     )
     search_fields = (
         'MobileNumber',
@@ -103,7 +107,8 @@ class ShopProductCountFilter(admin.SimpleListFilter):
             ({'annoatate_products_count__lt': '10'}, 'کمتر از 10 محصول'),
             ({'annoatate_products_count__lt': '50'}, 'کمتر از 50 محصول'),
             ({'annoatate_products_count__lt': '100'}, 'کمتر از 100 محصول'),
-            ({'annoatate_products_count__gte': '100'}, '100 و یا بیشتر از 100 محصول'),
+            ({'annoatate_products_count__gte': '100'},
+             '100 و یا بیشتر از 100 محصول'),
         ]
 
     def queryset(self, request, queryset):
@@ -144,7 +149,6 @@ class ShopAdmin(ExportActionMixin, admin.ModelAdmin):
         'Publish',
         'DateCreate',
         'DateUpdate',
-        ShopProductCountFilter,
     )
     search_fields = ('Title', 'Slug', 'FK_ShopManager__username')
     search_help_text = 'جستجو براساس عنوان و شناسه حجره یا نام کاربری مدیر'
@@ -210,8 +214,13 @@ class ProductBannerInline(admin.StackedInline):
     extra = 1
 
 
+class ShopProductsFilter(AutocompleteFilter):
+    title = ' نام حجره خروجی اکسل محصولات را دریافت کنید'
+    field_name = 'FK_Shop'
+
+
 @admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
+class ProductAdmin(ExportActionMixin, admin.ModelAdmin):
     autocomplete_fields = [
         'FK_User',
         'FK_Shop',
@@ -225,18 +234,19 @@ class ProductAdmin(admin.ModelAdmin):
         'Status',
         'DateCreate',
         'Publish')
-    list_filter = ('Status', 'Publish', 'Available', 'DateCreate', 'DateUpdate')
+    list_filter = ('Status', 'Publish', 'Available',
+                   'DateCreate', 'DateUpdate', ShopProductsFilter, )
     search_fields = ('Title', 'Slug', 'Description', 'Bio', 'Story')
     ordering = ['ID', 'DateCreate', 'DateUpdate']
     inlines = [ProductBannerInline, ]
-    actions = ["un_publish_product", "publish_product"]
+    actions = ["un_publish_product", "publish_product", ]
 
     def get_queryset(self, request: HttpRequest):
-        return super().get_queryset(request)\
-            .select_related('FK_Shop').select_related('category')\
-            .prefetch_related('post_range_cities',
-                              'post_range_cities__big_city',
-                              'post_range_cities__big_city__state',)
+        return super().get_queryset(
+            request).select_related('FK_Shop').select_related(
+                'category').prefetch_related('post_range_cities',
+                                             'post_range_cities__big_city',
+                                             'post_range_cities__big_city__state',)
 
     @admin.action(description='از حالت انتشار خارج کن', )
     def un_publish_product(self, request, queryset):
@@ -411,7 +421,8 @@ class LandingImageAdmin(ModelAdmin):
 
 @admin.register(Slider)
 class SliderAdmin(ModelAdmin):
-    list_display = ('Title', 'Description', 'Location', 'DateCreate', 'Publish')
+    list_display = ('Title', 'Description', 'Location',
+                    'DateCreate', 'Publish')
     list_filter = ('Location', 'DateCreate', 'DtatUpdate', 'Publish')
     ordering = ['DateCreate', 'id', 'Publish', 'Title', 'Location']
 

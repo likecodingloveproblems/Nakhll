@@ -4,6 +4,7 @@ from django.apps import apps
 from django.utils.translation import ugettext as _
 from rest_framework.response import Response
 from rest_framework.validators import ValidationError
+from nakhll.settings import PEC_CALLBACK_URL
 from nakhll_market.interface import AlertInterface
 from .base_payment import PaymentMethodAbstract, SUCCESS_STATUS, FAILURE_STATUS
 from .models import (
@@ -23,7 +24,7 @@ class PecPaymentMethod(PaymentMethodAbstract):
         super().__init__(args, kwargs)
         # TODO: These errors should be handled better with better messages
         pec_pin = os.environ.get('PEC_PIN')
-        callback_url = format(os.environ.get('CALLBACKURL'))
+        callback_url = PEC_CALLBACK_URL
         if not pec_pin:
             raise ValidationError(
                 _('در حال حاضر امکان اتصال به درگاه بانکی وجود ندارد'))

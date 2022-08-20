@@ -790,6 +790,12 @@ class UserProfileViewSet(viewsets.GenericViewSet):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @action(detail=False, methods=['patch'])
+    def extend_referral_link_expiration_date(self, request):
+        profile = request.user.User_Profile
+        profile.extend_referral_link()
+        return Response('')
+
 
 class UserOrderHistory(viewsets.GenericViewSet,
                        mixins.ListModelMixin, mixins.RetrieveModelMixin):

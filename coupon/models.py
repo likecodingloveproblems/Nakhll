@@ -52,7 +52,8 @@ class Coupon(models.Model, CouponValidation):
     presentage = models.IntegerField(_('درصد تخفیف'), default=0)
     creator = models.ForeignKey(User, verbose_name=_('سازنده کوپن'), on_delete=models.SET_NULL,
                                 null=True, blank=True, related_name='coupon_creator')
-    available = models.BooleanField(verbose_name='وضعیت ثبت کوپن', default=True)
+    available = models.BooleanField(
+        verbose_name='وضعیت ثبت کوپن', default=True)
     log = models.TextField(_('گزارش'), null=True, blank=True)
     created_at = models.DateTimeField(_('تاریخ ثبت'), auto_now_add=True)
     updated_at = models.DateTimeField(_('تاریخ بروزرسانی'), auto_now=True)
@@ -71,6 +72,15 @@ class Coupon(models.Model, CouponValidation):
         super().save(*args, **kwargs)
         if not hasattr(self, 'constraint'):
             CouponConstraint.objects.create(coupon=self)
+
+    def add_user(self, user):
+        """add user to this coupon allowed users
+        check coupon has constraint, if not create one,
+        add user to constraint users 
+        """
+        if not hasattr(self, 'constraint'):
+            CouponConstraint.objects.create(coupon=self)
+        self.constraint.users.add(user)
 
 
 class CouponConstraint(models.Model):
@@ -115,23 +125,36 @@ class CouponConstraint(models.Model):
     class Meta:
         verbose_name = _('محدودیت تخفیف')
         verbose_name_plural = _('محدودیت‌های تخفیف')
-    coupon = models.OneToOneField(Coupon, on_delete=models.CASCADE, related_name='constraint', verbose_name=_('کوپن'))
-    users = models.ManyToManyField(User, verbose_name=_('کاربران'), related_name='coupons', blank=True)
-    shops = models.ManyToManyField(Shop, verbose_name=_('حجره'), related_name='coupons', blank=True)
-    products = models.ManyToManyField(Product, verbose_name=_('محصول'), related_name='coupons', blank=True)
+    coupon = models.OneToOneField(
+        Coupon, on_delete=models.CASCADE, related_name='constraint', verbose_name=_('کوپن'))
+    users = models.ManyToManyField(User, verbose_name=_(
+        'کاربران'), related_name='coupons', blank=True)
+    shops = models.ManyToManyField(Shop, verbose_name=_(
+        'حجره'), related_name='coupons', blank=True)
+    products = models.ManyToManyField(Product, verbose_name=_(
+        'محصول'), related_name='coupons', blank=True)
     # categories = models.ManyToManyField(Category, verbose_name=_('دسته بندی'), related_name='coupons') TODO
-    valid_from = models.DateField(_('تاریخ شروع'), default=now, null=True, blank=True)
+    valid_from = models.DateField(
+        _('تاریخ شروع'), default=now, null=True, blank=True)
     valid_to = models.DateField(_('تاریخ پایان'), null=True, blank=True)
     budget = models.IntegerField(_('بودجه کل کوپن'), default=0)
-    max_usage_per_user = models.IntegerField(default=1, verbose_name=_('حداکثر دفعات استفاده کاربر'))
-    max_usage = models.IntegerField(default=5, verbose_name=_('حداکثر دفعات استفاده'))
-    min_purchase_amount = models.BigIntegerField(_('حداقل مقدار خرید'), null=True, blank=True)
-    min_purchase_count = models.IntegerField(_('حداقل تعداد خرید'), null=True, blank=True)
-    max_purchase_amount = models.BigIntegerField(_('حداکثر مقدار خرید'), null=True, blank=True)
-    max_purchase_count = models.IntegerField(_('حداکثر تعداد خرید'), null=True, blank=True)
-    cities = models.ManyToManyField('nakhll_market.City', verbose_name=_('شهرها'), related_name='coupons', blank=True)
+    max_usage_per_user = models.IntegerField(
+        default=1, verbose_name=_('حداکثر دفعات استفاده کاربر'))
+    max_usage = models.IntegerField(
+        default=5, verbose_name=_('حداکثر دفعات استفاده'))
+    min_purchase_amount = models.BigIntegerField(
+        _('حداقل مقدار خرید'), null=True, blank=True)
+    min_purchase_count = models.IntegerField(
+        _('حداقل تعداد خرید'), null=True, blank=True)
+    max_purchase_amount = models.BigIntegerField(
+        _('حداکثر مقدار خرید'), null=True, blank=True)
+    max_purchase_count = models.IntegerField(
+        _('حداکثر تعداد خرید'), null=True, blank=True)
+    cities = models.ManyToManyField('nakhll_market.City', verbose_name=_(
+        'شهرها'), related_name='coupons', blank=True)
 
-    extra_data = models.JSONField(_('اطلاعات اضافه'), null=True, blank=True, encoder=DjangoJSONEncoder)
+    extra_data = models.JSONField(
+        _('اطلاعات اضافه'), null=True, blank=True, encoder=DjangoJSONEncoder)
 
 
 class CouponUsage(models.Model):
@@ -141,7 +164,8 @@ class CouponUsage(models.Model):
         verbose_name_plural = _('استفاده از کوپن های تخفیف')
     invoice = models.ForeignKey(Invoice, verbose_name=_(
         'سفارش'), related_name='coupon_usages', on_delete=models.CASCADE)
-    coupon = models.ForeignKey(Coupon, verbose_name=_('کوپن تخفیف'), on_delete=models.CASCADE, related_name='usages')
+    coupon = models.ForeignKey(Coupon, verbose_name=_(
+        'کوپن تخفیف'), on_delete=models.CASCADE, related_name='usages')
     used_datetime = models.DateTimeField(_('تاریخ استفاده'), default=now)
     price_applied = models.IntegerField(_('تخفیف اعمال شده'), default=0)
     objects = CouponUsageManager

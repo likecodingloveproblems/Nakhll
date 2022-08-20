@@ -14,7 +14,8 @@ class CartItemSerializer(serializers.ModelSerializer):
     This is used to create and update CartItem objects
     """
     cart = serializers.PrimaryKeyRelatedField(read_only=True)
-    product = serializers.PrimaryKeyRelatedField(many=False, read_only=False, queryset=Product.objects.all())
+    product = serializers.PrimaryKeyRelatedField(
+        many=False, read_only=False, queryset=Product.objects.all())
 
     class Meta:
         model = CartItem
@@ -63,9 +64,22 @@ class CartSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cart
-        fields = ('user', 'cart_price', 'cart_old_price',
-                  'address', 'logistic_details', 'coupon_details',
-                  'ordered_items', 'count', 'total_price')
+        fields = (
+            'user',
+            'cart_price',
+            'cart_old_price',
+            'address',
+            'logistic_details',
+            'coupon_details',
+            'ordered_items',
+            'count',
+            'total_price',
+            'paid_by_coin',
+            'coin_price',
+            'coin_amount',
+            'payable_coin_price',
+            'payable_coin_amount',
+        )
 
     def get_count(self, object):
         """Get total count of items in cart"""
@@ -83,7 +97,8 @@ class CartWriteSerializer(serializers.ModelSerializer):
 
     This is a write serializer for cart objects.
     """
-    address = serializers.PrimaryKeyRelatedField(queryset=Address.objects.all(), required=False)
+    address = serializers.PrimaryKeyRelatedField(
+        queryset=Address.objects.all(), required=False)
     coupon = serializers.SlugRelatedField(slug_field='code', error_messages={
         'does_not_exist': 'کوپن تخفیف وارد شده نامعتبر است',
     }, required=False, queryset=Coupon.objects.all())
@@ -93,4 +108,5 @@ class CartWriteSerializer(serializers.ModelSerializer):
         fields = (
             'address',
             'coupon',
+            'paid_by_coin',
         )

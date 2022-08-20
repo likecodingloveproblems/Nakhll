@@ -4,6 +4,11 @@ from nakhll_market.models import Product
 
 
 class ProductResource(ModelResource):
+    id = Field(
+        attribute='ID',
+        column_name='id',
+        readonly=True
+    )
     title = Field(
         attribute='title',
         column_name='عنوان',
@@ -52,3 +57,13 @@ class ProductResource(ModelResource):
 
     class Meta:
         model = Product
+        fields = [
+            'title',
+            'barcode',
+            'price',
+            'old_price',
+            'inventory',
+            'net_weight',
+            'weight_with_packing',
+            'category_id',
+            'publish']

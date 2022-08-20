@@ -9,7 +9,10 @@ from django.utils import timezone
 from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth.models import User
 from django_jalali.db import models as jmodels
+from bank.constants import RequestTypes
+from bank.views import deposit_user
 from cart.managers import CartManager
+from invoice.constants import PURCHASE_REWARD, PURCHASE_VOLUME_LIMIT, PURCHASE_VOLUME_REWARD
 from nakhll.utils import datetime2jalali
 from nakhll_market.interface import AlertInterface
 from nakhll_market.models import Category, Product, Shop
@@ -18,11 +21,10 @@ from payoff.interfaces import PaymentInterface
 from payoff.exceptions import (
     NoAddressException, InvoiceExpiredException,
     InvalidInvoiceStatusException, NoItemException,
-    OutOfPostRangeProductsException
 )
-from invoice.interfaces import AccountingInterface
 from invoice.managers import AccountingManager, InvoiceItemManager
-from logistic.models import Address, ShopLogisticUnit
+from logistic.models import ShopLogisticUnit
+from refer.models import ReferrerPurchaseEvent
 from sms.services import Kavenegar
 
 logger = logging.getLogger(__name__)
@@ -149,6 +151,12 @@ class Invoice(models.Model):
     logistic_price = models.DecimalField(
         _('هزینه حمل و نقل'),
         max_digits=12, decimal_places=0, default=0)
+    coin_price = models.DecimalField(
+        _('مبلغ سکه های پرداخت شده'),
+        max_digits=12, decimal_places=0, default=0)
+    coin_amount = models.IntegerField(
+        _('coins amount'), default=0
+    )
     created_datetime = models.DateTimeField(
         _('تاریخ ایجاد فاکتور'), auto_now_add=True)
     payment_request_datetime = models.DateTimeField(
@@ -220,11 +228,11 @@ class Invoice(models.Model):
 
     @property
     def final_price(self):
-        """ Total amount of cart_price + logistic - coupon """
+        """ Total amount of cart_price + logistic - coupon - coin"""
         total_price = self.invoice_price_with_discount
         logistic_price = self.logistic_price
         coupon_price = self.coupons_total_price
-        return total_price + logistic_price - coupon_price
+        return total_price + logistic_price - coupon_price - self.coin_price
 
     @property
     def jpayment_datetime(self):
@@ -299,6 +307,7 @@ class Invoice(models.Model):
         self.status = self.Statuses.AWAIT_SHOP_APPROVAL
         self.payment_datetime = timezone.now()
         self.save()
+        self.give_rewarded_coins()
 
     def _reduce_inventory(self):
         """Reduce bought items from shops stock"""
@@ -357,6 +366,44 @@ class Invoice(models.Model):
             cart.add_product(item.product)
         cart.reset_coupons()
         cart.reset_address()
+
+    def give_rewarded_coins(self):
+        """Give rewarded coins to user for this purchase"""
+        if self._is_user_rewarded():
+            self._give_referrer_coins()
+            self._give_buyer_coins()
+
+    def _is_user_rewarded(self):
+        """this will check that this invoice will give coin reward to users or not
+        Only referrer and referred users will get coins for purchase"""
+        return self.user.User_Profile.is_referred
+
+    def _give_referrer_coins(self):
+        """Give referrer purchase coins"""
+        ReferrerPurchaseEvent.objects.create(
+            referrer=self.user.User_Profile.referrer,
+            invoice=self
+        )
+
+    def _give_buyer_coins(self):
+        """give purchase coins"""
+        deposit_user(
+            user=self.user,
+            request_type=RequestTypes.PURCHASE_REWARD,
+            amount=self.reward_coins_amount,
+            description=self.reward_description
+        )
+
+    @property
+    def reward_coins_amount(self):
+        """Calculate rewarded coins for this invoice based on the final price"""
+        return self.final_price // PURCHASE_VOLUME_LIMIT * PURCHASE_VOLUME_REWARD + PURCHASE_REWARD
+
+    @property
+    def reward_description(self):
+        return f'id:{self.id} - payment datetime:{self.payment_datetime} -\
+                user:{self.user.username} - final price:{self.final_price} -\
+                coins:{self.reward_coins}'
 
 
 class InvoiceItem(models.Model):

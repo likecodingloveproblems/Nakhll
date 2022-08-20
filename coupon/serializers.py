@@ -14,9 +14,15 @@ class CouponSerializer(serializers.ModelSerializer):
         )
 
 
+class GiftCouponSerializer(serializers.Serializer):
+    code = serializers.CharField(max_length=100)
+    mobile = serializers.CharField(max_length=11)
+
+
 class CouponUsageSerializer(serializers.ModelSerializer):
     """Serializer for CouponUsage model"""
-    coupon = serializers.SlugRelatedField(slug_field='code', read_only=True, many=False)
+    coupon = serializers.SlugRelatedField(
+        slug_field='code', read_only=True, many=False)
 
     class Meta:
         model = CouponUsage

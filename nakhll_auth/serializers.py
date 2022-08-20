@@ -7,6 +7,16 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import AuthRequest
 
 
+class GetUserMixin:
+    def _get_user(self, auth):
+        try:
+            return User.objects.get(username=auth.mobile)
+        except User.DoesNotExist:
+            raise serializers.ValidationError(
+                'برای این درخواست هیچ کاربری پیدا نشد',
+                code=status.HTTP_400_BAD_REQUEST)
+
+
 class BeginAuthSerializer(serializers.ModelSerializer):
     """This serializer only get mobile and return mobile_status and auth_key
 
@@ -17,17 +27,18 @@ class BeginAuthSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = AuthRequest
-        fields = ('mobile', 'auth_key', 'mobile_status', )
+        fields = ('mobile', 'auth_key', 'mobile_status', 'referral_code')
         read_only_fields = ('auth_key', 'mobile_status', )
 
     def to_representation(self, obj):
         """Remove mobile number from output of serializer data"""
         ret = super(BeginAuthSerializer, self).to_representation(obj)
         ret.pop('mobile')
+        ret.pop('referral_code')
         return ret
 
 
-class CompleteAuthSerializer(serializers.ModelSerializer):
+class CompleteAuthSerializer(serializers.ModelSerializer, GetUserMixin):
     """Serializer data to complete authentication
 
     Args:
@@ -50,7 +61,8 @@ class CompleteAuthSerializer(serializers.ModelSerializer):
         self.instance = self._get_auth_request(auth_key)
         if not self.auth_is_valid(self.instance, user_key):
             raise serializers.ValidationError(
-                {'password': 'اطلاعات برای احراز هویت معتبر نیست'}, code=status.HTTP_401_UNAUTHORIZED)
+                {'password': 'اطلاعات برای احراز هویت معتبر نیست'},
+                code=status.HTTP_401_UNAUTHORIZED)
         return data
 
     def auth_is_valid(self, auth_request, user_key):
@@ -63,16 +75,23 @@ class CompleteAuthSerializer(serializers.ModelSerializer):
     def _get_auth_request(self, auth_key):
         """Using auth_key try to get the initial request of user"""
         try:
-            return AuthRequest.objects.get(auth_key=auth_key, request_status=AuthRequest.RequestStatuses.PENDING)
+            return AuthRequest.objects.get(
+                auth_key=auth_key,
+                request_status=AuthRequest.RequestStatuses.PENDING)
         except AuthRequest.DoesNotExist:
-            raise serializers.ValidationError('درخواستی برای احراز هویت وجود ندارد', code=status.HTTP_400_BAD_REQUEST)
+            raise serializers.ValidationError(
+                'درخواستی برای احراز هویت وجود ندارد',
+                code=status.HTTP_400_BAD_REQUEST)
 
     def __validate_password(self, auth_request, user_key):
-        return bool(authenticate(username=auth_request.mobile, password=user_key))
+        return bool(
+            authenticate(
+                username=auth_request.mobile, password=user_key))
 
     def __validate_code(self, auth_request, user_key):
         if timezone.now() > auth_request.expire_datetime:
-            raise serializers.ValidationError('کد منقضی شده است', code=status.HTTP_401_UNAUTHORIZED)
+            raise serializers.ValidationError(
+                'کد منقضی شده است', code=status.HTTP_401_UNAUTHORIZED)
         return bool(user_key == auth_request.sms_code)
 
     def to_representation(self, obj):
@@ -83,7 +102,7 @@ class CompleteAuthSerializer(serializers.ModelSerializer):
         return ret
 
 
-class PasswordSerializer(serializers.Serializer):
+class PasswordSerializer(serializers.Serializer, GetUserMixin):
     """Serializer to get new password from user and set as user's password
 
     This action needs authentication, so user should first get secret_key in order
@@ -114,17 +133,14 @@ class PasswordSerializer(serializers.Serializer):
     def validate_auth_secret(self, value):
         self.auth = AuthRequest.objects.get_by_secret(value)
         if not self.auth:
-            raise serializers.ValidationError('هیچ درخواست احراز هویتی برای درخواست شما یافت نشد. لطفا مجددا تلاش کنید')
+            raise serializers.ValidationError(
+                'هیچ درخواست احراز هویتی برای درخواست شما یافت نشد. لطفا مجددا تلاش کنید')
         if self.auth.is_expired():
-            raise serializers.ValidationError('درخواست احراز هویت منقضی شده است', code=status.HTTP_403_FORBIDDEN)
+            raise serializers.ValidationError(
+                'درخواست احراز هویت منقضی شده است',
+                code=status.HTTP_403_FORBIDDEN)
         self.user = self._get_user(self.auth)
         return value
-
-    def _get_user(self, auth):
-        try:
-            return User.objects.get(username=auth.mobile)
-        except User.DoesNotExist:
-            raise serializers.ValidationError('برای این درخواست هیچ کاربری پیدا نشد', code=status.HTTP_400_BAD_REQUEST)
 
     def to_representation(self, obj):
         ret = super(GetTokenSerializer, self).to_representation(obj)
@@ -132,11 +148,11 @@ class PasswordSerializer(serializers.Serializer):
         return ret
 
 
-class GetTokenSerializer(serializers.Serializer):
+class GetTokenSerializer(serializers.Serializer, GetUserMixin):
     """Get authentication tokens (access and refresh) which user can login with
 
     This action needs authentication, so user should first get secret_key in order to perform
-    this action. After that, user will get a pair of access and refresh token which is valid 
+    this action. After that, user will get a pair of access and refresh token which is valid
     for a period of time (adjustable in :attr:`nakhll.settings.ACCESS_TOKEN_EXPIRE_MINUTES`
     and :attr:`nakhll.settings.REFRESH_TOKEN_EXPIRE_MINUTES`)
 
@@ -166,20 +182,21 @@ class GetTokenSerializer(serializers.Serializer):
     def get_token(self, user):
         return RefreshToken.for_user(user)
 
-    def _get_user(self, auth):
-        try:
-            return User.objects.get(username=auth.mobile)
-        except User.DoesNotExist:
-            raise serializers.ValidationError('برای این درخواست هیچ کاربری پیدا نشد', code=status.HTTP_400_BAD_REQUEST)
-
     def _get_auth_request(self, auth_secret):
         try:
-            return AuthRequest.objects.get(auth_secret=auth_secret, request_status=AuthRequest.RequestStatuses.PENDING)
-        except:
-            raise serializers.ValidationError('درخواستی برای احراز هویت وجود ندارد', code=status.HTTP_400_BAD_REQUEST)
+            return AuthRequest.objects.get(
+                auth_secret=auth_secret,
+                request_status=AuthRequest.RequestStatuses.PENDING)
+        except BaseException:
+            raise serializers.ValidationError(
+                'درخواستی برای احراز هویت وجود ندارد',
+                code=status.HTTP_400_BAD_REQUEST)
 
     def _validate_auth_request(self):
         if not self.auth:
-            raise serializers.ValidationError('هیچ درخواست احراز هویتی برای درخواست شما یافت نشد. لطفا مجددا تلاش کنید')
+            raise serializers.ValidationError(
+                'هیچ درخواست احراز هویتی برای درخواست شما یافت نشد. لطفا مجددا تلاش کنید')
         if self.auth.is_expired():
-            raise serializers.ValidationError('درخواست احراز هویت منقضی شده است', code=status.HTTP_403_FORBIDDEN)
+            raise serializers.ValidationError(
+                'درخواست احراز هویت منقضی شده است',
+                code=status.HTTP_403_FORBIDDEN)

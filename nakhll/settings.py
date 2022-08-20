@@ -71,13 +71,14 @@ THIRD_PARTY_APPS = [
     'imagekit',
     'compressor',
     'mathfilters',
-    'django_prometheus',
     'django_extensions',
     'colorfield',
     'django_rename_app',
     'drf_yasg',
     'import_export',
+    'pgtrigger',
     'dbbackup',
+    'admin_auto_filters',
 ]
 
 NAKHLL_APPS = [
@@ -96,12 +97,13 @@ NAKHLL_APPS = [
     'shop',
     'sms',
     'reports',
+    'bank',
+    'refer',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + NAKHLL_APPS
 
 MIDDLEWARE = [
-    'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -111,7 +113,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'admin_reorder.middleware.ModelAdminReorder',
-    'django_prometheus.middleware.PrometheusAfterMiddleware',
 ]
 
 ADMIN_REORDER = (
@@ -166,6 +167,8 @@ ADMIN_REORDER = (
         'shop.ShopFeatureInvoice',
         'shop.ShopLanding',
     )},
+    {'app': 'bank', 'label': 'بانک'},
+    {'app': 'refer', 'label': 'امتیازات بازاریاب'},
     {'app': 'Ticketing', 'label': 'بخش پشتیبانی و گزارشات', 'models': (
         'Ticketing.Ticketing',
     )},
@@ -213,19 +216,6 @@ IMAGEKIT_CACHEFILE_DIR = 'media/CACHE/images'
 PERSISTENT_STORAGE = "/mnt/shared-volume"
 
 DATABASES = {
-    # "mysql": {
-    #     "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.mysql"),
-    #     "NAME": os.environ.get("SQL_DATABASE", os.path.join(BASE_DIR, "db.sqlite3")),
-    #     "USER": os.environ.get("SQL_USER", "user"),
-    #     "PASSWORD": os.environ.get("SQL_PASSWORD", "password"),
-    #     "HOST": os.environ.get("SQL_HOST", "localhost"),
-    #     "PORT": os.environ.get("SQL_PORT", "3306"),
-    #     'OPTIONS': {
-    #         # Tell MySQLdb to connect with 'utf8mb4' character set
-    #         'charset': 'utf8mb4',
-    #     },
-    #     'CONN_MAX_AGE': None,
-    # },
     'default': {
         'ENGINE': os.environ.get('POSTGRES_ENGINE', 'django.db.backends.postgresql'),
         'NAME': os.environ.get('POSTGRES_DB', 'nakhlldb'),
@@ -430,5 +420,6 @@ if DEBUG:
         "SHOW_TOOLBAR_CALLBACK": lambda request: True,
     }
 
-SEP_CALLBACK_URL = 'https://nakhll.com/payoff/sep/callback/'
+PEC_CALLBACK_URL = os.environ.get("PEC_CALLBACK_URL")
+SEP_CALLBACK_URL = os.environ.get("SEP_CALLBACK_URL")
 SEP_TERMINAL_ID = os.environ.get("SEP_TERMINAL_ID")
