@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from shop import models as shop_models
 import os
 from functools import cached_property
 import datetime
@@ -35,6 +36,7 @@ OUTOFSTOCK_LIMIT_NUM = 5
 
 
 def attach_domain(url):
+    """Get domain name from :attr:`nakhll.settings.DOMAIN_NAME` and attach it to url"""
     domain = settings.DOMAIN_NAME
     # Cut domain trailing slash
     domain = domain if domain[-1] != '/' else domain[:-1]
@@ -77,11 +79,19 @@ def upload_path(instance, filename):
 
 
 class CategoryManager(models.Manager):
+    """Manager class for Category model"""
+
     def available_category(self):
+        """Return all categories that are available for use"""
         queryset = self.get_queryset()
         return queryset.filter(available=True)
 
     def all_childs(self, category):
+        """Get a category object and return all its childs as a flat list
+
+        This is a recursive function without any treshold or limitation to stop recursion. So if you have a category 
+        with a lot of childs, it may take a long time to return all childs.
+        """
         childs = []
         for child in category.get_sub_category():
             childs.append(child)
@@ -89,15 +99,30 @@ class CategoryManager(models.Manager):
         return childs
 
     def parents_to_root(self, category):
+        """Return all parents of a category till the root as a flat list
+
+        This is a recursive function without any treshold or limitation to stop recursion. So if you have a category
+        that is deep in the tree, it may take a long time to return all parents.
+        """
         if category.parent is None:
             return [category]
         else:
             return self.parents_to_root(category.parent) + [category]
 
     def get_root_categories(self):
+        """Return all root categories that are available"""
         return self.available_category().filter(parent=None).order_by('order')
 
     def categories_with_product_count(self, query=None, shop=None):
+        """Return all categories with the number of products in each one
+
+        Args:
+            query (str, optional): Search in products which query is in their Title. None means no search.
+            shop (Shop, optional): Shop to filter products. None means no filter on shop.
+
+        Returns:
+            QuerySet (Category): All categories with the number of products in each one
+        """
         filter_query = Q()
         if query:
             filter_query &= Q(products__Title__contains=query)
@@ -113,6 +138,11 @@ class CategoryManager(models.Manager):
         return queryset.filter(products_count__gt=0).order_by('-products_count')
 
     def all_subcategories(self, categories):
+        """Get a category object and return all its childs as a flat list
+
+        This is a recursive function without any treshold or limitation to stop recursion. So if you have a category 
+        with a lot of childs, it may take a long time to return all childs.
+        """
         subcategories = []
         for category in categories:
             subcategories.append(category)
@@ -122,10 +152,25 @@ class CategoryManager(models.Manager):
         return subcategories
 
     def all_ordered(self):
+        """Return all available categories ordered by their order field"""
         return self.available_category().order_by('order')
 
 
 class Category(models.Model):
+    """Category model for products
+
+    Attributes:
+        name (str): Name of the category
+        slug (str): Slug of the category
+        parent (Category, optional): Parent category of this category. None means this category is a root category
+        description (str, optional): Description of the category
+        image (ImageField, optional): Image of the category
+        image_thumbnail (ImageField, optional): Thumbnail of the category image
+        available = (bool): If this category is available for use or not. Default is True
+        market_uuid (str, optional): 
+        submarket_uuid (str, optional):
+        order (int): Order of the category in the list of categories
+    """
     class Meta:
         verbose_name = "دسته بندی"
         verbose_name_plural = "دسته بندی ها"
@@ -176,12 +221,14 @@ class Category(models.Model):
 # ----------------------------------------------------------------------------------------------------------------------------------
 
 class ShopManager(models.Manager):
+    """Manager for the Shop model"""
     FEW_HOURS_AGO = timezone.make_aware(
         datetime.datetime.now() -
         datetime.timedelta(
             hours=15))
 
     def shop_managers_info(self):
+        """Get informations of all shop managers"""
         queryset = self.get_queryset()
         return queryset.values(
             'FK_ShopManager__first_name',
@@ -194,6 +241,7 @@ class ShopManager(models.Manager):
         )
 
     def shop_managers_info_marketing(self):
+        """Get informations of all shop managers for marketing team"""
         queryset = self.get_queryset()
         return queryset.values(
             'FK_ShopManager__first_name',
@@ -217,6 +265,7 @@ class ShopManager(models.Manager):
             Image='static/Pictures/DefaultShop.png')) .annotate(number_sale=Sum('ShopProduct__Factor_Product__ProductCount')) .order_by('-number_sale')[:5]
 
     def get_random_shops(self):
+        """Get 12 random shops from the database, excluding the ones that have been created less than 15 Hours ago"""
         # Shop.objects\
         # .filter(Publish = True, Available = True)\
         # .annotate(product_count = Count('ShopProduct'))\
@@ -280,11 +329,49 @@ class ShopManager(models.Manager):
         return shops
 
     def public_shops(self):
+        """Return all the public shops"""
         return self.filter(Publish=True, Available=True)
 
 
 # Shop (حجره) Model
 class Shop(models.Model):
+    """Shop model in Nakhll
+
+    Attributes:
+        ID (AutoField): primary key of shop model - UUID field
+        FK_ShopManager (ForeignKey): Foreign key to the User model, who is the owner of this shop
+        Title (CharField): Title of the shop
+        Slug (SlugField): Slug of the shop
+        Description (TextField): Description of the shop
+        Image (ImageField): Image of the shop
+        Image_thumbnail (ImageField): Thumbnail of the shop
+        NewImage (ImageField): DEPRECATED, Previously used in django template system
+        ColorCode (CharField): Color code of the shop
+        Bio (TextField): Bio of the shop
+        state_old (CharField): DEPRECATED, Old state of the shop in char mode
+        big_city_old (CharField): DEPRECATED, Old big city of the shop in char mode
+        city_old (CharField): DEPRECATED, Old city of the shop in char mode
+        State (CharField): State of the shop, foreign key to the State model
+        BigCity (CharField): Big city of the shop, foreign key to the BigCity model
+        City (CharField): City of the shop, foreign key to the City model
+        Location (CharField): DEPRECATED
+        Point (PointField): DEPRECATED
+        Holidays (CharField): DEPRECATED
+        DateCreate (DateTimeField): Date of creation of the shop
+        DateUpdate (DateTimeField): Date of update of the shop
+        in_campaign (BooleanField): If the shop is in campaign or not, Marketing team can use this field to group some shops for their plans
+        Edite (BooleanField): DEPRECATED
+        Available (BooleanField): If the shop is available or not. This field is editable by the shop owner
+        Publish (BooleanField): If the shop is publish or not. This field is editable by the staff
+        FK_User (ForeignKey): Foreign key to the User model who is the creator or editor of the shop
+        CanselCount (IntegerField): DEPRECATED
+        CanselFirstDate (DateTimeField): DEPRECATED
+        LimitCancellationDate (DateTimeField): DEPRECATED
+        documents (FileField):
+        show_contact_info (BooleanField): If we allow to show the contact info of the shop to buyer or not
+        is_landing (BooleanField): If the shop has landing page or not
+        has_product_group_add_edit_permission (BooleanField): If the shop has permission to create or edit products using bulk system or not
+    """
     objects = ShopManager()
     ID = models.UUIDField(
         primary_key=True,
@@ -497,26 +584,32 @@ class Shop(models.Model):
 
     @property
     def date_created(self):
+        """Return the datetime of the object creation in Jalali."""
         return datetime2jalali(self.DateCreate)
 
     @property
     def date_updated(self):
+        """Return the last update datetime of the object in Jalali."""
         return datetime2jalali(self.DateUpdate)
 
     @property
     def total_sell(self):
+        """Return the total sell amount of the object in Jalali."""
         return self.invoice_model.objects.shop_total_sell_amount(self)
 
     @property
     def last_sell_date(self):
+        """Return the last sell date of the object in Jalali."""
         return self.invoice_model.objects.shop_last_sell_date(self)
 
     @property
     def manager_last_login(self):
+        """Return the last login datetime of the object in Jalali."""
         return datetime2jalali(self.FK_ShopManager.last_login)
 
     @property
     def manager_mobile_number(self):
+        """Return the mobile number of the shop manager."""
         if self.FK_ShopManager and hasattr(self.FK_ShopManager, 'User_Profile'):
             return self.FK_ShopManager.User_Profile.MobileNumber
         return None
@@ -528,10 +621,12 @@ class Shop(models.Model):
 
     @cached_property
     def invoice_model(self):
+        """Get invoice model class."""
         from invoice.models import Invoice
         return Invoice
 
     def get_absolute_url(self):
+        """Return the absolute url of the Shop."""
         return attach_domain(f'/shop/{self.Slug}/')
 
     def Image_thumbnail_url(self):
@@ -556,6 +651,7 @@ class Shop(models.Model):
         return category
 
     def is_available(self):
+        """Return True if the shop is available."""
         return self.Available and self.Publish
 
     def __str__(self):
@@ -583,10 +679,12 @@ class Shop(models.Model):
         return category
 
     def get_products(self):
+        """Return all published products of the shop."""
         return self.ShopProduct.filter(
             Publish=True)
 
     def get_all_products(self):
+        """Return all products of the shop."""
         return self.ShopProduct.all()
 
     def get_all_products_for_view(self):
@@ -615,25 +713,29 @@ class Shop(models.Model):
             FK_User=self.FK_ShopManager).Image_thumbnail_url()
 
     def get_shop_manager_full_name(self):
+        """Get the full name of the shop manager."""
         return '{} {}'.format(self.FK_ShopManager.first_name,
                               self.FK_ShopManager.last_name)
 
     def get_active_landing(self):
+        """Get the active landing of the shop."""
         return self.landings.filter(
             status=shop_models.ShopLanding.Statuses.ACTIVE).first()
 
     def has_advertisement(self):
+        """Return True if the shop has active advertisement setting."""
         if hasattr(self, 'advertisement'):
             return self.advertisement.yektanet_status == self.advertisement.YektanetStatuses.ACTIVE
         return False
 
     def get_advertisement(self):
+        """Get the active advertisement of the shop."""
         if self.has_advertisement():
             return self.advertisement
         return None
 
     def delete_image(self) -> None:
-        """ Delete image
+        """Delete image
 
         This method delete image from storage and set image to Default image
         """
@@ -648,6 +750,13 @@ class Shop(models.Model):
 
 
 class ShopSocialMedia(models.Model):
+    """Social media links for shop
+
+    Attributes:
+        shop (Shop): Shop model
+        telegram (str): Telegram link
+        instagram (str): Instagram link
+    """
     class Meta:
         verbose_name = 'شبکه اجتماعی حجره'
         verbose_name_plural = 'شبکه‌های اجتماعی حجره'
@@ -680,6 +789,10 @@ class ShopSocialMedia(models.Model):
 # ShopBankAccount (حساب‌های حجره) Model
 
 def iban_validator(value):
+    """Validator for IBAN (International Bank Account Number) field.
+
+    Value must be all digits and its length must be equal to 24.
+    """
     if not value.isdigit():
         raise ValidationError(_(f'مقدار {value} باید فقط عدد باشد'))
     if len(value) != 24:
@@ -687,6 +800,15 @@ def iban_validator(value):
 
 
 class ShopBankAccount(models.Model):
+    """The bank account of the shop.
+
+    Each shop can have only one bank account. The Accountant team will use this bank account to transfer money to the shop.
+
+    Attributes:
+        shop (Shop): Shop model
+        iban (str): International Bank Account Number
+        owner (str): Owner name
+    """
     class Meta:
         verbose_name = 'حساب بانکی حجره'
         verbose_name_plural = 'حساب‌های حجره'
@@ -712,6 +834,7 @@ class ShopBankAccount(models.Model):
 
 
 class ProductManager(models.Manager):
+    """Manager for Product model."""
     FEW_HOURS_AGO = timezone.make_aware(
         datetime.datetime.now() -
         datetime.timedelta(
@@ -736,12 +859,14 @@ class ProductManager(models.Manager):
         return result[random_id]
 
     def get_last_created_products(self):
+        """Get 12 last created products. (within last 15 hours)"""
         return Product.objects \
             .filter(Publish=True, Available=True, OldPrice=0, Status__in=['1', '2', '3'],
                     DateCreate__lt=self.FEW_HOURS_AGO) \
             .order_by('-DateCreate')[:12]
 
     def get_last_created_discounted_products(self):
+        """Get 12 last created discounted products that have discount. (within last 15 hours)"""
         return Product.objects.filter(
             Publish=True, Available=True, Status__in=['1', '2', '3'],
             DateCreate__lt=self.FEW_HOURS_AGO).exclude(
@@ -749,6 +874,10 @@ class ProductManager(models.Manager):
             : 16]
 
     def available_products(self):
+        """Get all available products.
+
+        A product is avaiable if both itself and its shop is published and available.
+        """
         return self.filter(
             Publish=True,
             Available=True,
@@ -756,6 +885,9 @@ class ProductManager(models.Manager):
             FK_Shop__Publish=True)
 
     def get_random_products(self):
+        """Return 16 random products from available products that are created more than
+        :attr:`nakhll_market.models.ProductManager.FEW_HOURS_AGO`."""
+
         return self.available_products().filter(
             OldPrice=0,
             Status__in=['1', '2', '3'],
@@ -779,6 +911,13 @@ class ProductManager(models.Manager):
             return None
 
     def get_user_shop_products(self, user, shop, order=None):
+        """Get all products of a shop that belong to a user.
+
+        Args:
+            user (User): User model that products belong to.
+            shop (Shop): Shop model that products belong to.
+            order (str, Optional): Order by this field.
+        """
         queryset = self.get_queryset()
         if order and order in ['total_sell', 'title']:
             try:
@@ -796,45 +935,53 @@ class ProductManager(models.Manager):
         return self.filter(FK_Shop=shop, FK_Shop__FK_ShopManager=user)
 
     def user_shop_active_products(self, user, shop_slug):
+        """Get all active products of a shop that belong to a user."""
         return self.filter(
             FK_Shop__FK_ShopManager=user, FK_Shop__Slug=shop_slug,
             Available=True, Publish=True)
 
     def user_shop_inactive_products(self, user, shop_slug):
+        """Get all inactive products of a shop that belong to a user."""
         return self.filter(
             FK_Shop__FK_ShopManager=user, FK_Shop__Slug=shop_slug,
             Available=False, Publish=True)
 
     def nearly_outofstock_products(self, user, shop_slug):
+        """Get all products that are nearly out of stock of a shop that belong to a user.
+
+        There is a threshold of 10 products for all kind of products which is configurabale from:
+        :attr:`nakhll_market.models.OUTOFSTOCK_LIMIT_NUM`. Any published product that has less than
+        this threshold will be returned.
+        """
         return self.filter(FK_Shop__FK_ShopManager=user,
                            FK_Shop__Slug=shop_slug, Publish=True,
                            Inventory__lt=OUTOFSTOCK_LIMIT_NUM)
 
     def outofstock_products(self, user, shop_slug):
+        """Get all products that are out of stock of a shop that belong to a user."""
         return self.filter(FK_Shop__FK_ShopManager=user,
                            FK_Shop__Slug=shop_slug, Publish=True,
                            Inventory__lt=1)
 
     @staticmethod
     def is_product_available(product, count):
-        ''' Check if product is available and published and also have enough items in stock '''
+        """Check if product is available and published and also have enough items in stock."""
         return product.Available and product.Publish and product.Status != '4'
 
     @staticmethod
     def has_enough_items_in_stock(product, count):
-        ''' Check if product have enough items in stock '''
+        """Check if product have enough items in stock."""
         return (product.Status == '1' and product.inventory >= count) \
             or (product.Status in ['2', '3'])
 
     def is_product_list_valid(self, product_list):
-        ''' Check if products in product_list is available, published and have enough in stock
-            Optimization is important here. What I do now is first check for availability and
-            being published all in one query; so if a product is not avaiable or published, it
-            rejects the product_list and return False. However if this step is passed, it will
-            check every product count one by one.
-            Maybe it could be better if I check for product availability and being published
-            and product count one by one. I don't know...
-        '''
+        """Check if products in product_list is available, published and have enough in stock.
+
+        Optimization is important here. What we do now is first check for availability and being published all in one
+        query; so if a product is not avaiable or published, it rejects the product_list and return False. However if
+        this step is passed, it will check every product count one by one.
+        Maybe it could be better if we check for product availability and being published and product count one by one.
+        """
         product_ids = [x.get('product').id for x in product_list]
         if self.filter(
                 Q(ID__in=product_ids) and (
@@ -849,14 +996,21 @@ class ProductManager(models.Manager):
 
     @staticmethod
     def jsonify_product(product):
+        """Convert a product to json format."""
         if isinstance(product, Product):
             product = [product]
         return serializers.serialize('json', product, ensure_ascii=False)
 
     def all_public_products(self):
+        """Get all public products ordered by last updated datetime."""
         return self.filter(Publish=True, Available=True).order_by('-DateUpdate')
 
     def get_available_products(self):
+        """Get all available products.
+
+        A product is avaiable if both itself and its shop is published and available. Besides, there must be enough
+        item of this product in stock and the status of the product must be 1, 2 or 3.
+        """
         return self.get_queryset().filter(
             Publish=True, Available=True, Status__in=['1', '2', '3'],
             Inventory=True, FK_Shop__Available=True, FK_Shop__Publish=True)
@@ -868,6 +1022,7 @@ class ProductManager(models.Manager):
 
     @staticmethod
     def get_product(id, raise_exception=True):
+        """Get a product by id or raise Http404 exception if raise_exception is True, else return None."""
         try:
             return Product.objects.get(ID=id)
         except BaseException:
@@ -878,6 +1033,52 @@ class ProductManager(models.Manager):
 
 # Product (محصول) Model
 class Product(models.Model):
+    """Product model
+
+    Attributes:
+        ID (AutoField): Primary key of UUID.
+        Title (CharField): Title of the product.
+        Slug (SlugField): Slug of the product.
+        Story (TextField): DEPRECATED, Story of the product.
+        Description (TextField): Description of the product.
+        Bio (TextField): DEPRECATED, Bio of the product.
+        Image (ImageField): Main image of the product. Other images are stored in 
+            :class:`nakhll_market.models.ProductImage`.
+        Image_thumbnail (ImageField): Thumbnail of the main image of the product.
+        Image_medium (ImageField): Medium size of the main image of the product.
+        NewImage (ImageField): DEPRECATED
+        Catalog (FileField): DEPRECATED, Catalog file of the product.
+        FK_Shop (ForeignKey): Foreign key of the shop that this product belongs to.
+        category (ForeignKey): Foreign key of the category that this product belongs to.
+        Price (DecimalField): Price of the product.
+        OldPrice (DecimalField): Old price of the product which must be 0 or any value greater than :attr:`Price`.
+            Zero means this product doesn't have any discount, otherwise this product has a discount. 
+            In any case, the actual price of the product is :attr:`Price`.
+        Net_Weight (CharField): Net weight of the product without packaging.
+        Weight_With_Packing (CharField): Weight of the product with packaging.
+        Length_With_Packaging (CharField): DEPRECATED, Length of the product with packaging.
+        Width_With_Packaging (CharField): DEPRECATED, Width of the product with packaging.
+        Height_With_Packaging (CharField): DEPRECATED, Height of the product with packaging.
+        Inventory (IntegerField): Inventory of the product. We don't have Inventory system, so we just increase and 
+            decrease this field.
+        PostRangeType (CharField): DEPRECATED, Post range type of the product. Can be any value of :attr:`POSTRANGE_TYPE`.
+        Status (CharField): Status of the product. Can be any value of :attr:`PRODUCT_STATUS`.
+        DateCreate (DateTimeField): Date time of the creation of the product.
+        DateUpdate (DateTimeField): Date time of the last update of the product.
+        Edite (BooleanField): DEPRECATED, True if the product is edited, else False.
+        Available (BooleanField): True if the product is available, else False. This field editable by the shop owner.
+        Publish (BooleanField): True if the product is published, else False. This field editable by the staff.
+        FK_User (ForeignKey): Foreign key of the user that created, edited or confirmed this product.
+        PreparationDays (IntegerField): Total number of days to prepare the product.
+        post_range_cities (ManyToManyField): DEPRECATED, Cities that this product is available to post.
+        is_advertisement (BooleanField): ???
+        barcode (CharField): Barcode of the product. In bulk operations, we should rely on a unique field country-wide.
+            So we use the barcode that comes with every product in our country. This field has no effect in other 
+            sections of Nakhll, just in bulk operations.
+        aparat_video_script (TextField): The script from Aparat that contains the video of the product.
+        history: Using `django-simple-history <https://django-simple-history.readthedocs.io/en/latest/>`, we track our
+            product changes in bulk mode, so shop owner can role back a bulk operation with just on click.
+    """
     POSTRANGE_TYPE = (
         ('1', 'سراسر کشور'),
         ('2', 'استانی'),
@@ -1026,7 +1227,7 @@ class Product(models.Model):
         null=True,
         blank=True)
     aparat_video_script = models.CharField(
-        verbose_name='اسکریپت ویدیو آپارات', 
+        verbose_name='اسکریپت ویدیو آپارات',
         max_length=255,
         null=True,
         blank=True,
@@ -1186,6 +1387,11 @@ class Product(models.Model):
         return self.PostRangeType
 
     def is_available(self):
+        """Check if product is available or not
+
+        A product is available if it is both Available and Publish and also its shop
+        :attr:`nakhll_market.models.Shop.is_available` returns True as well. No matter if it has inventory or not.
+        """
         return self.Available and self.Publish and self.FK_Shop.is_available()
 
     @property
@@ -1193,30 +1399,49 @@ class Product(models.Model):
         return self.is_available()
 
     def has_enough_items_in_stock(self, count):
-        ''' Check if product have enough items in stock '''
+        """Check if product have enough items in stock, no matter if it is available or not"""
         return (self.Status == '1' and self.inventory >= count) \
             or (self.Status in ['2', '3'])
 
     # These properties are created for Torob API
     @property
     def page_url(self):
+        """Torob API property: The URL of the product that Torob redirect users after clicking on purchase button.
+
+        This URL is a  intermediary URL in our website that redirects user to the product page. We use a intermediary
+        view between Torob and our end-user product page to be able to track users that are redirected from Torob
+        """
         url = f'/torob/products/{self.ID}/'
         return attach_domain(url)
 
     @property
     def page_unique(self):
+        """Torob API property: A unique identifier for our products in Torob Website"""
         return self.ID
 
     @property
     def subtitle(self):
+        """Torob API property: Use product Slug as subtitle
+
+        Torob needs a title and a subtitle of our products, so we use :attr:`Title` as title and :attr:`Slug` as slug
+        """
         return self.Slug
 
     @property
     def current_price(self):
+        """Torob API property: Use product :attr:`Price` as  current_price in Torob
+
+        Torob needs a current_price and a old_price of our products, so we use :attr:`Price` as current_price and
+        :attr:`OldPrice` as old_price
+        """
         return self.Price
 
     @property
     def availability(self):
+        """Torob API property: Availability of product in Torob website.
+
+        An available product in Torob must be both :attr:`is_available` and has at least one item in stock
+        """
         return 'instock' if self.Available and self.Publish and \
             self.FK_Shop.is_available() and \
             (self.Status == '1' and self.inventory) or \
@@ -1224,21 +1449,25 @@ class Product(models.Model):
 
     @property
     def category_name(self):
+        """Torob API property: Category name of the product"""
         return self.category.name
 
     @property
     def image_link(self):
+        """Torob API property: The image link of the product"""
         if self.Image:
             return attach_domain(self.Image.url)
 
     @property
     def short_desc(self):
+        """Torob API property: A description of our product in Torob"""
         return self.Description
 
     def __str__(self):
         return "{}".format(self.Title)
 
     def get_status(self):
+        """Get the Persian message of the product property"""
         Status = {
             "1": 'آماده در انبار',
             "2": 'تولید بعد از سفارش',
@@ -1249,6 +1478,7 @@ class Product(models.Model):
             or (self.Status in ['2', '3']) else Status['4']
 
     def get_sendtype(self):
+        """Get the Persian message of the product :attr:`PostRangeType`"""
         SendType = {
             "1": 'سراسر کشور',
             "2": 'استانی',
@@ -1258,6 +1488,7 @@ class Product(models.Model):
         return SendType[self.PostRangeType]
 
     def get_absolute_url(self):
+        """Absolute URL of our product in Front-end framework"""
         return attach_domain(f'/shop/{self.FK_Shop.Slug}/product/{self.Slug}')
 
     def get_add_to_cart_url(self):
@@ -1271,7 +1502,7 @@ class Product(models.Model):
         })
 
     def get_discounted(self):
-        # Get Discounted
+        """Get total amount of discount for this product"""
         try:
             return int((self.OldPrice - self.Price) * 100 / self.OldPrice)
         except BaseException:
@@ -1345,9 +1576,11 @@ class Product(models.Model):
             return False
 
     def default_image_url(self):
+        """Default image of product if there is no image is available"""
         return 'https://nakhll.com/media/Pictures/default.jpg'
 
     def get_image(self):
+        """Get the absolute URL of product's image if available, else return :attr:`default_image_url`"""
         try:
             return attach_domain(self.Image.url)
         except BaseException:
@@ -1357,6 +1590,7 @@ class Product(models.Model):
         return self.Title
 
     def Image_thumbnail_url(self):
+        """Get the absolute URL of product's thumbnail image if available, else return a default image"""
         try:
             url = self.Image_thumbnail.url
             return attach_domain(url)
@@ -1365,6 +1599,7 @@ class Product(models.Model):
             return url
 
     def Image_medium_url(self):
+        """Get the absolute URL of product's medium image if available, else return a default image"""
         try:
             url = self.Image_medium.url
             return attach_domain(url)
@@ -1418,7 +1653,12 @@ class Product(models.Model):
         return self.FK_Shop.Slug
 
     def reduce_stock(self, count):
-        ''' Reduce from inventory of this product '''
+        """Reduce product's inventory after a successful purchase.
+
+        This is one of the :attr:`invoice.modeles.Invoice.complete_payment` method of invoice model which will trigger
+        after a successful purchase. In case the inventory of the product doesn't have enough item, it will create an
+        alert for staff and return without any action.
+        """
         if self.Inventory < count:
             AlertInterface.not_enogth_in_stock(self, count)
             return
@@ -1445,9 +1685,7 @@ class Product(models.Model):
 
 
 class Tag(models.Model):
-    """
-    #TODO: Document
-    """
+    """Tag model for a shop"""
     name = models.CharField(max_length=127, verbose_name=_('نام تگ'),
                             error_messages={
         'max_length': _('نام تگ باید کمتر از 127 کاراکتر باشد.'), }
@@ -1468,9 +1706,7 @@ class Tag(models.Model):
 
 
 class ProductTag(models.Model):
-    """
-        #TODO: Document
-    """
+    """Tag model for a product"""
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
@@ -1493,6 +1729,25 @@ class ProductTag(models.Model):
 
 # Product Banner (گالری محصول) Model
 class ProductBanner(models.Model):
+    """Images of a product besides the main product image
+
+    Attributes:
+        FK_Product (:class:`Product`): Product which this banner belongs to
+        Title (str): Title of the image
+        Description (str): Description of the image
+        URL (str): The URL which user will redirect to after clicking the image
+        Image (ImageField): The actual image file
+        Image_medium (ImageField): The medium size image file
+        NewImage (ImageField): DEPRECATED
+        BannerBuilder (CharField): DEPRECATED 
+        BannerURL (CharField): DEPRECATED
+        DateCreate (DateTimeField): DateTime of creation
+        DateUpdate (DateTimeField): DateTime of last update
+        Edite (BooleanField): DEPRECATED, Whether the image is edited or not
+        Available (BooleanField): Whether the image is available or not. This field is editable by shop owner.
+        Publish (BooleanField): Whether the image is published or not. This field is editable by staff only.
+        FK_User (ForeignKey): DEPRECATED, User who confirmed the image
+    """
     FK_Product = models.ForeignKey(
         Product,
         null=True,
@@ -1593,6 +1848,7 @@ class ProductBanner(models.Model):
 
 # Comment (نظر محصول) Model
 class Comment(models.Model):
+    """DEPRECATED MODEL"""
     TYPE_STATUS = (
         (False, 'منفی'),
         (True, 'مثبت'),
@@ -1759,6 +2015,36 @@ class ProfileManager(models.Manager):
 
 # Profile (پروفایل) Model
 class Profile(models.Model):
+    """Profile model for User with OneToOne Relationship.
+
+    Attributes:
+        ID (AutoField): Primary Key of UUID type.
+        FK_User (OneToOneField): Foreign Key of User model.
+        Sex (CharField): DEPRECATED, The gender of the user
+        CountrPreCode (CharField): DEPRECATED, Country Code of User
+        MobileNumber (CharField): Mobile number of user which should be unique
+        ZipCode (CharField): DEPRECATED, Zip code of user
+        NationalCode (CharField): National code of user
+        Address (CharField): DEPRECATED, Address of user
+        State (CharField): DEPRECATED, State of user
+        BigCity (CharField): DEPRECATED, Big city of user
+        City (CharField): DEPRECATED, City of user
+        Location (CharField): DEPRECATED, Location of user
+        BrithDay (jmodels.jDateField): DEPRECATED, Brithday of user in Jalali format
+        FaxNumber (CharField): DEPRECATED, Fax number of user
+        CityPerCode (CharField): DEPRECATED, City code of user
+        PhoneNumber (CharField): DEPRECATED, Fix phone number of user
+        Bio (CharField): DEPRECATED, Bio of user
+        Image (ImageField): Image of user
+        Image_thumbnail (ImageField): Image of user in thumbnail size
+        ImageNationalCard (ImageField): DEPRECATED, Image of user's national card after verification
+        ImageNationalCardUnverified (ImageField): DEPRECATED, Image of user's national card before verification
+        UserReferenceCode (CharField): DEPRECATED, User reference code
+        Point (IntegerField): DEPRECATED, Point of user
+        TutorialWebsite (CharField): DEPRECATED, How the user introducted with our website
+        ReferenceCode (CharField): DEPRECATED, Reference code of user
+        IPAddress (CharField): DEPRECATED, IP address of user
+    """
     SEX_STATUS = (
         ('0', 'انتخاب جنسیت'),
         ('1', 'زن'),
@@ -2061,6 +2347,7 @@ class Profile(models.Model):
 
 # Slider (اسلایدر) Model
 class Slider(models.Model):
+    """DEPRECATED"""
     FK_Creator = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
@@ -2165,6 +2452,25 @@ class Slider(models.Model):
 
 # Alert (هشدار ها) Model
 class Alert(models.Model):
+    """The notification model for events in Nakhll system
+
+    For each event that we want to notify staffs, we create an alert object.
+    Staffs should regualrly check the alerts and see if there is any new event.
+
+    Attributes:
+        FK_User (User): The user who created the alert, or the user who is this event is related to.
+        Part (str): The type of the event. Event types are defined in :attr:`PART_TYPE`.
+        Slug (str): The slug of the model that is related to the event. Using Part and Slug, we can find the related
+            model instance that the event is related to.
+        Seen (bool): Whether the alert has been seen or not.
+        alert_description (str): The description of the alert.
+        Status (str): The status of the alert. Alert statuses are defined in :attr:`STATUS`.
+        DateCreate (datetime): The date of the alert creation.
+        DateUpdate (datetime): The date of the alert update.
+        Description (str): In case the alert is rejectable, this is the reason why staff rejected the alert.
+        FK_Staff (User): The staff that accepted or rejected the alert.
+
+    """
     class AlertParts:
         ADD_PROFILE = '0'
         EDIT_PROFILE = '1'
@@ -2281,6 +2587,16 @@ class AmazingProductManager(models.Manager):
 
 
 class AmazingProduct(models.Model):
+    """The Amazing Product Model
+
+    Amazing products are products that are selected (usally by marketing team) to be shown in special locations on the
+    website, like the main page.
+
+    Attributes:
+        product (Product): The product that is selected as amazing.
+        start_date (DateTimeField): The date from which the product is selected as amazing.
+        end_date (DateTimeField): The date until which the product is selected as amazing.
+    """
     objects = AmazingProductManager()
     product = models.ForeignKey(
         Product,
@@ -2313,6 +2629,12 @@ class AmazingProduct(models.Model):
 
 # State استان
 class State(models.Model):
+    """Iran states
+
+    Attributes:
+        name (CharField): The name of the state.
+        code (IntegerField): The code of the state.
+    """
     name = models.CharField(verbose_name='نام استان', max_length=127)
     code = models.IntegerField(verbose_name='کد استان')
 
@@ -2322,9 +2644,11 @@ class State(models.Model):
         verbose_name_plural = "استان ها"
 
     def get_bigcities_of_state(self):
+        """Return all big cities of the state as a queryset."""
         return self.big_city.all()
 
     def get_bigcities_of_state_id_name(self):
+        """Return all big cities of the state as a dictionary of name and id."""
         return self.get_bigcities_of_state().values('name', 'id')
 
     def __str__(self):
@@ -2333,6 +2657,13 @@ class State(models.Model):
 
 # ‌BigCity شهرستان
 class BigCity(models.Model):
+    """Big cities of each state
+
+    Attributes:
+        name (CharField): The name of the big city.
+        code (IntegerField): The code of the big city.
+        state (State): The state of the big city.
+    """
     name = models.CharField(verbose_name='نام شهرستان', max_length=127)
     code = models.IntegerField(verbose_name='کد شهرستان')
     state = models.ForeignKey(
@@ -2346,9 +2677,11 @@ class BigCity(models.Model):
         verbose_name_plural = "شهرستان ها"
 
     def get_cities_of_bigcities(self):
+        """Return all cities of the big city as a queryset."""
         return self.city.all()
 
     def get_cities_of_bigcities_id_name(self):
+        """Return all cities of the big city as a dictionary of name and id."""
         return self.get_cities_of_bigcities().values('id', 'name')
 
     def __str__(self):
@@ -2357,6 +2690,13 @@ class BigCity(models.Model):
 
 # ‌City شهر
 class City(models.Model):
+    """City of each big city
+
+    Attributes:
+        name (CharField): The name of the city.
+        code (IntegerField): The code of the city.
+        big_city (BigCity): The big city of the city.
+    """
     name = models.CharField(verbose_name='نام شهر', max_length=127)
     code = models.IntegerField(verbose_name='کد شهر')
     big_city = models.ForeignKey(
@@ -2387,6 +2727,17 @@ class DashboardBannerManager(models.Manager):
 
 
 class DashboardBanner(models.Model):
+    """Banner images in shop dashboard
+
+    After shop owners logs in their dashboard, they can see some banners that are published by staff. 
+
+    Attributes:
+        image (ImageField): The image of the banner.
+        url (URLField): The url of the banner which user will redirect to after clicking.
+        staff_user (User): The user who created the banner.
+        created_datetime (DateTimeField): The date and time of the creation of the banner.
+        publish_status (CharField): The status of the banner. Statuses can be found in :attr:`PublishStatuses`.
+    """
     class Meta:
         verbose_name = 'بنر داشبرد'
         verbose_name_plural = 'بنرهای داشبرد'
@@ -2521,6 +2872,22 @@ class ShopPageSchema(LandingPageSchema):
 
 
 class UserImage(models.Model):
+    """Images that a user uploaded for different purposes.
+
+    This model mainly serves as a way to store images that a shop owner uploaded for his/her shop landing page.
+    Yet, you can use it for other purposes as well.
+
+    Attributes:
+        profile (Profile): Profile of the user who uploaded the image. Unlike other models, this model has link to the
+            profile model which reduce the consistency of the database.
+        image (ImageField): Image field.
+        image_thumbnail (ImageField): Thumbnail of the image.
+        publish (BooleanField): Whether the image is published or not.
+        title (CharField): Title of the image.
+        description (TextField): Description of the image.
+        created_at (DateTimeField): DateTime of the creation of the image.
+        updated_at (DateTimeField): DateTime of the last update of the image.
+    """
     class Meta:
         verbose_name = 'تصویر بارگذاری شده کاربر'
         verbose_name_plural = 'تصویر بارگذاری شده کاربر'
@@ -2550,6 +2917,7 @@ class UserImage(models.Model):
 
 @receiver(models.signals.post_delete, sender=UserImage)
 def auto_delete_file_on_delete(sender, instance, **kwargs):
+    """Deletes file from filesystem"""
     if instance.image:
         if os.path.isfile(instance.image.path):
             os.remove(instance.image.path)
@@ -2557,6 +2925,7 @@ def auto_delete_file_on_delete(sender, instance, **kwargs):
 
 @receiver(models.signals.pre_save, sender=UserImage)
 def auto_delete_file_on_change(sender, instance, **kwargs):
+    """Deletes file from filesystem if it's changed"""
     if not instance.pk:
         return False
     try:
@@ -2636,6 +3005,3 @@ class LandingImage(models.Model):
 
     def __str__(self):
         return f'{self.landing_page.page_slug}: {self.image}'
-
-
-from shop import models as shop_models
