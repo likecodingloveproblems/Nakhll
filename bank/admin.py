@@ -100,6 +100,12 @@ class AccountRequestAdmin(ExportActionMixin,
     search_fields = [
         'from_account__user__username',
         'to_account__user__username']
+    list_display = [
+        'from_account',
+        'to_account',
+        'value',
+        'request_type',
+        'status']
     list_filter = ['status', 'request_type']
     resource_class = AccountRequestResource
 
