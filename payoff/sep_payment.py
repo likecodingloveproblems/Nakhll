@@ -380,6 +380,10 @@ class SepResponseRevertation(SepResponseConfirmation):
 
 
 class SepPaymentMethod(PaymentMethodAbstract):
+    """Payment method for PEC Payment Gateway
+
+    Refer to :attr:`payoff.base_payment.PaymentMethodAbstract` for more details
+    """
 
     def initiate_payment(self, data):
         self.transaction = self._create_transaction(data)

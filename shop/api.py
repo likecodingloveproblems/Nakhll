@@ -59,6 +59,7 @@ class ShopFeatureInvoiceViewSet(
     @action(detail=False, methods=['get'],
             url_path='(?P<shop_slug>[^/.]+)/history')
     def shop_feature_invoices_history(self, request, shop_slug):
+        """Show :attr:`shop.models.ShopFeatureInvoice` invoices of a shop."""
         feature_id = request.query_params.get('feature')
         shop = self.get_shop(shop_slug)
         invoices = ShopFeatureInvoice.objects.filter(shop=shop)
@@ -69,6 +70,7 @@ class ShopFeatureInvoiceViewSet(
 
     @action(detail=False, methods=['post'])
     def activate_demo(self, request):
+        """Get a shop feature and try to activate it as demo."""
         serializer = ShopFeatureInvoiceWriteSerializer(data=request.data)
         if serializer.is_valid(is_demo=True):
             feature = serializer.validated_data.get('feature')
@@ -102,6 +104,7 @@ class ShopFeatureInvoiceViewSet(
 
     @action(detail=True, methods=['get'])
     def pay(self, request, id=None):
+        """Pay for a :attr:`shop.models.ShopFeatureInvoice`"""
         invoice = self.get_object()
         if invoice.status != ShopFeatureInvoice.ShopFeatureInvoiceStatuses.AWAIT_PAYMENT:
             return Response(

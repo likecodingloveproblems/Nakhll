@@ -77,8 +77,8 @@ from shop.mixins import MultipleFieldLookupMixin
 from shop.serializers import ShopLandingDetailsSerializer, ShopLandingSerializer
 
 
-class LastCreatedProductsViewSet(
-        mixins.ListModelMixin, viewsets.GenericViewSet):
+class LastCreatedProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """Return Prodocts that are created recently"""
     serializer_class = ProductSerializer
     permission_classes = [permissions.AllowAny, ]
 
@@ -86,8 +86,8 @@ class LastCreatedProductsViewSet(
         return Product.objects.get_last_created_products()
 
 
-class LastCreatedDiscountedProductsViewSet(
-        mixins.ListModelMixin, viewsets.GenericViewSet):
+class LastCreatedDiscountedProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """Return discounted Prodocts that are created recently"""
     serializer_class = ProductSerializer
     permission_classes = [permissions.AllowAny, ]
 
@@ -96,6 +96,7 @@ class LastCreatedDiscountedProductsViewSet(
 
 
 class RandomShopsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """Return random shops"""
     serializer_class = ShopSerializer
     permission_classes = [permissions.AllowAny, ]
 
@@ -104,6 +105,7 @@ class RandomShopsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 
 class RandomProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """Return random products"""
     serializer_class = ProductSerializer
     permission_classes = [permissions.AllowAny, ]
 
@@ -111,8 +113,8 @@ class RandomProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return Product.objects.get_random_products()
 
 
-class MostDiscountPrecentageProductsViewSet(
-        mixins.ListModelMixin, viewsets.GenericViewSet):
+class MostDiscountPrecentageProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """Return products that have highest discount precentage"""
     serializer_class = ProductSerializer
     permission_classes = [permissions.AllowAny, ]
 
@@ -121,6 +123,7 @@ class MostDiscountPrecentageProductsViewSet(
 
 
 class MostSoldShopsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """Return most sold shops"""
     serializer_class = ShopSerializer
     permission_classes = [permissions.AllowAny, ]
 
@@ -129,6 +132,7 @@ class MostSoldShopsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 
 class SliderViewSet(viewsets.ReadOnlyModelViewSet):
+    """Model viewset for all sliders that are published"""
     serializer_class = SliderSerializer
     permission_classes = [permissions.AllowAny, ]
     search_fields = ('Location',)
@@ -136,8 +140,8 @@ class SliderViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Slider.objects.filter(Publish=True)
 
 
-class ShopProductsViewSet(viewsets.GenericViewSet,
-                          mixins.RetrieveModelMixin, mixins.ListModelMixin):
+class ShopProductsViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.ListModelMixin):
+    """Return one or all products of a shop that are published"""
     serializer_class = ProductListSerializer
     permission_classes = [permissions.AllowAny, ]
     product_slug = None
@@ -160,9 +164,12 @@ class ShopProductsViewSet(viewsets.GenericViewSet,
         return super().list(request, *args, **kwargs)
 
 
-class ShopOwnerProductViewSet(
-        viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.CreateModelMixin,
-        mixins.ListModelMixin, mixins.UpdateModelMixin):
+class ShopOwnerProductViewSet(viewsets.GenericViewSet,
+                              mixins.RetrieveModelMixin,
+                              mixins.CreateModelMixin,
+                              mixins.ListModelMixin,
+                              mixins.UpdateModelMixin):
+    """ModelViewset for products that are owned by a shop"""
     permission_classes = [permissions.IsAuthenticated, IsProductOwner]
     pagination_class = StandardPagination
     filter_class = ProductFilter
@@ -199,17 +206,18 @@ class ShopOwnerProductViewSet(
         return obj
 
     def perform_create(self, serializer):
+        """Create a new product
+
+        Check if price have dicount or not. Swap Price and OldPrice value if discount exists.
+        Note that, the requester should use OldPrice as price_with_discount, if discount exists. Then we convert price
+        and old price from Toman to Rial to store in DB. We also create an alert for staff to check the product.
+        """
         shop = self.get_shop()
         data = serializer.validated_data
         title = data.get('Title')
 
         slug = self.__generate_unique_slug(title)
         product_extra_fileds = {'Publish': True, 'Slug': slug, 'FK_Shop': shop}
-        # TODO: This behavior should be inhanced later
-        # ! Check if price have dicount or not
-        # ! Swap Price and OldPrice value if discount exists
-        # ! Note that, request should use OldPrice as price with discount
-        # Convert price and old price from Toman to Rial to store in DB
         old_price = data.get('OldPrice', 0) * 10
         price = data.get('Price', 0) * 10
         if old_price:
@@ -222,10 +230,7 @@ class ShopOwnerProductViewSet(
                 OldPrice=old_price,
                 Price=price,
                 **product_extra_fileds)
-        # product.post_range_cities.add(*post_range)
 
-        # TODO: Check if product created successfully and published and alerts
-        # created as well
         Alert.objects.create(
             Part='6',
             FK_User=self.request.user,
@@ -239,29 +244,24 @@ class ShopOwnerProductViewSet(
                 without_image=True)
 
     def perform_update(self, serializer):
+        """Update a product
+
+        Check if price have dicount or not. Swap Price and OldPrice value if discount exists.
+        Note that, the requester should use OldPrice as price_with_discount, if discount exists. Then we convert price
+        and old price from Toman to Rial to store in DB. We also create an alert for staff to check the product.
+        """
         shop = self.get_shop()
         data = serializer.validated_data
-        # post_range = data.pop('post_range_cities')
         ID = self.kwargs.get('ID')
-
-        # TODO: This behavior should be inhanced later
-        # ! Check if price have dicount or not
-        # ! Swap Price and OldPrice value if discount exists
-        # ! Note that, request should use OldPrice as price with discount
-        # Convert price and old price from Toman to Rial to store in DB
         old_price = data.get('OldPrice', 0) * 10
         price = data.get('Price', 0) * 10
-
         if old_price:
             product = serializer.save(
                 OldPrice=price, Price=old_price, FK_Shop=shop)
         else:
             product = serializer.save(
                 OldPrice=old_price, Price=price, FK_Shop=shop)
-        # product.post_range_cities.add(*post_range)
 
-        # TODO: Check if product created successfully and published and alerts
-        # created as well
         Alert.objects.create(Part='7', FK_User=self.request.user, Slug=ID)
         try:
             DiscordAlertInterface.product_alert(
@@ -279,10 +279,7 @@ class ShopOwnerProductViewSet(
             )
 
     def __generate_unique_slug(self, title):
-        ''' Generate new unique slug for Product Model
-            NOTE: This fucntion should move to utils
-            Also the performance here is not good, it should be improved
-        '''
+        """Generate new unique slug for Product Model"""
         slug = slugify(title, allow_unicode=True)
         counter = 1
         new_slug = slug
@@ -325,6 +322,7 @@ class TagsOwnerViewSet(viewsets.GenericViewSet,
 
 
 class ProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """Product viewset for end user with filter and search capabilities."""
     pagination_class = StandardPagination
     filter_class = ProductFilter
     filter_backends = (
@@ -371,6 +369,7 @@ class ProductsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 
 class ProductDetailsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    """Product details viewset for end user."""
     serializer_class = ProductDetailSerializer
     permission_classes = [permissions.AllowAny, ]
     lookup_field = 'Slug'
@@ -383,8 +382,8 @@ class ProductDetailsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         return product
 
 
-class ProductCommentsViewSet(
-        mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class ProductCommentsViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    """List of comments for product for end user."""
     serializer_class = ProductCommentSerializer
     permission_classes = [permissions.AllowAny, ]
     lookup_field = 'FK_Product__Slug'
@@ -405,8 +404,8 @@ class ProductCommentsViewSet(
         return super().list(request, *args, **kwargs)
 
 
-class ProductRelatedItemsViewSet(
-        mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class ProductRelatedItemsViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    """List of related products which are available for a product for end user. We get related products by category."""
     pagination_class = StandardPagination
     serializer_class = ProductSerializer
     permission_classes = [permissions.AllowAny, ]
@@ -442,6 +441,7 @@ class ProductsInSameFactorViewSet(generics.ListAPIView):
 
 
 class GetShopWithSlug(views.APIView):
+    """Return shop details with slug"""
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, ]
 
     def get(self, request, format=None):
@@ -452,6 +452,7 @@ class GetShopWithSlug(views.APIView):
 
 
 class GetShop(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
+    """Return shop details with slug"""
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, ]
     serializer_class = ShopSerializer
     queryset = Shop.objects.all()
@@ -465,6 +466,7 @@ class GetShop(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
 
 
 class GetShopList(viewsets.GenericViewSet, mixins.ListModelMixin):
+    """Return list of shops with their details"""
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, ]
     serializer_class = ShopSimpleSerializer
     queryset = Shop.objects.filter(
@@ -473,6 +475,10 @@ class GetShopList(viewsets.GenericViewSet, mixins.ListModelMixin):
 
 
 class CreateShop(generics.CreateAPIView):
+    """Create shop api
+
+    Slugs for a shop are automatically generated from the name of the shop.
+    """
     serializer_class = CreateShopSerializer
     permission_classes = [permissions.IsAuthenticated, ]
 
@@ -480,9 +486,7 @@ class CreateShop(generics.CreateAPIView):
         return Shop.objects.filter(FK_ShopManager=self.request.user)
 
     def generate_unique_slug(self, title):
-        ''' Generate new unique slug for Shop Model
-            NOTE: This fucntion should move to utils
-        '''
+        """Generate new unique slug for Shop Model based on title and using a counter."""
         slug = slugify(title, allow_unicode=True)
         counter = 1
         new_slug = slug
@@ -526,6 +530,7 @@ class CreateShop(generics.CreateAPIView):
 
 
 class CheckShopSlug(views.APIView):
+    """Check if shop slug is available or not. We used to use this api before, but now we automatically generate slug for a shop."""
     permission_classes = [permissions.IsAuthenticated, ]
 
     def get(self, request, format=None):
@@ -538,6 +543,7 @@ class CheckShopSlug(views.APIView):
 
 
 class CheckProductSlug(views.APIView):
+    """Check if product slug is available or not. We used to use this api before, but now we automatically generate slug for a product."""
     permission_classes = [permissions.IsAuthenticated, ]
 
     def get(self, request, format=None):
@@ -550,7 +556,7 @@ class CheckProductSlug(views.APIView):
 
 
 class AddImagesToProduct(views.APIView):
-    # parser_classes = (MultiPartParser, FormParser)
+    """Add images to product as secondary images"""
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, format=None):
@@ -563,7 +569,6 @@ class AddImagesToProduct(views.APIView):
                 product = Product.objects.get(ID=product_id)
                 self.check_object_permissions(request, product)
 
-                # Save first image in product.NewImage
                 product_main_image = images[0]
                 product.Image = product_main_image
                 product.save()
@@ -587,6 +592,7 @@ class AddImagesToProduct(views.APIView):
 
 class ProductBannerViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
                            mixins.DestroyModelMixin):
+    """Viewset for creating and deleting product images. We also generate an alert for creation of new product image."""
     permission_classes = [permissions.IsAuthenticated, IsProductBannerOwner]
     lookup_field = 'id'
     queryset = ProductBanner.objects.all()
@@ -599,7 +605,11 @@ class ProductBannerViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
 
 
 class ShopMultipleUpdatePrice(views.APIView):
-    # TODO: Swap OldPrice and Price
+    """Allow shop owner to update price of multiple products at once.
+
+    Shop owner can update Price and OldPrice of many products using product_slug property.
+    We use OldPrice as price with discount in front side and swap them in this api.
+    """
     permission_classes = [permissions.IsAuthenticated, ]
 
     def patch(self, request, format=None):
@@ -614,10 +624,6 @@ class ShopMultipleUpdatePrice(views.APIView):
                     old_price = price_item.get('OldPrice')
                     price = price_item.get('Price')
                     if product.FK_Shop.FK_ShopManager == user:
-                        # TODO: This behavior should be inhanced later
-                        # ! Check if price have dicount or not
-                        # ! Swap Price and OldPrice value if discount exists
-                        # ! Note that, request should use OldPrice as price with discount
                         if old_price:
                             product.OldPrice = price
                             product.Price = old_price
@@ -638,13 +644,16 @@ class ShopMultipleUpdatePrice(views.APIView):
 
 
 class ShopMultipleUpdateInventory(views.APIView):
+    """Allow shop owner to update inventory of multiple products at once.
+
+    Shop owner can update Inventory of many products using product_slug property.
+    """
     permission_classes = [permissions.IsAuthenticated, ]
 
     def patch(self, request, format=None):
         serializer = ProductInventoryWriteSerializer(
             data=request.data, many=True)
         user = request.user
-        # user = User.objects.get(id=72)
         if serializer.is_valid():
             price_list = serializer.data
             ready_for_update_products = []
@@ -667,7 +676,7 @@ class ShopMultipleUpdateInventory(views.APIView):
 
 
 class AllShopSettings(views.APIView):
-    # TODO: Check this class entirely
+    """Allow shop owner to update all settings of shop at once."""
     serializer_class = ShopAllSettingsReadSerializer
     permission_classes = [permissions.IsAuthenticated, IsShopOwner]
 
@@ -696,6 +705,7 @@ class AllShopSettings(views.APIView):
 
 
 class DeleteShopImage(views.APIView):
+    """Allow shop owner to delete shop image."""
     permission_classes = [permissions.IsAuthenticated, IsShopOwner]
 
     def get_object(self, shop_slug, user):
@@ -710,40 +720,8 @@ class DeleteShopImage(views.APIView):
                         status=status.HTTP_204_NO_CONTENT)
 
 
-# class BankAccountShopSettings(views.APIView):
-#     # TODO: Check this class entirely
-#     permission_classes = [permissions.IsAuthenticated, ]
-#     def get_object(self, shop_slug, user):
-#         return get_object_or_404(Shop, Slug=shop_slug)
-#     def put(self, request, shop_slug, format=None):
-#         user = request.user
-#         shop = self.get_object(shop_slug, user)
-#         self.check_object_permissions(request, shop)
-#         serializer = ShopBankAccountSettingsSerializer(data=request.data, instance=shop)
-#         if serializer.is_valid():
-#             serializer.save()
-#         else:
-#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#         return Response(serializer.data)
-
-# class SocialMediaShopSettings(views.APIView):
-#     # TODO: Check this class entirely
-#     permission_classes = [permissions.IsAuthenticated, ]
-#     def get_object(self, shop_slug, user):
-#         return get_object_or_404(Shop, Slug=shop_slug)
-#     def put(self, request, shop_slug, format=None):
-#         user = request.user
-#         shop = self.get_object(shop_slug, user)
-#         self.check_object_permissions(request, shop)
-#         serializer = SocialMediaAccountSettingsSerializer(data=request.data, instance=shop)
-#         if serializer.is_valid():
-#             serializer.save()
-#         else:
-#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#         return Response(serializer.data)
-
-
 class ImageShopSettings(views.APIView):
+    """Allow shop owner to update shop image."""
     permission_classes = [permissions.IsAuthenticated, ]
 
     def get_object(self, shop_slug):
@@ -764,13 +742,14 @@ class ImageShopSettings(views.APIView):
 
 
 class StateFullViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+    """Return list of all states with big cities and cities."""
     permission_classes = [permissions.AllowAny, ]
     queryset = State.objects.all()
     serializer_class = StateFullSeraializer
 
 
 class UserProfileViewSet(viewsets.GenericViewSet):
-    '''Viewset for user profile '''
+    """View and update user profile."""
     permission_classes = [permissions.IsAuthenticated, ]
     queryset = User.objects.all()
     serializer_class = ProfileSerializer
@@ -797,8 +776,8 @@ class UserProfileViewSet(viewsets.GenericViewSet):
         return Response('')
 
 
-class UserOrderHistory(viewsets.GenericViewSet,
-                       mixins.ListModelMixin, mixins.RetrieveModelMixin):
+class UserOrderHistory(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
+    """Return list of all invoices of user."""
     permission_classes = [permissions.IsAuthenticated, IsInvoiceOwner]
     queryset = Invoice.objects.all()
     serializer_class = UserOrderSerializer
@@ -808,6 +787,7 @@ class UserOrderHistory(viewsets.GenericViewSet,
 
 
 class UserImagesViewSet(viewsets.ModelViewSet):
+    """Viewset for user profile image."""
     permission_classes = [permissions.IsAuthenticated]
     queryset = UserImage.objects.all()
     serializer_class = UserImageSerializer
@@ -820,6 +800,7 @@ class UserImagesViewSet(viewsets.ModelViewSet):
 
 
 class LandingPageSchemaViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+    """Return all published landing page schemas for Nakhll."""
     permission_classes = [permissions.AllowAny, ]
     serializer_class = LandingPageSchemaSerializer
 
@@ -828,6 +809,7 @@ class LandingPageSchemaViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
 
 
 class ShopPageSchemaViewSet(views.APIView):
+    """Return all published landing page schemas for given shop."""
     permission_classes = [permissions.AllowAny, ]
     serializer_class = ShopPageSchemaSerializer
 
@@ -842,6 +824,7 @@ class ShopPageSchemaViewSet(views.APIView):
 
 
 class GroupProductCreateExcel(views.APIView):
+    """Create many products from excel file using :class:`BulkProductHandler` class"""
     permission_classes = [permissions.IsAuthenticated, IsShopOwner]
     bulk_type = BulkProductHandler.BULK_TYPE_CREATE
 
@@ -866,29 +849,13 @@ class GroupProductCreateExcel(views.APIView):
 
 
 class GroupProductUpdateExcel(GroupProductCreateExcel, views.APIView):
+    """Update many products from excel file using :class:`BulkProductHandler` class"""
     permission_classes = [permissions.IsAuthenticated, IsShopOwner]
     bulk_type = BulkProductHandler.BULK_TYPE_UPDATE
 
 
 class GroupProductUndo(views.APIView):
-    permission_classes = [permissions.IsAuthenticated, IsShopOwner]
-
-    def get_object(self, shop_slug):
-        shop = get_object_or_404(Shop, Slug=shop_slug)
-        self.check_object_permissions(self.request, shop)
-        return shop
-
-    def get(self, request, shop_slug, format=None):
-        shop = self.get_object(shop_slug)
-        bulk_product_handler = BulkProductHandler(shop=shop)
-        try:
-            bulk_product_handler.undo_last_changes()
-        except BulkException as ex:
-            return Response(str(ex), status=status.HTTP_400_BAD_REQUEST)
-        return Response({'message': 'Undo sent'})
-
-
-class GroupProductUndo(views.APIView):
+    """Undo bulk product operation."""
     permission_classes = [permissions.IsAuthenticated, IsShopOwner]
 
     def get_object(self, shop_slug):
@@ -908,6 +875,7 @@ class GroupProductUndo(views.APIView):
 
 
 class MostSoldProduct(views.APIView):
+    """Return most sold products of shop."""
     permission_classes = [permissions.AllowAny, ]
     serializer_class = ProductSerializer
 
@@ -920,15 +888,12 @@ class MostSoldProduct(views.APIView):
         return Response(serializer.data)
 
 
-class CategoryViewSet(viewsets.GenericViewSet, mixins.ListModelMixin,
-                      mixins.RetrieveModelMixin):
-    '''
-    Represents categories in Nakhll system
+class CategoryViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
+    """Represents categories in Nakhll system
 
-    You can specify how deep you want to get categories by defining max_depth
-    query string parameter. No max_depth or max_depth=-1 means that you will
-    get all categories.
-    '''
+    You can specify how deep you want to get categories by defining max_depth query string parameter. No max_depth
+    or max_depth=-1 means that you will get all categories.
+    """
     permission_classes = [permissions.AllowAny, ]
     queryset = Category.objects.all_ordered()
     serializer_class = CategoryParentSerializer
@@ -951,13 +916,10 @@ class CategoryViewSet(viewsets.GenericViewSet, mixins.ListModelMixin,
 
     @action(methods=['GET'], detail=False)
     def category_product_count(self, request):
-        '''
-        Without any query string, it gives you all categories with their
-        product count. You can narrow down the categories by specifying
-        a search parameter as q which search in product name, and/or a
-        shop_slug parameter, which only gives you categories of a specific
-        shop.
-        '''
+        """Without any query string, it gives you all categories with their product count. You can narrow down the
+        categories by specifying a search parameter as q which search in product name, and/or a shop_slug parameter,
+        which only gives you categories of a specific shop.
+        """
         product_title_query = request.GET.get('q', None)
         shop = request.GET.get('shop', None)
         queryset = Category.objects.categories_with_product_count(
@@ -969,6 +931,7 @@ class CategoryViewSet(viewsets.GenericViewSet, mixins.ListModelMixin,
 
 
 class PublicShopsViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+    """Return all public shops."""
     permission_classes = [permissions.AllowAny, ]
     serializer_class = ProductSerializer
 
@@ -983,6 +946,7 @@ class PublicShopsViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
 
 
 class ShopsStatisticView(views.APIView):
+    """Return shops statistic."""
     permission_classes = [permissions.IsAdminUser, ]
 
     def get(self, request):

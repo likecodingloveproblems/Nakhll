@@ -1,3 +1,4 @@
+from nakhll_market import models
 import enum
 import json
 from urllib.parse import urljoin
@@ -7,14 +8,20 @@ from discord_webhook import DiscordWebhook, DiscordEmbed, webhook
 import jdatetime
 import requests
 
+
 class ProductChangeTypes(enum.Enum):
     CREATE = 'create'
     UPDATE = 'update'
-        
+
+
 class AlertInterface:
+    """An interface class for communicating with all kind of alerts that we want to use in our system."""
+
     @staticmethod
     def new_order(invoice):
-        ''' Create new alert for invoice '''
+        """Create and send alerts for new order events using Nakhll :class:`nakhll_market.models.Alert`
+        system and Discord service.
+        """
         DiscordAlertInterface.purchase_alert(invoice)
         alert = models.Alert()
         alert.FK_User = invoice.user
@@ -25,7 +32,8 @@ class AlertInterface:
 
     @staticmethod
     def reverse_payment_error(transaction_result, **kwargs):
-        ''' Create alert for transaction that is unsucessfull '''
+        """Create and send alerts for reverse payment error events using Nakhll :class:`nakhll_market.models.Alert`
+        and Discord service."""
         desc = ', '.join(f'{key}: {value}' for key, value in kwargs.items())
         DiscordAlertInterface.send_alert(desc)
         alert = models.Alert()
@@ -35,11 +43,11 @@ class AlertInterface:
         alert.alert_description = desc
         alert.save()
         return alert
-        
-    
+
     @staticmethod
     def payment_not_confirmed(transaction_result, **kwargs):
-        ''' Create alert when transaction_result is valid, but ipg doesn't confirm payment'''
+        """Create and send alerts for payments that are valid in our system but not confirmed by IPG using Nakhll
+        :class:`nakhll_market.models.Alert` and Discord service."""
         desc = ', '.join(f'{key}: {value}' for key, value in kwargs.items())
         DiscordAlertInterface.send_alert(desc)
         alert = models.Alert()
@@ -52,6 +60,8 @@ class AlertInterface:
 
     @staticmethod
     def not_enogth_in_stock(product, count):
+        """Create and send alerts for products that are validated before sending to IPG, but for some reason doesn not
+        have enogth in stock using Nakhll :class:`nakhll_market.models.Alert` and Discord service."""
         desc = 'Not enogth in stock: {} {}'.format(count, product.Title)
         DiscordAlertInterface.send_alert(desc)
         alert = models.Alert()
@@ -61,40 +71,42 @@ class AlertInterface:
         alert.alert_description = desc
         alert.save()
         return alert
-    
+
     @staticmethod
     def developer_alert(**kwargs):
-        ''' send alert to dicord channel '''
+        """Alerts for developers' test only in discord."""
         message = '\n'.join(f'{key}:{value}' for key, value in kwargs.items())
         DiscordAlertInterface.send_alert(message)
 
-        
+
 class DiscordAlertInterface:
+    """An interface class for communicating with discord API service."""
     @staticmethod
     def send_alert(message=None, **kwargs):
-        ''' send alert to dicord channel '''
+        """send alert to dicord channel"""
         url = settings.DISCORD_WEBHOOKS.get('ALERT')
         if not url:
             return
-        headers = { "Content-Type": "application/json" }
+        headers = {"Content-Type": "application/json"}
         if kwargs:
             message += '\n'.join(f'{key}:{value}' for key, value in kwargs.items())
-        data = {'content': message, 'username': 'Nakhll Market',}
+        data = {'content': message, 'username': 'Nakhll Market', }
         requests.post(url, json=data, headers=headers)
 
     @staticmethod
     def purchase_alert(invoice):
-        ''' send alert to dicord channel '''
+        """send new purchase alert to dicord channel"""
         url = settings.DISCORD_WEBHOOKS.get('PURCHASE')
         if not url:
             return
         message = DiscordAlertInterface.build_message(invoice)
-        headers = { "Content-Type": "application/json" }
-        data = {'content': message,'username': 'Nakhll Market',}
+        headers = {"Content-Type": "application/json"}
+        data = {'content': message, 'username': 'Nakhll Market', }
         requests.post(url, json=data, headers=headers)
 
     @staticmethod
     def build_message(invoice):
+        """Build a message for discord alert using :class:`nakhll_market.models.Invoice` object."""
         address = json.loads(invoice.address_json)
         name = address['receiver_full_name']
         phone = address['receiver_mobile_number']
@@ -116,6 +128,7 @@ class DiscordAlertInterface:
 
     @staticmethod
     def product_alert(product, *, change_type=ProductChangeTypes.CREATE, without_image=False):
+        """Send alert for newly added or updated product to dicord channel."""
         title = 'یک محصول جدید!' if change_type == ProductChangeTypes.CREATE else 'تغییر در محصول!'
         base_url = settings.DOMAIN_NAME
         product_url = urljoin(base_url, '/shop/{}/product/{}'.format(product.FK_Shop.Slug, product.Slug))
@@ -145,7 +158,3 @@ class DiscordAlertInterface:
             except FileNotFoundError as ex:
                 pass
         response = webhook.execute()
-
-        
-
-from nakhll_market import models
