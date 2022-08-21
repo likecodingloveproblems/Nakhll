@@ -36,6 +36,6 @@ class CouponViewset(GenericViewSet):
     @action(methods=['post'], detail=False, description='ارسال کد تخفیف')
     def gift_user(self, request, *args, **kwargs):
         coupon = self.get_coupon(request)
-        user = self.selfget_user(request)
+        user = self.get_user(request)
         coupon.add_user(user)
         Kavenegar.send_gift_coupon(user, coupon)
