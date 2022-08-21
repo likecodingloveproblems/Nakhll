@@ -4,7 +4,6 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
-from nakhll_market.models import Shop
 from payoff.interfaces import PaymentInterface
 from payoff.models import Transaction
 from .managers import ShopFeatureManager, ShopLandingManager
@@ -138,7 +137,7 @@ class ShopFeatureInvoice(models.Model):
 
     feature = models.ForeignKey(ShopFeature, on_delete=models.CASCADE, related_name='shop_feature_invoices',
                                 verbose_name=_('ویژگی فروشگاه'))
-    shop = models.ForeignKey(Shop, on_delete=models.CASCADE, related_name='invoice_shop_feature_items',
+    shop = models.ForeignKey('nakhll_market.Shop', on_delete=models.CASCADE, related_name='invoice_shop_feature_items',
                              verbose_name=_('فروشگاه'))
     status = models.CharField(_('وضعیت'), max_length=15, choices=ShopFeatureInvoiceStatuses.choices,
                               default=ShopFeatureInvoiceStatuses.AWAIT_PAYMENT)
@@ -240,7 +239,8 @@ class ShopLanding(models.Model):
     class Statuses(models.TextChoices):
         ACTIVE = 'active', _('فعال')
         INACTIVE = 'inactive', _('غیرفعال')
-    shop = models.ForeignKey(Shop, on_delete=models.CASCADE, related_name='landings', verbose_name=_('حجره'))
+    shop = models.ForeignKey('nakhll_market.Shop', on_delete=models.CASCADE,
+                             related_name='landings', verbose_name=_('حجره'))
     name = models.CharField(max_length=100, verbose_name=_('نام'))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('تاریخ ایجاد'))
     updated_at = models.DateTimeField(auto_now=True, verbose_name=_('تاریخ بروزرسانی'))
@@ -296,7 +296,8 @@ class ShopAdvertisement(models.Model):
         ACTIVE = 1, _('فعال')
         INACTIVE = 0, _('غیرفعال')
 
-    shop = models.OneToOneField(Shop, on_delete=models.CASCADE, related_name='advertisement', verbose_name=_('حجره'))
+    shop = models.OneToOneField('nakhll_market.Shop', on_delete=models.CASCADE,
+                                related_name='advertisement', verbose_name=_('حجره'))
     yektanet_id = models.CharField(verbose_name=_('شناسه تبلیغاتی یکتانت'), max_length=20, null=True, blank=True)
     yektanet_status = models.IntegerField(verbose_name=_('وضعیت تبلیغاتی یکتانت'),
                                           choices=YektanetStatuses.choices,
