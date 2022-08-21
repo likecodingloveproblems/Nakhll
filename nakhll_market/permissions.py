@@ -72,6 +72,7 @@ def get_group_privileges_sidebar(permission_keys):
 
 
 class IsInvoiceOwner(BasePermission):
+    """Check if this user is the buyer of the invoice"""
     def has_object_permission(self, request, view, obj):
         prev_result = super().has_object_permission(request, view, obj)
         user = request.user 
@@ -79,6 +80,7 @@ class IsInvoiceOwner(BasePermission):
 
 
 class IsInvoiceProvider(BasePermission):
+    """Chekc if this user is the seller for this invoice"""
     def has_object_permission(self, request, view, obj):
         prev_result = super().has_object_permission(request, view, obj)
         user = request.user 
