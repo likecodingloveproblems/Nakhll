@@ -4,6 +4,22 @@ from nakhll_market.utils import split_args
 
 
 class ProductFilter(filters.FilterSet):
+    """Filter class for Product model with the following filters:
+        * min_price: filter products with price greater than or equal to the value
+        * max_price: filter products with price less than or equal to the value
+        * ready: filter products that are ready to be sold
+        * search: filter products that contain the value in the title
+        * q: filter products that contain the value in the title
+        * available: filter products that are available to be sold
+        * category: filter products that are in the category or its subcategories
+        * state: filter products that are in the state
+        * city: filter products that are in the city
+        * big_city: filter products that are in the big city
+        * tags: filter products that have the tag
+        * discounted: filter products that are discounted
+        * shop: filter products that are in the shop
+        * in_campaign: filter products which their :attr:`nakhll_market.models.Shop.in_campaign` is True
+    """
     min_price = filters.NumberFilter(field_name="Price", lookup_expr='gte')
     max_price = filters.NumberFilter(field_name="Price", lookup_expr='lte')
     ready = filters.BooleanFilter(method='filter_ready')
@@ -53,11 +69,6 @@ class ProductFilter(filters.FilterSet):
                 Status__in=AVAILABLE_IDS, Inventory__gt=0,
                 FK_Shop__Publish=True)
         return queryset
-
-    @split_args(-1)
-    def filter_category(self, queryset, name, value):
-        return queryset.filter(
-            category__in=value) if value else queryset
 
     @split_args(-1)
     def filter_category(self, queryset, name, value):

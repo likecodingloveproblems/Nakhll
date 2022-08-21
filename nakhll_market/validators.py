@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _
 
 
 def validate_iran_national_code(national_code):
+    """Check if the national code is valid"""
     if not re.search(r'^\d{10}$', national_code):
         raise ValidationError(_('کدملی وارد شده معتبر نمیباشد.'))
     check = int(national_code[9])
