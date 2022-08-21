@@ -6,23 +6,28 @@ from coupon.models import Coupon
 from sms.services import Kavenegar
 from .serializers import GiftCouponSerializer
 from rest_framework.permissions import AllowAny
+from rest_framework.decorators import action
 
 
 class CouponViewset(GenericViewSet):
     serializer_class = GiftCouponSerializer
     permission_classes = [AllowAny]
 
+    @action(methods=['post'], detail=False)
     def get_coupon(self, request):
-        code = request.POST.get('code')
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        code = serializer.validated_data['code']
         try:
             return Coupon.objects.get(code=code)
         except Coupon.DoesNotExist:
             raise ValidationError({"code": "Invalid coupon code"})
 
+    @action(methods=['post'], detail=False)
     def get_user(self, request):
-        if request.user:
-            return request.user
-        mobile = request.POST.get('mobile')
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        mobile = serializer.validated_data['mobile']
         try:
             return User.objects.get(username=mobile)
         except User.DoesNotExist:
