@@ -7,6 +7,7 @@ from sms.services import Kavenegar
 from .serializers import GiftCouponSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import action
+from rest_framework.response import Response
 
 
 class CouponViewset(GenericViewSet):
@@ -39,3 +40,4 @@ class CouponViewset(GenericViewSet):
         user = self.get_user(request)
         coupon.add_user(user)
         Kavenegar.send_gift_coupon(user, coupon)
+        return Response({"message": "کد تخفیف با موفقیت ارسال شد."})
