@@ -80,4 +80,4 @@ class Kavenegar:
         }
         mobile = user.username
         template = 'nakhl-sendgiftcoupon'
-        Kavenegar._raw_send(template, tokens, mobile, )
+        Kavenegar._raw_send(template, tokens, mobile)
