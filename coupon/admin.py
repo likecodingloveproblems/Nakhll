@@ -9,7 +9,7 @@ from .models import Coupon, CouponUsage, CouponConstraint
 class CouponConstraintInline(admin.StackedInline):
     """Coupon Constraint inline form for Coupon admin."""
     model = CouponConstraint
-    # fields = ('name', 'count', 'price_with_discount', 'price_without_discount', 'weight', 'shop_name', 'barcode')
+    autocomplete_fields = ['shops', 'users', 'products', 'cities']
     extra = 0
 
 
@@ -41,3 +41,6 @@ class CouponAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.creator = request.user
         obj.save()
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('creator')
