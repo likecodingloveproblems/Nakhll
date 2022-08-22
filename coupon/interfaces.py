@@ -75,7 +75,7 @@ class CouponValidation:
                 self._errors.append(e.message)
         return not bool(self._errors)
 
-    def apply(self, invoice):
+    def apply(self, invoice, cart):
         """Save coupon as coupon_usage for this specific invoice"""
         self._final_price = self.get_final_price()
         if self._final_price > invoice.invoice_price_with_discount:
@@ -98,7 +98,7 @@ class CouponValidation:
         if len(self._errors) == 0:
             return self.calculate_coupon_price()
 
-    def calculate_coupon_price(self):
+    def calculate_coupon_price(self, cart=None):
         """Caculate coupon price according to coupon type
 
         If coupon type is percent, it should be calculated as:
@@ -107,7 +107,8 @@ class CouponValidation:
 
         If coupon type is amount, it should just return that amount
         """
-
+        if not hasattr(self, '_cart'):
+            self._cart = cart
         if self.amount:
             return self.amount
         if self.presentage:

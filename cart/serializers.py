@@ -1,4 +1,4 @@
-from rest_framework import serializers
+from rest_framework import serializers, exceptions
 from cart.models import Cart, CartItem
 from coupon.models import Coupon
 from coupon.serializers import CouponSerializer
@@ -110,3 +110,9 @@ class CartWriteSerializer(serializers.ModelSerializer):
             'coupon',
             'paid_by_coin',
         )
+
+    def validate_paid_by_coin(self, paid_by_coin):
+        if self.instance.coupons.exists() or self.initial_data.get('coupon'):
+            raise exceptions.ValidationError(
+                'در صورت استفاده از کوپن تخفیف امکان پرداخت سکه وجود ندارد.')
+        return paid_by_coin

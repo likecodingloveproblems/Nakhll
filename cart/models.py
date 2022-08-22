@@ -284,7 +284,7 @@ class Cart(models.Model):
 
         for coupon in self.coupons.all():
             if coupon.is_valid(self, validators_list):
-                coupon.apply(invoice)
+                coupon.apply(invoice, self)
 
         return invoice
 
@@ -428,7 +428,7 @@ class Cart(models.Model):
         """
         result = []
         for coupon in self.coupons.all():
-            price = coupon.calculate_coupon_price()
+            price = coupon.calculate_coupon_price(self)
             result.append({
                 'coupon': CouponSerializer(coupon).data,
                 'price': price
