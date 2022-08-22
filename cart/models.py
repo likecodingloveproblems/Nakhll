@@ -465,13 +465,11 @@ class Cart(models.Model):
         self.logistic_details = None
         self.save()
 
-    def _update_coin_payment_if_coupon_used(self):
+    def update_coin_payment_if_coupon_used(self):
         if self.coupons.exists():
             self.paid_by_coin = False
+            self.save()
 
-    def save(self, *args, **kwargs):
-        self._update_coin_payment_if_coupon_used()
-        super().save(*args, **kwargs)
 
 class CartItem(models.Model):
     """Each Item in Cart

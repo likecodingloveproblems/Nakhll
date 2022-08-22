@@ -114,6 +114,7 @@ class UserCartViewSet(viewsets.GenericViewSet):
         if coupon.is_valid(cart):
             serializer.save()
             cart.coupons.add(coupon)
+            cart.update_coin_payment_if_coupon_used()
         return Response(
             {'coupon': coupon.code, 'result': coupon.final_price,
              'errors': coupon.errors},
