@@ -77,6 +77,7 @@ class CouponValidation:
 
     def apply(self, invoice, cart):
         """Save coupon as coupon_usage for this specific invoice"""
+        self._cart = cart
         self._final_price = self.get_final_price()
         if self._final_price > invoice.invoice_price_with_discount:
             raise CouponException(_('مبلغ کوپن از مبلغ فاکتور بیشتر است'))
