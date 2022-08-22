@@ -93,6 +93,7 @@ class AccountRequestAdmin(ExportActionMixin,
     autocomplete_fields = ['from_account', 'to_account']
     readonly_fields = [
         'status',
+        'date_created',
         'date_confirmed',
         'date_rejected',
         'staff_user',
