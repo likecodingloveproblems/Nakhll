@@ -214,9 +214,11 @@ class Cart(models.Model):
         return self.get_coins_amount() if self.paid_by_coin else 0
 
     def get_coins_amount(self):
-        payable_coins = self._get_payable_coins()
-        account = Account.objects.get_or_create(user=self.user)[0]
-        return payable_coins if account.net_balance >= payable_coins else account.net_balance
+        if self.user:
+            payable_coins = self._get_payable_coins()
+            account = Account.objects.get_or_create(user=self.user)[0]
+            return payable_coins if account.net_balance >= payable_coins else account.net_balance
+        return 0
 
     def _get_payable_coins(self):
         total_price = self.cart_price + self.logistic_price
@@ -466,11 +468,10 @@ class Cart(models.Model):
     def _update_coin_payment_if_coupon_used(self):
         if self.coupons.exists():
             self.paid_by_coin = False
-            self.save()
 
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
         self._update_coin_payment_if_coupon_used()
+        super().save(*args, **kwargs)
 
 class CartItem(models.Model):
     """Each Item in Cart
