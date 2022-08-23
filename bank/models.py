@@ -101,19 +101,24 @@ class CoinMintBurn(models.Model):
 class Account(models.Model):
     user = models.ForeignKey(
         User,
+        verbose_name='مالک حساب',
         unique=True,
         null=True,
         on_delete=models.PROTECT)
-    balance = models.PositiveIntegerField(default=0)
-    blocked_balance = models.PositiveIntegerField(default=0)
-    cashable_amount = models.PositiveIntegerField(default=0)
-    blocked_cashable_amount = models.PositiveIntegerField(default=0)
-    date_created = jmodels.jDateTimeField(auto_now_add=True)
+    balance = models.PositiveIntegerField(verbose_name='موجودی', default=0)
+    blocked_balance = models.PositiveIntegerField(
+        verbose_name='موجودی مسدود شده', default=0)
+    cashable_amount = models.PositiveIntegerField(
+        verbose_name='موجودی نقدی', default=0)
+    blocked_cashable_amount = models.PositiveIntegerField(
+        verbose_name='موحودی نقدی مسدود شده', default=0)
+    date_created = jmodels.jDateTimeField(
+        verbose_name='تاریخ ایجاد', auto_now_add=True)
     objects = AccountManager()
 
     class Meta:
-        verbose_name = _("Account")
-        verbose_name_plural = _("Accounts")
+        verbose_name = _("حساب سکه")
+        verbose_name_plural = _("حساب های سکه")
         constraints = [
             CheckConstraint(
                 check=Q(~Q(pk__lt=SYSTEMIC_ACCOUNTS_ID_UPPER_LIMIT) & ~Q(user=None)) |
