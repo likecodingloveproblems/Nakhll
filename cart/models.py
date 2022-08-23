@@ -289,12 +289,13 @@ class Cart(models.Model):
         return invoice
 
     def create_coin_payment_request(self, invoice):
-        def get_coin_payment_description():
-            return f'user:{invoice.user} - invoice:{invoice.pk} - coin-rial-ration{COIN_RIAL_RATIO}'
-        buy_from_nakhll(
-            invoice,
-            invoice.coin_amount,
-            get_coin_payment_description())
+        if invoice.coin_amount > 0:
+            def get_coin_payment_description():
+                return f'user:{invoice.user} - invoice:{invoice.pk} - coin-rial-ration{COIN_RIAL_RATIO}'
+            buy_from_nakhll(
+                invoice,
+                invoice.coin_amount,
+                get_coin_payment_description())
 
     def clear_cart(self):
         """Clear cart items and coin payment configurations"""

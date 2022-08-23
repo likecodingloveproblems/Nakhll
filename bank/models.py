@@ -174,7 +174,7 @@ class Account(models.Model):
         return self.pk <= SYSTEMIC_ACCOUNTS_ID_UPPER_LIMIT or self.user is None
 
     def withdraw(self, amount=None):
-        amount = amount if amount else self.cashable_amount
+        amount = amount if amount else self.net_cashable_amount
         AccountRequest.objects.create(
             from_account=self,
             to_account=Account.objects.financial_account,

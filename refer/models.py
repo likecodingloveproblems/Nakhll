@@ -32,9 +32,9 @@ class RequestData(models.Model):
 
     @request.setter
     def request(self, request):
-        self.user_agent = request.META.get('HTTP_USER_AGENT'),
-        self.ip_address = request.META.get('REMOTE_ADDR'),
-        self.platform = request.META.get('HTTP_SEC_CH_UA_PLATFORM'),
+        self.user_agent = request.META.get('HTTP_USER_AGENT')
+        self.ip_address = request.META.get('REMOTE_ADDR')
+        self.platform = request.META.get('HTTP_SEC_CH_UA_PLATFORM')
 
 
 class ReferrerEventStatuses(models.IntegerChoices):
