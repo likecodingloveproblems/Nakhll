@@ -149,7 +149,7 @@ class ShopAdmin(ExportActionMixin, admin.ModelAdmin):
         'Publish',
         'DateCreate',
         'DateUpdate',
-        'ShopProductCountFilter',
+        ShopProductCountFilter,
 
     )
     search_fields = ('Title', 'Slug', 'FK_ShopManager__username')
