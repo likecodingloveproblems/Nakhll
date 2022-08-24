@@ -149,6 +149,8 @@ class ShopAdmin(ExportActionMixin, admin.ModelAdmin):
         'Publish',
         'DateCreate',
         'DateUpdate',
+        'ShopProductCountFilter',
+
     )
     search_fields = ('Title', 'Slug', 'FK_ShopManager__username')
     search_help_text = 'جستجو براساس عنوان و شناسه حجره یا نام کاربری مدیر'

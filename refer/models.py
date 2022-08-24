@@ -117,8 +117,8 @@ class ReferrerVisitEvent(BaseReferrerEventModel, RequestData):
     REWARD = REFERRER_VISIT_REWARD
 
     class Meta(BaseReferrerEventModel.Meta):
-        verbose_name = _("ReferrerVisitEvent")
-        verbose_name_plural = _("ReferrerVisitEvent")
+        verbose_name = _("تاریخچه بازدید")
+        verbose_name_plural = _("تاریخچه بازدید ها")
 
 
 class ReferrerSignupEvent(BaseReferrerEventModel, RequestData):
@@ -132,8 +132,8 @@ class ReferrerSignupEvent(BaseReferrerEventModel, RequestData):
         related_name='referred_signup_events')
 
     class Meta(BaseReferrerEventModel.Meta):
-        verbose_name = _("ReferrerSignupEvent")
-        verbose_name_plural = _("ReferrerSignupEvents")
+        verbose_name = _("تاریخچه ثبت نام")
+        verbose_name_plural = _("تاریخچه ثبت نام ها")
 
 
 class ReferrerPurchaseEvent(BaseReferrerEventModel):
@@ -143,5 +143,5 @@ class ReferrerPurchaseEvent(BaseReferrerEventModel):
     invoice = models.ForeignKey("invoice.Invoice", on_delete=models.PROTECT)
 
     class Meta(BaseReferrerEventModel.Meta):
-        verbose_name = _("ReferrerPurchaseEvent")
-        verbose_name_plural = _("ReferrerPurchaseEvents")
+        verbose_name = _("تاریخچه خرید")
+        verbose_name_plural = _("تاریخچه خرید ها")

@@ -38,18 +38,19 @@ class CoinMintBurn(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
-        verbose_name='سوزاننده سکه')
+        verbose_name='ضرب کننده سکه')
     value = models.PositiveIntegerField(
         verbose_name='مقدار', validators=[
             validators.MinValueValidator(1)])
-    is_mint = models.BooleanField(verbose_name='آیا ضرب سکه است؟', default=True)
+    is_mint = models.BooleanField(
+        verbose_name='آیا ضرب سکه است؟', default=True)
     description = models.TextField(verbose_name='توضیحات')
     date_created = jmodels.jDateTimeField(
         auto_now_add=True, verbose_name='تاریخ ایجاد')
 
     class Meta:
-        verbose_name = _("MintBurn")
-        verbose_name_plural = _("MintBurns")
+        verbose_name = _("ضرب سکه")
+        verbose_name_plural = _("ضرب سکه ها")
         triggers = [
             pgtrigger.Protect(
                 name='protect_from_deletes_and_updates',
@@ -237,8 +238,8 @@ class AccountRequest(models.Model):
     objects = AccountRequestManager()
 
     class Meta:
-        verbose_name = _("AccountRequest")
-        verbose_name_plural = _("AccountRequest")
+        verbose_name = _("درخواست")
+        verbose_name_plural = _("درخواست ها")
         constraints = [
             CheckConstraint(
                 check=Q(
@@ -270,7 +271,8 @@ class AccountRequest(models.Model):
                         from_account=FUND_ACCOUNT_ID,
                         to_account__gt=SYSTEMIC_ACCOUNTS_ID_UPPER_LIMIT) |
                     Q(
-                        request_type__in=[RequestTypes.WITHDRAW, RequestTypes.BUY_FROM_NAKHLL],
+                        request_type__in=[RequestTypes.WITHDRAW,
+                                          RequestTypes.BUY_FROM_NAKHLL],
                         from_account__gt=SYSTEMIC_ACCOUNTS_ID_UPPER_LIMIT,
                         to_account=FINANCIAL_ACCOUNT_ID) |
                     Q(
@@ -357,8 +359,8 @@ class AccountTransaction(models.Model):
     date_created = jmodels.jDateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = _("AccountTransaction")
-        verbose_name_plural = _("AccountTransaction")
+        verbose_name = _("سند تراکنش")
+        verbose_name_plural = _("سند تراکنش ها")
         triggers = [
             pgtrigger.Protect(
                 name='protect_from_updates_and_deleted',
@@ -385,8 +387,8 @@ class CoinPayment(models.Model):
     date_created = jmodels.jDateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = _("CoinPayment")
-        verbose_name_plural = _("CoinPayments")
+        verbose_name = _("پرداخت سکه")
+        verbose_name_plural = _("پرداخت سکه ها")
 
     def __str__(self):
         return f'invoice:{self.invoice}, account request:{self.account_request}'
@@ -401,9 +403,11 @@ class DepositRequest(AccountRequest):
 
     class Meta:
         proxy = True
+        verbose_name = _("درخواست واریز")
+        verbose_name_plural = _("درخواست های واریز")
 
     def __str__(self):
-        return f'Deposit to {self.to_account}: {self.value}'
+        return f'واریز به  {self.to_account} به مقدار {self.value} سکه'
 
     def create(self, *args, **kwargs):
         self.from_account = Account.objects.fund_account
@@ -461,6 +465,8 @@ class FinancialToFundRequest(AccountRequest):
 
     class Meta:
         proxy = True
+        verbose_name = _("درخواست از حساب مالی به صندوق")
+        verbose_name_plural = _("درخواست ها از حساب مالی به صندوق")
 
     def __str__(self):
         return f'انتقال از حساب مالی به حساب نخل: {self.value}'

@@ -9,14 +9,14 @@ class RequestStatuses(models.IntegerChoices):
 
 
 class RequestTypes(models.IntegerChoices):
-    REFERRER_VISIT_REWARD = 0
-    REFERRER_SIGNUP_REWARD = 1
-    REFERRER_PURCHASE_REWARD = 2
-    PURCHASE_REWARD = 3
-    BUY_FROM_NAKHLL = 4
-    WITHDRAW = 5
-    DEPOSIT = 6
-    FINANCIAL_TO_FUND = 7
+    REFERRER_VISIT_REWARD = 0, _('پاداش بازدید')
+    REFERRER_SIGNUP_REWARD = 1, _('پاداش ثبت نام')
+    REFERRER_PURCHASE_REWARD = 2, _('پاداش خرید بازار یاب')
+    PURCHASE_REWARD = 3, _('پاداش خرید خریدار')
+    BUY_FROM_NAKHLL = 4, _('خرید از نخل')
+    WITHDRAW = 5, _('تسویه حساب')
+    DEPOSIT = 6, _('واریز')
+    FINANCIAL_TO_FUND = 7, _('از حساب مالی به صندوق')
 
 
 COIN_RIAL_RATIO = 100_000

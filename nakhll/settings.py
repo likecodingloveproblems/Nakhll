@@ -167,7 +167,7 @@ ADMIN_REORDER = (
         'shop.ShopFeatureInvoice',
         'shop.ShopLanding',
     )},
-    {'app': 'bank', 'label': 'بانک'},
+    {'app': 'bank', 'label': 'سکه'},
     {'app': 'refer', 'label': 'امتیازات بازاریاب'},
     {'app': 'Ticketing', 'label': 'بخش پشتیبانی و گزارشات', 'models': (
         'Ticketing.Ticketing',
