@@ -158,8 +158,7 @@ class RejectRequest(BaseAccountRequest):
         self.from_account.blocked_balance -= self.account_request.value
 
     def __update_blocked_cashable_amount(self):
-        if self.account_request.is_withdraw():
-            self.from_account.blocked_cashable_amount -= self.account_request.value
+        self.from_account.blocked_cashable_amount -= self.account_request.cashable_value
 
     def __update_account_request_status(self):
         self.account_request.date_rejected = timezone.now()
@@ -167,4 +166,4 @@ class RejectRequest(BaseAccountRequest):
         self.account_request.save()
 
     def _validate(self):
-        pass
+        """Validate reject request"""
