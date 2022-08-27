@@ -403,7 +403,7 @@ class Invoice(models.Model):
     def reward_description(self):
         return f'id:{self.id} - payment datetime:{self.payment_datetime} -\
                 user:{self.user.username} - final price:{self.final_price} -\
-                coins:{self.reward_coins}'
+                coins:{self.reward_coins_amount}'
 
 
 class InvoiceItem(models.Model):
