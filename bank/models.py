@@ -283,6 +283,10 @@ class AccountRequest(models.Model):
                 ),
                 name='check_request_types_requirements'
             ),
+            CheckConstraint(
+                check=Q(value__gte=1),
+                name='request_value_must_be_greater_or_equal_to_1'
+            )
         ]
         triggers = [
             pgtrigger.Protect(
@@ -366,6 +370,12 @@ class AccountTransaction(models.Model):
                 name='protect_from_updates_and_deleted',
                 operation=(
                     pgtrigger.Update | pgtrigger.Delete))]
+        constraints = [
+            CheckConstraint(
+                check=~Q(value=0),
+                name='transaction_value_must_be_not_0'
+            )
+        ]
 
     def __str__(self):
         return f'{self.account} - {self.account_opposite} - {self.value} - {self.date_created}'
