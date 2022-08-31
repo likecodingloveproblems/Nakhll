@@ -75,7 +75,7 @@ class ProfileSerializer(ModelSerializer):
     cart_items_count = serializers.SerializerMethodField()
 
     class Meta:
-        model = Profile 
+        model = Profile
         fields = [
             'id',
             'user',
@@ -96,7 +96,7 @@ class ProfileSerializer(ModelSerializer):
             'fax_number',
             'city_per_code',
             'image_national_card',
-            'referral_link',
+            'refer_code',
             'point',
             'tutorial_website',
             'reference_code',

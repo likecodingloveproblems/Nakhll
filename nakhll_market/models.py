@@ -2336,8 +2336,8 @@ class Profile(models.Model):
             self.ImageNationalCard.url) if self.ImageNationalCard else None
 
     @property
-    def referral_link(self):
-        return f'{settings.DOMAIN_NAME}?ref={self.refer_code}'
+    def refer_code(self):
+        return self.refer_code
 
     @property
     def point(self):
