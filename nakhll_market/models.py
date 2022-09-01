@@ -2334,11 +2334,7 @@ class Profile(models.Model):
     def image_national_card(self):
         return attach_domain(
             self.ImageNationalCard.url) if self.ImageNationalCard else None
-
-    @property
-    def refer_code(self):
-        return self.refer_code
-
+            
     @property
     def point(self):
         return self.Point
