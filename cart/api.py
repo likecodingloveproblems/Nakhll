@@ -115,10 +115,13 @@ class UserCartViewSet(viewsets.GenericViewSet):
             serializer.save()
             cart.coupons.add(coupon)
             cart.update_coin_payment_if_coupon_used()
+            status_code = status.HTTP_200_OK
+        else:
+            status_code = status.HTTP_400_BAD_REQUEST
         return Response(
             {'coupon': coupon.code, 'result': coupon.final_price,
              'errors': coupon.errors},
-            status=status.HTTP_200_OK)
+            status=status_code)
 
     @action(methods=['PATCH'], detail=False)
     def unset_coupon(self, request):
